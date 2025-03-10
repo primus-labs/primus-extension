@@ -174,7 +174,7 @@
               }
 
               &.dark {
-                color: #fff;
+                color: rgb(153, 153, 153);
 
                 &:hover {
                   color: #ff4d4f;
@@ -394,7 +394,7 @@
       }
       
       .xiaohongshu-handle {
-        color: #7467ef;
+        color: white;
         font-weight: 500;
       }
       
@@ -404,7 +404,7 @@
       
       .following-status {
         display: inline-block;
-        padding: 3px 6px;
+        // padding: 3px 6px;
         border-radius: 3px;
         font-size: 0.85em;
         font-weight: 500;
@@ -415,8 +415,50 @@
         }
         
         &.no {
-          background-color: rgba(211, 47, 47, 0.1);
+          // background-color: rgba(211, 47, 47, 0.1);
           color: #d32f2f;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          
+          .follow-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #666666;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            
+            &:hover {
+              background-color: #555555;
+            }
+            
+            &:active {
+              background-color: #444444;
+            }
+            
+            &.loading {
+              pointer-events: none;
+              position: relative;
+              color: transparent;
+              
+              &:after {
+                content: '';
+                position: absolute;
+                width: 12px;
+                height: 12px;
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                border-top-color: white;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+              }
+            }
+          }
         }
       }
       
@@ -477,6 +519,77 @@
       min-width: 120px;
     }
   }
+
+  // New styles for unfollowed Xiaohongshu users component
+  .unfollowed-xiaohongshu-container {
+    margin: 16px 0;
+    padding: 16px;
+    background-color: #f5f8ff;
+    border-radius: 8px;
+    border-left: 4px solid #4285f4;
+    
+    .dark & {
+      background-color: #1e293b;
+      border-left-color: #5b9afa;
+    }
+    
+    .unfollowed-xiaohongshu-message {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      
+      span {
+        flex: 1;
+        font-weight: 500;
+        color: var(--text-tokens-text-primary);
+      }
+      
+      button {
+        margin-left: 16px;
+        white-space: nowrap;
+        padding: 2px 8px;
+        
+        &.loading {
+          opacity: 0.7;
+          pointer-events: none;
+        }
+        
+        &.follow-all-button {
+          background-color: #eaefff;
+          color: #5b7bdb;
+          border: none;
+          border-radius: 8px;
+          font-size: 0.75rem;
+          font-weight: 500;
+          transition: background-color 0.2s, color 0.2s;
+          
+          &:hover {
+            background-color: #dbe5ff;
+          }
+          
+          .dark & {
+            background-color: #394a7d;
+            color: #7b9eff;
+            
+            &:hover {
+              background-color: #243054;
+            }
+          }
+        }
+      }
+      
+      @media (max-width: 600px) {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+        
+        button {
+          margin-left: 0;
+          width: 100%;
+        }
+      }
+    }
+  }
 }
 
 // Dark theme adjustments
@@ -521,7 +634,8 @@
       }
       
       .xiaohongshu-handle {
-        color: #9d92ff;  /* Brighter purple in dark mode */
+        color: white;
+        font-weight: 500;
       }
       
       .not-found {
@@ -535,8 +649,20 @@
         }
         
         &.no {
-          background-color: rgba(229, 115, 115, 0.15);
+          // background-color: rgba(229, 115, 115, 0.15);
           color: #e57373;
+          
+          .follow-button {
+            background-color: #777777;
+            
+            &:hover {
+              background-color: #666666;
+            }
+            
+            &:active {
+              background-color: #555555;
+            }
+          }
         }
       }
       

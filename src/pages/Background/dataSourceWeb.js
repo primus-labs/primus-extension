@@ -919,6 +919,9 @@ export const dataSourceWebMsgListener = async (
             const ex = new constructorF();
             await storeDataSource(exchangeName, ex, port);
             
+            // Data has been stored successfully by storeDataSource
+            console.log(`${exchangeName} data stored successfully in Chrome storage`);
+            
             // After successful connection, navigate to profile page
             if (exchangeName === 'tiktok' && ex.userName) {
               console.log('Successfully connected TikTok, navigating to profile:', ex.userName);
@@ -926,11 +929,50 @@ export const dataSourceWebMsgListener = async (
               await handleTikTokProfile(tabCreatedByPado, ex.userName, port);
             }
             
-            if (port) {
-              port.postMessage({
-                resType: `set-${exchangeName}`,
-                res: true
+            // Always use storage fallback in addition to port message
+            // This ensures UI updates even when port fails
+            setTimeout(() => {
+              // Get the current activeConnectDataSource and socialSources
+              chrome.storage.local.get(['socialSources', 'activeConnectDataSource'], (result) => {
+                const socialSources = result.socialSources || {};
+                const activeState = result.activeConnectDataSource || {};
+                
+                // Check if we need to update UI for this platform
+                if (socialSources[exchangeName]) {
+                  console.log(`Using storage fallback to trigger UI update for ${exchangeName}`, {
+                    activeState,
+                    socialSources: Object.keys(socialSources)
+                  });
+                  
+                  // Re-save socialSources to trigger storage.onChanged
+                  chrome.storage.local.set({ socialSources });
+                  
+                  // Also directly update activeConnectDataSource if needed
+                  if (activeState.dataSourceId === exchangeName && activeState.loading === 1) {
+                    console.log(`Directly updating activeConnectDataSource for ${exchangeName}`);
+                    chrome.storage.local.set({
+                      activeConnectDataSource: {
+                        ...activeState,
+                        loading: 2 // Set to success state
+                      }
+                    });
+                  }
+                }
               });
+            }, 500);
+            
+            // Try regular port communication as well
+            try {
+              if (port) {
+                console.log(`Sending success message through port for ${exchangeName}`);
+                port.postMessage({
+                  resType: `set-${exchangeName}`,
+                  res: true
+                });
+              }
+            } catch (error) {
+              console.log('Port connection error:', error);
+              // Fallback already implemented above
             }
           }
         } catch (error) {
@@ -978,6 +1020,29 @@ export const dataSourceWebMsgListener = async (
           );
           activeTemplate = {};
         }
+      }
+    }
+
+    // Reset completedDataTypes when TikTok is connected or disconnected
+    if (type === 'dataSourceWeb' && name === 'init' && params?.dataSource === 'tiktok') {
+      console.log('TikTok connection initiated, resetting completedDataTypes');
+      completedDataTypes = new Set();
+    }
+    
+    if (type === 'dataSourceWeb' && name === 'stop' && operation === 'connect') {
+      console.log('Connection flow stopped, resetting completedDataTypes');
+      completedDataTypes = new Set();
+    }
+    
+    // Reset completedDataTypes for direct fetch requests
+    if (type === 'fetch_followers' || type === 'fetch_more_followers' || 
+        type === 'fetch_following' || type === 'fetch_more_following') {
+      console.log('Direct fetch request received, resetting relevant completedDataTypes');
+      if (type.includes('followers')) {
+        completedDataTypes.delete('followers');
+      }
+      if (type.includes('following')) {
+        completedDataTypes.delete('following');
       }
     }
   } catch (error) {

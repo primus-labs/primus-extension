@@ -55,18 +55,76 @@ export const storeDataSource = async (dataSourceId, ex, port, otherParams) => {
         ...ex,
         version: SocailStoreVersion,
       };
-      // postMsg(port, { resMethodName: 'checkIsLogin', res: false });
     }
     Object.assign(newSourceUserData, {
       date: getCurrentDate(),
       timestamp: +new Date(),
       attestationRequestid,
     });
-    await chrome.storage.local.set({
-      [dataSourceId]: JSON.stringify(newSourceUserData),
+    
+    // Store the individual data source info
+    await chrome.storage.local.get([dataSourceId], async (result) => {
+      console.log(`Storing data for ${dataSourceId}`, newSourceUserData);
+      await chrome.storage.local.set({
+        [dataSourceId]: JSON.stringify(newSourceUserData),
+      });
+      
+      // IMPORTANT: Also update the socialSources object for social media platforms
+      if (sourceType === 'Social') {
+        try {
+          // Get the current socialSources
+          chrome.storage.local.get(['socialSources'], async (result) => {
+            let socialSources = result.socialSources || {};
+            
+            // Handle case where socialSources is stored as a string
+            if (typeof socialSources === 'string') {
+              try {
+                socialSources = JSON.parse(socialSources);
+                console.log('Converted socialSources from string to object', socialSources);
+              } catch (parseError) {
+                console.error('Failed to parse socialSources string', parseError);
+                socialSources = {};
+              }
+            }
+            
+            // Update the specific platform data
+            socialSources[dataSourceId] = newSourceUserData;
+            
+            console.log(`Updating socialSources with ${dataSourceId} data`, {
+              platformData: newSourceUserData,
+              allPlatforms: Object.keys(socialSources)
+            });
+            
+            // Save the updated socialSources
+            await chrome.storage.local.set({ socialSources });
+            
+            // Also update activeConnectDataSource directly
+            chrome.storage.local.get(['activeConnectDataSource'], (connectResult) => {
+              const activeState = connectResult.activeConnectDataSource || {};
+              if (activeState.dataSourceId === dataSourceId && activeState.loading === 1) {
+                console.log(`Directly updating loading state for ${dataSourceId}`);
+                chrome.storage.local.set({
+                  activeConnectDataSource: {
+                    ...activeState,
+                    loading: 2 // Success state
+                  }
+                });
+              }
+            });
+          });
+        } catch (socialError) {
+          console.error('Error updating socialSources:', socialError);
+        }
+      }
     });
+    
     if (port) {
-      postMsg(port, { resType, res: true, connectType, withoutMsg });
+      try {
+        postMsg(port, { resType, res: true, connectType, withoutMsg });
+      } catch (portError) {
+        console.log('Port communication error:', portError);
+        // Port error is non-fatal since we've already updated storage
+      }
     }
   } catch (error) {
     console.log(

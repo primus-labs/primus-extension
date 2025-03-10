@@ -14,6 +14,7 @@ import {
 export interface HandleMapping {
   tiktokHandle: string;
   xiaohongshuHandle: string;
+  xiaohongshuUserId?: string; // Adding userId field
   createdAt: Timestamp;
 }
 
@@ -21,9 +22,14 @@ export interface HandleMapping {
  * Save a mapping between TikTok and Xiaohongshu handles to Firestore
  * @param tiktokHandle TikTok username/handle
  * @param xiaohongshuHandle Xiaohongshu username/handle
+ * @param xiaohongshuUserId Optional Xiaohongshu user ID for direct profile access
  * @returns The document ID of the saved mapping
  */
-export const saveHandleMapping = async (tiktokHandle: string, xiaohongshuHandle: string): Promise<string> => {
+export const saveHandleMapping = async (
+  tiktokHandle: string, 
+  xiaohongshuHandle: string,
+  xiaohongshuUserId?: string
+): Promise<string> => {
   try {
     const handleMappingCollection = collection(db, 'handleMappings');
     
@@ -31,6 +37,7 @@ export const saveHandleMapping = async (tiktokHandle: string, xiaohongshuHandle:
     const mapping: HandleMapping = {
       tiktokHandle,
       xiaohongshuHandle,
+      ...(xiaohongshuUserId && { xiaohongshuUserId }), // Add userId if provided
       createdAt: Timestamp.now()
     };
     
@@ -77,14 +84,18 @@ export const findXiaohongshuByTiktok = async (tiktokHandle: string): Promise<Han
       const timestamp = data.createdAt.toMillis();
       
       if (!mostRecent || timestamp > mostRecentTimestamp) {
+        // Include the userId if available
         mostRecent = {
-          ...data,
-          createdAt: data.createdAt
+          tiktokHandle: data.tiktokHandle,
+          xiaohongshuHandle: data.xiaohongshuHandle,
+          createdAt: data.createdAt,
+          ...(data.xiaohongshuUserId && { xiaohongshuUserId: data.xiaohongshuUserId })
         };
         mostRecentTimestamp = timestamp;
       }
     });
     
+    console.log('Found Xiaohongshu mapping:', mostRecent);
     return mostRecent;
   } catch (error) {
     console.error('Error finding Xiaohongshu handle:', error);

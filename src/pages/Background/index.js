@@ -676,4 +676,394 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     console.log('content2', message);
     lumaMonadEventMsgListener(message, sender);
   }
+  
+  // Handler for following a user on Xiaohongshu
+  if (type === 'follow_xiaohongshu_user' || type === 'xiaohongshu_follow') {
+    console.log('Received follow request for Xiaohongshu user:', message.data.handle);
+    
+    // We need to make sure we return true to keep the message channel open
+    // for our async operation
+    (async () => {
+      let searchTab = null;
+      try {
+        const { handle, userId } = message.data;
+        console.log(`Attempting to follow Xiaohongshu user: ${handle}`);
+        
+        // Try to get userId from storage before creating tab
+        const userIdFromStorage = await new Promise(resolve => {
+          chrome.storage.local.get(['xiaohongshuUserIdMappings'], (result) => {
+            const mappings = result.xiaohongshuUserIdMappings || {};
+            console.log('Retrieved userId mappings from storage:', mappings);
+            
+            if (mappings[handle]) {
+              console.log(`Found stored userId ${mappings[handle]} for handle ${handle}`);
+              resolve(mappings[handle]);
+            } else {
+              resolve(null);
+            }
+          });
+        });
+        
+        // Determine the best profile URL to use
+        let profileUrl;
+        const targetId = userIdFromStorage || handle;
+        
+        profileUrl = `https://www.xiaohongshu.com/user/profile/${targetId}`;
+        console.log(`Navigating directly to profile URL: ${profileUrl}`);
+        
+        // Option 1: Try with a background tab first
+        try {
+          searchTab = await chrome.tabs.create({ 
+            url: profileUrl, 
+            active: false  // Set to false to open the tab in the background
+          });
+          
+          console.log('Created tab with ID:', searchTab.id);
+          
+          // Wait for the page to load
+          await new Promise(resolve => setTimeout(resolve, 5000)); // Longer wait time
+          
+          // Execute script to check if we're on a profile page and find the follow button
+          console.log('Checking if we reached the profile page...');
+          const profilePageResult = await chrome.scripting.executeScript({
+            target: { tabId: searchTab.id },
+            func: async (userHandle) => {
+              const debugInfo = {
+                logs: [],
+                elements: {},
+                actions: []
+              };
+              
+              const log = (message) => {
+                console.log(`[Xiaohongshu Direct] ${message}`);
+                debugInfo.logs.push(message);
+              };
+              
+              const wait = ms => new Promise(r => setTimeout(r, ms));
+              
+              try {
+                // Check if we're on a profile page
+                log('Checking if on a profile page');
+                const profileElements = document.querySelectorAll('[class*="profile"], [class*="user"], [id*="profile"], [id*="user"]');
+                debugInfo.foundProfileElements = profileElements.length;
+                
+                // Check if the follow button exists on the current page
+                const followButtonExact = document.querySelector('button.reds-button-new.follow-button.large.primary.follow-button');
+                const followButtonGeneric = document.querySelector('.follow-button');
+                const followButtonByText = Array.from(document.querySelectorAll('button')).find(btn => 
+                  btn.textContent.includes('关注'));
+                
+                // Button inside specific divs as shown in the HTML structure
+                const followButtonInDiv = document.querySelector('.btn button.follow-button');
+                
+                // Check for "no results" or "user not found" indicators
+                const noResultsContainer = document.querySelector('.no-result-container') || 
+                                         document.querySelector('[class*="no-result"]');
+                
+                const noDataContainer = document.querySelector('.no-data-container') || 
+                                      document.querySelector('[class*="no-data"]');
+                
+                // Elements that might indicate empty search results or no such user
+                const emptyState = document.querySelector('[class*="empty-state"]');
+                
+                debugInfo.elements.errorIndicators = {
+                  noResultsContainer: !!noResultsContainer,
+                  noDataContainer: !!noDataContainer,
+                  emptyState: !!emptyState
+                };
+                
+                // If we find a clear indication of "no results" or "user not found"
+                if (noResultsContainer || noDataContainer || emptyState) {
+                  log('Found indicators that user does not exist');
+                  
+                  // Get text content from these elements for error details
+                  const errorTexts = [];
+                  if (noResultsContainer) errorTexts.push(noResultsContainer.textContent.trim());
+                  if (noDataContainer) errorTexts.push(noDataContainer.textContent.trim());
+                  if (emptyState) errorTexts.push(emptyState.textContent.trim());
+                  
+                  debugInfo.errorTexts = errorTexts;
+                  
+                  return { 
+                    success: false, 
+                    userNotFound: true,
+                    error: 'User does not exist on Xiaohongshu',
+                    debugInfo
+                  };
+                }
+                
+                debugInfo.elements.followButton = {
+                  exactSelector: !!followButtonExact,
+                  genericSelector: !!followButtonGeneric,
+                  byText: !!followButtonByText,
+                  inDiv: !!followButtonInDiv,
+                };
+                
+                if (followButtonExact || followButtonGeneric || followButtonByText || followButtonInDiv) {
+                  log('Found follow button directly on current page');
+                  // We're already on a page with the follow button, proceed to clicking it
+                  const buttonToClick = followButtonExact || followButtonInDiv || followButtonGeneric || followButtonByText;
+                  debugInfo.elements.buttonToClick = {
+                    tagName: buttonToClick.tagName,
+                    className: buttonToClick.className,
+                    innerText: buttonToClick.innerText,
+                    innerHTML: buttonToClick.innerHTML.substring(0, 100)
+                  };
+                  
+                  // Check if the button indicates we're already following this user
+                  const buttonText = buttonToClick.textContent || buttonToClick.innerText;
+                  const isOutlinedButton = buttonToClick.classList.contains('outlined') || 
+                                         buttonToClick.className.includes('outlined');
+                  
+                  if (buttonText.includes('已关注') || (isOutlinedButton && buttonText.includes('关注'))) {
+                    log('User is already being followed - no need to click');
+                    return { 
+                      success: true,
+                      alreadyFollowing: true,
+                      followSuccess: true, // Consider already following as success
+                      directFollow: true,
+                      debugInfo
+                    };
+                  }
+                  
+                  log('Clicking the found follow button');
+                  buttonToClick.click();
+                  debugInfo.actions.push('Clicked follow button');
+                  
+                  // Wait for button state to change
+                  await wait(2000);
+                  
+                  // Verify if the action was successful - check for 已关注 text
+                  const buttonAfterClick = document.querySelector('button.follow-button') || 
+                                         document.querySelector('[class*="follow-button"]');
+                  
+                  const successTexts = ['已关注', 'Following', 'Followed'];
+                  let isSuccessful = false;
+                  
+                  if (buttonAfterClick) {
+                    const buttonTextAfter = buttonAfterClick.textContent || buttonAfterClick.innerText;
+                    log(`Button text after click: ${buttonTextAfter}`);
+                    isSuccessful = successTexts.some(text => buttonTextAfter.includes(text));
+                    
+                    // Also check for class changes
+                    const hasSuccessClass = buttonAfterClick.classList.contains('outlined') || 
+                                          buttonAfterClick.classList.contains('followed') ||
+                                          buttonAfterClick.className.includes('outlined') ||
+                                          buttonAfterClick.className.includes('followed');
+                    
+                    isSuccessful = isSuccessful || hasSuccessClass;
+                  }
+                  
+                  log(isSuccessful ? 'Follow was successful' : 'Follow appears to have failed');
+                  
+                  return { 
+                    success: isSuccessful, 
+                    followSuccess: isSuccessful,
+                    directFollow: true,
+                    debugInfo
+                  };
+                }
+                
+                // If we couldn't find the button, try direct navigation
+                log(`Trying to directly navigate to user profile for: ${userHandle}`);
+                debugInfo.actions.push('Attempting direct navigation');
+                
+                // Xiaohongshu user profile URLs can be in different formats
+                // Let's try the most common ones
+                const possibleUrls = [
+                  `https://www.xiaohongshu.com/user/profile/${userHandle}`,
+                  `https://www.xiaohongshu.com/user/${userHandle}`
+                ];
+                
+                // Append the current URL in case it's already a user profile
+                debugInfo.currentUrl = window.location.href;
+                debugInfo.actions.push(`Current URL: ${window.location.href}`);
+                
+                for (const url of possibleUrls) {
+                  log(`Trying URL: ${url}`);
+                  debugInfo.actions.push(`Navigating to: ${url}`);
+                  window.location.href = url;
+                  
+                  // Wait for navigation
+                  await wait(5000);
+                  
+                  // Check if there's a follow button now
+                  const followButton = document.querySelector('button.follow-button') || 
+                                     document.querySelector('[class*="follow-button"]');
+                  
+                  if (followButton) {
+                    log('Found follow button after direct navigation');
+                    return { 
+                      success: true, 
+                      directNavigation: true,
+                      debugInfo
+                    };
+                  }
+                }
+                
+                // If we're still here, we couldn't find the follow button
+                log('Failed to find follow button after direct navigation attempts');
+                
+                // Take a snapshot of the HTML for debugging
+                debugInfo.html = document.body.innerHTML.substring(0, 5000);
+                
+                // Find all buttons on the page
+                const allButtons = document.querySelectorAll('button');
+                debugInfo.allButtons = Array.from(allButtons).map(btn => ({
+                  className: btn.className,
+                  innerText: btn.innerText,
+                  innerHTML: btn.innerHTML.substring(0, 50)
+                }));
+                
+                return { 
+                  success: false, 
+                  error: 'Could not find follow button after direct navigation',
+                  debugInfo
+                };
+              } catch (err) {
+                log(`Error in direct navigation: ${err.message}`);
+                return { 
+                  success: false, 
+                  error: err.message,
+                  debugInfo
+                };
+              }
+            },
+            args: [handle]
+          });
+          
+          console.log('Direct navigation result:', JSON.stringify(profilePageResult[0]?.result, null, 2));
+          
+          // Close the tab after operation - immediately if successful, after a delay if not
+          if (searchTab) {
+            const isSuccessful = profilePageResult[0]?.result?.success;
+            setTimeout(() => {
+              chrome.tabs.remove(searchTab.id);
+              console.log(`Tab ${searchTab.id} closed ${isSuccessful ? 'immediately after success' : 'after timeout'}`);
+            }, isSuccessful ? 300 : 10000);
+          }
+          
+          // Process the direct navigation result
+          if (profilePageResult[0]?.result?.success) {
+            // If direct follow was successful
+            if (profilePageResult[0]?.result?.directFollow) {
+              console.log('Sending success response with userId:', userId);
+              try {
+                // Prepare a well-formatted result object
+                const followResult = {
+                  type: 'xiaohongshu_follow_result',
+                  data: {
+                    success: profilePageResult[0]?.result?.followSuccess,
+                    userId,
+                    handle,
+                    message: profilePageResult[0]?.result?.followSuccess ? 
+                            `Successfully followed user ${handle}` : 
+                            `Found but failed to follow user ${handle}`
+                  }
+                };
+                
+                console.log('Broadcasting follow result');
+                
+                // 1. Try to send back directly to original sender
+                if (sender && sender.tab && sender.tab.id) {
+                  chrome.tabs.sendMessage(sender.tab.id, followResult);
+                  console.log(`Sent direct response to sender tab: ${sender.tab.id}`);
+                }
+                
+                // 2. Broadcast via runtime message (this will reach all extension pages)
+                chrome.runtime.sendMessage(followResult);
+                console.log('Broadcast follow result via runtime message');
+                
+                // 3. Store the result in chrome.storage for persistence
+                chrome.storage.local.get(['successfulXiaohongshuFollows'], (result) => {
+                  const existingFollows = result.successfulXiaohongshuFollows || {};
+                  const updatedFollows = {
+                    ...existingFollows,
+                    [userId]: { 
+                      handle, 
+                      success: profilePageResult[0]?.result?.followSuccess, 
+                      timestamp: Date.now() 
+                    }
+                  };
+                  chrome.storage.local.set({ successfulXiaohongshuFollows: updatedFollows });
+                  console.log(`Stored follow result in chrome.storage for persistence: ${userId}`);
+                });
+                
+                // 4. Also send in alternate format (only via runtime)
+                chrome.runtime.sendMessage({
+                  type: 'xiaohongshu_direct_follow_result',
+                  success: profilePageResult[0]?.result?.followSuccess,
+                  userId,
+                  handle,
+                  message: profilePageResult[0]?.result?.followSuccess ? 
+                          `Successfully followed user ${handle}` : 
+                          `Found but failed to follow user ${handle}`
+                });
+              } catch (e) {
+                console.error('Error sending follow result messages:', e);
+              }
+              return;
+            }
+            
+            // If direct navigation found the profile but didn't follow
+            sendResponse({ 
+              success: false, 
+              userId, 
+              handle,
+              error: 'Found user profile but could not complete follow action',
+              debug: profilePageResult[0]?.result?.debugInfo
+            });
+            return;
+          }
+          
+          // Check if we got a clear indication that the user doesn't exist
+          if (profilePageResult[0]?.result?.userNotFound) {
+            sendResponse({ 
+              success: false, 
+              userId, 
+              handle,
+              error: 'User does not exist on Xiaohongshu',
+              debug: profilePageResult[0]?.result?.debugInfo
+            });
+            return;
+          }
+          
+          // If all attempts failed
+          sendResponse({ 
+            success: false,
+            userId,
+            handle,
+            error: 'Could not find or follow user on Xiaohongshu',
+            debug: {
+              search: profilePageResult[0]?.result?.debugInfo,
+              directNavigation: profilePageResult[0]?.result?.debugInfo
+            }
+          });
+          return;
+        } catch (error) {
+          console.error('Error executing script:', error);
+          if (searchTab) {
+            // Keep the tab open longer for debugging
+            setTimeout(() => chrome.tabs.remove(searchTab.id), 10000);
+          }
+          sendResponse({ 
+            success: false, 
+            error: error.message 
+          });
+        }
+      } catch (error) {
+        console.error('Error executing script:', error);
+        if (searchTab) {
+          // Keep the tab open longer for debugging
+          setTimeout(() => chrome.tabs.remove(searchTab.id), 10000);
+        }
+        sendResponse({ 
+          success: false, 
+          error: error.message 
+        });
+      }
+    })();
+    
+    return true; // Keep the message channel open for the async response
+  }
 });

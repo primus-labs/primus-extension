@@ -26,8 +26,32 @@ export class WebXiaohongshu extends WebSocial {
         chrome.storage.local.get(['tiktok']),
         chrome.storage.local.get(['socialSources'])
       ]);
-      console.log('TikTok stored data:', tiktokData.tiktok ? JSON.parse(tiktokData.tiktok) : null);
-      console.log('Social Sources data:', socialSourcesData.socialSources ? JSON.parse(socialSourcesData.socialSources) : null);
+      
+      // Safely parse JSON values or handle objects directly
+      let parsedTiktokData = null;
+      if (tiktokData.tiktok) {
+        try {
+          parsedTiktokData = typeof tiktokData.tiktok === 'string' 
+            ? JSON.parse(tiktokData.tiktok) 
+            : tiktokData.tiktok;
+        } catch (e) {
+          console.log('Error parsing TikTok data:', e);
+        }
+      }
+      
+      let parsedSocialSources = null;
+      if (socialSourcesData.socialSources) {
+        try {
+          parsedSocialSources = typeof socialSourcesData.socialSources === 'string' 
+            ? JSON.parse(socialSourcesData.socialSources) 
+            : socialSourcesData.socialSources;
+        } catch (e) {
+          console.log('Error parsing socialSources:', e);
+        }
+      }
+      
+      console.log('TikTok stored data:', parsedTiktokData);
+      console.log('Social Sources data:', parsedSocialSources);
 
       // Get stored headers from both locations
       const [urlData, authData] = await Promise.all([
@@ -47,23 +71,38 @@ export class WebXiaohongshu extends WebSocial {
 
       // Try to parse the URL data first
       if (urlData['https://edith.xiaohongshu.com/api/sns/web/v2/user/me']) {
-        const storedData = JSON.parse(urlData['https://edith.xiaohongshu.com/api/sns/web/v2/user/me']);
-        console.log('Stored URL data:', storedData);
-
-        if (storedData.originalHeaders && Array.isArray(storedData.originalHeaders)) {
-          storedData.originalHeaders.forEach(header => {
-            params.headers[header.name] = header.value;
-          });
-        } else if (storedData.headers) {
-          params.headers = { ...storedData.headers };
+        let storedData;
+        try {
+          storedData = typeof urlData['https://edith.xiaohongshu.com/api/sns/web/v2/user/me'] === 'string'
+            ? JSON.parse(urlData['https://edith.xiaohongshu.com/api/sns/web/v2/user/me'])
+            : urlData['https://edith.xiaohongshu.com/api/sns/web/v2/user/me'];
+          
+          console.log('Stored URL data:', storedData);
+          
+          if (storedData.originalHeaders && Array.isArray(storedData.originalHeaders)) {
+            storedData.originalHeaders.forEach(header => {
+              params.headers[header.name] = header.value;
+            });
+          } else if (storedData.headers) {
+            params.headers = { ...params.headers, ...storedData.headers };
+          }
+        } catch (e) {
+          console.error('Error parsing URL data:', e);
         }
       }
 
       // If we don't have all necessary headers, try to use auth data
       if (!params.headers['X-s'] || !params.headers['X-t']) {
         if (authData['xiaohongshu-auth']) {
-          const authHeaders = JSON.parse(authData['xiaohongshu-auth']);
-          params.headers = { ...params.headers, ...authHeaders };
+          try {
+            const authHeaders = typeof authData['xiaohongshu-auth'] === 'string'
+              ? JSON.parse(authData['xiaohongshu-auth'])
+              : authData['xiaohongshu-auth'];
+              
+            params.headers = { ...params.headers, ...authHeaders };
+          } catch (e) {
+            console.error('Error parsing auth data:', e);
+          }
         }
       }
 
@@ -134,11 +173,26 @@ export class WebXiaohongshu extends WebSocial {
         }),
         // Store in socialSources
         chrome.storage.local.get(['socialSources']).then(result => {
-          const socialSources = result.socialSources ? JSON.parse(result.socialSources) : {};
+          let socialSources = {};
+          
+          // Carefully handle socialSources which might be a string or an object
+          if (result.socialSources) {
+            try {
+              socialSources = typeof result.socialSources === 'string'
+                ? JSON.parse(result.socialSources)
+                : result.socialSources;
+            } catch (e) {
+              console.error('Error parsing socialSources in storage operation:', e);
+              // If parsing fails, start with empty object
+              socialSources = {};
+            }
+          }
+          
+          // Update xiaohongshu data
           socialSources.xiaohongshu = storageData;
-          return chrome.storage.local.set({
-            socialSources: JSON.stringify(socialSources)
-          });
+          
+          // Store as object, not string - this is a key fix
+          return chrome.storage.local.set({ socialSources });
         })
       ]);
 
@@ -149,9 +203,32 @@ export class WebXiaohongshu extends WebSocial {
         chrome.storage.local.get(['socialSources'])
       ]);
       
-      console.log('Verified Xiaohongshu storage:', verifyXiaohongshu.xiaohongshu ? JSON.parse(verifyXiaohongshu.xiaohongshu) : null);
+      // Safely parse strings or handle objects directly
+      let parsedXiaohongshu = null;
+      if (verifyXiaohongshu.xiaohongshu) {
+        try {
+          parsedXiaohongshu = typeof verifyXiaohongshu.xiaohongshu === 'string'
+            ? JSON.parse(verifyXiaohongshu.xiaohongshu)
+            : verifyXiaohongshu.xiaohongshu;
+        } catch (e) {
+          console.error('Error parsing verification data for xiaohongshu:', e);
+        }
+      }
+      
+      let verifiedSocialSources = null;
+      if (verifySocialSources.socialSources) {
+        try {
+          verifiedSocialSources = typeof verifySocialSources.socialSources === 'string'
+            ? JSON.parse(verifySocialSources.socialSources)
+            : verifySocialSources.socialSources;
+        } catch (e) {
+          console.error('Error parsing verification data for socialSources:', e);
+        }
+      }
+      
+      console.log('Verified Xiaohongshu storage:', parsedXiaohongshu);
       console.log('Verified User-specific storage:', verifyUserSpecific[`xiaohongshu_${userId}`]);
-      console.log('Verified Social Sources:', verifySocialSources.socialSources ? JSON.parse(verifySocialSources.socialSources) : null);
+      console.log('Verified Social Sources:', verifiedSocialSources);
 
       return this.userInfo;
     } catch (error) {

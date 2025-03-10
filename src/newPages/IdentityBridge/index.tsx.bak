@@ -218,12 +218,6 @@ const IdentityBridge = () => {
     deleteFn: deleteXiaohongshuFn,
   } = useDataSource('xiaohongshu');
 
-  // Add debug logs for xiaohongshuUserInfo
-  useEffect(() => {
-    console.log('xiaohongshuUserInfo changed:', xiaohongshuUserInfo);
-    console.log('hasXiaohongshuConnected value:', xiaohongshuUserInfo?.userName);
-  }, [xiaohongshuUserInfo]);
-  
   const hasConnected = activeDataSouceUserInfo?.userName;
   const hasXiaohongshuConnected = xiaohongshuUserInfo?.userName;
 
@@ -1524,443 +1518,15 @@ const IdentityBridge = () => {
   
   // Remove the old effect that was causing issues
 
-  // Helper function to get followers with Xiaohongshu handles that aren't being followed
-  const getUnfollowedXiaohongshuUsers = (isFollower: boolean = true) => {
-    const targetArray = isFollower ? followers : following;
-    return targetArray.filter(user => 
-      user.xiaohongshuHandle && 
-      !user.isFollowingOnXiaohongshu
-    );
-  };
-
-  // Function to follow all unfollowed Xiaohongshu users
-  const handleFollowAllXiaohongshuUsers = async (isFollower: boolean = true) => {
-    const unfollowedUsers = getUnfollowedXiaohongshuUsers(isFollower);
-    
-    // Show confirmation dialog
-    if (unfollowedUsers.length > 0) {
-      if (window.confirm(`You are about to follow ${unfollowedUsers.length} Xiaohongshu accounts. Continue?`)) {
-        // Follow each user sequentially
-        for (const user of unfollowedUsers) {
-          if (user.xiaohongshuHandle) {
-            try {
-              await handleFollowUser(user.xiaohongshuHandle, user.userId, isFollower);
-              // Small delay to prevent rate limiting
-              await new Promise(resolve => setTimeout(resolve, 500));
-            } catch (error) {
-              console.error(`Error following ${user.uniqueId}:`, error);
-            }
-          }
-        }
-        
-        // Show success message
-        addMsg({
-          type: 'success',
-          content: `Successfully initiated following process for ${unfollowedUsers.length} Xiaohongshu accounts`
-        });
-      }
-    }
-  };
-
-  // Add a direct storage change listener to detect when connections complete
-  useEffect(() => {
-    const handleStorageChange = (changes: { [key: string]: chrome.storage.StorageChange }, areaName: string) => {
-      console.log('Storage changed:', changes, 'in area:', areaName);
-      
-      // Check if socialSources data has changed
-      if (changes.socialSources && areaName === 'local') {
-        let newValue: any = changes.socialSources.newValue || {};
-        let oldValue: any = changes.socialSources.oldValue || {};
-        
-        // Handle case where values are strings
-        if (typeof newValue === 'string') {
-          try {
-            newValue = JSON.parse(newValue);
-            console.log('Parsed newValue from string to object', newValue);
-          } catch (e) {
-            console.error('Failed to parse newValue', e);
-            newValue = {};
-          }
-        }
-        
-        if (typeof oldValue === 'string') {
-          try {
-            oldValue = JSON.parse(oldValue);
-          } catch (e) {
-            oldValue = {};
-          }
-        }
-        
-        console.log('Social sources changed:', {
-          oldKeys: Object.keys(oldValue),
-          newKeys: Object.keys(newValue),
-          activeState: activeConnectDataSource
-        });
-        
-        // More direct approach: Check if the service we're loading is now in socialSources
-        if (activeConnectDataSource.loading === 1) {
-          const platformId = activeConnectDataSource.dataSourceId || '';
-          console.log(`Checking if platform ${platformId} is now connected. Current state:`, {
-            platformId,
-            platformData: platformId ? newValue[platformId] : null,
-            loading: activeConnectDataSource.loading
-          });
-          
-          // If the platform we're loading has data in socialSources, update the UI state
-          if (platformId && newValue[platformId]) {
-            console.log(`Connection detected for ${platformId}! Updating UI...`);
-            
-            // Update the UI state
-            dispatch(setActiveConnectDataSource({ loading: 2 }));
-            dispatch(setSocialSourcesAsync());
-            
-            // Show success notification
-            const msgId = addMsg({
-              type: 'suc',
-              title: `${platformId === 'xiaohongshu' ? 'Xiaohongshu' : 'TikTok'} connected successfully!`,
-              showTime: 5000,
-            });
-            setTimeout(() => deleteMsg(msgId), 5000);
-          }
-        }
-      }
-      
-      // Also check for direct activeConnectDataSource changes
-      if (changes.activeConnectDataSource && areaName === 'local') {
-        console.log('activeConnectDataSource changed:', changes.activeConnectDataSource);
-      }
-    };
-    
-    // Register storage change listener
-    chrome.storage.onChanged.addListener(handleStorageChange);
-    
-    return () => {
-      chrome.storage.onChanged.removeListener(handleStorageChange);
-    };
-  }, [dispatch, activeConnectDataSource, addMsg, deleteMsg]);
-  
-  // Add one more direct check on component mount and when activeConnectDataSource changes
-  useEffect(() => {
-    if (activeConnectDataSource.loading === 1) {
-      const platformId = activeConnectDataSource.dataSourceId || '';
-      if (!platformId) return;
-      
-      console.log(`Checking directly for ${platformId} data on mount/state change`);
-      
-      // Check if we already have the data for this platform
-      chrome.storage.local.get(['socialSources', platformId], (result) => {
-        let platformData = null;
-        
-        // First check individual storage
-        if (result[platformId]) {
-          try {
-            const data = typeof result[platformId] === 'string' 
-              ? JSON.parse(result[platformId]) 
-              : result[platformId];
-            
-            platformData = data;
-            console.log(`Found ${platformId} data in individual storage`, data);
-          } catch (e) {
-            console.error(`Error parsing ${platformId} data`, e);
-          }
-        }
-        
-        // Also check socialSources
-        if (!platformData && result.socialSources) {
-          try {
-            const socialSources = typeof result.socialSources === 'string'
-              ? JSON.parse(result.socialSources)
-              : result.socialSources;
-              
-            if (socialSources[platformId]) {
-              platformData = socialSources[platformId];
-              console.log(`Found ${platformId} data in socialSources`, platformData);
-            }
-          } catch (e) {
-            console.error('Error parsing socialSources', e);
-          }
-        }
-        
-        // If we found data, update the UI
-        if (platformData) {
-          console.log(`Already have ${platformId} data, updating UI...`);
-          dispatch(setActiveConnectDataSource({ loading: 2 }));
-          dispatch(setSocialSourcesAsync());
-        }
-      });
-    }
-  }, [activeConnectDataSource.loading, activeConnectDataSource.dataSourceId, dispatch]);
-
-  // Add a timeout mechanism to ensure the UI doesn't stay in loading state indefinitely
-  useEffect(() => {
-    // If we've been in loading state for more than a reasonable time, force an update
-    if (activeConnectDataSource.loading === 1) {
-      console.log('Connection process started, setting fail-safe timeout');
-      
-      // Store the current connection attempt details to check against later
-      const currentConnectionAttempt = {
-        dataSourceId: activeConnectDataSource.dataSourceId,
-        timestamp: Date.now()
-      };
-      
-      // Set a timeout to check if we're still loading after 15 seconds
-      const timeoutId = setTimeout(() => {
-        // Check if we're still in loading state for the same connection
-        console.log('Checking connection timeout...', {
-          current: activeConnectDataSource,
-          original: currentConnectionAttempt
-        });
-        
-        if (
-          activeConnectDataSource.loading === 1 && 
-          activeConnectDataSource.dataSourceId === currentConnectionAttempt.dataSourceId
-        ) {
-          console.log('Connection timeout - forcing UI update');
-          
-          // Check storage one last time to see if data exists
-          chrome.storage.local.get(['socialSources', currentConnectionAttempt.dataSourceId], (result) => {
-            let platformData = null;
-            const platformId = currentConnectionAttempt.dataSourceId || '';
-            
-            // First check individual storage
-            if (result[platformId]) {
-              try {
-                const data = typeof result[platformId] === 'string' 
-                  ? JSON.parse(result[platformId]) 
-                  : result[platformId];
-                
-                platformData = data;
-                console.log(`Found ${platformId} data in individual storage on timeout`, data);
-              } catch (e) {
-                console.error(`Error parsing ${platformId} data on timeout`, e);
-              }
-            }
-            
-            // Also check socialSources
-            if (!platformData && result.socialSources) {
-              try {
-                const socialSources = typeof result.socialSources === 'string'
-                  ? JSON.parse(result.socialSources)
-                  : result.socialSources;
-                  
-                if (socialSources[platformId]) {
-                  platformData = socialSources[platformId];
-                  console.log(`Found ${platformId} data in socialSources on timeout`, platformData);
-                }
-              } catch (e) {
-                console.error('Error parsing socialSources on timeout', e);
-              }
-            }
-            
-            // If we found data, show success
-            if (platformData) {
-              console.log(`Data found for ${platformId} on timeout, showing success`);
-              
-              // Update the state to success
-              dispatch(setActiveConnectDataSource({ loading: 2 }));
-              dispatch(setSocialSourcesAsync());
-              
-              const msgId = addMsg({
-                type: 'suc',
-                title: `${platformId === 'xiaohongshu' ? 'Xiaohongshu' : 'TikTok'} connected successfully!`,
-                showTime: 5000,
-              });
-              setTimeout(() => deleteMsg(msgId), 5000);
-            } else {
-              // If no data, show failed state
-              console.log(`No data found for ${platformId} on timeout, showing failure`);
-              dispatch(setActiveConnectDataSource({ loading: 3 })); // 3 = failed
-              
-              const msgId = addMsg({
-                type: 'error',
-                title: `Connection failed`,
-                desc: 'Unable to connect. Please try again.',
-                showTime: 5000,
-              });
-              setTimeout(() => deleteMsg(msgId), 5000);
-            }
-          });
-        }
-      }, 15000); // 15 seconds timeout
-      
-      return () => {
-        clearTimeout(timeoutId);
-      };
-    }
-  }, [activeConnectDataSource.loading, activeConnectDataSource.dataSourceId, dispatch, addMsg, deleteMsg]);
-
-  // Log when component renders with activeConnectDataSource state
-  useEffect(() => {
-    console.log('IdentityBridge rendering with activeConnectDataSource:', activeConnectDataSource);
-    
-    // Get the current state directly from storage
-    chrome.storage.local.get(['socialSources', 'xiaohongshu'], (result) => {
-      console.log('DEBUG - Chrome Storage Contents:', result);
-      
-      let socialSourcesData = null;
-      try {
-        socialSourcesData = result.socialSources && typeof result.socialSources === 'string' 
-          ? JSON.parse(result.socialSources) 
-          : result.socialSources;
-      } catch (e) {
-        console.error('Error parsing socialSources:', e);
-      }
-      
-      console.log('Current socialSources from storage:', socialSourcesData);
-      
-      // Debug test conditions for showing Connect vs Delete buttons
-      if (socialSourcesData?.xiaohongshu) {
-        console.log('Xiaohongshu should show DELETE button, data exists:', socialSourcesData.xiaohongshu);
-      } else {
-        console.log('Xiaohongshu should show CONNECT button (no data in socialSources)');
-      }
-      
-      // Also check direct xiaohongshu storage
-      let xiaohongshuData = null;
-      try {
-        xiaohongshuData = result.xiaohongshu && typeof result.xiaohongshu === 'string'
-          ? JSON.parse(result.xiaohongshu)
-          : result.xiaohongshu;
-      } catch (e) {
-        console.error('Error parsing xiaohongshu data:', e);
-      }
-      
-      console.log('Direct xiaohongshu data from storage:', xiaohongshuData);
-    });
-  }, [activeConnectDataSource]);
-
-  // Add a special debug log to track setSocialSourcesAsync dispatch
-  useEffect(() => {
-    const handler = () => {
-      console.log('Checking storage after setSocialSourcesAsync dispatched');
-      
-      chrome.storage.local.get(['socialSources', 'xiaohongshu'], (result) => {
-        console.log('Storage after dispatch:', result);
-      });
-    };
-    
-    document.addEventListener('debug-dispatch-setSocialSourcesAsync', handler);
-    
-    return () => {
-      document.removeEventListener('debug-dispatch-setSocialSourcesAsync', handler);
-    };
-  }, []);
-  
-  // Override dispatch to track when setSocialSourcesAsync is called
-  const originalDispatch = dispatch;
-  const wrappedDispatch = useCallback((action) => {
-    if (action.type === 'setSocialSourcesAsync') {
-      console.log('setSocialSourcesAsync dispatched');
-      setTimeout(() => {
-        document.dispatchEvent(new Event('debug-dispatch-setSocialSourcesAsync'));
-      }, 500);
-    }
-    return originalDispatch(action);
-  }, [dispatch]);
-
-  // Add a direct force refresh for xiaohongshuUserInfo when storage changes
-  useEffect(() => {
-    // Set up a storage change listener specifically for xiaohongshu data
-    const handleXiaohongshuStorageChange = (changes, areaName) => {
-      if ((changes.xiaohongshu || changes.socialSources) && areaName === 'local') {
-        console.log('Detected xiaohongshu data change in storage, forcing refresh...');
-        
-        // Force a refresh of the social sources in the Redux state
-        dispatch(setSocialSourcesAsync());
-        
-        // Direct manual check of xiaohongshu data
-        chrome.storage.local.get(['xiaohongshu'], (result) => {
-          if (result.xiaohongshu) {
-            try {
-              const data = typeof result.xiaohongshu === 'string' 
-                ? JSON.parse(result.xiaohongshu) 
-                : result.xiaohongshu;
-                
-              console.log('Direct xiaohongshu data check:', data);
-              
-              // Force a UI update by setting a state variable
-              if (data?.userName) {
-                setConnectionStatus('connected');
-              }
-            } catch (e) {
-              console.error('Error parsing xiaohongshu data in direct check:', e);
-            }
-          }
-        });
-      }
-    };
-    
-    chrome.storage.onChanged.addListener(handleXiaohongshuStorageChange);
-    
-    return () => {
-      chrome.storage.onChanged.removeListener(handleXiaohongshuStorageChange);
-    };
-  }, [dispatch]);
-
-  // Add a function to force-load follower/following data
-  const forceLoadTikTokData = useCallback(() => {
-    console.log('Forcing reload of TikTok follower/following data');
-    
-    // Clear the completedDataTypes in the background script
-    chrome.runtime.sendMessage({
-      type: 'fetch_followers'
-    });
-    
-    chrome.runtime.sendMessage({
-      type: 'fetch_following'
-    });
-    
-    // Also load from stored data if available
-    chrome.storage.local.get(['tiktok-followers-data', 'tiktok-following-data'], (result) => {
-      if (result['tiktok-followers-data']) {
-        try {
-          const data = JSON.parse(result['tiktok-followers-data']);
-          console.log('Loading stored followers data:', data);
-          if (data.users && Array.isArray(data.users)) {
-            setFollowers(data.users);
-            setHasMoreFollowers(data.hasMore);
-            setFollowersCursor(data.cursor);
-            setTotalFollowers(data.total);
-          }
-        } catch (error) {
-          console.error('Error parsing stored followers data:', error);
-        }
-      }
-      
-      if (result['tiktok-following-data']) {
-        try {
-          const data = JSON.parse(result['tiktok-following-data']);
-          console.log('Loading stored following data:', data);
-          if (data.users && Array.isArray(data.users)) {
-            setFollowing(data.users);
-            setHasMoreFollowing(data.hasMore);
-            setFollowingCursor(data.cursor);
-            setTotalFollowing(data.total);
-          }
-        } catch (error) {
-          console.error('Error parsing stored following data:', error);
-        }
-      }
-    });
-  }, []);
-  
-  // Call force load when both TikTok and Xiaohongshu are connected
-  useEffect(() => {
-    if (hasConnected && (hasXiaohongshuConnected || connectionStatus === 'connected')) {
-      console.log('Both TikTok and Xiaohongshu connected, force loading data');
-      forceLoadTikTokData();
-    }
-  }, [hasConnected, hasXiaohongshuConnected, connectionStatus, forceLoadTikTokData]);
-
   return (
     <div className={`pageContent ${theme}`}>
       <div className="homeDataSources">
         <div className="titleSection">
           <div className="titleContent">
             <div className="title">Bridge your TikTok community to XiaoHongShu!</div>
-            {/* <div className="description">
+            <div className="description">
               This app follows your TikTok followers and following on Xiaohongshu.
-            </div> */}
+            </div>
           </div>
           <div className="switchWrapper">
             {showDebugging && (
@@ -2037,18 +1603,14 @@ const IdentityBridge = () => {
                   </div>
                   <div className="bottom">
                     <div className="balance">
-                      {hasXiaohongshuConnected || connectionStatus === 'connected' ? (
-                        `@${xiaohongshuUserInfo?.userName || 'cc66628'}`
-                      ) : (
-                        'Not Connected'
-                      )}
+                      {hasXiaohongshuConnected ? `@${xiaohongshuUserInfo.userName}` : 'Not Connected'}
                     </div>
                   </div>
                 </div>
               </div>
               <div className="right">
                 <div className="tokensWrapper">
-                  {hasXiaohongshuConnected || connectionStatus === 'connected' ? (
+                  {hasXiaohongshuConnected ? (
                     <button
                       onClick={handleXiaohongshuDelete}
                       className={`deleteBtn ${theme}`}
@@ -2163,37 +1725,18 @@ const IdentityBridge = () => {
 
         {/* Wrap both tables in a container */}
         <div className={`tables-container ${theme}`}>
-          {hasConnected && (
+          {hasConnected && followers?.length > 0 && (
             <div className="followers-section">
               <div className="followers-header">
                 <h3>TikTok Followers ({totalFollowers})</h3>
-                {followers?.length > 0 && (
-                  <button 
-                    onClick={handleExportFollowers}
-                    className={`PButton secondary ${theme}`}
-                    title="Export followers to CSV"
-                  >
-                    Export CSV
-                  </button>
-                )}
+                <button 
+                  onClick={handleExportFollowers}
+                  className={`PButton secondary ${theme}`}
+                  title="Export followers to CSV"
+                >
+                  Export CSV
+                </button>
               </div>
-              
-              {/* New Component: Unfollowed Xiaohongshu Users */}
-              {hasXiaohongshuConnected && getUnfollowedXiaohongshuUsers().length > 0 && (
-                <div className="unfollowed-xiaohongshu-container">
-                  <div className="unfollowed-xiaohongshu-message">
-                    <span>You have {getUnfollowedXiaohongshuUsers().length} TikTok followers on Xiaohongshu that you're not following. Follow them now!</span>
-                    <button 
-                      onClick={() => handleFollowAllXiaohongshuUsers(true)}
-                      className={`PButton follow-all-button ${theme}`}
-                      title="Follow all Xiaohongshu users"
-                    >
-                      Follow All
-                    </button>
-                  </div>
-                </div>
-              )}
-              
               <div className="followers-table-container">
                 <table className="followers-table">
                   <thead>
@@ -2201,22 +1744,11 @@ const IdentityBridge = () => {
                       <th>Avatar</th>
                       <th>Username</th>
                       <th>Nickname</th>
-                      <th>XiaoHongShu name</th>
+                      <th>XiaoHongShu ID</th>
                       <th>Following on Xiaohongshu</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {/* Show a loading message when no followers are loaded yet */}
-                    {followers?.length === 0 && (
-                      <tr>
-                        <td colSpan={5} style={{ textAlign: 'center', padding: '20px' }}>
-                          {hasMoreFollowers ? 
-                            <div>Loading TikTok followers data...</div> : 
-                            <div>No TikTok followers data available. <button onClick={forceLoadTikTokData} className="PButton secondary">Reload Data</button></div>
-                          }
-                        </td>
-                      </tr>
-                    )}
                     {/* Debug row - only show when debug mode is on */}
                     {showDebugging && (
                       <tr key="debug-follower">
@@ -2309,7 +1841,7 @@ const IdentityBridge = () => {
                             ) : follower.xiaohongshuHandle && follower.xiaohongshuHandle.length > 0 ? (
                               <span className="xiaohongshu-handle">@{follower.xiaohongshuHandle}</span>
                             ) : (
-                              <span className="not-found">User not signed up yet</span>
+                              <span className="not-found">Not found</span>
                             )}
                           </td>
                           <td>
@@ -2453,37 +1985,18 @@ const IdentityBridge = () => {
             </div>
           )}
 
-          {hasConnected && (
+          {hasConnected && following?.length > 0 && (
             <div className="followers-section">
               <div className="followers-header">
                 <h3>TikTok Following ({totalFollowing})</h3>
-                {following?.length > 0 && (
-                  <button 
-                    onClick={handleExportFollowing}
-                    className={`PButton secondary ${theme}`}
-                    title="Export following to CSV"
-                  >
-                    Export CSV
-                  </button>
-                )}
+                <button 
+                  onClick={handleExportFollowing}
+                  className={`PButton secondary ${theme}`}
+                  title="Export following to CSV"
+                >
+                  Export CSV
+                </button>
               </div>
-              
-              {/* New Component: Unfollowed Xiaohongshu Users in Following */}
-              {hasXiaohongshuConnected && getUnfollowedXiaohongshuUsers(false).length > 0 && (
-                <div className="unfollowed-xiaohongshu-container">
-                  <div className="unfollowed-xiaohongshu-message">
-                    <span>You have {getUnfollowedXiaohongshuUsers(false).length} TikTok accounts you're following that are on Xiaohongshu but you're not following there. Follow them now!</span>
-                    <button 
-                      onClick={() => handleFollowAllXiaohongshuUsers(false)}
-                      className={`PButton follow-all-button ${theme}`}
-                      title="Follow all Xiaohongshu users"
-                    >
-                      Follow All
-                    </button>
-                  </div>
-                </div>
-              )}
-              
               <div className="followers-table-container">
                 <table className="followers-table">
                   <thead>
@@ -2491,22 +2004,11 @@ const IdentityBridge = () => {
                       <th>Avatar</th>
                       <th>Username</th>
                       <th>Nickname</th>
-                      <th>XiaoHongShu name</th>
+                      <th>XiaoHongShu ID</th>
                       <th>Following on Xiaohongshu</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {/* Show a loading message when no following are loaded yet */}
-                    {following?.length === 0 && (
-                      <tr>
-                        <td colSpan={5} style={{ textAlign: 'center', padding: '20px' }}>
-                          {hasMoreFollowing ? 
-                            <div>Loading TikTok following data...</div> : 
-                            <div>No TikTok following data available. <button onClick={forceLoadTikTokData} className="PButton secondary">Reload Data</button></div>
-                          }
-                        </td>
-                      </tr>
-                    )}
                     {/* Debug row - only show when debug mode is on */}
                     {showDebugging && (
                       <tr key="debug-following">
@@ -2599,7 +2101,7 @@ const IdentityBridge = () => {
                             ) : user.xiaohongshuHandle && user.xiaohongshuHandle.length > 0 ? (
                               <span className="xiaohongshu-handle">@{user.xiaohongshuHandle}</span>
                             ) : (
-                              <span className="not-found">User not signed up yet</span>
+                              <span className="not-found"></span>
                             )}
                           </td>
                           <td>
