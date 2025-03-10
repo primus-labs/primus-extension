@@ -12,6 +12,12 @@ let lastRequestTimestamp = 0;
 const DEBOUNCE_INTERVAL = 1000; // 1 second
 let completedDataTypes = new Set();
 
+// In the root of the file, add a way to track direct fetch requests
+let directFetchInProgress = {
+  followers: false,
+  following: false
+};
+
 // Add new function to handle TikTok profile navigation
 async function handleTikTokProfile(tab, username, port) {
   if (isNavigatingToProfile) {
@@ -189,7 +195,14 @@ function setupFollowerDataListeners(tabId, port) {
 
   // Create the listeners
   followersListener = async function(details) {
-    if (completedDataTypes.has('followers')) {
+    // Check if this is a direct fetch request
+    if (directFetchInProgress.followers) {
+      console.log('Direct fetch followers in progress, processing request');
+      // Only reset once we've found a request
+      if (details.url.includes('/api/user/list/') && details.url.includes('scene=67')) {
+        directFetchInProgress.followers = false;
+      }
+    } else if (completedDataTypes.has('followers')) {
       console.log('Followers data already complete, ignoring request');
       return;
     }
@@ -223,7 +236,14 @@ function setupFollowerDataListeners(tabId, port) {
   };
 
   followingListener = async function(details) {
-    if (completedDataTypes.has('following')) {
+    // Check if this is a direct fetch request
+    if (directFetchInProgress.following) {
+      console.log('Direct fetch following in progress, processing request');
+      // Only reset once we've found a request
+      if (details.url.includes('/api/user/list/') && details.url.includes('scene=21')) {
+        directFetchInProgress.following = false;
+      }
+    } else if (completedDataTypes.has('following')) {
       console.log('Following data already complete, ignoring request');
       return;
     }
@@ -1070,3 +1090,30 @@ const parseCookie = (str) => {
       return acc;
     }, {});
 };
+
+// Reset tracking when a session ends
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.type === 'dataSourceWeb' && (message.name === 'stop' || message.name === 'init')) {
+    console.log('Resetting follower/following data tracking');
+    // Clear the completedDataTypes Set
+    if (typeof completedDataTypes !== 'undefined') {
+      completedDataTypes.delete('followers');
+      completedDataTypes.delete('following');
+    }
+    // Reset direct fetch tracking
+    directFetchInProgress = {
+      followers: false,
+      following: false
+    };
+  }
+  
+  // Handle direct fetch requests
+  if (message.type === 'fetch_followers') {
+    console.log('Direct fetch followers request received');
+    directFetchInProgress.followers = true;
+  }
+  if (message.type === 'fetch_following') {
+    console.log('Direct fetch following request received');
+    directFetchInProgress.following = true;
+  }
+});

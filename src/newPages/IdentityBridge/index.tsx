@@ -23,6 +23,12 @@ import iconSettings from '@/assets/newImg/layout/iconMore.svg';
 import './index.scss';
 import { saveHandleMapping, doesMappingExist, findXiaohongshuByTiktok } from '@/services/firestore';
 import HandleSearch from '@/newComponents/HandleSearch';
+// import { ScrollArea } from '@/newComponents/ScrollArea';
+// import { Table } from '@/newComponents/Table';
+// import { TableHeader } from '@/newComponents/TableHeader';
+// import { TableRow } from '@/newComponents/TableRow';
+// import { TableHead } from '@/newComponents/TableHead';
+// import { TableBody } from '@/newComponents/TableBody';
 
 interface TikTokFollower {
   userId: string;
@@ -172,13 +178,15 @@ const IdentityBridge = () => {
   const padoServicePort = useSelector((state: UserState) => state.padoServicePort);
   const theme = useSelector((state: UserState) => state.theme);
   const [followers, setFollowers] = useState<TikTokFollower[]>([]);
-  const [hasMoreFollowers, setHasMoreFollowers] = useState(false);
-  const [followersCursor, setFollowersCursor] = useState(0);
-  const [totalFollowers, setTotalFollowers] = useState(0);
   const [following, setFollowing] = useState<TikTokFollower[]>([]);
+  const [hasMoreFollowers, setHasMoreFollowers] = useState(false);
   const [hasMoreFollowing, setHasMoreFollowing] = useState(false);
-  const [followingCursor, setFollowingCursor] = useState(0);
+  const [followersCursor, setFollowersCursor] = useState<string>('0');
+  const [followingCursor, setFollowingCursor] = useState<string>('0');
+  const [totalFollowers, setTotalFollowers] = useState(0);
   const [totalFollowing, setTotalFollowing] = useState(0);
+  const [followersLoading, setFollowersLoading] = useState(false);
+  const [followingLoading, setFollowingLoading] = useState(false);
   const [isHandleMappingSaved, setIsHandleMappingSaved] = useState<boolean>(false);
   const [saveMappingError, setSaveMappingError] = useState<string | null>(null);
   const [hasAutoSaved, setHasAutoSaved] = useState<boolean>(false);
@@ -256,17 +264,19 @@ const IdentityBridge = () => {
         }
         
         if (message.type === 'tiktok_followers_data') {
-          const data = message.data;
+          const { data } = message;
           
-          // Update followers with deduplication
+          setFollowersLoading(false);
+          
           setFollowers(prevFollowers => {
             const existingIds = new Set(prevFollowers.map(f => f.userId));
             const newFollowers = data.users.filter(f => !existingIds.has(f.userId));
-            return [...prevFollowers, ...newFollowers];
+            const updatedFollowers = [...prevFollowers, ...newFollowers];
+            console.log('Updated followers list from runtime message:', updatedFollowers);
+            return updatedFollowers;
           });
-          
           setHasMoreFollowers(data.hasMore);
-          setFollowersCursor(data.cursor);
+          setFollowersCursor(data.cursor.toString());
           setTotalFollowers(data.total);
           
           // Save to storage
@@ -279,17 +289,19 @@ const IdentityBridge = () => {
         }
         
         if (message.type === 'tiktok_following_data') {
-          const data = message.data;
+          const { data } = message;
           
-          // Update following with deduplication
+          setFollowingLoading(false);
+          
           setFollowing(prevFollowing => {
             const existingIds = new Set(prevFollowing.map(f => f.userId));
             const newFollowing = data.users.filter(f => !existingIds.has(f.userId));
-            return [...prevFollowing, ...newFollowing];
+            const updatedFollowing = [...prevFollowing, ...newFollowing];
+            console.log('Updated following list from runtime message:', updatedFollowing);
+            return updatedFollowing;
           });
-          
           setHasMoreFollowing(data.hasMore);
-          setFollowingCursor(data.cursor);
+          setFollowingCursor(data.cursor.toString());
           setTotalFollowing(data.total);
           
           // Save to storage
@@ -386,8 +398,8 @@ const IdentityBridge = () => {
     setFollowing([]);
     setHasMoreFollowers(false);
     setHasMoreFollowing(false);
-    setFollowersCursor(0);
-    setFollowingCursor(0);
+    setFollowersCursor('0');
+    setFollowingCursor('0');
     setTotalFollowers(0);
     setTotalFollowing(0);
     
@@ -677,21 +689,11 @@ const IdentityBridge = () => {
 
   // Add listener for follower data via runtime messages
   useEffect(() => {
-    const handleMessage = (message: any) => {
-      console.log('Runtime message received in IdentityBridge:', message);
+    const handleMessage = (message) => {
       if (message.type === 'tiktok_followers_data') {
-        console.log('Processing followers data from runtime message:', message.data);
-        const data: TikTokFollowersData = message.data;
+        const { data } = message;
         
-        // Store followers data in chrome.storage.local
-        chrome.storage.local.set({
-          'tiktok-followers-data': JSON.stringify({
-            ...data,
-            timestamp: Date.now() // Add current timestamp
-          })
-        }, () => {
-          console.log('Follower data saved to storage:', data);
-        });
+        setFollowersLoading(false);
         
         setFollowers(prevFollowers => {
           const existingIds = new Set(prevFollowers.map(f => f.userId));
@@ -701,23 +703,14 @@ const IdentityBridge = () => {
           return updatedFollowers;
         });
         setHasMoreFollowers(data.hasMore);
-        setFollowersCursor(data.cursor);
+        setFollowersCursor(data.cursor.toString());
         setTotalFollowers(data.total);
       }
       
       if (message.type === 'tiktok_following_data') {
-        console.log('Processing following data from runtime message:', message.data);
-        const data: TikTokFollowersData = message.data;
+        const { data } = message;
         
-        // Store following data in chrome.storage.local
-        chrome.storage.local.set({
-          'tiktok-following-data': JSON.stringify({
-            ...data,
-            timestamp: Date.now() // Add current timestamp
-          })
-        }, () => {
-          console.log('Following data saved to storage:', data);
-        });
+        setFollowingLoading(false);
         
         setFollowing(prevFollowing => {
           const existingIds = new Set(prevFollowing.map(f => f.userId));
@@ -727,7 +720,7 @@ const IdentityBridge = () => {
           return updatedFollowing;
         });
         setHasMoreFollowing(data.hasMore);
-        setFollowingCursor(data.cursor);
+        setFollowingCursor(data.cursor.toString());
         setTotalFollowing(data.total);
       }
     };
@@ -744,7 +737,7 @@ const IdentityBridge = () => {
           if (data.users && Array.isArray(data.users)) {
             setFollowers(data.users);
             setHasMoreFollowers(data.hasMore);
-            setFollowersCursor(data.cursor);
+            setFollowersCursor(data.cursor.toString());
             setTotalFollowers(data.total);
           }
         } catch (error) {
@@ -759,7 +752,7 @@ const IdentityBridge = () => {
           if (data.users && Array.isArray(data.users)) {
             setFollowing(data.users);
             setHasMoreFollowing(data.hasMore);
-            setFollowingCursor(data.cursor);
+            setFollowingCursor(data.cursor.toString());
             setTotalFollowing(data.total);
           }
         } catch (error) {
@@ -1797,7 +1790,7 @@ const IdentityBridge = () => {
     chrome.storage.local.get(['socialSources', 'xiaohongshu'], (result) => {
       console.log('DEBUG - Chrome Storage Contents:', result);
       
-      let socialSourcesData = null;
+      let socialSourcesData: {xiaohongshu?: any, [key: string]: any} | null = null;
       try {
         socialSourcesData = result.socialSources && typeof result.socialSources === 'string' 
           ? JSON.parse(result.socialSources) 
@@ -1901,17 +1894,17 @@ const IdentityBridge = () => {
   const forceLoadTikTokData = useCallback(() => {
     console.log('Forcing reload of TikTok follower/following data');
     
-    // Clear the completedDataTypes in the background script
-    chrome.runtime.sendMessage({
-      type: 'fetch_followers'
-    });
+    setFollowersLoading(true);
+    setFollowingLoading(true);
     
-    chrome.runtime.sendMessage({
-      type: 'fetch_following'
-    });
-    
-    // Also load from stored data if available
-    chrome.storage.local.get(['tiktok-followers-data', 'tiktok-following-data'], (result) => {
+    // First load from stored data if available
+    chrome.storage.local.get([
+      'tiktok-followers-data', 
+      'tiktok-following-data', 
+      'tiktok-followers-headers', 
+      'tiktok-following-headers'
+    ], async (result) => {
+      // Process followers data
       if (result['tiktok-followers-data']) {
         try {
           const data = JSON.parse(result['tiktok-followers-data']);
@@ -1919,7 +1912,7 @@ const IdentityBridge = () => {
           if (data.users && Array.isArray(data.users)) {
             setFollowers(data.users);
             setHasMoreFollowers(data.hasMore);
-            setFollowersCursor(data.cursor);
+            setFollowersCursor(data.cursor.toString());
             setTotalFollowers(data.total);
           }
         } catch (error) {
@@ -1927,6 +1920,7 @@ const IdentityBridge = () => {
         }
       }
       
+      // Process following data
       if (result['tiktok-following-data']) {
         try {
           const data = JSON.parse(result['tiktok-following-data']);
@@ -1934,12 +1928,115 @@ const IdentityBridge = () => {
           if (data.users && Array.isArray(data.users)) {
             setFollowing(data.users);
             setHasMoreFollowing(data.hasMore);
-            setFollowingCursor(data.cursor);
+            setFollowingCursor(data.cursor.toString());
             setTotalFollowing(data.total);
           }
         } catch (error) {
           console.error('Error parsing stored following data:', error);
         }
+      }
+
+      // Now try to fetch new data using stored headers
+      // Fetch followers
+      if (result['tiktok-followers-headers']) {
+        try {
+          const headerData = JSON.parse(result['tiktok-followers-headers']);
+          const headers = headerData.headers;
+          
+          console.log('Directly fetching followers data with stored headers');
+          const url = 'https://www.tiktok.com/api/user/list/?scene=67&cursor=0';
+          
+          const response = await fetch(url, { headers });
+          const data = await response.json();
+          
+          if (data.userList && Array.isArray(data.userList)) {
+            const users = data.userList.map(user => ({
+              userId: user.user.id,
+              uniqueId: user.user.uniqueId,
+              nickname: user.user.nickname,
+              avatar: user.user.avatarThumb,
+              followerCount: user.stats.followerCount,
+              followingCount: user.stats.followingCount,
+              signature: user.user.signature
+            }));
+
+            // Update state with new data
+            setFollowers(users);
+            setHasMoreFollowers(data.hasMore);
+            setFollowersCursor(data.minCursor.toString());
+            setTotalFollowers(data.total);
+            
+            // Also store the data
+            const followersData = {
+              users,
+              hasMore: data.hasMore,
+              total: data.total,
+              cursor: data.minCursor,
+              timestamp: Date.now()
+            };
+            
+            chrome.storage.local.set({
+              'tiktok-followers-data': JSON.stringify(followersData)
+            });
+          }
+        } catch (error) {
+          console.error('Error fetching followers data directly:', error);
+        } finally {
+          setFollowersLoading(false);
+        }
+      } else {
+        setFollowersLoading(false);
+      }
+
+      // Fetch following
+      if (result['tiktok-following-headers']) {
+        try {
+          const headerData = JSON.parse(result['tiktok-following-headers']);
+          const headers = headerData.headers;
+          
+          console.log('Directly fetching following data with stored headers');
+          const url = 'https://www.tiktok.com/api/user/list/?scene=21&cursor=0';
+          
+          const response = await fetch(url, { headers });
+          const data = await response.json();
+          
+          if (data.userList && Array.isArray(data.userList)) {
+            const users = data.userList.map(user => ({
+              userId: user.user.id,
+              uniqueId: user.user.uniqueId,
+              nickname: user.user.nickname,
+              avatar: user.user.avatarThumb,
+              followerCount: user.stats.followerCount,
+              followingCount: user.stats.followingCount,
+              signature: user.user.signature
+            }));
+
+            // Update state with new data
+            setFollowing(users);
+            setHasMoreFollowing(data.hasMore);
+            setFollowingCursor(data.minCursor.toString());
+            setTotalFollowing(data.total);
+            
+            // Also store the data
+            const followingData = {
+              users,
+              hasMore: data.hasMore,
+              total: data.total,
+              cursor: data.minCursor,
+              timestamp: Date.now()
+            };
+            
+            chrome.storage.local.set({
+              'tiktok-following-data': JSON.stringify(followingData)
+            });
+          }
+        } catch (error) {
+          console.error('Error fetching following data directly:', error);
+        } finally {
+          setFollowingLoading(false);
+        }
+      } else {
+        setFollowingLoading(false);
       }
     });
   }, []);
