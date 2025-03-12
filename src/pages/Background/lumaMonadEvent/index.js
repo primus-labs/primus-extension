@@ -30,7 +30,7 @@ export const listener = async (request, sender) => {
   }
 };
 
-
+export const monadEventName = 'Monad'; // TODOMonad
 export const templateIdForMonad = 'be2268c1-56b2-438a-80cb-eddf2e850b63';
 
 export let monadFields = {};
@@ -115,23 +115,13 @@ export const checkTargetRequestFnForMonad = async (
   const checkFn = async (result, checkUrl) => {
     if (result) {
       const eventList = result?.entries || [];
-      const { configMap } = await chrome.storage.local.get(['configMap']);
-      let requiredEventNameList = ['monad'];
-      if (configMap) {
-        const MONAD_EVENT_SUPPORT_SOURCESStr =
-          JSON.parse(configMap)?.MONAD_EVENT_SUPPORT_SOURCES;
-        if (MONAD_EVENT_SUPPORT_SOURCESStr) {
-          requiredEventNameList = JSON.parse(MONAD_EVENT_SUPPORT_SOURCESStr);
-        }
-      }
       const monadEventIdx = eventList.findIndex((i) => {
         const lcEventName = i.event.name.toLowerCase();
-
-        const hasRequiredEvent = requiredEventNameList.some((requiredEventName) => {
-          const lcRequiredName = requiredEventName.toLowerCase();
-          return lcEventName.includes(lcRequiredName);
-        });
-        return hasRequiredEvent && i.role.approval_status === 'approved';
+        const lcMonadEventName = monadEventName.toLowerCase();
+        return (
+          lcEventName.includes(lcMonadEventName) &&
+          i.role.approval_status === 'approved'
+        );
         // TODO
       });
 
@@ -194,7 +184,7 @@ export const formatRequestResponseFnForMonad = (
   };
   formatResponseItemFn(0, [
     monadFields['name'],
-    monadFields['approval_status'], // TODO
+    monadFields['approval_status'],// TODO
   ]);
   formatResponseItemFn(1, [monadFields['api_id']]);
   return { formatRequests, formatResponse };
