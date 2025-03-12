@@ -1083,12 +1083,10 @@ export const pageDecodeMsgListener = async (
         const prestParamsObj = JSON.parse(
           padoZKAttestationJSSDKAttestationPresetParams
         );
-        const formatOrigin =
-          padoZKAttestationJSSDKBeginAttest === '1'
-            ? prestParamsObj.attestOrigin
-            : prestParamsObj.appId;
-        eventInfo.rawData.attestOrigin = formatOrigin;
+        eventInfo.rawData.attestOrigin = prestParamsObj.attestOrigin;
+        eventInfo.rawData.templateId = prestParamsObj.attTemplateID;
       }
+      debugger;
       eventReport(eventInfo);
       chrome.runtime.sendMessage({
         type: 'algorithm',

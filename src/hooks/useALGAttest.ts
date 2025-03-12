@@ -182,11 +182,6 @@ const useALGAttest = function useAttest() {
             },
           };
           eventReport(eventInfo);
-          var eventInfoEnd = {
-            ...eventInfo,
-            eventType: 'ATTESTATION_END',
-          };
-          eventReport(eventInfoEnd);
         }
       }
     },
@@ -304,11 +299,6 @@ const useALGAttest = function useAttest() {
               address: fullAttestation?.address,
             });
             eventReport(eventInfo);
-            var eventInfoEnd = {
-              ...eventInfo,
-              eventType: 'ATTESTATION_END',
-            };
-            eventReport(eventInfoEnd);
           } else if (
             !content.signature ||
             content.balanceGreaterThanBaseValue === 'false'
@@ -399,11 +389,6 @@ const useALGAttest = function useAttest() {
               address: parsedActiveRequestAttestation?.address,
             });
             eventReport(eventInfo);
-            var eventInfoEnd = {
-              ...eventInfo,
-              eventType: 'ATTESTATION_END',
-            };
-            eventReport(eventInfoEnd);
           }
         } else if (retcode === '2') {
           clearFetchAttestationTimer();
@@ -467,11 +452,6 @@ const useALGAttest = function useAttest() {
             address: parsedActiveRequestAttestation?.address,
           });
           eventReport(eventInfo);
-          var eventInfoEnd = {
-            ...eventInfo,
-            eventType: 'ATTESTATION_END',
-          };
-          eventReport(eventInfoEnd);
           if (parsedActiveRequestAttestation.reqType === 'web') {
             await chrome.runtime.sendMessage({
               type: 'pageDecode',
@@ -571,11 +551,6 @@ const useALGAttest = function useAttest() {
       eventInfo.rawData.getAttestationResultRes = getAttestationResultRes;
       eventReport(eventInfo);
     }
-    var eventInfoEnd = {
-      ...eventInfo,
-      eventType: 'ATTESTATION_END',
-    };
-    eventReport(eventInfoEnd);
 
     const msg = {
       fullScreenType: 'algorithm',
