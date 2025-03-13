@@ -37,7 +37,7 @@ const ZkAttestation = memo(() => {
   const credentialsFromStore = useSelector(
     (state: UserState) => state.credentials
   );
-  console.log('222credentialsFromStore', credentialsFromStore);
+  // console.log('222credentialsFromStore', credentialsFromStore);
   const attestLoading = useSelector((state: UserState) => state.attestLoading);
   const activeOnChain = useSelector((state: UserState) => state.activeOnChain);
   const hasConnected = useMemo(() => {

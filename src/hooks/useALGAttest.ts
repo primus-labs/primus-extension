@@ -587,7 +587,7 @@ const useALGAttest = function useAttest() {
         if (padoZKAttestationJSSDKBeginAttest) {
           return;
         }
-        console.log('222message', message, activeAttestation);
+        // console.log('222message', message, activeAttestation);
         const errorMsgTitle = [
           'Assets Verification',
           'Humanity Verification',

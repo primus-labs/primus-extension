@@ -55,7 +55,7 @@ const useMsgs = function useMsgs() {
       };
       dispatch(setMsgsAsync(newMsgs));
 
-      console.log('222useMsgs-addMsg', msgs, newObj);
+      // console.log('222useMsgs-addMsg', msgs, newObj);
       // const delay = newObj?.link && newObj?.link !== pathname ? 8000 : 5000;
       // let timer = setTimeout(() => {
       //   console.log('222useMsgs-timeout', newObj, msgs);

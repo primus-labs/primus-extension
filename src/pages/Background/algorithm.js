@@ -54,7 +54,6 @@ export const algorithmMsgListener = async (
         order: '6',
       },
     };
-    debugger;
     if (padoZKAttestationJSSDKBeginAttest) {
       const prestParamsObj = JSON.parse(
         padoZKAttestationJSSDKAttestationPresetParams

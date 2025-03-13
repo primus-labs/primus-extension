@@ -603,7 +603,6 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         'padoZKAttestationJSSDKBeginAttest',
         'padoZKAttestationJSSDKAttestationPresetParams',
       ]);
-      debugger;
       if (padoZKAttestationJSSDKBeginAttest) {
         const prestParamsObj = JSON.parse(
           padoZKAttestationJSSDKAttestationPresetParams

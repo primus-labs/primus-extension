@@ -308,7 +308,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
             },
             sslCipherSuite,
           };
-          debugger
           activeAttestationParams = {
             dataSourceId: dataSource,
             verificationContent: name,
@@ -602,6 +601,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       desc: attestTipMap[code].desc,
       sourcePageTip: attestTipMap[code].title,
     };
+
     await chrome.storage.local.remove([
       'padoZKAttestationJSSDKBeginAttest',
       'padoZKAttestationJSSDKWalletAddress',
@@ -650,9 +650,23 @@ export const padoZKAttestationJSSDKMsgListener = async (
       name: 'startAttestationRes',
       params: resParams,
     });
-  }
+    const userAddress = activeAttestationParams?.ext?.appSignParameters
+      ? JSON.parse(activeAttestationParams.ext.appSignParameters).userAddress
+      : '';
+    var eventInfo = {
+      eventType: 'ATTESTATION_GENERATE',
+      rawData: {
+        source: activeAttestationParams.dataSourceId,
+        attestOrigin: activeAttestationParams.attestOrigin,
+        templateId: activeAttestationParams.attTemplateID,
+        status: 'FAILED',
+        reason: 'timeout',
+        address: userAddress,
+      },
+    };
 
-  
+    eventReport(eventInfo);
+  }
 
   if (name === 'sendToChainRes') {
     const { attestationRequestId, chainName, onChainRes: upChainRes } = params;
