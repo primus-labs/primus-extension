@@ -54,6 +54,7 @@ let onBeforeSendHeadersFn = () => {};
 let onBeforeRequestFn = () => {};
 let onCompletedFn = () => {};
 let requestsMap = {};
+let reportRequestIds = [];
 
 const sendMsgToSdk = async (msg) => {
   const { padoZKAttestationJSSDKDappTabId: dappTabId } =
@@ -106,6 +107,7 @@ const resetVarsFn = () => {
   chatgptHasLogin = false;
   requestsMap = {};
   sdkTargetRequestId = '';
+  reportRequestIds = [];
   changeFieldsObjFnForMonad('reset');
   chrome.runtime.onMessage.removeListener(listenerFn);
 };
@@ -202,6 +204,93 @@ const extraRequestFn = async () => {
     console.log('fetch chatgpt conversation error', e);
   }
 };
+const handleDataSourcePageDialogTimeout = async (processAlgorithmReq) => {
+  let rawData = {};
+  let baseRawData = {
+    status: 'FAILED',
+    reason: 'Something went wrong',
+    detail: {
+      code: '00014',
+      desc: 'The verification process timed out.',
+    },
+  };
+  const {
+    padoZKAttestationJSSDKBeginAttest,
+    padoZKAttestationJSSDKAttestationPresetParams,
+    activeRequestAttestation,
+  } = await chrome.storage.local.get([
+    'padoZKAttestationJSSDKBeginAttest',
+    'padoZKAttestationJSSDKAttestationPresetParams',
+    'activeRequestAttestation',
+  ]);
+  if (padoZKAttestationJSSDKBeginAttest) {
+    if (padoZKAttestationJSSDKAttestationPresetParams) {
+      const parsedActiveRequestAttestation = JSON.parse(
+        padoZKAttestationJSSDKAttestationPresetParams
+      );
+      if (
+        !reportRequestIds.includes(parsedActiveRequestAttestation.requestid)
+      ) {
+        reportRequestIds.push(parsedActiveRequestAttestation.requestid);
+        const userAddress = parsedActiveRequestAttestation?.ext
+          ?.appSignParameters
+          ? JSON.parse(parsedActiveRequestAttestation.ext.appSignParameters)
+              .userAddress
+          : '';
+        // debugger;
+        console.log('111', parsedActiveRequestAttestation);
+        rawData = {
+          source: parsedActiveRequestAttestation.dataSourceId,
+          schemaType: parsedActiveRequestAttestation.schemaType,
+          sigFormat: parsedActiveRequestAttestation.sigFormat,
+          attestOrigin: parsedActiveRequestAttestation.attestOrigin,
+          templateId: parsedActiveRequestAttestation.attTemplateID,
+          address: userAddress,
+          ...baseRawData,
+        };
+        var eventInfo = {
+          eventType: 'ATTESTATION_GENERATE',
+          rawData,
+        };
+        eventReport(eventInfo);
+      }
+    }
+  } else {
+    if (activeRequestAttestation) {
+      // debugger;
+      const parsedActiveRequestAttestation = JSON.parse(
+        activeRequestAttestation
+      );
+      if (
+        !reportRequestIds.includes(parsedActiveRequestAttestation.requestid)
+      ) {
+        reportRequestIds.push(parsedActiveRequestAttestation.requestid);
+        rawData = {
+          source: parsedActiveRequestAttestation.source,
+          schemaType: parsedActiveRequestAttestation.schemaType,
+          sigFormat: parsedActiveRequestAttestation.sigFormat,
+          address: parsedActiveRequestAttestation?.address,
+          ...baseRawData,
+        };
+        var eventInfo = {
+          eventType: 'ATTESTATION_GENERATE',
+          rawData,
+        };
+        eventReport(eventInfo);
+      }
+    }
+  }
+
+  processAlgorithmReq({
+    reqMethodName: 'stop',
+  });
+  errorFn({
+    title: 'Request Timed Out',
+    desc: 'The process did not respond within 2 minutes. Please try again later.',
+    code: '00014',
+  });
+};
+
 // inject-dynamic
 export const pageDecodeMsgListener = async (
   request,
@@ -1083,11 +1172,8 @@ export const pageDecodeMsgListener = async (
         const prestParamsObj = JSON.parse(
           padoZKAttestationJSSDKAttestationPresetParams
         );
-        const formatOrigin =
-          padoZKAttestationJSSDKBeginAttest === '1'
-            ? prestParamsObj.attestOrigin
-            : prestParamsObj.appId;
-        eventInfo.rawData.attestOrigin = formatOrigin;
+        eventInfo.rawData.attestOrigin = prestParamsObj.attestOrigin;
+        eventInfo.rawData.templateId = prestParamsObj.attTemplateID;
       }
       eventReport(eventInfo);
       chrome.runtime.sendMessage({
@@ -1124,14 +1210,7 @@ export const pageDecodeMsgListener = async (
       });
     }
     if (name === 'dataSourcePageDialogTimeout') {
-      processAlgorithmReq({
-        reqMethodName: 'stop',
-      });
-      errorFn({
-        title: 'Request Timed Out',
-        desc: 'The process did not respond within 2 minutes. Please try again later.',
-        code: '00002',
-      });
+      handleDataSourcePageDialogTimeout(processAlgorithmReq);
     }
   } else {
     if (name === 'close' || name === 'cancel') {
@@ -1146,14 +1225,7 @@ export const pageDecodeMsgListener = async (
       });
     }
     if (name === 'dataSourcePageDialogTimeout') {
-      processAlgorithmReq({
-        reqMethodName: 'stop',
-      });
-      errorFn({
-        title: 'Request Timed Out',
-        desc: 'The process did not respond within 2 minutes. Please try again later.',
-        code: '00002',
-      });
+      handleDataSourcePageDialogTimeout(processAlgorithmReq);
     }
     if (name === 'end') {
       handleEnd(request);

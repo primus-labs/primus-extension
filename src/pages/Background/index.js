@@ -221,11 +221,11 @@ const processAlgorithmReq = async (message, port) => {
       startFn();
       break;
     case 'init':
-      var eventInfo = {
-        eventType: 'ATTESTATION_INIT_3',
-        rawData: {},
-      };
-      eventReport(eventInfo);
+      // var eventInfo = {
+      //   eventType: 'ATTESTATION_INIT_3',
+      //   rawData: {},
+      // };
+      // eventReport(eventInfo);
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'init',
@@ -607,12 +607,8 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         const prestParamsObj = JSON.parse(
           padoZKAttestationJSSDKAttestationPresetParams
         );
-        const formatOrigin =
-          padoZKAttestationJSSDKBeginAttest === '1'
-            ? prestParamsObj.attestOrigin
-            : prestParamsObj.appId;
-
-        eventInfo.rawData.attestOrigin = formatOrigin;
+        eventInfo.rawData.attestOrigin = prestParamsObj.attestOrigin;
+        eventInfo.rawData.templateId = prestParamsObj.attTemplateID;
       }
       eventReport(eventInfo);
     }

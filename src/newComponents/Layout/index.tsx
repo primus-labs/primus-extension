@@ -58,7 +58,7 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
   const connectedWallet = useSelector(
     (state: UserState) => state.connectedWallet
   );
-  console.log('222userInfo', userInfo);
+  // console.log('222userInfo', userInfo);
   const dispatch: Dispatch<any> = useDispatch();
   const padoServicePort = useSelector(
     (state: UserState) => state.padoServicePort

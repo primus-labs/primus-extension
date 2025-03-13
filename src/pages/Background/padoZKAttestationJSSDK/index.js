@@ -245,7 +245,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
                 // reveal_id: feilds[0].key, // required if type is REVEAL_STRING
                 // type: fieldType, // "FIELD_REVEAL" FIELD_VALUE  FIELD_RANGE
               };
-
               const subItemCondition =
                 params.attRequest?.attConditions?.[0]?.find((i) => {
                   return i.field === key;
@@ -602,6 +601,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       desc: attestTipMap[code].desc,
       sourcePageTip: attestTipMap[code].title,
     };
+
     await chrome.storage.local.remove([
       'padoZKAttestationJSSDKBeginAttest',
       'padoZKAttestationJSSDKWalletAddress',
@@ -650,29 +650,23 @@ export const padoZKAttestationJSSDKMsgListener = async (
       name: 'startAttestationRes',
       params: resParams,
     });
-  }
+    const userAddress = activeAttestationParams?.ext?.appSignParameters
+      ? JSON.parse(activeAttestationParams.ext.appSignParameters).userAddress
+      : '';
+    var eventInfo = {
+      eventType: 'ATTESTATION_GENERATE',
+      rawData: {
+        source: activeAttestationParams.dataSourceId,
+        attestOrigin: activeAttestationParams.attestOrigin,
+        templateId: activeAttestationParams.attTemplateID,
+        status: 'FAILED',
+        reason: 'timeout',
+        address: userAddress,
+      },
+    };
 
-  // if (name === 'stopOffscreen') {
-  //   const { activeRequestAttestation } = await chrome.storage.local.get([
-  //     'activeRequestAttestation',
-  //   ]);
-  //   if (activeRequestAttestation) {
-  //     const activeRequestAttestationObj = JSON.parse(activeRequestAttestation);
-  //     if (
-  //       !activeRequestAttestationObj.attestOrigin
-  //     ) {
-  //       processAlgorithmReq({
-  //         reqMethodName: 'stop',
-  //       });
-  //       await chrome.storage.local.remove([
-  //         'padoZKAttestationJSSDKBeginAttest',
-  //         'padoZKAttestationJSSDKAttestationPresetParams',
-  //         'padoZKAttestationJSSDKXFollowerCount',
-  //         'activeRequestAttestation',
-  //       ]);
-  //     }
-  //   }
-  // }
+    eventReport(eventInfo);
+  }
 
   if (name === 'sendToChainRes') {
     const { attestationRequestId, chainName, onChainRes: upChainRes } = params;
@@ -713,6 +707,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
           },
         };
         eventInfo.rawData.attestOrigin = curCredential.attestOrigin;
+        eventInfo.rawData.templateId = curCredential.attTemplateID;
 
         if (upChainRes) {
           if (upChainRes.error) {

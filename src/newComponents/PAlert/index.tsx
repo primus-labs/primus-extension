@@ -21,7 +21,7 @@ const PAlert: React.FC<Msg> = memo(
     const navigate = useNavigate();
     const location = useLocation();
     const { pathname } = location;
-    console.log('222pathname', location, pathname, link); //delete
+    // console.log('222pathname', location, pathname, link); //delete
     const activeIconName = useMemo(() => {
       let cN = '';
       if (type === 'suc') {
