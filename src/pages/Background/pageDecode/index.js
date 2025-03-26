@@ -223,6 +223,24 @@ const handleDataSourcePageDialogTimeout = async (processAlgorithmReq) => {
     'padoZKAttestationJSSDKAttestationPresetParams',
     'activeRequestAttestation',
   ]);
+  const eventReportFn = async (rawData) => {
+    const { beginAttest, getAttestationResultRes } =
+      await chrome.storage.local.get([
+        'beginAttest',
+        'getAttestationResultRes',
+      ]);
+
+    if (beginAttest === '1') {
+      rawData.getAttestationResultRes = getAttestationResultRes;
+    }
+    if (!getAttestationResultRes) {
+      var eventInfo = {
+        eventType: 'ATTESTATION_GENERATE',
+        rawData,
+      };
+      eventReport(eventInfo);
+    }
+  };
   if (padoZKAttestationJSSDKBeginAttest) {
     if (padoZKAttestationJSSDKAttestationPresetParams) {
       const parsedActiveRequestAttestation = JSON.parse(
@@ -238,7 +256,6 @@ const handleDataSourcePageDialogTimeout = async (processAlgorithmReq) => {
               .userAddress
           : '';
         // debugger;
-        console.log('111', parsedActiveRequestAttestation);
         rawData = {
           source: parsedActiveRequestAttestation.dataSourceId,
           schemaType: parsedActiveRequestAttestation.schemaType,
@@ -248,16 +265,11 @@ const handleDataSourcePageDialogTimeout = async (processAlgorithmReq) => {
           address: userAddress,
           ...baseRawData,
         };
-        var eventInfo = {
-          eventType: 'ATTESTATION_GENERATE',
-          rawData,
-        };
-        eventReport(eventInfo);
+        eventReportFn(rawData);
       }
     }
   } else {
     if (activeRequestAttestation) {
-      // debugger;
       const parsedActiveRequestAttestation = JSON.parse(
         activeRequestAttestation
       );
@@ -272,11 +284,7 @@ const handleDataSourcePageDialogTimeout = async (processAlgorithmReq) => {
           address: parsedActiveRequestAttestation?.address,
           ...baseRawData,
         };
-        var eventInfo = {
-          eventType: 'ATTESTATION_GENERATE',
-          rawData,
-        };
-        eventReport(eventInfo);
+        eventReportFn(rawData);
       }
     }
   }

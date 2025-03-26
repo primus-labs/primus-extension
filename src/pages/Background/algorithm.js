@@ -185,6 +185,9 @@ export const algorithmMsgListener = async (
         message.res
       );
       if (isUserClick === 'true') {
+        await chrome.storage.local.set({
+          getAttestationResultRes: message.res,
+        });
         const activeAttestationParams = JSON.parse(
           padoZKAttestationJSSDKAttestationPresetParams
         );
