@@ -521,7 +521,7 @@ export const pageDecodeMsgListener = async (
       let {
         dataSource,
         schemaType,
-        datasourceTemplate: { host, requests, responses, calculations },
+        datasourceTemplate: { host, requests, responses, calculations, cipher },
         uiTemplate,
         id,
         event,
@@ -537,6 +537,7 @@ export const pageDecodeMsgListener = async (
         exUserId: null,
         requestid,
         algorithmType: algorithmType || 'proxytls',
+        cipher,
       };
       if (event) {
         form.event = event;
