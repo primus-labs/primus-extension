@@ -38,7 +38,7 @@ const useAlgorithm: UseAlgorithm = function useAlgorithm(
     async function (message: any) {
       const { resType, resMethodName, res, params } = message;
       if (resType === 'algorithm') {
-        console.log(`page_get:${resMethodName}:`, res);
+        console.log(`front page_get:${resMethodName}:`, res);
         if (resMethodName === `start`) {
           
         }

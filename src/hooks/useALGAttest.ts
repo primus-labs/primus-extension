@@ -110,6 +110,7 @@ const useALGAttest = function useAttest() {
       if (isUserClick === 'true') {
         if (retcode === '0') {
           setIntervalSwitch(true);
+          console.log(`front page start Start timing.`);
           // Restart timing
           setTimeoutSwitch(false);
           setTimeout(() => {

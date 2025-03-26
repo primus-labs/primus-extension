@@ -161,6 +161,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     requestid: prevRequestid,
     event,
     algorithmType = 'proxytls',
+    cipher,
   } = form;
   // const { baseName } = DATASOURCEMAP[source];
   const baseName = DATASOURCEMAP[source] && DATASOURCEMAP[source].baseName; // unnecessary for web proof
@@ -189,7 +190,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     errLogUrl: 'wss://api.padolabs.org/logs',
     // if cipher non-exist or empty use default. options:
     //    ECDHE-RSA-AES128-GCM-SHA256(default), ECDHE-ECDSA-AES128-GCM-SHA256
-    cipher: '',
+    cipher: cipher || '',
     getdatatime: timeStampStr,
     credVersion: CredVersion,
 
@@ -204,10 +205,6 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
   };
   let calculationType;
   const sourceUpperCaseName = source.toUpperCase();
-  if (source === 'tiktok') {
-    params.cipher = 'ECDHE-ECDSA-AES128-GCM-SHA256';
-    params.setHostName = 'true';
-  }
   if (type === 'ASSETS_PROOF') {
     params.baseValue = baseValue;
     calculationType = `SUM_OF_ALL`;

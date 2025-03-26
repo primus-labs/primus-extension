@@ -664,6 +664,15 @@ export const padoZKAttestationJSSDKMsgListener = async (
         address: userAddress,
       },
     };
+    const { beginAttest, getAttestationResultRes } =
+      await chrome.storage.local.get([
+        'beginAttest',
+        'getAttestationResultRes',
+      ]);
+
+    if (beginAttest === '1') {
+      eventInfo.rawData.getAttestationResultRes = getAttestationResultRes;
+    }
 
     eventReport(eventInfo);
   }
