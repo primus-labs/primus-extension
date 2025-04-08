@@ -225,71 +225,82 @@ export const padoZKAttestationJSSDKMsgListener = async (
             []
           );
 
-          const newResponses = dataSourceTemplateObj.reduce((prev, curr) => {
-            const { responseTemplate } = curr;
-            const subconditions = responseTemplate.reduce((prevS, currS) => {
-              const {
-                resolver: { type, expression },
-                valueType,
-                fieldType,
-                feilds: [{ key }],
-              } = currS;
-              const opMap = {
-                string: 'REVEAL_STRING',
-                number: 'REVEAL_STRING',
-                boolean: 'REVEAL_STRING',
-              };
-              let subconditionItem = {
-                field: expression,
-                // op: opMap[feilds[0].DataType] || 'REVEAL_STRING', // TODO ">"
-                // reveal_id: feilds[0].key, // required if type is REVEAL_STRING
-                // type: fieldType, // "FIELD_REVEAL" FIELD_VALUE  FIELD_RANGE
-              };
-              const subItemCondition =
-                params.attRequest?.attConditions?.[0]?.find((i) => {
+          const newResponses = dataSourceTemplateObj.reduce(
+            (prev, curr, currIdx) => {
+              const { responseTemplate } = curr;
+              const subconditions = responseTemplate.reduce((prevS, currS) => {
+                const {
+                  resolver: { type, expression },
+                  valueType,
+                  fieldType,
+                  feilds: [{ key }],
+                } = currS;
+                const opMap = {
+                  string: 'REVEAL_STRING',
+                  number: 'REVEAL_STRING',
+                  boolean: 'REVEAL_STRING',
+                };
+                let subconditionItem = {
+                  field: expression,
+                  // op: opMap[feilds[0].DataType] || 'REVEAL_STRING', // TODO ">"
+                  // reveal_id: feilds[0].key, // required if type is REVEAL_STRING
+                  // type: fieldType, // "FIELD_REVEAL" FIELD_VALUE  FIELD_RANGE
+                };
+                const subItemCondition = params.attRequest?.attConditions?.[
+                  currIdx
+                ]?.find((i) => {
                   return i.field === key;
                 });
-              const handleREVEALFn = () => {
-                subconditionItem.op = 'REVEAL_STRING';
-                subconditionItem.type = 'FIELD_REVEAL';
-                subconditionItem.reveal_id = key;
-              };
-              if (subItemCondition) {
-                const { op, value } = subItemCondition;
-                subconditionItem.op = op;
-                if (
-                  ['>', '>=', '=', '!=', '<', '<=', 'STREQ', 'STRNEQ'].includes(
-                    op
-                  )
-                ) {
-                  subconditionItem.type = 'FIELD_RANGE';
-                  subconditionItem.value = value;
-                } else if (op === 'SHA256') {
-                  subconditionItem.type = 'FIELD_VALUE';
-                } else if (op === 'REVEAL_STRING') {
+                const handleREVEALFn = () => {
+                  subconditionItem.op = 'REVEAL_STRING';
+                  subconditionItem.type = 'FIELD_REVEAL';
+                  subconditionItem.reveal_id = key;
+                };
+                if (subItemCondition) {
+                  const { op, value } = subItemCondition;
+                  subconditionItem.op = op;
+                  if (
+                    [
+                      '>',
+                      '>=',
+                      '=',
+                      '!=',
+                      '<',
+                      '<=',
+                      'STREQ',
+                      'STRNEQ',
+                    ].includes(op)
+                  ) {
+                    subconditionItem.type = 'FIELD_RANGE';
+                    subconditionItem.value = value;
+                  } else if (op === 'SHA256') {
+                    subconditionItem.type = 'FIELD_VALUE';
+                  } else if (op === 'REVEAL_STRING') {
+                    handleREVEALFn();
+                  }
+                } else {
                   handleREVEALFn();
                 }
-              } else {
-                handleREVEALFn();
-              }
-              // TODO
-              // field: '$.data.create_time';
-              // op: '>';
-              // type: 'FIELD_RANGE';
-              // value: '978278400';
-              prevS.push(subconditionItem);
-              return prevS;
-            }, []);
-            let responseItem = {
-              conditions: {
-                type: 'CONDITION_EXPANSION',
-                op: 'BOOLEAN_AND',
-                subconditions,
-              },
-            };
-            prev.push(responseItem);
-            return prev;
-          }, []);
+                // TODO
+                // field: '$.data.create_time';
+                // op: '>';
+                // type: 'FIELD_RANGE';
+                // value: '978278400';
+                prevS.push(subconditionItem);
+                return prevS;
+              }, []);
+              let responseItem = {
+                conditions: {
+                  type: 'CONDITION_EXPANSION',
+                  op: 'BOOLEAN_AND',
+                  subconditions,
+                },
+              };
+              prev.push(responseItem);
+              return prev;
+            },
+            []
+          );
           activeWebProofTemplate = {
             id,
             name,
@@ -672,6 +683,9 @@ export const padoZKAttestationJSSDKMsgListener = async (
 
     if (beginAttest === '1') {
       eventInfo.rawData.getAttestationResultRes = getAttestationResultRes;
+    }
+    if (activeAttestationParams.event) {
+      eventInfo.rawData.event = activeAttestationParams.event;
     }
 
     eventReport(eventInfo);
