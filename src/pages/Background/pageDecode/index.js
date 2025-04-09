@@ -355,7 +355,6 @@ export const pageDecodeMsgListener = async (
           if (requestsMap[matchRequestId]?.isTarget === 1) {
             break;
           } else if (requestsMap[matchRequestId]?.isTarget === 2) {
-            break;
           } else {
             const jsonPathArr = thisResponseObj.conditions.subconditions.map(
               (i) => i.field
@@ -370,7 +369,6 @@ export const pageDecodeMsgListener = async (
               header: requestsMap[matchRequestId].headers,
               url: targetRequestUrl,
             });
-
             let isTargetUrl = jsonPathArr.every((jpItem) => {
               try {
                 const hasField =
