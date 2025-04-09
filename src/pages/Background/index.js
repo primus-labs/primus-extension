@@ -608,6 +608,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
           padoZKAttestationJSSDKAttestationPresetParams
         );
         eventInfo.rawData.attestOrigin = prestParamsObj.attestOrigin;
+        eventInfo.rawData.event = prestParamsObj.attestOrigin;
         eventInfo.rawData.templateId = prestParamsObj.attTemplateID;
       }
       eventReport(eventInfo);

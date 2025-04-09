@@ -259,6 +259,7 @@ const handleDataSourcePageDialogTimeout = async (processAlgorithmReq) => {
           schemaType: parsedActiveRequestAttestation.schemaType,
           sigFormat: parsedActiveRequestAttestation.sigFormat,
           attestOrigin: parsedActiveRequestAttestation.attestOrigin,
+          event: parsedActiveRequestAttestation.attestOrigin,
           templateId: parsedActiveRequestAttestation.attTemplateID,
           address: userAddress,
           ...baseRawData,
@@ -1195,6 +1196,7 @@ export const pageDecodeMsgListener = async (
           padoZKAttestationJSSDKAttestationPresetParams
         );
         eventInfo.rawData.attestOrigin = prestParamsObj.attestOrigin;
+        eventInfo.rawData.event = prestParamsObj.attestOrigin;
         eventInfo.rawData.templateId = prestParamsObj.attTemplateID;
       }
       eventReport(eventInfo);
