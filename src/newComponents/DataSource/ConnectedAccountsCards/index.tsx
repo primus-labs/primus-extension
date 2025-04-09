@@ -84,7 +84,7 @@ const ConnectedAccountsCards: React.FC<PDropdownProps> = memo(
         return <span>API Key: {i.account}</span>;
       } else {
         var activeLabel = 'User Name';
-        if (['binance'].includes(lowerCaseDataSourceName)) {
+        if (['binance', 'bitget'].includes(lowerCaseDataSourceName)) {
           activeLabel = 'UserID';
         }
         if (['okx'].includes(lowerCaseDataSourceName)) {
