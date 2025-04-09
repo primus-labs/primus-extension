@@ -168,7 +168,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
       } else if (pswForm.verificationContent === 'Spot 30-Day Trade Vol') {
         list = [...ASSETSVOLVERIFICATIONVALUETYPELIST];
       }
-      console.log('222valueList', list, pswForm.verificationContent);
+      // console.log('222valueList', list, pswForm.verificationContent);
       return list;
     }, [pswForm.verificationContent, activeDataSouceUserInfo]);
 
@@ -285,7 +285,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
         setPswForm((f) => {
           const newV = upperFlag ? v.toUpperCase() : v;
           const newForm = { ...f, [formKey]: newV };
-          console.log('newForm', f, newForm);
+          // console.log('newForm', f, newForm);
           return newForm;
         });
       },

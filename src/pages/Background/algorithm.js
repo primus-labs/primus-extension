@@ -60,6 +60,7 @@ export const algorithmMsgListener = async (
       );
 
       eventInfo.rawData.attestOrigin = prestParamsObj.attestOrigin;
+      eventInfo.rawData.event = prestParamsObj.attestOrigin;
       eventInfo.rawData.templateId = prestParamsObj.attTemplateID;
     }
     eventReport(eventInfo);
@@ -210,6 +211,7 @@ export const algorithmMsgListener = async (
         };
         if (padoZKAttestationJSSDKBeginAttest) {
           eventInfo.rawData.attestOrigin = activeAttestationParams.attestOrigin;
+          eventInfo.rawData.event = activeAttestationParams.attestOrigin;
           eventInfo.rawData.templateId = activeAttestationParams.attTemplateID;
         }
 

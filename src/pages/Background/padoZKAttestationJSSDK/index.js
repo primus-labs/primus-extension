@@ -669,6 +669,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       rawData: {
         source: activeAttestationParams.dataSourceId,
         attestOrigin: activeAttestationParams.attestOrigin,
+        event: activeAttestationParams.attestOrigin,
         templateId: activeAttestationParams.attTemplateID,
         status: 'FAILED',
         reason: 'timeout',
