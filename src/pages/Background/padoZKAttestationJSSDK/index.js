@@ -211,13 +211,19 @@ export const padoZKAttestationJSSDKMsgListener = async (
           const newRequests = dataSourceTemplateObj.reduce(
             (prev, curr, idx) => {
               const {
-                requestTemplate: { targetUrlExpression, targetUrlType, method },
+                requestTemplate: {
+                  targetUrlExpression,
+                  targetUrlType,
+                  method,
+                  matchReqBodyKey,
+                },
               } = curr;
               const requestItem = {
                 name: `sdk-${idx}`,
                 url: targetUrlExpression,
                 urlType: targetUrlType,
                 method,
+                matchReqBodyKey,
               };
               prev.push(requestItem);
               return prev;
@@ -249,7 +255,11 @@ export const padoZKAttestationJSSDKMsgListener = async (
                 const subItemCondition = params.attRequest?.attConditions?.[
                   currIdx
                 ]?.find((i) => {
-                  return i.field === key;
+                  if (i.op === 'MATCH_ONE') {
+                    return i.key === key;
+                  } else {
+                    return i.field === key;
+                  }
                 });
                 const handleREVEALFn = () => {
                   subconditionItem.op = 'REVEAL_STRING';
@@ -257,7 +267,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
                   subconditionItem.reveal_id = key;
                 };
                 if (subItemCondition) {
-                  const { op, value } = subItemCondition;
+                  const { op, value, field, type } = subItemCondition;
                   subconditionItem.op = op;
                   if (
                     [
@@ -277,6 +287,13 @@ export const padoZKAttestationJSSDKMsgListener = async (
                     subconditionItem.type = 'FIELD_VALUE';
                   } else if (op === 'REVEAL_STRING') {
                     handleREVEALFn();
+                  } else if (op === 'MATCH_ONE') {
+                    subconditionItem = {
+                      type,
+                      op,
+                      field,
+                      subconditions: value,
+                    };
                   }
                 } else {
                   handleREVEALFn();

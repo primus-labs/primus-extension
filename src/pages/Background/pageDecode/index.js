@@ -17,6 +17,12 @@ import {
   formatRequestResponseFnForMonad,
 } from '../lumaMonadEvent/index.js';
 import {
+  templateIdForTwitch,
+  formatJsonArrFnForTwitch,
+  changeFieldsObjFnForTwitch,
+  formatRequestResponseFnForTwitch,
+} from '../twitchEvent/index.js';
+import {
   isObject,
   parseCookie,
   isUrlWithQueryFn,
@@ -24,7 +30,7 @@ import {
   getErrorMsgFn,
   sendMsgToTab,
 } from '../utils/utils';
-import { extraRequestFn2, errorFn } from './utils';
+import { extraRequestFn2, errorFn, checkResIsMatchConditionFn } from './utils';
 
 let PRE_ATTEST_PROMOT_V2 = [
   {
@@ -107,6 +113,7 @@ const resetVarsFn = () => {
   requestsMap = {};
   reportRequestIds = [];
   changeFieldsObjFnForMonad('reset');
+  changeFieldsObjFnForTwitch('reset');
   chrome.runtime.onMessage.removeListener(listenerFn);
 };
 const handlerForSdk = async (processAlgorithmReq, operation) => {
@@ -357,8 +364,14 @@ export const pageDecodeMsgListener = async (
             break;
           } else if (requestsMap[matchRequestId]?.isTarget === 2) {
           } else {
-            const jsonPathArr = thisResponseObj.conditions.subconditions.map(
-              (i) => i.field
+            let jsonPathArr = thisResponseObj.conditions.subconditions.map(
+              (i) => {
+                if (i?.op === 'MATCH_ONE') {
+                  return i;
+                } else {
+                  return i.field;
+                }
+              }
             );
             let targetRequestUrl = requestsMap[matchRequestId].url;
             if (activeTemplate?.attTemplateID === templateIdForMonad) {
@@ -370,15 +383,30 @@ export const pageDecodeMsgListener = async (
               header: requestsMap[matchRequestId].headers,
               url: targetRequestUrl,
             });
-            let isTargetUrl = jsonPathArr.every((jpItem) => {
-              try {
-                const hasField =
-                  jp.query(matchRequestUrlResult, jpItem).length > 0;
-                return hasField;
-              } catch {
-                return false;
+            let isTargetUrl = false;
+            
+
+            if (
+              matchRequestUrlResult &&
+              activeTemplate?.attTemplateID === templateIdForTwitch
+            ) {
+              let formarRes = formatJsonArrFnForTwitch(
+                jsonPathArr,
+                requestsMap[matchRequestId],
+                thisRequestObj.matchReqBodyKey,
+                matchRequestUrlResult
+              );
+              if (formarRes?.checkRes) {
+                jsonPathArr = formarRes.jsonpath;
+                isTargetUrl = true;
               }
-            });
+            } else {
+              isTargetUrl = checkResIsMatchConditionFn(
+                jsonPathArr,
+                matchRequestUrlResult
+              );
+            }
+
             if (
               matchRequestUrlResult &&
               activeTemplate?.attTemplateID === templateIdForMonad
@@ -714,6 +742,11 @@ export const pageDecodeMsgListener = async (
         if (activeTemplate.attTemplateID === templateIdForMonad) {
           const { formatRequests: req, formatResponse: res } =
             formatRequestResponseFnForMonad(formatRequests, formatResponse);
+          formatRequests = req;
+          formatResponse = res;
+        } else if (activeTemplate.attTemplateID === templateIdForTwitch) {
+          const { formatRequests: req, formatResponse: res } =
+            formatRequestResponseFnForTwitch(formatRequests, formatResponse);
           formatRequests = req;
           formatResponse = res;
         }
