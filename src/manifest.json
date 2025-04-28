@@ -50,8 +50,7 @@
         "https://padolabs.org/*",
         "https://www.padolabs.org/*",
         "https://events.padolabs.org/*",
-        "http://api-dev.padolabs.org:9094/*",
-        "http://api-dev.padolabs.org:8081/*",
+        "http://api-dev.padolabs.org:*/*",
         "https://primuslabs.xyz/*"
       ],
       "js": ["padoWebsite.js"]
@@ -78,7 +77,7 @@
     {
       "matches": [
         "http://localhost:5173/*",
-        "http://api-dev.padolabs.org:38082/*",
+        "http://api-dev.padolabs.org:*/*",
         "https://dev.primuslabs.xyz/*",
         "http://35.200.124.249/*"
       ],
