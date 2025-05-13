@@ -207,6 +207,7 @@ const Nav: React.FC<PButtonProps> = memo(
           const { signatureInfo, signatureRawInfo } = res;
 
           const fullAttestation = {
+            schemaType: signatureRawInfo.rawParam.schemaType,
             ...signatureInfo,
             ...signatureRawInfo,
             address: credAddress,

@@ -1,3 +1,4 @@
+import jp from 'jsonpath';
 import { customFetch2 } from '../utils/request';
 export const extraRequestFn2 = async (params) => {
   try {
@@ -35,4 +36,46 @@ export const errorFn = async (errorData, dataSourcePageTabId) => {
   }
 };
 
+export const checkResIsMatchConditionFn = (
+  jsonPathArr,
+  matchRequestUrlResult
+) => {
+  const isMatch = jsonPathArr.every((jpItem) => {
+    try {
+      let hasField = false;
+      if (jpItem?.op === 'MATCH_ONE') {
+        const {
+          field: fatherJsonPath,
+          subconditions: [{ type, op, field: sonJsonpath, value }],
+        } = jpItem;
+        const firstJsonPath = fatherJsonPath?.split('[*]+')?.[0];
+        const lastJsonpath = sonJsonpath.split('+')[1];
+        let jsonpathQueryStr = '';
 
+        if (['>', '>=', '=', '!=', '<', '<=', 'STREQ', 'STRNEQ'].includes(op)) {
+          // let formatOp = op;
+          // if (['=', 'STREQ'].includes(op)) {
+          //   formatOp = '==';
+          // }
+          // if (['STRNEQ'].includes(op)) {
+          //   formatOp = '!=';
+          // }
+          // const formatValue = ['STREQ', 'STRNEQ'].includes(op)
+          //   ? `"${value}"`
+          //   : value; // TODO
+          // jsonpathQueryStr = `${firstJsonPath}[?(@${lastJsonpath} ${formatOp} ${formatValue})]`;
+
+          jsonpathQueryStr = `${firstJsonPath}[0]${lastJsonpath}`;
+          hasField =
+            jp.query(matchRequestUrlResult, jsonpathQueryStr).length > 0;
+        }
+      } else {
+        hasField = jp.query(matchRequestUrlResult, jpItem).length > 0;
+      }
+      return hasField;
+    } catch {
+      return false;
+    }
+  });
+  return isMatch;
+};

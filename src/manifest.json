@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Primus (prev. PADO)",
+  "name": "Primus",
   "description": "Use zkTLS to enable trusted and verifiable data flows from Web2 to Web3.",
   "background": { "service_worker": "background.bundle.js" },
   "action": {
@@ -79,6 +79,7 @@
       "matches": [
         "http://localhost:5173/*",
         "http://api-dev.padolabs.org:38082/*",
+        "http://api-dev.padolabs.org:38089/*",
         "https://dev.primuslabs.xyz/*",
         "http://35.200.124.249/*"
       ],

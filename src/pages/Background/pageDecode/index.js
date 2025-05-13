@@ -17,6 +17,12 @@ import {
   formatRequestResponseFnForMonad,
 } from '../lumaMonadEvent/index.js';
 import {
+  templateIdForTwitch,
+  formatJsonArrFnForTwitch,
+  changeFieldsObjFnForTwitch,
+  formatRequestResponseFnForTwitch,
+} from '../twitchEvent/index.js';
+import {
   isObject,
   parseCookie,
   isUrlWithQueryFn,
@@ -24,7 +30,7 @@ import {
   getErrorMsgFn,
   sendMsgToTab,
 } from '../utils/utils';
-import { extraRequestFn2, errorFn } from './utils';
+import { extraRequestFn2, errorFn, checkResIsMatchConditionFn } from './utils';
 
 let PRE_ATTEST_PROMOT_V2 = [
   {
@@ -48,12 +54,12 @@ let preAlgorithmStatus = '';
 let preAlgorithmTimer = null;
 let preAlgorithmFlag = false;
 let chatgptHasLogin = false;
-let sdkTargetRequestId = '';
 let listenerFn = () => {};
 let onBeforeSendHeadersFn = () => {};
 let onBeforeRequestFn = () => {};
 let onCompletedFn = () => {};
 let requestsMap = {};
+let reportRequestIds = [];
 
 const sendMsgToSdk = async (msg) => {
   const { padoZKAttestationJSSDKDappTabId: dappTabId } =
@@ -105,8 +111,9 @@ const resetVarsFn = () => {
   preAlgorithmFlag = false;
   chatgptHasLogin = false;
   requestsMap = {};
-  sdkTargetRequestId = '';
+  reportRequestIds = [];
   changeFieldsObjFnForMonad('reset');
+  changeFieldsObjFnForTwitch('reset');
   chrome.runtime.onMessage.removeListener(listenerFn);
 };
 const handlerForSdk = async (processAlgorithmReq, operation) => {
@@ -202,6 +209,108 @@ const extraRequestFn = async () => {
     console.log('fetch chatgpt conversation error', e);
   }
 };
+const handleDataSourcePageDialogTimeout = async (processAlgorithmReq) => {
+  let rawData = {};
+  let baseRawData = {
+    status: 'FAILED',
+    reason: 'Something went wrong',
+    detail: {
+      code: '00014',
+      desc: 'The verification process timed out.',
+    },
+  };
+  const {
+    padoZKAttestationJSSDKBeginAttest,
+    padoZKAttestationJSSDKAttestationPresetParams,
+    activeRequestAttestation,
+  } = await chrome.storage.local.get([
+    'padoZKAttestationJSSDKBeginAttest',
+    'padoZKAttestationJSSDKAttestationPresetParams',
+    'activeRequestAttestation',
+  ]);
+  const eventReportFn = async (rawData) => {
+    const { beginAttest, getAttestationResultRes } =
+      await chrome.storage.local.get([
+        'beginAttest',
+        'getAttestationResultRes',
+      ]);
+
+    if (beginAttest === '1') {
+      rawData.getAttestationResultRes = getAttestationResultRes;
+    }
+    if (!getAttestationResultRes) {
+      var eventInfo = {
+        eventType: 'ATTESTATION_GENERATE',
+        rawData,
+      };
+      eventReport(eventInfo);
+    }
+  };
+  if (padoZKAttestationJSSDKBeginAttest) {
+    if (padoZKAttestationJSSDKAttestationPresetParams) {
+      const parsedActiveRequestAttestation = JSON.parse(
+        padoZKAttestationJSSDKAttestationPresetParams
+      );
+      if (
+        !reportRequestIds.includes(parsedActiveRequestAttestation.requestid)
+      ) {
+        reportRequestIds.push(parsedActiveRequestAttestation.requestid);
+        const userAddress = parsedActiveRequestAttestation?.ext
+          ?.appSignParameters
+          ? JSON.parse(parsedActiveRequestAttestation.ext.appSignParameters)
+              .userAddress
+          : '';
+        // TODO-event
+        rawData = {
+          source: parsedActiveRequestAttestation.dataSourceId,
+          schemaType: parsedActiveRequestAttestation.schemaType,
+          sigFormat: parsedActiveRequestAttestation.sigFormat,
+          attestOrigin: parsedActiveRequestAttestation.attestOrigin,
+          event: parsedActiveRequestAttestation.attestOrigin,
+          templateId: parsedActiveRequestAttestation.attTemplateID,
+          address: userAddress,
+          ...baseRawData,
+        };
+        if (parsedActiveRequestAttestation.event) {
+          rawData.event = parsedActiveRequestAttestation.event;
+        }
+        eventReportFn(rawData);
+      }
+    }
+  } else {
+    if (activeRequestAttestation) {
+      const parsedActiveRequestAttestation = JSON.parse(
+        activeRequestAttestation
+      );
+      if (
+        !reportRequestIds.includes(parsedActiveRequestAttestation.requestid)
+      ) {
+        reportRequestIds.push(parsedActiveRequestAttestation.requestid);
+        rawData = {
+          source: parsedActiveRequestAttestation.source,
+          schemaType: parsedActiveRequestAttestation.schemaType,
+          sigFormat: parsedActiveRequestAttestation.sigFormat,
+          address: parsedActiveRequestAttestation?.address,
+          ...baseRawData,
+        };
+        if (parsedActiveRequestAttestation.event) {
+          rawData.event = parsedActiveRequestAttestation.event;
+        }
+        eventReportFn(rawData);
+      }
+    }
+  }
+
+  processAlgorithmReq({
+    reqMethodName: 'stop',
+  });
+  errorFn({
+    title: 'Request Timed Out',
+    desc: 'The process did not respond within 2 minutes. Please try again later.',
+    code: '00014',
+  });
+};
+
 // inject-dynamic
 export const pageDecodeMsgListener = async (
   request,
@@ -226,42 +335,43 @@ export const pageDecodeMsgListener = async (
       datasourceTemplate: { requests },
     } = activeTemplate;
 
-    const checkSDKTargetRequestFn = async () => {
+    const checkSDKTargetRequestFn = async (requestId, templateRequestUrl) => {
       const {
         datasourceTemplate: { requests, responses },
       } = activeTemplate;
+      const thisRequestUrlIdx = requests.findIndex(
+        (r) => r.url === templateRequestUrl
+      );
+      const thisRequestObj = requests[thisRequestUrlIdx];
+      const thisResponseObj = responses[thisRequestUrlIdx];
 
-      const sdkRequestUrl = requests[0].url;
-
-      const matchRequestIdArr = Object.keys(requestsMap).filter((key) => {
-        const checkRes = checkIsRequiredUrl({
-          requestUrl: requestsMap[key].url,
-          requiredUrl: sdkRequestUrl,
-          urlType: requests[0].urlType || 'REGX',
-          queryParams: requests[0].queryParams,
+      const { url, urlType, queryParams } = thisRequestObj;
+      const thisRequestUrlFoundFlag = Object.keys(requestsMap).find(
+        (v) => v.templateRequestUrl === url && v.isTarget === 1
+      );
+      if (!thisRequestUrlFoundFlag) {
+        const matchRequestIdArr = Object.keys(requestsMap).filter((key) => {
+          const checkRes = checkIsRequiredUrl({
+            requestUrl: requestsMap[key].url,
+            requiredUrl: url,
+            urlType: urlType || 'REGX',
+            queryParams: queryParams,
+          });
+          return checkRes;
         });
-        return checkRes;
-      });
-
-      const hadTargetRequestId = Object.keys(requestsMap).some((k) => {
-        if (matchRequestIdArr.includes(k)) {
-          if (requestsMap[k].isTarget === 1) {
-            sdkTargetRequestId = k;
-          }
-          return requestsMap[k].isTarget === 1;
-        } else {
-          return false;
-        }
-      });
-      if (!hadTargetRequestId) {
         for (const matchRequestId of [...matchRequestIdArr]) {
           if (requestsMap[matchRequestId]?.isTarget === 1) {
-            sdkTargetRequestId = matchRequestId;
             break;
           } else if (requestsMap[matchRequestId]?.isTarget === 2) {
           } else {
-            const jsonPathArr = responses[0].conditions.subconditions.map(
-              (i) => i.field
+            let jsonPathArr = thisResponseObj.conditions.subconditions.map(
+              (i) => {
+                if (i?.op === 'MATCH_ONE') {
+                  return i;
+                } else {
+                  return i.field;
+                }
+              }
             );
             let targetRequestUrl = requestsMap[matchRequestId].url;
             if (activeTemplate?.attTemplateID === templateIdForMonad) {
@@ -273,16 +383,30 @@ export const pageDecodeMsgListener = async (
               header: requestsMap[matchRequestId].headers,
               url: targetRequestUrl,
             });
+            let isTargetUrl = false;
+            
 
-            let isTargetUrl = jsonPathArr.every((jpItem) => {
-              try {
-                const hasField =
-                  jp.query(matchRequestUrlResult, jpItem).length > 0;
-                return hasField;
-              } catch {
-                return false;
+            if (
+              matchRequestUrlResult &&
+              activeTemplate?.attTemplateID === templateIdForTwitch
+            ) {
+              let formarRes = formatJsonArrFnForTwitch(
+                jsonPathArr,
+                requestsMap[matchRequestId],
+                thisRequestObj.matchReqBodyKey,
+                matchRequestUrlResult
+              );
+              if (formarRes?.checkRes) {
+                jsonPathArr = formarRes.jsonpath;
+                isTargetUrl = true;
               }
-            });
+            } else {
+              isTargetUrl = checkResIsMatchConditionFn(
+                jsonPathArr,
+                matchRequestUrlResult
+              );
+            }
+
             if (
               matchRequestUrlResult &&
               activeTemplate?.attTemplateID === templateIdForMonad
@@ -314,7 +438,6 @@ export const pageDecodeMsgListener = async (
             }
 
             if (isTargetUrl) {
-              sdkTargetRequestId = matchRequestId;
               storeRequestsMap(matchRequestId, { isTarget: 1 });
               break;
             } else {
@@ -384,7 +507,14 @@ export const pageDecodeMsgListener = async (
 
           let fl = false;
           if (sdkVersion) {
-            fl = f && !!sdkTargetRequestId;
+            const allRequestUrlFoundFlag = interceptorUrlArr.every((url) => {
+              const curFlag = Object.values(requestsMap).find(
+                (sInfo) =>
+                  sInfo.templateRequestUrl === url && sInfo.isTarget === 1
+              );
+              return !!curFlag;
+            });
+            fl = f && !!allRequestUrlFoundFlag;
           } else {
             fl = f;
           }
@@ -424,7 +554,7 @@ export const pageDecodeMsgListener = async (
       let {
         dataSource,
         schemaType,
-        datasourceTemplate: { host, requests, responses, calculations },
+        datasourceTemplate: { host, requests, responses, calculations, cipher },
         uiTemplate,
         id,
         event,
@@ -440,6 +570,7 @@ export const pageDecodeMsgListener = async (
         exUserId: null,
         requestid,
         algorithmType: algorithmType || 'proxytls',
+        cipher,
       };
       if (event) {
         form.event = event;
@@ -477,8 +608,12 @@ export const pageDecodeMsgListener = async (
         let { headers, cookies, body, urlType } = r;
         // let formatUrlKey = url;
         let targetRequestId = '';
-        if (sdkVersion && sdkTargetRequestId) {
-          targetRequestId = sdkTargetRequestId;
+        if (sdkVersion) {
+          targetRequestId =
+            Object.values(requestsMap).find(
+              (sInfo) =>
+                sInfo.templateRequestUrl === r.url && sInfo.isTarget === 1
+            )?.requestId || '';
         } else {
           targetRequestId = Object.values(requestsMap).find((rInfo) => {
             const checkRes = checkIsRequiredUrl({
@@ -607,6 +742,11 @@ export const pageDecodeMsgListener = async (
         if (activeTemplate.attTemplateID === templateIdForMonad) {
           const { formatRequests: req, formatResponse: res } =
             formatRequestResponseFnForMonad(formatRequests, formatResponse);
+          formatRequests = req;
+          formatResponse = res;
+        } else if (activeTemplate.attTemplateID === templateIdForTwitch) {
+          const { formatRequests: req, formatResponse: res } =
+            formatRequestResponseFnForTwitch(formatRequests, formatResponse);
           formatRequests = req;
           formatResponse = res;
         }
@@ -807,6 +947,7 @@ export const pageDecodeMsgListener = async (
             });
           }
         }
+        let templateRequestUrl = '';
         const isTarget = requests.some((r) => {
           if (r.name === 'first') {
             return false;
@@ -833,6 +974,9 @@ export const pageDecodeMsgListener = async (
             urlType: r.urlType,
             queryParams: r.queryParams,
           });
+          if (checkRes) {
+            templateRequestUrl = r.url;
+          }
           return checkRes;
         });
 
@@ -843,6 +987,7 @@ export const pageDecodeMsgListener = async (
             method,
             url: currRequestUrl,
             requestId,
+            templateRequestUrl,
           };
           if (addQueryStr) {
             newCapturedInfo.queryString = addQueryStr;
@@ -885,7 +1030,7 @@ export const pageDecodeMsgListener = async (
             });
           }
           if (sdkVersion) {
-            await checkSDKTargetRequestFn();
+            await checkSDKTargetRequestFn(requestId, templateRequestUrl);
           }
           checkWebRequestIsReadyFn();
         }
@@ -1083,11 +1228,9 @@ export const pageDecodeMsgListener = async (
         const prestParamsObj = JSON.parse(
           padoZKAttestationJSSDKAttestationPresetParams
         );
-        const formatOrigin =
-          padoZKAttestationJSSDKBeginAttest === '1'
-            ? prestParamsObj.attestOrigin
-            : prestParamsObj.appId;
-        eventInfo.rawData.attestOrigin = formatOrigin;
+        eventInfo.rawData.attestOrigin = prestParamsObj.attestOrigin;
+        eventInfo.rawData.event = prestParamsObj.attestOrigin;
+        eventInfo.rawData.templateId = prestParamsObj.attTemplateID;
       }
       eventReport(eventInfo);
       chrome.runtime.sendMessage({
@@ -1124,14 +1267,7 @@ export const pageDecodeMsgListener = async (
       });
     }
     if (name === 'dataSourcePageDialogTimeout') {
-      processAlgorithmReq({
-        reqMethodName: 'stop',
-      });
-      errorFn({
-        title: 'Request Timed Out',
-        desc: 'The process did not respond within 2 minutes. Please try again later.',
-        code: '00002',
-      });
+      handleDataSourcePageDialogTimeout(processAlgorithmReq);
     }
   } else {
     if (name === 'close' || name === 'cancel') {
@@ -1146,14 +1282,7 @@ export const pageDecodeMsgListener = async (
       });
     }
     if (name === 'dataSourcePageDialogTimeout') {
-      processAlgorithmReq({
-        reqMethodName: 'stop',
-      });
-      errorFn({
-        title: 'Request Timed Out',
-        desc: 'The process did not respond within 2 minutes. Please try again later.',
-        code: '00002',
-      });
+      handleDataSourcePageDialogTimeout(processAlgorithmReq);
     }
     if (name === 'end') {
       handleEnd(request);

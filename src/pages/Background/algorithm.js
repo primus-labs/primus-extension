@@ -30,11 +30,11 @@ export const algorithmMsgListener = async (
     'padoZKAttestationJSSDKAttestationPresetParams',
   ]);
   if (resMethodName === `start`) {
-    var eventInfo = {
-      eventType: 'ATTESTATION_INIT_1',
-      rawData: {},
-    };
-    eventReport(eventInfo);
+    // var eventInfo = {
+    //   eventType: 'ATTESTATION_INIT_1',
+    //   rawData: {},
+    // };
+    // eventReport(eventInfo);
     processAlgorithmReq({
       reqMethodName: 'init',
     });
@@ -58,11 +58,10 @@ export const algorithmMsgListener = async (
       const prestParamsObj = JSON.parse(
         padoZKAttestationJSSDKAttestationPresetParams
       );
-      const formatOrigin =
-        padoZKAttestationJSSDKBeginAttest === '1'
-          ? prestParamsObj.attestOrigin
-          : prestParamsObj.appId;
-      eventInfo.rawData.attestOrigin = formatOrigin;
+
+      eventInfo.rawData.attestOrigin = prestParamsObj.attestOrigin;
+      eventInfo.rawData.event = prestParamsObj.attestOrigin;
+      eventInfo.rawData.templateId = prestParamsObj.attTemplateID;
     }
     eventReport(eventInfo);
   }
@@ -187,6 +186,9 @@ export const algorithmMsgListener = async (
         message.res
       );
       if (isUserClick === 'true') {
+        await chrome.storage.local.set({
+          getAttestationResultRes: message.res,
+        });
         const activeAttestationParams = JSON.parse(
           padoZKAttestationJSSDKAttestationPresetParams
         );
@@ -208,11 +210,9 @@ export const algorithmMsgListener = async (
           },
         };
         if (padoZKAttestationJSSDKBeginAttest) {
-          const formatOrigin =
-            padoZKAttestationJSSDKBeginAttest === '1'
-              ? activeAttestationParams.attestOrigin
-              : activeAttestationParams.appId;
-          eventInfo.rawData.attestOrigin = formatOrigin;
+          eventInfo.rawData.attestOrigin = activeAttestationParams.attestOrigin;
+          eventInfo.rawData.event = activeAttestationParams.attestOrigin;
+          eventInfo.rawData.templateId = activeAttestationParams.attTemplateID;
         }
 
         if (retcode === '0') {
@@ -318,11 +318,6 @@ export const algorithmMsgListener = async (
               address: content?.address,
             });
             eventReport(eventInfo);
-            var eventInfoEnd = {
-              ...eventInfo,
-              eventType: 'ATTESTATION_END',
-            };
-            eventReport(eventInfoEnd);
           } else if (
             !content.signature ||
             content.balanceGreaterThanBaseValue === 'false'
@@ -432,11 +427,6 @@ export const algorithmMsgListener = async (
               address: parsedActiveRequestAttestation?.address,
             });
             eventReport(eventInfo);
-            var eventInfoEnd = {
-              ...eventInfo,
-              eventType: 'ATTESTATION_END',
-            };
-            eventReport(eventInfoEnd);
           }
         } else if (retcode === '2') {
           const {
@@ -489,11 +479,6 @@ export const algorithmMsgListener = async (
             address: parsedActiveRequestAttestation?.address,
           });
           eventReport(eventInfo);
-          var eventInfoEnd = {
-            ...eventInfo,
-            eventType: 'ATTESTATION_END',
-          };
-          eventReport(eventInfoEnd);
           pageDecodeMsgListener(
             {
               name: 'end',
