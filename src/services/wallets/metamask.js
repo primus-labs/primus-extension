@@ -1,4 +1,8 @@
-import createMetaMaskProvider from 'metamask-extension-provider';
+// import createMetaMaskProvider from 'metamask-extension-provider';
+// import createMetaMaskProvider from '@superorange/metamask-extension-provider';
+import { createExternalExtensionProvider as createMetaMaskProvider } from '@metamask/providers';
+
+
 import { ethers } from 'ethers';
 import store from '@/store';
 import {
@@ -13,26 +17,30 @@ var provider;
 export const connectWallet = async (targetNetwork) => {
   console.log('connect metamask', targetNetwork);
   try {
-    if (provider && provider.on) {
-      provider.removeListener('chainChanged', handleChainChanged);
-      provider.removeListener('accountsChanged', handleAccountsChanged);
-      provider.removeListener('connect', handleConnect);
-      provider.removeListener('disconnect', handleDisconnect);
-    }
+    // if (provider && provider.on) {
+    //   provider.removeListener('chainChanged', handleChainChanged);
+    //   provider.removeListener('accountsChanged', handleAccountsChanged);
+    //   provider.removeListener('connect', handleConnect);
+    //   provider.removeListener('disconnect', handleDisconnect);
+    // }
     provider = createMetaMaskProvider();
+    
+    debugger;
+  
     const [accounts, chainId] = await Promise.all([
       provider.request({
         method: 'eth_requestAccounts',
       }),
       provider.request({ method: 'eth_chainId' }),
     ]);
-
+    debugger;
     // if (targetNetwork) {
     await switchChain();
     // }
     subscribeToEvents();
     return [accounts, chainId, provider];
   } catch (e) {
+    debugger;
     console.log('connect wallet error: ', e);
     if (e.code === 4001) {
       // User rejected the request.

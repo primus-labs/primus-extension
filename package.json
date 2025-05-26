@@ -17,6 +17,7 @@
   "dependencies": {
     "@ethereum-attestation-service/eas-sdk": "^0.29.0",
     "@metamask/eth-sig-util": "6.0.1",
+    "@metamask/providers": "^22.1.0",
     "@types/node": "^20.11.30",
     "@types/react-redux": "^7.1.33",
     "@web3modal/ethers5": "^3.5.3",
