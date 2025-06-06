@@ -266,7 +266,14 @@ export const padoZKAttestationJSSDKMsgListener = async (
                   subconditionItem.type = 'FIELD_REVEAL';
                   subconditionItem.reveal_id = key;
                 };
-                if (subItemCondition) {
+                const handleNoneComputeFn = () => {
+                  subconditionItem.op = 'NONE';
+                  subconditionItem.type = 'FIELD_VALUE';
+                };
+                const computeMode = params.attRequest?.computeMode;
+                if (computeMode === 'nonecomplete' || computeMode === 'nonepartial') {
+                  handleNoneComputeFn();
+                } else if (subItemCondition) {
                   const { op, value, field, type } = subItemCondition;
                   subconditionItem.op = op;
                   if (

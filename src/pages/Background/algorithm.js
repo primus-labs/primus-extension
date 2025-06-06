@@ -306,7 +306,10 @@ export const algorithmMsgListener = async (
                 await sucFn(resData);
               }
             } else {
-              await sucFn(JSON.parse(content.encodedData));
+              // await sucFn(JSON.parse(content.encodedData));
+              const passRes = JSON.parse(content.encodedData);
+              passRes.extendedData = content.extendedData;
+              await sucFn(passRes);
             }
 
             const uniqueId = strToHexSha256(content.signature);
