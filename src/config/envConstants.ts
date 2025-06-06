@@ -15,22 +15,22 @@ export const CURENV = process.env.NODE_ENV as ENVTYPE;
 // export const CURENV = 'production';
 console.log('222CURENV', CURENV, process.env);
 const PADOURLMAP = {
-  development: 'wss://api-dev.padolabs.org/algorithm',
+  development: 'wss://api-dev.padolabs.org/algorithmV3',
   test: '18.179.8.186:8888',
-  production: 'wss://api.padolabs.org/algorithm',
+  production: 'wss://api.padolabs.org/algorithmV3',
 };
 export let PADOURL = PADOURLMAP[CURENV];
 
 const ZKPADOURLMAP = {
-  development: 'wss://api-dev.padolabs.org/algorithm-proxy',
-  production: 'wss://api.padolabs.org/algorithm-proxy',
+  development: 'wss://api-dev.padolabs.org/algorithm-proxyV3',
+  production: 'wss://api.padolabs.org/algorithm-proxyV3',
 };
 export let ZKPADOURL = ZKPADOURLMAP[CURENV];
 
 const PROXYURLMAP = {
-  development: 'wss://api-dev.padolabs.org/algoproxy',
+  development: 'wss://api-dev.padolabs.org/algoproxyV3',
   test: '18.179.8.186:9000',
-  production: 'wss://api.padolabs.org/algoproxy',
+  production: 'wss://api.padolabs.org/algoproxyV3',
 };
 export let PROXYURL = PROXYURLMAP[CURENV];
 
@@ -730,14 +730,14 @@ export const updateAlgoUrl = async () => {
   if (res?.rc === 0) {
     let isInited = false;
     res.result.forEach((item: any) => {
-      let ws = new WebSocket(`wss://${item.algoProxyDomain}/algoproxy`);
+      let ws = new WebSocket(`wss://${item.algoProxyDomain}/algoproxyV3`);
       ws.onopen = async function (e) {
         console.log('updateAlgoUrl onopen url=', item.algoProxyDomain);
         if (!isInited) {
           console.log('updateAlgoUrl onopen update url new');
-          PADOURL = `wss://${item.algorithmDomain}/algorithm`;
-          ZKPADOURL = `wss://${item.algorithmDomain}/algorithm-proxy`;
-          PROXYURL = `wss://${item.algoProxyDomain}/algoproxy`;
+          PADOURL = `wss://${item.algorithmDomain}/algorithmV3`;
+          ZKPADOURL = `wss://${item.algorithmDomain}/algorithm-proxyV3`;
+          PROXYURL = `wss://${item.algoProxyDomain}/algoproxyV3`;
           const jsonobj = {
             padoUrl: PADOURL,
             zkPadoUrl: ZKPADOURL,
