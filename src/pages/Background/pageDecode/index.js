@@ -384,7 +384,6 @@ export const pageDecodeMsgListener = async (
               url: targetRequestUrl,
             });
             let isTargetUrl = false;
-            
 
             if (
               matchRequestUrlResult &&
@@ -904,9 +903,17 @@ export const pageDecodeMsgListener = async (
       chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
       chrome.webRequest.onCompleted.removeListener(onCompletedFn);
       onBeforeSendHeadersFn = async (details) => {
-        if (details.tabId !== dataSourcePageTabId) {
+        if (
+          details?.initiator.startsWith(
+            `chrome-extension://${chrome.runtime.id}`
+          )
+        ) {
           return;
         }
+        if (![-1, dataSourcePageTabId].includes(details.tabId)) {
+          return;
+        }
+
         if (details.method === 'OPTIONS') {
           return;
         }
@@ -1036,7 +1043,14 @@ export const pageDecodeMsgListener = async (
         }
       };
       onBeforeRequestFn = async (subDetails) => {
-        if (subDetails.tabId !== dataSourcePageTabId) {
+        if (
+          details?.initiator.startsWith(
+            `chrome-extension://${chrome.runtime.id}`
+          )
+        ) {
+          return;
+        }
+        if (![-1, dataSourcePageTabId].includes(subDetails.tabId)) {
           return;
         }
         if (subDetails.method === 'OPTIONS') {
@@ -1086,7 +1100,14 @@ export const pageDecodeMsgListener = async (
         }
       };
       onCompletedFn = async (details) => {
-        if (details.tabId !== dataSourcePageTabId) {
+        if (
+          details?.initiator.startsWith(
+            `chrome-extension://${chrome.runtime.id}`
+          )
+        ) {
+          return;
+        }
+        if (![-1, dataSourcePageTabId].includes(details.tabId)) {
           return;
         }
         let { dataSource } = activeTemplate;
