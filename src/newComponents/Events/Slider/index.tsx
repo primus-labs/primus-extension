@@ -8,11 +8,13 @@ import {
   LINEAEVENTNAME,
   ETHSIGNEVENTNAME,
 } from '@/config/events';
+import { FUNDLINK } from '@/config/constants';
 import PButton from '@/newComponents/PButton';
 import adLinea from '@/assets/newImg/events/adLinea.svg';
 import adBas from '@/assets/newImg/events/adBas.svg';
 import adEthSign from '@/assets/newImg/events/adEthSign.svg';
 import bannerBgBas from '@/assets/newImg/events/bannerBgBas.svg';
+import bannerBgFund from '@/assets/newImg/events/bannerBgFund.svg';
 // import bannerBgBas from '@/assets/newImg/events/a0.svg';
 // import bannerBgBas from '@/assets/newImg/events/a1.svg';
 // import bannerBgBas from '@/assets/newImg/events/a3.svg';
@@ -62,6 +64,16 @@ const eventIntroMap = {
     ],
     bg: bannerBgBas,
   },
+  fund: {
+    id: 'fund',
+    title: 'Send Crypto to Anyone',
+    desc: [
+      'Try sending tokens to your friends’ social accounts.',
+      'Live on Pharos, Monad, Base, and BNB Chain!',
+    ],
+    points: [],
+    bg: bannerBgFund,
+  },
   /*[ETHSIGNEVENTNAME]: {
     id: ETHSIGNEVENTNAME,
     title: 'SignX Program',
@@ -89,7 +101,12 @@ const PBack: React.FC<PBackProps> = memo(({}) => {
     },
   };
   const handleClick = (i: any) => {
-    navigate(`/events/detail?id=${i.id}`);
+    if (i.id === 'fund') {
+      window.open(FUNDLINK);
+      window.close();
+    } else {
+      navigate(`/events/detail?id=${i.id}`);
+    }
   };
   return (
     <div className="eventsSlider">
@@ -120,7 +137,7 @@ const PBack: React.FC<PBackProps> = memo(({}) => {
                   </div>
                 </div>
                 <PButton
-                  text="Join now"
+                  text={i.id === 'fund' ? 'Try now' : 'Join now'}
                   type="primary"
                   size="m"
                   className="joinBtn"
