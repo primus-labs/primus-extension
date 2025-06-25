@@ -50,7 +50,7 @@
           padding: 0 33px;
           @include frbc;
           .intro {
-            @include fcbs;
+            @include fccs;
             gap: var(--spacing-14);
             height: 94px;
             .brief {

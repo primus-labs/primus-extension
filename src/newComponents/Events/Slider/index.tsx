@@ -1,4 +1,6 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
+import { useSelector } from 'react-redux';
+import type { UserState } from '@/types/store';
 import Slider from 'react-slick';
 import { useNavigate } from 'react-router-dom';
 import 'slick-carousel/slick/slick.css';
@@ -28,10 +30,10 @@ interface PBackProps {}
 var settings = {
   dots: true,
   infinite: true,
-  speed: 500,
+  speed: 2000,
   slidesToShow: 1,
   slidesToScroll: 1,
-  autoplay: true,
+  autoplay: false,
   pauseOnHover: true,
   nextArrow: <></>,
   prevArrow: <></>,
@@ -83,23 +85,25 @@ const eventIntroMap = {
   },*/
 };
 const PBack: React.FC<PBackProps> = memo(({}) => {
+  const sysConfig = useSelector((state: UserState) => state.sysConfig);
+  console.log('sysConfig', sysConfig);
   const navigate = useNavigate();
-  const eventMap = {
-    [LINEAEVENTNAME]: {
-      id: LINEAEVENTNAME,
-      adImg: adLinea,
-      // link: '/',
-    },
-    [ETHSIGNEVENTNAME]: {
-      id: ETHSIGNEVENTNAME,
-      adImg: adEthSign,
-    },
-    [BASEVENTNAME]: {
-      id: BASEVENTNAME,
-      adImg: adBas,
-      // link: `/events/detail?id=BAS_EVENT_PROOF_OF_HUMANITY`,
-    },
-  };
+
+  const formatEventIntroMap = useMemo(() => {
+    if (sysConfig?.SLIDER_TEXT) {
+      const sliderTextObj = JSON.parse(sysConfig.SLIDER_TEXT);
+      let newM = {};
+      Object.keys(eventIntroMap).forEach((key) => {
+        newM[key] = {
+          ...eventIntroMap[key],
+          ...sliderTextObj[key],
+        };
+      });
+      return newM;
+    } else {
+      return eventIntroMap;
+    }
+  }, [sysConfig]);
   const handleClick = (i: any) => {
     if (i.id === 'fund') {
       window.open(FUNDLINK);
@@ -111,7 +115,7 @@ const PBack: React.FC<PBackProps> = memo(({}) => {
   return (
     <div className="eventsSlider">
       <Slider {...settings}>
-        {Object.values(eventIntroMap).map((i) => {
+        {Object.values(formatEventIntroMap).map((i) => {
           return (
             <div className={`homeBanner ${i.id}`} key={i.id}>
               <img src={i.bg} alt="" className="bg" />
@@ -125,16 +129,20 @@ const PBack: React.FC<PBackProps> = memo(({}) => {
                       })}
                     </h3>
                   </div>
-                  <div className="desc">
-                    {i.points.map((p, index) => {
-                      return (
-                        <div className="left" key={index}>
-                          <div className={`iconfont ${p.pointIconFont}`}></div>
-                          <span>{p.pointDesc}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
+                  {i.points?.length > 0 && (
+                    <div className="desc">
+                      {i.points.map((p, index) => {
+                        return (
+                          <div className="left" key={index}>
+                            <div
+                              className={`iconfont ${p.pointIconFont}`}
+                            ></div>
+                            <span>{p.pointDesc}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
                 <PButton
                   text={i.id === 'fund' ? 'Try now' : 'Join now'}
