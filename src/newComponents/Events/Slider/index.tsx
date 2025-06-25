@@ -33,7 +33,7 @@ var settings = {
   speed: 2000,
   slidesToShow: 1,
   slidesToScroll: 1,
-  autoplay: false,
+  autoplay: true,
   pauseOnHover: true,
   nextArrow: <></>,
   prevArrow: <></>,
@@ -115,7 +115,7 @@ const PBack: React.FC<PBackProps> = memo(({}) => {
   return (
     <div className="eventsSlider">
       <Slider {...settings}>
-        {Object.values(formatEventIntroMap).map((i) => {
+        {Object.values(formatEventIntroMap).map((i: any) => {
           return (
             <div className={`homeBanner ${i.id}`} key={i.id}>
               <img src={i.bg} alt="" className="bg" />
