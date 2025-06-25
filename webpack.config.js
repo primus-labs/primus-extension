@@ -261,127 +261,61 @@ var options = {
             }
           },
         },
-      ],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
         {
           from: 'src/assets/img/logo.png',
           to: path.join(__dirname, 'build'),
           force: true,
         },
-      ],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
         {
           from: 'src/services/algorithms/offscreen.html',
           to: path.join(__dirname, 'build'),
           force: true,
         },
-      ],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
         {
           from: 'src/services/algorithms/offscreen.js',
           to: path.join(__dirname, 'build'),
           force: true,
         },
-      ],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
         {
           from: 'src/services/algorithms/ccxt.browser.min.js',
           to: path.join(__dirname, 'build'),
           force: true,
         },
-      ],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
         {
           from: 'src/services/algorithms/client_plugin.data',
           to: path.join(__dirname, 'build'),
           force: true,
         },
-      ],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
         {
           from: 'src/services/algorithms/client_plugin.wasm',
           to: path.join(__dirname, 'build'),
           force: true,
         },
-      ],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
         {
           from: 'src/services/algorithms/client_plugin.worker.js',
           to: path.join(__dirname, 'build'),
           force: true,
         },
-      ],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
         {
           from: 'src/services/algorithms/client_plugin.js',
           to: path.join(__dirname, 'build'),
           force: true,
         },
-      ],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
         {
           from: 'src/content/xFollow.js',
           to: path.join(__dirname, 'build'),
           force: true,
         },
-      ],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
         {
           from: 'src/content/primus.js',
           to: path.join(__dirname, 'build'),
           force: true,
         },
-      ],
-    }),
-    // new CopyWebpackPlugin({
-    //   patterns: [
-    //     {
-    //       from: 'src/content/pageDecode.js',
-    //       to: path.join(__dirname, 'build'),
-    //       force: true,
-    //     },
-    //   ],
-    // }),
-    // new CopyWebpackPlugin({
-    //   patterns: [
-    //     {
-    //       from: 'src/content/pageDecode.css',
-    //       to: path.join(__dirname, 'build'),
-    //       force: true,
-    //     },
-    //   ],
-    // }),
-    new CopyWebpackPlugin({
-      patterns: [
         {
           from: 'src/content/padoWebsite.js',
           to: path.join(__dirname, 'build'),
           force: true,
         },
-      ],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
         {
           from: 'src/assets/img/content/iconExtension.svg',
           to: path.join(__dirname, 'build'),
@@ -462,10 +396,6 @@ var options = {
           to: path.join(__dirname, 'build'),
           force: true,
         },
-      ],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
         {
           from: 'src/assets/img/content/iconSuc.svg',
           to: path.join(__dirname, 'build'),
@@ -473,15 +403,7 @@ var options = {
         },
       ],
     }),
-    /*new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: 'src/pages/sandbox.html',
-          to: path.join(__dirname, 'build'),
-          force: true,
-        },
-      ],
-    }),*/
+
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'src', 'pages', 'Home', 'index.html'),
       filename: 'home.html',
