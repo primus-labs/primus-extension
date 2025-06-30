@@ -30,7 +30,7 @@ import useListener from '@/hooks/useListener';
 import useALGAttest from '@/hooks/useALGAttest';
 import useKeepConnect from '@/hooks/useKeepConnect';
 import usePollingUpdateAllSources from '@/hooks/usePollingUpdateAllSources';
-
+import useCheckCompletedEvents from '@/hooks/useCheckCompletedEvents';
 import { postMsg, compareVersions } from '@/utils/utils';
 import { updateAlgoUrl } from '@/config/envConstants';
 import { DATASOURCEMAP } from '@/config/dataSource';
@@ -68,6 +68,7 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
   useALGAttest();
   useKeepConnect();
   usePollingUpdateAllSources();
+  useCheckCompletedEvents();
 
   const initStoreData = useCallback(async () => {
     // Compatible with old attestations

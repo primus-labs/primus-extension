@@ -345,104 +345,112 @@ export const pageDecodeMsgListener = async (
       const thisRequestObj = requests[thisRequestUrlIdx];
       const thisResponseObj = responses[thisRequestUrlIdx];
 
-      const { url, urlType, queryParams } = thisRequestObj;
-      const thisRequestUrlFoundFlag = Object.keys(requestsMap).find(
+      const { url, urlType, queryParams, ignoreResponse } = thisRequestObj;
+      const thisRequestUrlFoundFlag = Object.values(requestsMap).find(
         (v) => v.templateRequestUrl === url && v.isTarget === 1
       );
       if (!thisRequestUrlFoundFlag) {
-        const matchRequestIdArr = Object.keys(requestsMap).filter((key) => {
-          const checkRes = checkIsRequiredUrl({
-            requestUrl: requestsMap[key].url,
-            requiredUrl: url,
-            urlType: urlType || 'REGX',
-            queryParams: queryParams,
+        if (ignoreResponse) {
+          Object.values(requestsMap).some((sInfo) => {
+            if (sInfo.templateRequestUrl === url && sInfo.headers) {
+              sInfo.isTarget = 1;
+              return true;
+            }
           });
-          return checkRes;
-        });
-        for (const matchRequestId of [...matchRequestIdArr]) {
-          if (requestsMap[matchRequestId]?.isTarget === 1) {
-            break;
-          } else if (requestsMap[matchRequestId]?.isTarget === 2) {
-          } else {
-            let jsonPathArr = thisResponseObj.conditions.subconditions.map(
-              (i) => {
-                if (i?.op === 'MATCH_ONE') {
-                  return i;
-                } else {
-                  return i.field;
-                }
-              }
-            );
-            let targetRequestUrl = requestsMap[matchRequestId].url;
-            if (activeTemplate?.attTemplateID === templateIdForMonad) {
-              // 'https://api.lu.ma/home/get-events?period=past&pagination_limit=1000';
-              targetRequestUrl = eventListUrlForMonad(targetRequestUrl); // TODO
-            }
-            let matchRequestUrlResult = await extraRequestFn2({
-              ...requestsMap[matchRequestId],
-              header: requestsMap[matchRequestId].headers,
-              url: targetRequestUrl,
+        } else {
+          const matchRequestIdArr = Object.keys(requestsMap).filter((key) => {
+            const checkRes = checkIsRequiredUrl({
+              requestUrl: requestsMap[key].url,
+              requiredUrl: url,
+              urlType: urlType || 'REGX',
+              queryParams: queryParams,
             });
-            let isTargetUrl = false;
-            
-
-            if (
-              matchRequestUrlResult &&
-              activeTemplate?.attTemplateID === templateIdForTwitch
-            ) {
-              let formarRes = formatJsonArrFnForTwitch(
-                jsonPathArr,
-                requestsMap[matchRequestId],
-                thisRequestObj.matchReqBodyKey,
-                matchRequestUrlResult
-              );
-              if (formarRes?.checkRes) {
-                jsonPathArr = formarRes.jsonpath;
-                isTargetUrl = true;
-              }
-            } else {
-              isTargetUrl = checkResIsMatchConditionFn(
-                jsonPathArr,
-                matchRequestUrlResult
-              );
-            }
-
-            if (
-              matchRequestUrlResult &&
-              activeTemplate?.attTemplateID === templateIdForMonad
-            ) {
-              const notMetHandler = async () => {
-                const notMetCode = '00104';
-                const netMetMsg = await getErrorMsgFn(
-                  activeTemplate.attestationType,
-                  notMetCode
-                );
-                handleEnd(netMetMsg);
-                sendMsgToSdk({
-                  type: 'padoZKAttestationJSSDK',
-                  name: 'startAttestationRes',
-                  params: {
-                    result: false,
-                    errorData: {
-                      code: notMetCode,
-                    },
-                  },
-                });
-              };
-              isTargetUrl = await checkTargetRequestFnForMonad(
-                targetRequestUrl,
-                matchRequestUrlResult,
-                requestsMap[matchRequestId],
-                notMetHandler
-              );
-            }
-
-            if (isTargetUrl) {
-              storeRequestsMap(matchRequestId, { isTarget: 1 });
+            return checkRes;
+          });
+          for (const matchRequestId of [...matchRequestIdArr]) {
+            if (requestsMap[matchRequestId]?.isTarget === 1) {
               break;
+            } else if (requestsMap[matchRequestId]?.isTarget === 2) {
             } else {
-              if (requestsMap[matchRequestId]) {
-                storeRequestsMap(matchRequestId, { isTarget: 2 });
+              let jsonPathArr = thisResponseObj.conditions.subconditions.map(
+                (i) => {
+                  if (i?.op === 'MATCH_ONE') {
+                    return i;
+                  } else {
+                    return i.field;
+                  }
+                }
+              );
+              let targetRequestUrl = requestsMap[matchRequestId].url;
+              if (activeTemplate?.attTemplateID === templateIdForMonad) {
+                // 'https://api.lu.ma/home/get-events?period=past&pagination_limit=1000';
+                targetRequestUrl = eventListUrlForMonad(targetRequestUrl); // TODO
+              }
+              let matchRequestUrlResult = await extraRequestFn2({
+                ...requestsMap[matchRequestId],
+                header: requestsMap[matchRequestId].headers,
+                url: targetRequestUrl,
+              });
+              let isTargetUrl = false;
+
+              if (
+                matchRequestUrlResult &&
+                activeTemplate?.attTemplateID === templateIdForTwitch
+              ) {
+                let formarRes = formatJsonArrFnForTwitch(
+                  jsonPathArr,
+                  requestsMap[matchRequestId],
+                  thisRequestObj.matchReqBodyKey,
+                  matchRequestUrlResult
+                );
+                if (formarRes?.checkRes) {
+                  jsonPathArr = formarRes.jsonpath;
+                  isTargetUrl = true;
+                }
+              } else {
+                isTargetUrl = checkResIsMatchConditionFn(
+                  jsonPathArr,
+                  matchRequestUrlResult
+                );
+              }
+
+              if (
+                matchRequestUrlResult &&
+                activeTemplate?.attTemplateID === templateIdForMonad
+              ) {
+                const notMetHandler = async () => {
+                  const notMetCode = '00104';
+                  const netMetMsg = await getErrorMsgFn(
+                    activeTemplate.attestationType,
+                    notMetCode
+                  );
+                  handleEnd(netMetMsg);
+                  sendMsgToSdk({
+                    type: 'padoZKAttestationJSSDK',
+                    name: 'startAttestationRes',
+                    params: {
+                      result: false,
+                      errorData: {
+                        code: notMetCode,
+                      },
+                    },
+                  });
+                };
+                isTargetUrl = await checkTargetRequestFnForMonad(
+                  targetRequestUrl,
+                  matchRequestUrlResult,
+                  requestsMap[matchRequestId],
+                  notMetHandler
+                );
+              }
+
+              if (isTargetUrl) {
+                storeRequestsMap(matchRequestId, { isTarget: 1 });
+                break;
+              } else {
+                if (requestsMap[matchRequestId]) {
+                  storeRequestsMap(matchRequestId, { isTarget: 2 });
+                }
               }
             }
           }
@@ -514,6 +522,20 @@ export const pageDecodeMsgListener = async (
               );
               return !!curFlag;
             });
+
+            // const allRequestUrlFoundFlag = Object.values(requestsMap).some(
+            //   (sInfo) => {
+            //     if (
+            //       sInfo.templateRequestUrl.includes('get_creator_channels') &&
+            //       sInfo.headers &&
+            //       sInfo.body
+            //     ) {
+            //       sInfo.isTarget = 1;
+            //       return true;
+            //     }
+            //   }
+            // );
+            debugger;
             fl = f && !!allRequestUrlFoundFlag;
           } else {
             fl = f;
@@ -904,9 +926,17 @@ export const pageDecodeMsgListener = async (
       chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
       chrome.webRequest.onCompleted.removeListener(onCompletedFn);
       onBeforeSendHeadersFn = async (details) => {
-        if (details.tabId !== dataSourcePageTabId) {
+        if (
+          details?.initiator.startsWith(
+            `chrome-extension://${chrome.runtime.id}`
+          )
+        ) {
           return;
         }
+        if (![-1, dataSourcePageTabId].includes(details.tabId)) {
+          return;
+        }
+
         if (details.method === 'OPTIONS') {
           return;
         }
@@ -1036,7 +1066,14 @@ export const pageDecodeMsgListener = async (
         }
       };
       onBeforeRequestFn = async (subDetails) => {
-        if (subDetails.tabId !== dataSourcePageTabId) {
+        if (
+          subDetails?.initiator.startsWith(
+            `chrome-extension://${chrome.runtime.id}`
+          )
+        ) {
+          return;
+        }
+        if (![-1, dataSourcePageTabId].includes(subDetails.tabId)) {
           return;
         }
         if (subDetails.method === 'OPTIONS') {
@@ -1086,7 +1123,14 @@ export const pageDecodeMsgListener = async (
         }
       };
       onCompletedFn = async (details) => {
-        if (details.tabId !== dataSourcePageTabId) {
+        if (
+          details?.initiator.startsWith(
+            `chrome-extension://${chrome.runtime.id}`
+          )
+        ) {
+          return;
+        }
+        if (![-1, dataSourcePageTabId].includes(details.tabId)) {
           return;
         }
         let { dataSource } = activeTemplate;

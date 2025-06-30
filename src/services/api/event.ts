@@ -95,3 +95,12 @@ export const checkEarlyBirdNFT = () => {
     url: `/event/early-bird/check`,
   });
 };
+
+// Check if participated in the events.
+export const checkIfJoinedEvents = (data: CheckLotteryResultsParams) => {
+  return request({
+    method: 'get',
+    url: `/event/check`,
+    data,
+  });
+};

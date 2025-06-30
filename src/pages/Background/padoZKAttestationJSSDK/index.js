@@ -216,6 +216,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
                   targetUrlType,
                   method,
                   matchReqBodyKey,
+                  ignoreResponse,
                 },
               } = curr;
               const requestItem = {
@@ -224,6 +225,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
                 urlType: targetUrlType,
                 method,
                 matchReqBodyKey,
+                ignoreResponse,
               };
               prev.push(requestItem);
               return prev;
