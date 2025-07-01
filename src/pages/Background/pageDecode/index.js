@@ -535,7 +535,6 @@ export const pageDecodeMsgListener = async (
             //     }
             //   }
             // );
-            debugger;
             fl = f && !!allRequestUrlFoundFlag;
           } else {
             fl = f;
@@ -927,7 +926,7 @@ export const pageDecodeMsgListener = async (
       chrome.webRequest.onCompleted.removeListener(onCompletedFn);
       onBeforeSendHeadersFn = async (details) => {
         if (
-          details?.initiator.startsWith(
+          details?.initiator?.startsWith(
             `chrome-extension://${chrome.runtime.id}`
           )
         ) {
@@ -1009,7 +1008,6 @@ export const pageDecodeMsgListener = async (
           }
           return checkRes;
         });
-
         if (isTarget) {
           console.log('monad-details', details);
           let newCapturedInfo = {
@@ -1067,7 +1065,7 @@ export const pageDecodeMsgListener = async (
       };
       onBeforeRequestFn = async (subDetails) => {
         if (
-          subDetails?.initiator.startsWith(
+          subDetails?.initiator?.startsWith(
             `chrome-extension://${chrome.runtime.id}`
           )
         ) {
@@ -1124,7 +1122,7 @@ export const pageDecodeMsgListener = async (
       };
       onCompletedFn = async (details) => {
         if (
-          details?.initiator.startsWith(
+          details?.initiator?.startsWith(
             `chrome-extension://${chrome.runtime.id}`
           )
         ) {
@@ -1157,18 +1155,18 @@ export const pageDecodeMsgListener = async (
 
       chrome.webRequest.onBeforeSendHeaders.addListener(
         onBeforeSendHeadersFn,
-        { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
+        { urls: ['<all_urls>'], types: ['xmlhttprequest', 'main_frame'] },
         ['requestHeaders', 'extraHeaders']
       );
       chrome.webRequest.onBeforeRequest.addListener(
         onBeforeRequestFn,
-        { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
+        { urls: ['<all_urls>'], types: ['xmlhttprequest', 'main_frame'] },
         ['requestBody']
       );
 
       chrome.webRequest.onCompleted.addListener(
         onCompletedFn,
-        { urls: interceptorUrlArr, types: ['xmlhttprequest'] },
+        { urls: interceptorUrlArr, types: ['xmlhttprequest', 'main_frame'] },
         ['responseHeaders', 'extraHeaders']
       );
       const tabCreatedByPado = await chrome.tabs.create({
