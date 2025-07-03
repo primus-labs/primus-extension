@@ -204,7 +204,18 @@ export const padoZKAttestationJSSDKMsgListener = async (
           } = result;
 
           const dataSourceTemplateObj = JSON.parse(dataSourceTemplate);
-          const jumpTo = JSON.parse(dataPageTemplate).baseUrl;
+          let jumpTo = JSON.parse(dataPageTemplate).baseUrl;
+          const additionParams = params.attRequest?.additionParams;
+          if (additionParams) {
+            try {
+              const additionParamsObj = JSON.parse(additionParams);
+              if (additionParamsObj.launch_page) {
+                jumpTo = additionParamsObj.launch_page;
+              }
+            }catch (err){
+               console.log('Invalid json string ,additionParamsObj.launch_page err', err)
+            }
+          }
           const host =
             dataSourceTemplateObj[0]?.requestTemplate?.host ||
             new URL(jumpTo).host;
