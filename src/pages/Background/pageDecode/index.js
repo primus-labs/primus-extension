@@ -17,6 +17,12 @@ import {
   formatRequestResponseFnForMonad,
 } from '../lumaMonadEvent/index.js';
 import {
+  templateIdForNilion7Days,
+  templateIdForNilion1Month,
+  startTimeDistanceForNilion,
+  rowForNilion,
+} from '../nilionEvent/index.js';
+import {
   templateIdForTwitch,
   formatJsonArrFnForTwitch,
   changeFieldsObjFnForTwitch,
@@ -30,7 +36,13 @@ import {
   getErrorMsgFn,
   sendMsgToTab,
 } from '../utils/utils';
-import { extraRequestFn2, errorFn, checkResIsMatchConditionFn } from './utils';
+import {
+  extraRequestFn2,
+  errorFn,
+  checkResIsMatchConditionFn,
+  getNMonthsBeforeTime,
+  getUTCDayLastSecondTime,
+} from './utils';
 
 let PRE_ATTEST_PROMOT_V2 = [
   {
@@ -349,6 +361,7 @@ export const pageDecodeMsgListener = async (
       const thisRequestUrlFoundFlag = Object.values(requestsMap).find(
         (v) => v.templateRequestUrl === url && v.isTarget === 1
       );
+
       if (!thisRequestUrlFoundFlag) {
         if (ignoreResponse) {
           Object.values(requestsMap).some((sInfo) => {
@@ -386,6 +399,52 @@ export const pageDecodeMsgListener = async (
                 // 'https://api.lu.ma/home/get-events?period=past&pagination_limit=1000';
                 targetRequestUrl = eventListUrlForMonad(targetRequestUrl); // TODO
               }
+
+              if (
+                [templateIdForNilion7Days, templateIdForNilion1Month].includes(
+                  activeTemplate?.attTemplateID
+                )
+              ) {
+                const lastBody = requestsMap[matchRequestId].body;
+                let newBody = {
+                  ...lastBody,
+                };
+                if (
+                  activeTemplate?.attTemplateID === templateIdForNilion1Month
+                ) {
+                  const newStartTime = getNMonthsBeforeTime(
+                    lastBody.endTime,
+                    startTimeDistanceForNilion
+                  );
+                  // console.log('nilion', 'binance time:', lastBody.endTime);
+                  // console.log(
+                  //   'utc time:',
+                  //   getUTCDayLastSecondTime(lastBody.endTime)
+                  // );
+                  newBody = {
+                    ...lastBody,
+                    rows: rowForNilion,
+                    startTime: newStartTime,
+                    direction: '',
+                    baseAsset: '',
+                    quoteAsset: '',
+                    hideCancel: false,
+                    queryTimeType: 'INSERT_TIME',
+                  };
+                } else if (
+                  activeTemplate?.attTemplateID === templateIdForNilion7Days
+                ) {
+                  newBody = {
+                    ...lastBody,
+                    rows: rowForNilion,
+                  };
+                }
+                storeRequestsMap(matchRequestId, {
+                  ...requestsMap[matchRequestId],
+                  body: newBody,
+                });
+              }
+
               let matchRequestUrlResult = await extraRequestFn2({
                 ...requestsMap[matchRequestId],
                 header: requestsMap[matchRequestId].headers,

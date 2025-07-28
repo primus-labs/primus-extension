@@ -1,4 +1,7 @@
 import jp from 'jsonpath';
+import dayjs from 'dayjs';
+// import utc from 'dayjs/plugin/utc';
+// dayjs.extend(utc);
 import { customFetch2 } from '../utils/request';
 export const extraRequestFn2 = async (params) => {
   try {
@@ -78,4 +81,16 @@ export const checkResIsMatchConditionFn = (
     }
   });
   return isMatch;
+};
+export const getNMonthsBeforeTime = (timestamp, n) => {
+  const nowTime = dayjs(timestamp);
+  let targetTime2 = nowTime.subtract(n, 'month');
+  targetTime2 = targetTime2.subtract(1, 'day').add(1, 'second').valueOf();
+  console.log('targetTime2', targetTime2);
+  return targetTime2;
+};
+export const getUTCDayLastSecondTime = (timestamp) => {
+  const nowTime = dayjs(timestamp);
+  const targetTime = nowTime.endOf('day').valueOf();
+  return targetTime;
 };
