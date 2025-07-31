@@ -206,14 +206,19 @@ export const padoZKAttestationJSSDKMsgListener = async (
           const dataSourceTemplateObj = JSON.parse(dataSourceTemplate);
           let jumpTo = JSON.parse(dataPageTemplate).baseUrl;
           const additionParams = params.attRequest?.additionParams;
+          
+          let additionParamsObj = {};
           if (additionParams) {
             try {
-              const additionParamsObj = JSON.parse(additionParams);
+              additionParamsObj = JSON.parse(additionParams);
               if (additionParamsObj.launch_page) {
                 jumpTo = additionParamsObj.launch_page;
               }
-            }catch (err){
-               console.log('Invalid json string ,additionParamsObj.launch_page err', err)
+            } catch (err) {
+              console.log(
+                'Invalid json string ,additionParamsObj.launch_page err',
+                err
+              );
             }
           }
           const host =
@@ -284,7 +289,10 @@ export const padoZKAttestationJSSDKMsgListener = async (
                   subconditionItem.type = 'FIELD_VALUE';
                 };
                 const computeMode = params.attRequest?.computeMode;
-                if (computeMode === 'nonecomplete' || computeMode === 'nonepartial') {
+                if (
+                  computeMode === 'nonecomplete' ||
+                  computeMode === 'nonepartial'
+                ) {
                   handleNoneComputeFn();
                 } else if (subItemCondition) {
                   const { op, value, field, type } = subItemCondition;
@@ -375,6 +383,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
               proxyUrl,
             },
             attTemplateID,
+            additionParamsObj,
           };
         } else {
           const resParams = {

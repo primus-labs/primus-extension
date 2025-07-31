@@ -107,9 +107,9 @@ chrome.runtime.onInstalled.addListener(async ({ reason, version }) => {
   }
 });
 
-chrome.action.onClicked.addListener((tab) => {
-  showIndex();
-});
+// chrome.action.onClicked.addListener((tab) => {
+//   showIndex();
+// });
 
 const showIndex = (info, tab) => {
   let url = chrome.runtime.getURL('home.html');

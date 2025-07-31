@@ -23,6 +23,11 @@ import {
   rowForNilion,
 } from '../nilionEvent/index.js';
 import {
+  templateIdForBrevis1Month,
+  startTimeDistanceForBrevis,
+  rowForBrevis,
+} from '../brevisEvent/index.js';
+import {
   templateIdForTwitch,
   formatJsonArrFnForTwitch,
   changeFieldsObjFnForTwitch,
@@ -350,6 +355,7 @@ export const pageDecodeMsgListener = async (
     const checkSDKTargetRequestFn = async (requestId, templateRequestUrl) => {
       const {
         datasourceTemplate: { requests, responses },
+        additionParamsObj,
       } = activeTemplate;
       const thisRequestUrlIdx = requests.findIndex(
         (r) => r.url === templateRequestUrl
@@ -401,16 +407,21 @@ export const pageDecodeMsgListener = async (
               }
 
               if (
-                [templateIdForNilion7Days, templateIdForNilion1Month].includes(
-                  activeTemplate?.attTemplateID
-                )
+                [
+                  templateIdForNilion7Days,
+                  templateIdForNilion1Month,
+                  templateIdForBrevis1Month,
+                ].includes(activeTemplate?.attTemplateID)
               ) {
                 const lastBody = requestsMap[matchRequestId].body;
                 let newBody = {
                   ...lastBody,
                 };
                 if (
-                  activeTemplate?.attTemplateID === templateIdForNilion1Month
+                  [
+                    templateIdForNilion1Month,
+                    templateIdForBrevis1Month,
+                  ].includes(activeTemplate?.attTemplateID)
                 ) {
                   const newStartTime = getNMonthsBeforeTime(
                     lastBody.endTime,
@@ -431,6 +442,13 @@ export const pageDecodeMsgListener = async (
                     hideCancel: false,
                     queryTimeType: 'INSERT_TIME',
                   };
+                  if (
+                    templateIdForBrevis1Month === activeTemplate?.attTemplateID
+                  ) {
+                    if (additionParamsObj?.binanceBaseAsset) {
+                      newBody.baseAsset = additionParamsObj?.binanceBaseAsset;
+                    }
+                  }
                 } else if (
                   activeTemplate?.attTemplateID === templateIdForNilion7Days
                 ) {
