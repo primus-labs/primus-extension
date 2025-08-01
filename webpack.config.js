@@ -243,6 +243,15 @@ var options = {
                 })
               );
             } else {
+              if (process.env.REACT_APP_ENV === 'kaito') {
+                let jsonobj = JSON.parse(content.toString());
+                jsonobj.web_accessible_resources[0].resources.push('kaito.png');
+              } else if (process.env.REACT_APP_ENV === 'buidlpad') {
+                let jsonobj = JSON.parse(content.toString());
+                jsonobj.web_accessible_resources[0].resources.push(
+                  'buidlpad.png'
+                );
+              }
               let jsonobj = JSON.parse(content.toString());
               //jsonobj.content_scripts[0].matches.push("http://api-dev.padolabs.org:9094/*");
               jsonobj.content_scripts[0].matches.push(
@@ -323,6 +332,16 @@ var options = {
         },
         {
           from: 'src/assets/img/content/iconPado.svg',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/img/content/kaito.png',
+          to: path.join(__dirname, 'build'),
+          force: true,
+        },
+        {
+          from: 'src/assets/img/content/buidlpad.png',
           to: path.join(__dirname, 'build'),
           force: true,
         },

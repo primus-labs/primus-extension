@@ -445,8 +445,19 @@ export const pageDecodeMsgListener = async (
                   if (
                     templateIdForBrevis1Month === activeTemplate?.attTemplateID
                   ) {
+                    newBody.rows = rowForBrevis;
+                    newBody.startTime = startTimeDistanceForBrevis;
                     if (additionParamsObj?.binanceBaseAsset) {
                       newBody.baseAsset = additionParamsObj?.binanceBaseAsset;
+                    }
+                    if (
+                      additionParamsObj?.binanceRows &&
+                      additionParamsObj?.binanceRows < rowForBrevis
+                    ) {
+                      newBody.baseAsset =
+                        typeof additionParamsObj?.rowForBrevis === 'number'
+                          ? additionParamsObj?.rowForBrevis
+                          : Number(additionParamsObj?.rowForBrevis);
                     }
                   }
                 } else if (
