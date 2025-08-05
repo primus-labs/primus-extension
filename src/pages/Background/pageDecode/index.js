@@ -457,9 +457,9 @@ export const pageDecodeMsgListener = async (
                       additionParamsObj?.binanceRows &&
                       additionParamsObj?.binanceRows < rowForBrevis
                     ) {
-                      newBody.baseAsset =
-                        typeof additionParamsObj?.rowForBrevis === 'number'
-                          ? additionParamsObj?.rowForBrevis
+                      newBody.rows =
+                        typeof additionParamsObj?.binanceRows === 'number'
+                          ? additionParamsObj?.binanceRows
                           : Number(additionParamsObj?.rowForBrevis);
                     }
                   }

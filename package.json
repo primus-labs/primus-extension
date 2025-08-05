@@ -9,9 +9,9 @@
   },
   "scripts": {
     "build": "node utils/build.js",
-    "build:test": "cross-env REACT_APP_ENV=kaito node utils/buildtest.js",
-    "build:kaito": "cross-env REACT_APP_ENV=buidlpad node utils/buildtest.js",
-    "build:buidlpad": "node utils/buildtest.js",
+    "build:test": "node utils/buildtest.js",
+    "build:kaito": "cross-env REACT_APP_ENV=kaito node utils/buildtest.js",
+    "build:buidlpad": "cross-env REACT_APP_ENV=buidlpad node utils/buildtest.js",
     "start": "node utils/webserver.js",
     "dev": "node utils/webserver.js",
     "dev:kaito": "cross-env REACT_APP_ENV=kaito node utils/webserver.js",
