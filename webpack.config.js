@@ -225,51 +225,9 @@ var options = {
     new CleanWebpackPlugin({ verbose: false }),
     new webpack.ProgressPlugin(),
     // expose and write the allowed env vars on the compiled bundle
-    new webpack.EnvironmentPlugin(['NODE_ENV']),
+    new webpack.EnvironmentPlugin(['NODE_ENV', 'REACT_APP_ENV']),
     new CopyWebpackPlugin({
       patterns: [
-        {
-          from: 'src/manifest.json',
-          to: path.join(__dirname, 'build'),
-          force: true,
-          transform: function (content, path) {
-            // generates the manifest file using the package.json informations
-            if (process.env.NODE_ENV === 'production') {
-              return Buffer.from(
-                JSON.stringify({
-                  description: process.env.npm_package_description,
-                  version: process.env.npm_package_version,
-                  ...JSON.parse(content.toString()),
-                })
-              );
-            } else {
-              if (process.env.REACT_APP_ENV === 'kaito') {
-                let jsonobj = JSON.parse(content.toString());
-                jsonobj.web_accessible_resources[0].resources.push('kaito.png');
-              } else if (process.env.REACT_APP_ENV === 'buidlpad') {
-                let jsonobj = JSON.parse(content.toString());
-                jsonobj.web_accessible_resources[0].resources.push(
-                  'buidlpad.png'
-                );
-              }
-              let jsonobj = JSON.parse(content.toString());
-              //jsonobj.content_scripts[0].matches.push("http://api-dev.padolabs.org:9094/*");
-              jsonobj.content_scripts[0].matches.push(
-                'http://api-dev.padolabs.org:9095/*'
-              );
-              jsonobj.content_scripts[0].matches.push(
-                'http://localhost:3001/*'
-              );
-              return Buffer.from(
-                JSON.stringify({
-                  description: process.env.npm_package_description,
-                  version: process.env.npm_package_version,
-                  ...jsonobj,
-                })
-              );
-            }
-          },
-        },
         {
           from: 'src/assets/img/logo.png',
           to: path.join(__dirname, 'build'),
@@ -420,9 +378,54 @@ var options = {
           to: path.join(__dirname, 'build'),
           force: true,
         },
+        {
+          from: 'src/manifest.json',
+          to: path.join(__dirname, 'build'),
+          force: true,
+          transform: function (content, path) {
+            // generates the manifest file using the package.json informations
+            if (process.env.NODE_ENV === 'production') {
+              return Buffer.from(
+                JSON.stringify({
+                  description: process.env.npm_package_description,
+                  version: process.env.npm_package_version,
+                  ...JSON.parse(content.toString()),
+                })
+              );
+            } else {
+              let jsonobj = JSON.parse(content.toString());
+              if (process.env.REACT_APP_ENV === 'kaito') {
+                jsonobj.web_accessible_resources[0].resources.push('kaito.png');
+                jsonobj.name = 'Kaito';
+                jsonobj.action.default_icon = 'kaito.png';
+                jsonobj.icons['128'] = 'kaito.png';
+              } else if (process.env.REACT_APP_ENV === 'buidlpad') {
+                jsonobj.web_accessible_resources[0].resources.push(
+                  'buidlpad.png'
+                );
+                jsonobj.name = 'Buidlpad';
+                jsonobj.action.default_icon = 'buidlpad.png';
+                jsonobj.icons['128'] = 'buidlpad.png';
+              }
+              //jsonobj.content_scripts[0].matches.push("http://api-dev.padolabs.org:9094/*");
+              jsonobj.content_scripts[0].matches.push(
+                'http://api-dev.padolabs.org:9095/*'
+              );
+              jsonobj.content_scripts[0].matches.push(
+                'http://localhost:3001/*'
+              );
+              return Buffer.from(
+                JSON.stringify({
+                  description: process.env.npm_package_description,
+                  version: process.env.npm_package_version,
+                  ...jsonobj,
+                })
+              );
+            }
+          },
+        },
       ],
     }),
-
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'src', 'pages', 'Home', 'index.html'),
       filename: 'home.html',

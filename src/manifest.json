@@ -1,13 +1,13 @@
 {
   "manifest_version": 3,
-  "name": "Kaito",
+  "name": "Primus",
   "description": "Use zkTLS to enable trusted and verifiable data flows from Web2 to Web3.",
   "background": { "service_worker": "background.bundle.js" },
   "action": {
-    "default_icon": "kaito.png"
+    "default_icon": "logo.png"
   },
   "icons": {
-    "128": "kaito.png"
+    "128": "logo.png"
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
@@ -39,8 +39,7 @@
         "iconDataSourceMEXC.png",
         "iconDataSourceHuobi.svg",
         "iconDataSourceChatgpt.svg",
-        "iconPrimusSquare.svg",
-        "kaito.png"
+        "iconPrimusSquare.svg"
       ],
       "matches": ["<all_urls>"]
     }

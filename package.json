@@ -9,12 +9,13 @@
   },
   "scripts": {
     "build": "node utils/build.js",
-    "build:test": "node utils/buildtest.js",
-    "build:kaito": "REACT_APP_ENV=kaito npm run build:test",
-    "build:buidlpad": "REACT_APP_ENV=buidlpad npm run build:test",
+    "build:test": "cross-env REACT_APP_ENV=kaito node utils/buildtest.js",
+    "build:kaito": "cross-env REACT_APP_ENV=buidlpad node utils/buildtest.js",
+    "build:buidlpad": "node utils/buildtest.js",
     "start": "node utils/webserver.js",
-    "start:kaito": "REACT_APP_ENV=kaito npm run start",
     "dev": "node utils/webserver.js",
+    "dev:kaito": "cross-env REACT_APP_ENV=kaito  utils/webserver.js",
+    "dev:buidlpad": "cross-env REACT_APP_ENV=buidlpad  node utils/webserver.js",
     "prettier": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
   },
   "dependencies": {
@@ -90,6 +91,7 @@
     "babel-preset-react-app": "^10.0.1",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",
+    "cross-env": "^10.0.0",
     "css-loader": "^6.7.3",
     "eslint": "^8.56.0",
     "eslint-config-react-app": "^7.0.1",

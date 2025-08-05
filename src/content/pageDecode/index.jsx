@@ -256,7 +256,7 @@ function PadoCard() {
       activeRequest.dataSourceId !== 'chatgpt' ? (
         <div className={`pado-extension-card  ${status}`}>
           <div className="pado-extension-left">
-            <HeaderEl />
+            <HeaderEl extensionName={activeRequest.extensionName} />
             <FooterEl
               status={status}
               resultStatus={resultStatus}

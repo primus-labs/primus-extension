@@ -446,7 +446,10 @@ export const pageDecodeMsgListener = async (
                     templateIdForBrevis1Month === activeTemplate?.attTemplateID
                   ) {
                     newBody.rows = rowForBrevis;
-                    newBody.startTime = startTimeDistanceForBrevis;
+                    newBody.startTime = getNMonthsBeforeTime(
+                      lastBody.endTime,
+                      startTimeDistanceForBrevis
+                    );
                     if (additionParamsObj?.binanceBaseAsset) {
                       newBody.baseAsset = additionParamsObj?.binanceBaseAsset;
                     }
@@ -1314,6 +1317,7 @@ export const pageDecodeMsgListener = async (
           padoExtensionVersion,
           PRE_ATTEST_PROMOT_V2,
           tabId: dataSourcePageTabId,
+          extensionName: process.env.REACT_APP_ENV,
         },
         dataSourcePageTabId: dataSourcePageTabId,
         isReady: isReadyRequest,

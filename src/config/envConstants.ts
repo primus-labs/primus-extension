@@ -13,7 +13,7 @@ type ENVTYPE = 'development' | 'test' | 'production';
 export const CURENV = process.env.NODE_ENV as ENVTYPE;
 // export const CURENV = 'development';
 // export const CURENV = 'production';
-console.log('222CURENV', CURENV, process.env);
+console.log('222CURENV', CURENV, process.env, process.env.REACT_APP_ENV);
 const PADOURLMAP = {
   development: 'wss://api-dev.padolabs.org/algorithmV3',
   test: '18.179.8.186:8888',
