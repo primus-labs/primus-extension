@@ -14,8 +14,8 @@
     "build:buidlpad": "node utils/buildtest.js",
     "start": "node utils/webserver.js",
     "dev": "node utils/webserver.js",
-    "dev:kaito": "cross-env REACT_APP_ENV=kaito  utils/webserver.js",
-    "dev:buidlpad": "cross-env REACT_APP_ENV=buidlpad  node utils/webserver.js",
+    "dev:kaito": "cross-env REACT_APP_ENV=kaito node utils/webserver.js",
+    "dev:buidlpad": "cross-env REACT_APP_ENV=buidlpad node utils/webserver.js",
     "prettier": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
   },
   "dependencies": {
