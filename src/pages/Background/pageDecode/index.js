@@ -1431,6 +1431,11 @@ const handleEnd = (request) => {
     chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
     chrome.webRequest.onCompleted.removeListener(onCompletedFn);
     resetVarsFn();
+    // if (request?.params?.result === 'success') {
+    //   chandleClose({
+    //     tabId: dataSourcePageTabId,
+    //   });
+    // }
   }
 };
 const chandleClose = async (params, processAlgorithmReq) => {
