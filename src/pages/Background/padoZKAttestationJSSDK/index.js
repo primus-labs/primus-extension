@@ -6,7 +6,7 @@ import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
 import { updateAlgoUrl } from '@/config/envConstants';
 import { pageDecodeMsgListener } from '../pageDecode/index.js';
 import { attestBrevisFn } from './brevis';
-import { schemaNameFn } from './utils';
+import { schemaNameFn, getAlgoApi } from './utils';
 
 import { CURENV, ONCHAINLIST, EASINFOMAP } from '@/config/chain';
 import { getDataSourceAccount } from '../dataSourceUtils';
@@ -20,6 +20,7 @@ import {
 let hasGetTwitterScreenName = false;
 let sdkParams = {};
 let sdkVersion = '';
+let sdkName = '';
 const fetchAttestationTemplateList = async () => {
   try {
     const fetchRes = await getProofTypes({
@@ -79,6 +80,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     await fetchAttestationTemplateList();
     await fetchConfigure();
     sdkVersion = params?.sdkVersion;
+    sdkName = params?.sdkName;
 
     const { configMap } = await chrome.storage.local.get(['configMap']);
     let sdkSupportHosts = [];
@@ -115,12 +117,15 @@ export const padoZKAttestationJSSDKMsgListener = async (
     processAlgorithmReq({
       reqMethodName: 'start',
     });
-    updateAlgoUrl();
+    if (!sdkName) {
+      updateAlgoUrl();
+    }
 
     console.log('333pado-bg-receive-initAttestation', dappTabId);
   }
   if (name === 'startAttestation') {
     sdkVersion = params?.sdkVersion;
+    sdkName = params?.sdkName;
     console.log('debuge-zktls-startAttestation', sdkVersion, params);
     await chrome.storage.local.set({
       padoZKAttestationJSSDKBeginAttest: sdkVersion || '1',
@@ -163,19 +168,18 @@ export const padoZKAttestationJSSDKMsgListener = async (
     chainName = params.chainName;
     let walletAddress;
 
-    let padoUrl;
     let algorithmType;
     if (sdkVersion) {
       algorithmType = params.attRequest?.attMode?.algorithmType || 'proxytls';
     } else {
       algorithmType = params.algorithmType;
     }
-    if (algorithmType === 'proxytls') {
-      padoUrl = await getZkPadoUrl();
-    } else {
-      padoUrl = await getPadoUrl();
-    }
-    const proxyUrl = await getProxyUrl();
+    const algoDomainParam = sdkName ? params.algoDomain : undefined;
+    const padoUrlKey = algorithmType === 'proxytls' ? 'zkPadoUrl' : 'padoUrl';
+
+    let padoUrl = await getAlgoApi(padoUrlKey, algoDomainParam);
+
+    let proxyUrl = await getAlgoApi('proxyUrl', algoDomainParam);
     chrome.runtime.sendMessage({
       type: 'algorithm',
       method: 'startOffline',
@@ -212,8 +216,11 @@ export const padoZKAttestationJSSDKMsgListener = async (
               if (additionParamsObj.launch_page) {
                 jumpTo = additionParamsObj.launch_page;
               }
-            }catch (err){
-               console.log('Invalid json string ,additionParamsObj.launch_page err', err)
+            } catch (err) {
+              console.log(
+                'Invalid json string ,additionParamsObj.launch_page err',
+                err
+              );
             }
           }
           const host =
@@ -284,7 +291,10 @@ export const padoZKAttestationJSSDKMsgListener = async (
                   subconditionItem.type = 'FIELD_VALUE';
                 };
                 const computeMode = params.attRequest?.computeMode;
-                if (computeMode === 'nonecomplete' || computeMode === 'nonepartial') {
+                if (
+                  computeMode === 'nonecomplete' ||
+                  computeMode === 'nonepartial'
+                ) {
                   handleNoneComputeFn();
                 } else if (subItemCondition) {
                   const { op, value, field, type } = subItemCondition;

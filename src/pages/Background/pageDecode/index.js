@@ -1,4 +1,3 @@
-import jp from 'jsonpath';
 import {
   assembleAlgorithmParams,
   assembleAlgorithmParamsForSDK,
