@@ -174,12 +174,12 @@ export const padoZKAttestationJSSDKMsgListener = async (
     } else {
       algorithmType = params.algorithmType;
     }
-    const algoDomainParam = sdkName ? params.algoDomain : undefined;
+    
+    const algoApisParam = sdkName ? params.algoApis : undefined;
     const padoUrlKey = algorithmType === 'proxytls' ? 'zkPadoUrl' : 'padoUrl';
+    let padoUrl = await getAlgoApi(padoUrlKey, algoApisParam);
+    let proxyUrl = await getAlgoApi('proxyUrl', algoApisParam);
 
-    let padoUrl = await getAlgoApi(padoUrlKey, algoDomainParam);
-
-    let proxyUrl = await getAlgoApi('proxyUrl', algoDomainParam);
     chrome.runtime.sendMessage({
       type: 'algorithm',
       method: 'startOffline',

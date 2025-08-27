@@ -88,14 +88,11 @@ export const regenerateAttest = async (orginAttestation, chainName) => {
   return regenerateAttestRes;
 };
 
-export const getDynamicAlgoApi = (algoApiType, algoDomain) => {
-  const PADOURL = `wss://${algoDomain}/algorithmV3`;
-  const ZKPADOURL = `wss://${algoDomain}/algorithm-proxyV3`;
-  const PROXYURL = `wss://${algoDomain}/algoproxyV3`;
+export const getDynamicAlgoApi = (algoApiType, algoApis) => {
   const jsonobj = {
-    padoUrl: PADOURL,
-    zkPadoUrl: ZKPADOURL,
-    proxyUrl: PROXYURL,
+    padoUrl: algoApis[0],
+    zkPadoUrl: algoApis[1],
+    proxyUrl: algoApis[3],
   };
   return jsonobj[algoApiType];
 };
@@ -110,9 +107,9 @@ export const getDefaultAlgoApi = async (algoApiType) => {
   }
   return targetUrl;
 };
-export const getAlgoApi = async (algoApiType, algoDomain) => {
-  if (algoDomain) {
-    return getDynamicAlgoApi(algoApiType, algoDomain);
+export const getAlgoApi = async (algoApiType, algoApis) => {
+  if (algoApis) {
+    return getDynamicAlgoApi(algoApiType, algoApis);
   } else {
     return await getDefaultAlgoApi(algoApiType);
   }
