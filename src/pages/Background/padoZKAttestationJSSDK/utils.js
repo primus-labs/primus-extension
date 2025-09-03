@@ -92,7 +92,7 @@ export const getDynamicAlgoApi = (algoApiType, algoApis) => {
   const jsonobj = {
     padoUrl: algoApis[0],
     zkPadoUrl: algoApis[1],
-    proxyUrl: algoApis[3],
+    proxyUrl: algoApis[2],
   };
   return jsonobj[algoApiType];
 };

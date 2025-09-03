@@ -174,8 +174,10 @@ export const padoZKAttestationJSSDKMsgListener = async (
     } else {
       algorithmType = params.algorithmType;
     }
-    
-    const algoApisParam = sdkName ? params.algoApis : undefined;
+
+    const algoApisParam = sdkName ? params.attRequest?.algoApis : undefined;
+    // TODO
+
     const padoUrlKey = algorithmType === 'proxytls' ? 'zkPadoUrl' : 'padoUrl';
     let padoUrl = await getAlgoApi(padoUrlKey, algoApisParam);
     let proxyUrl = await getAlgoApi('proxyUrl', algoApisParam);
