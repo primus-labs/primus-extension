@@ -176,6 +176,26 @@ export const padoZKAttestationJSSDKMsgListener = async (
     }
 
     const algoApisParam = sdkName ? params.attRequest?.algoApis : undefined;
+    
+    if (sdkName && !params.attRequest?.algoApis?.[0]) {
+      console.log('network-sdk params error');
+      const resParams = {
+        result: false,
+        errorData: {
+          title: 'Invalid Algorithm Parameters',
+          desc: 'Invalid Algorithm Parameters',
+          code: '00015',
+        },
+      };
+      const { padoZKAttestationJSSDKDappTabId: dappTabId } =
+        await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
+      chrome.tabs.sendMessage(dappTabId, {
+        type: 'padoZKAttestationJSSDK',
+        name: 'getAttestationRes',
+        params: resParams,
+      });
+      return;
+    }
     // TODO
 
     const padoUrlKey = algorithmType === 'proxytls' ? 'zkPadoUrl' : 'padoUrl';

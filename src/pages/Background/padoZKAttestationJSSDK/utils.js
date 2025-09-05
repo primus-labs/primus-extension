@@ -9,6 +9,7 @@ import {
   OPBNBSCHEMANAMEMAP,
 } from '@/config/chain';
 import { regenerateAttestation } from '@/services/api/cred';
+import { getPadoUrl, getProxyUrl, getZkPadoUrl } from '@/config/envConstants';
 export const schemaNameFn = (networkName) => {
   const formatNetworkName = networkName;
   let Name;
