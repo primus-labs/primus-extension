@@ -336,20 +336,49 @@ export const algorithmMsgListener = async (
             let errorCode;
 
             const { extraData } = content;
+            const tipMapForSdk = {
+              '-1200010': 'Invalid message.', // chatgpt input error
+              '-1002001': 'Invalid App ID.',
+              '-1002002': 'Invalid App Secret.',
+            };
+            const tipMapForPrimusNetworkSdk = {
+              '-500':
+                'General error, indicating an unknown exception occurred in the attester-node',
+              '-10100': 'Incorrect task status!',
+              '-10101': 'The task has been executed successfully!',
+              '-10102':
+                'A task with the same ID is currently being executed on the current node!',
+              '-10103':
+                'The number of task initiations for the same task exceeds the limit (currently set to 5 times)!',
+              '-10104': 'Failed to obtain task details!',
+              '-10105': 'Error in attestation template parameters!',
+              '-10106':
+                'The URL in the algorithm parameters is inconsistent with the URL defined in the template!',
+              '-10107':
+                'The address in the algorithm parameters is inconsistent with that when submitting the task!',
+              '-10108':
+                'Invalid template ID; details cannot be queried based on the specified ID!',
+              '-10109':
+                'The task status is failed or partial_success_settled (task funds have been withdrawn)!',
+              '-10110':
+                'The current attester is not the attester specified in the task!',
+              '-10111': 'The task submission time exceeds the 1-hour limit!',
+            };
+            const totalTipMapForSdk = Object.assign(
+              {},
+              tipMapForSdk,
+              tipMapForPrimusNetworkSdk
+            );
             if (
               extraData &&
               JSON.parse(extraData) &&
-              ['-1200010', '-1002001', '-1002002'].includes(
+              Object.keys(totalTipMapForSdk).includes(
                 JSON.parse(extraData).errorCode + ''
               )
             ) {
-              const tipMapForSdk = {
-                '-1200010': 'Invalid message.', // chatgpt input error
-                '-1002001': 'Invalid App ID.',
-                '-1002002': 'Invalid App Secret.',
-              };
+
               errorCode = JSON.parse(extraData).errorCode + '';
-              const showTip = tipMapForSdk[errorCode];
+              const showTip = totalTipMapForSdk[errorCode];
               Object.assign(msgObj, {
                 type: '',
                 desc: showTip,
