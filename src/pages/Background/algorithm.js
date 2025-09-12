@@ -342,27 +342,30 @@ export const algorithmMsgListener = async (
               '-1002002': 'Invalid App Secret.',
             };
             const tipMapForPrimusNetworkSdk = {
-              '-500':
-                'General error, indicating an unknown exception occurred in the attester-node',
-              '-10100': 'Incorrect task status!',
-              '-10101': 'The task has been executed successfully!',
-              '-10102':
-                'A task with the same ID is currently being executed on the current node!',
+              '-500': 'Unexpected attester node program failure.',
+              '-10100':
+                'Task cannot be executed again due to unexpected failure.',
+              '-10101':
+                'This task has already been completed. No need to resubmit.',
+              '-10102': 'This task is still in progress. No need to resubmit.',
               '-10103':
-                'The number of task initiations for the same task exceeds the limit (currently set to 5 times)!',
-              '-10104': 'Failed to obtain task details!',
-              '-10105': 'Error in attestation template parameters!',
+                'Submission limit reached for this task. Initiate a new task to continue.',
+              '-10104':
+                'Failed to get task details. Please check the attester node condition or task ID.',
+              '-10105':
+                'Invalid attestation parameters. Please check the connection between the node and the template server.',
               '-10106':
-                'The URL in the algorithm parameters is inconsistent with the URL defined in the template!',
+                'Attestation template ID mismatch between task and attester node.',
               '-10107':
-                'The address in the algorithm parameters is inconsistent with that when submitting the task!',
+                'The user wallet address provided during attestation mismatch with submission.',
               '-10108':
-                'Invalid template ID; details cannot be queried based on the specified ID!',
+                'Invalid task ID. Please ensure the submitted ID matches the task.',
               '-10109':
-                'The task status is failed or partial_success_settled (task funds have been withdrawn)!',
+                'Task cannot be executed again. Please check your task fees.',
               '-10110':
-                'The current attester is not the attester specified in the task!',
-              '-10111': 'The task submission time exceeds the 1-hour limit!',
+                'Attester node mismatch. Ensure the node matches the task specification and resubmit.',
+              '-10111':
+                'Task submitted past the allowed time limit (15 minutes).',
             };
             const totalTipMapForSdk = Object.assign(
               {},
