@@ -443,7 +443,7 @@ export const pageDecodeMsgListener = async (
                   body: newBody,
                 });
               }
-
+              
               let matchRequestUrlResult = await extraRequestFn2({
                 ...requestsMap[matchRequestId],
                 header: requestsMap[matchRequestId].headers,
@@ -466,6 +466,7 @@ export const pageDecodeMsgListener = async (
                   isTargetUrl = true;
                 }
               } else {
+                
                 isTargetUrl = checkResIsMatchConditionFn(
                   jsonPathArr,
                   matchRequestUrlResult
@@ -1365,6 +1366,7 @@ export const pageDecodeMsgListener = async (
         desc: 'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
         code: '00013',
       });
+      chandleClose(params, processAlgorithmReq);
     }
     if (name === 'dataSourcePageDialogTimeout') {
       handleDataSourcePageDialogTimeout(processAlgorithmReq);
@@ -1380,6 +1382,7 @@ export const pageDecodeMsgListener = async (
         desc: 'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
         code: '00013',
       });
+      chandleClose(params, processAlgorithmReq);
     }
     if (name === 'dataSourcePageDialogTimeout') {
       handleDataSourcePageDialogTimeout(processAlgorithmReq);
