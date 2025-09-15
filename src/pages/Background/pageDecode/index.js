@@ -28,6 +28,11 @@ import {
   formatRequestResponseFnForTwitch,
 } from '../twitchEvent/index.js';
 import {
+  lumaAccountTemplateId,
+  lumaAccountTemplateReg,
+  getLumaAccountTargetJumpUrl,
+} from '../scoreEvent/index.js';
+import {
   isObject,
   parseCookie,
   isUrlWithQueryFn,
@@ -1002,7 +1007,9 @@ export const pageDecodeMsgListener = async (
           jumpTo,
           datasourceTemplate: { requests },
           sdkVersion,
+          attTemplateID,
         } = activeTemplate;
+
         const {
           url: currRequestUrl,
           requestHeaders,
@@ -1035,6 +1042,25 @@ export const pageDecodeMsgListener = async (
           }
         }
         let templateRequestUrl = '';
+
+        if (attTemplateID === lumaAccountTemplateId) {
+          const checkRes = checkIsRequiredUrl({
+            requestUrl: currRequestUrl,
+            requiredUrl: lumaAccountTemplateReg,
+            urlType: 'REGX',
+          });
+          if (checkRes) {
+            // console.log('formatHeader', formatHeader);
+            const lumaAccountTargetJumpUrl = getLumaAccountTargetJumpUrl(
+              formatHeader?.Cookie
+            );
+            await chrome.tabs.update(dataSourcePageTabId, {
+              url: lumaAccountTargetJumpUrl,
+            });
+            return;
+          }
+          
+        }
         const isTarget = requests.some((r) => {
           if (r.name === 'first') {
             return false;
@@ -1054,7 +1080,6 @@ export const pageDecodeMsgListener = async (
             }
             formatUrlKey = hostUrl;
           }
-
           const checkRes = checkIsRequiredUrl({
             requestUrl: currRequestUrl,
             requiredUrl: r.url,
@@ -1064,8 +1089,10 @@ export const pageDecodeMsgListener = async (
           if (checkRes) {
             templateRequestUrl = r.url;
           }
+
           return checkRes;
         });
+
         if (isTarget) {
           console.log('monad-details', details);
           let newCapturedInfo = {
@@ -1227,6 +1254,7 @@ export const pageDecodeMsgListener = async (
         { urls: interceptorUrlArr, types: ['xmlhttprequest', 'main_frame'] },
         ['responseHeaders', 'extraHeaders']
       );
+
       const tabCreatedByPado = await chrome.tabs.create({
         url: jumpTo,
       });
