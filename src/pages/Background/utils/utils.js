@@ -56,6 +56,7 @@ export function checkIsRequiredUrl({
   queryParams,
 }) {
   const specifiedQueryParams = queryParams?.[0] ? queryParams : null;
+  // console.log('requestUrl', requestUrl);
   const hostUrl = requestUrl.split('?')[0];
   const type =
     urlType === 'REGX' && requestUrl !== requiredUrl

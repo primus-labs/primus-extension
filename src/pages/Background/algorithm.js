@@ -379,7 +379,6 @@ export const algorithmMsgListener = async (
                 JSON.parse(extraData).errorCode + ''
               )
             ) {
-
               errorCode = JSON.parse(extraData).errorCode + '';
               const showTip = totalTipMapForSdk[errorCode];
               Object.assign(msgObj, {
@@ -453,6 +452,9 @@ export const algorithmMsgListener = async (
               type: 'padoZKAttestationJSSDK',
               name: 'startAttestationRes',
               params: resParams,
+            });
+            pageDecodeMsgListener({
+              name: 'close',
             });
 
             eventInfo.rawData = Object.assign(eventInfo.rawData, {
@@ -550,6 +552,9 @@ export const algorithmMsgListener = async (
             type: 'padoZKAttestationJSSDK',
             name: 'startAttestationRes',
             params: resParams,
+          });
+          pageDecodeMsgListener({
+            name: 'close',
           });
         } else {
           chrome.storage.local.set({

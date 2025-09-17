@@ -42,8 +42,10 @@ import {
 } from '../utils/utils';
 import {
   extraRequestFn2,
+  extraRequestHtmlFn,
   errorFn,
   checkResIsMatchConditionFn,
+  checkResHtmlIsMatchConditionFn,
   getNMonthsBeforeTime,
   getUTCDayLastSecondTime,
 } from './utils';
@@ -448,13 +450,33 @@ export const pageDecodeMsgListener = async (
                   body: newBody,
                 });
               }
-
-              let matchRequestUrlResult = await extraRequestFn2({
-                ...requestsMap[matchRequestId],
-                header: requestsMap[matchRequestId].headers,
-                url: targetRequestUrl,
-              });
+              let matchRequestUrlResult;
               let isTargetUrl = false;
+              if (requestsMap[matchRequestId].type === 'main_frame') {
+                matchRequestUrlResult = await extraRequestHtmlFn({
+                  ...requestsMap[matchRequestId],
+                  header: requestsMap[matchRequestId].headers,
+                  url: targetRequestUrl,
+                });
+                if (matchRequestUrlResult) {
+                  isTargetUrl = checkResHtmlIsMatchConditionFn(
+                    jsonPathArr,
+                    matchRequestUrlResult
+                  );
+                  if (isTargetUrl) {
+                    storeRequestsMap(matchRequestId, { isTarget: 1 });
+                    break;
+                  }
+                }
+              } else {
+                matchRequestUrlResult = await extraRequestFn2({
+                  ...requestsMap[matchRequestId],
+                  header: requestsMap[matchRequestId].headers,
+                  url: targetRequestUrl,
+                });
+              }
+
+              
 
               if (
                 matchRequestUrlResult &&
@@ -1059,7 +1081,6 @@ export const pageDecodeMsgListener = async (
             });
             return;
           }
-          
         }
         const isTarget = requests.some((r) => {
           if (r.name === 'first') {
@@ -1092,7 +1113,13 @@ export const pageDecodeMsgListener = async (
 
           return checkRes;
         });
-
+        // console.log(
+        //   'captured:',
+        //   currRequestUrl,
+        //   'isTarget:',
+        //   isTarget,
+        //   details
+        // );
         if (isTarget) {
           console.log('monad-details', details);
           let newCapturedInfo = {
@@ -1101,6 +1128,7 @@ export const pageDecodeMsgListener = async (
             url: currRequestUrl,
             requestId,
             templateRequestUrl,
+            type: details.type, // type: "main_frame"
           };
           if (addQueryStr) {
             newCapturedInfo.queryString = addQueryStr;
@@ -1399,7 +1427,6 @@ export const pageDecodeMsgListener = async (
     }
   } else {
     if (name === 'close' || name === 'cancel') {
-      chandleClose(params, processAlgorithmReq);
     }
     if (name === 'interceptionFail') {
       errorFn({
@@ -1408,6 +1435,7 @@ export const pageDecodeMsgListener = async (
         desc: 'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
         code: '00013',
       });
+      chandleClose(params, processAlgorithmReq);
     }
     if (name === 'dataSourcePageDialogTimeout') {
       handleDataSourcePageDialogTimeout(processAlgorithmReq);

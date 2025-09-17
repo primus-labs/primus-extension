@@ -29,6 +29,7 @@
     "browserify-zlib": "^0.2.0",
     "buffer": "^6.0.3",
     "ccxt": "^3.0.78",
+    "cheerio": "^1.1.2",
     "circular-dependency-plugin": "5.2.2",
     "constants-browserify": "^1.0.0",
     "copy-to-clipboard": "^3.3.3",
@@ -65,7 +66,9 @@
     "stream-browserify": "^3.0.0",
     "util": "^0.12.5",
     "uuid": "^9.0.0",
-    "web3-eth-accounts": "^1.8.2"
+    "web3-eth-accounts": "^1.8.2",
+    "xmldom": "^0.6.0",
+    "xpath": "^0.0.34"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",
