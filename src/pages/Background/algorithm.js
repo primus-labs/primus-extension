@@ -453,9 +453,6 @@ export const algorithmMsgListener = async (
               name: 'startAttestationRes',
               params: resParams,
             });
-            pageDecodeMsgListener({
-              name: 'close',
-            });
 
             eventInfo.rawData = Object.assign(eventInfo.rawData, {
               status: 'FAILED',
@@ -553,9 +550,7 @@ export const algorithmMsgListener = async (
             name: 'startAttestationRes',
             params: resParams,
           });
-          pageDecodeMsgListener({
-            name: 'close',
-          });
+          
         } else {
           chrome.storage.local.set({
             attestationLogInQuery: message.res,
