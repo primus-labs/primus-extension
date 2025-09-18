@@ -161,6 +161,7 @@ export const algorithmMsgListener = async (
             data: message.res,
           };
         }
+        console.log('send getAttestationRes msg to dappTab')
         chrome.tabs.sendMessage(dappTabId, {
           type: 'padoZKAttestationJSSDK',
           name: 'getAttestationRes',
