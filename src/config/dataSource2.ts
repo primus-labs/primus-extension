@@ -155,20 +155,20 @@ export const DATASOURCEMAP: DataSourceMapType = {
 
     connectType: 'Auth',
   },
-  bitget: {
-    id: 'bitget',
-    name: 'Bitget',
-    type: 'Assets',
-    icon: iconDataSourceBitget,
-    desc: 'Support fetching spot account assets data for management and attestation creation.',
-    unConnectTip:
-      'You can fetch spot account data from your Bitget account to manage your data or create attestations.',
-    requirePassphase: true,
-    // constructorF: Bitget,
-    baseName: 'api.bitget.com',
+  // bitget: {
+  //   id: 'bitget',
+  //   name: 'Bitget',
+  //   type: 'Assets',
+  //   icon: iconDataSourceBitget,
+  //   desc: 'Support fetching spot account assets data for management and attestation creation.',
+  //   unConnectTip:
+  //     'You can fetch spot account data from your Bitget account to manage your data or create attestations.',
+  //   requirePassphase: true,
+  //   // constructorF: Bitget,
+  //   baseName: 'api.bitget.com',
 
-    connectType: 'Web',
-  },
+  //   connectType: 'Web',
+  // },
   huobi: {
     id: 'huobi',
     name: 'Huobi',
