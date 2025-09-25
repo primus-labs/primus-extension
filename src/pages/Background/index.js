@@ -38,6 +38,7 @@ import { padoZKAttestationJSSDKMsgListener } from './padoZKAttestationJSSDK/inde
 import { algorithmMsgListener } from './algorithm.js';
 import { devconsoleMsgListener } from './devconsole/index.js';
 import { listener as lumaMonadEventMsgListener } from './lumaMonadEvent/index.js';
+import { listener as xEventMsgListener } from './xEvent/index.js';
 const Web3EthAccounts = require('web3-eth-accounts');
 console.log('Background initialization');
 let fullscreenPort = null;
@@ -672,5 +673,11 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   if (type === 'lumaMonadEvent') {
     console.log('content2', message);
     lumaMonadEventMsgListener(message, sender);
+  }
+  if (type === 'xEvent') {
+    xEventMsgListener(message, sender);
+  }
+  if (type === 'xPage') {
+    xEventMsgListener(message, sender);
   }
 });

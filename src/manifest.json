@@ -93,6 +93,17 @@
         "https://test-luckydraw.primuslabs.xyz/*"
       ],
       "js": ["lumaMonadEvent.bundle.js"]
+    },
+    {
+      "matches": [
+        "https://x.com/intent/follow?screen_name=*",
+        "https://x.com/intent/retweet?tweet_id=*"
+      ],
+      "js": ["xPage.bundle.js"]
+    },
+    {
+      "matches": ["http://localhost:5173/*"],
+      "js": ["xEvent.bundle.js"]
     }
   ]
 }
