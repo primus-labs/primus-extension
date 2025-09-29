@@ -102,7 +102,12 @@
       "js": ["xPage.bundle.js"]
     },
     {
-      "matches": ["http://localhost:5173/*"],
+      "matches": [
+        "http://localhost:5173/*",
+        "http://api-dev.padolabs.org:38098/*",
+        "http://app.primuslabs.xyz/*",
+        "https://app.primuslabs.xyz/*"
+      ],
       "js": ["xEvent.bundle.js"]
     }
   ]

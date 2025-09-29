@@ -1,4 +1,4 @@
 window.primus = {
   name: 'primus',
-  version: '0.3.38',
+  version: '0.3.39',
 };
