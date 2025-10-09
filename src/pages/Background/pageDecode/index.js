@@ -31,6 +31,7 @@ import {
   lumaAccountTemplateId,
   lumaAccountTemplateReg,
   getLumaAccountTargetJumpUrl,
+  getUserIdFromCookie,
 } from '../scoreEvent/index.js';
 import {
   isObject,
@@ -475,8 +476,6 @@ export const pageDecodeMsgListener = async (
                   url: targetRequestUrl,
                 });
               }
-
-              
 
               if (
                 matchRequestUrlResult &&
@@ -1073,13 +1072,17 @@ export const pageDecodeMsgListener = async (
           });
           if (checkRes) {
             // console.log('formatHeader', formatHeader);
-            const lumaAccountTargetJumpUrl = getLumaAccountTargetJumpUrl(
-              formatHeader?.Cookie
-            );
-            await chrome.tabs.update(dataSourcePageTabId, {
-              url: lumaAccountTargetJumpUrl,
-            });
-            return;
+            const userId = getUserIdFromCookie(formatHeader?.Cookie);
+            if (userId) {
+              const lumaAccountTargetJumpUrl =
+                getLumaAccountTargetJumpUrl(userId);
+              await chrome.tabs.update(dataSourcePageTabId, {
+                url: lumaAccountTargetJumpUrl,
+              });
+              return;
+            } else {
+              return;
+            }
           }
         }
         const isTarget = requests.some((r) => {

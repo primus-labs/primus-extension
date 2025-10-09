@@ -9,7 +9,6 @@ export const getUserIdFromCookie = (cookieStr) => {
   const userId = cookieObj['luma.auth-session-key']?.split('.')[0];
   return userId;
 };
-export const getLumaAccountTargetJumpUrl = (cookieStr) => {
-  const userId = getUserIdFromCookie(cookieStr);
+export const getLumaAccountTargetJumpUrl = (userId) => {
   return `${lumaAccountTargetJumpUrlPrefix}${userId}`;
 };

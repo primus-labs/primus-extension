@@ -161,8 +161,16 @@ export const algorithmMsgListener = async (
             data: message.res,
           };
         }
-        console.log('send getAttestationRes msg to dappTab')
+        console.log('send getAttestationRes msg to dappTab');
         console.log('dappTabId', dappTabId);
+        // async function getTabInfo(tabId) {
+        try {
+          const tab = await chrome.tabs.get(dappTabId);
+          console.log('tab info：', tab);
+        } catch (error) {
+          console.error('Failed to get tab info：', error);
+        }
+        // }
         chrome.tabs.sendMessage(dappTabId, {
           type: 'padoZKAttestationJSSDK',
           name: 'getAttestationRes',
@@ -552,7 +560,6 @@ export const algorithmMsgListener = async (
             name: 'startAttestationRes',
             params: resParams,
           });
-          
         } else {
           chrome.storage.local.set({
             attestationLogInQuery: message.res,

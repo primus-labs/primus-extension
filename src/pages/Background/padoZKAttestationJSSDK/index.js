@@ -901,12 +901,6 @@ chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
         type: 'pageDecode',
         name: 'cancel',
       },
-      sender,
-      sendResponse,
-      USERPASSWORD,
-      fullscreenPort,
-      hasGetTwitterScreenName,
-      processAlgorithmReq
     );
   }
 });
