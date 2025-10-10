@@ -394,13 +394,8 @@ export const algorithmMsgListener = async (
                 ? JSON.parse(activeAttestationParams.extendedParams)
                 : {};
               if (
-                padoZKAttestationJSSDKBeginAttest &&
-                [
-                  'localhost',
-                  'api-dev.padolabs.org',
-                  'pay.primuslabs.xyz',
-                ].includes(extendedParamsObj.hostname) &&
-                ['-10101'].includes(errorCode)
+                extendedParamsObj.handleReSubmitCodes &&
+                extendedParamsObj.handleReSubmitCodes.includes(errorCode)
               ) {
                 sucFn({
                   attestation: JSON.stringify({}),
