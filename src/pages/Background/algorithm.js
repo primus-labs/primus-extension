@@ -226,6 +226,37 @@ export const algorithmMsgListener = async (
         }
 
         if (retcode === '0') {
+          const sucFn = async (resData) => {
+            pageDecodeMsgListener(
+              {
+                name: 'end',
+                params: {
+                  result: 'success',
+                },
+              },
+              sender,
+              sendResponse,
+              USERPASSWORD,
+              fullscreenPort,
+              hasGetTwitterScreenName,
+              processAlgorithmReq
+            );
+            await chrome.storage.local.remove([
+              'padoZKAttestationJSSDKBeginAttest',
+              'padoZKAttestationJSSDKWalletAddress',
+              'padoZKAttestationJSSDKAttestationPresetParams',
+              'padoZKAttestationJSSDKXFollowerCount',
+              'activeRequestAttestation',
+            ]);
+            chrome.tabs.sendMessage(dappTabId, {
+              type: 'padoZKAttestationJSSDK',
+              name: 'startAttestationRes',
+              params: {
+                result: true,
+                data: resData,
+              },
+            });
+          };
           if (
             content.balanceGreaterThanBaseValue === 'true' &&
             content.signature
@@ -271,37 +302,6 @@ export const algorithmMsgListener = async (
               });
             }
 
-            const sucFn = async (resData) => {
-              pageDecodeMsgListener(
-                {
-                  name: 'end',
-                  params: {
-                    result: 'success',
-                  },
-                },
-                sender,
-                sendResponse,
-                USERPASSWORD,
-                fullscreenPort,
-                hasGetTwitterScreenName,
-                processAlgorithmReq
-              );
-              await chrome.storage.local.remove([
-                'padoZKAttestationJSSDKBeginAttest',
-                'padoZKAttestationJSSDKWalletAddress',
-                'padoZKAttestationJSSDKAttestationPresetParams',
-                'padoZKAttestationJSSDKXFollowerCount',
-                'activeRequestAttestation',
-              ]);
-              chrome.tabs.sendMessage(dappTabId, {
-                type: 'padoZKAttestationJSSDK',
-                name: 'startAttestationRes',
-                params: {
-                  result: true,
-                  data: resData,
-                },
-              });
-            };
             if (padoZKAttestationJSSDKBeginAttest === '1') {
               const { rc, result } = await regenerateAttest(
                 fullAttestation,
@@ -390,6 +390,24 @@ export const algorithmMsgListener = async (
               )
             ) {
               errorCode = JSON.parse(extraData).errorCode + '';
+              const extendedParamsObj = activeAttestationParams.extendedParams
+                ? JSON.parse(activeAttestationParams.extendedParams)
+                : {};
+              if (
+                padoZKAttestationJSSDKBeginAttest &&
+                [
+                  'localhost',
+                  'api-dev.padolabs.org',
+                  'pay.primuslabs.xyz',
+                ].includes(extendedParamsObj.hostname) &&
+                ['-10101'].includes(errorCode)
+              ) {
+                sucFn({
+                  attestation: JSON.stringify({}),
+                  taskId: extendedParamsObj.taskId,
+                });
+                return;
+              }
               const showTip = totalTipMapForSdk[errorCode];
               Object.assign(msgObj, {
                 type: '',

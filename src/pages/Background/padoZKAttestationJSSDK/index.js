@@ -407,6 +407,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
               proxyUrl,
             },
             attTemplateID,
+            extendedParams: params.attRequest?.extendedParams
           };
         } else {
           const resParams = {

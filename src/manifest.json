@@ -106,7 +106,11 @@
         "http://localhost:5173/*",
         "http://api-dev.padolabs.org:38098/*",
         "http://app.primuslabs.xyz/*",
-        "https://app.primuslabs.xyz/*"
+        "https://app.primuslabs.xyz/*",
+        "http://localhost:5174/*",
+        "http://api-dev.padolabs.org:38093/*",
+        "http://pay.primuslabs.xyz/*",
+        "https://pay.primuslabs.xyz/*"
       ],
       "js": ["xEvent.bundle.js"]
     }
