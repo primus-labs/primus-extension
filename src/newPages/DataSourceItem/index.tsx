@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
+import React, { useState, useMemo, useCallback, memo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { setActiveConnectDataSource } from '@/store/actions';
@@ -6,14 +6,12 @@ import { switchAccount } from '@/services/wallets/metamask';
 import useDataSource from '@/hooks/useDataSource';
 import useAuthorization from '@/hooks/useAuthorization';
 import {
-  setSocialSourcesAsync,
   setConnectWalletDialogVisibleAction,
 } from '@/store/actions';
-import { DATASOURCEMAP, SUPPORTATTESTDATASOURCES } from '@/config/dataSource';
+import { SUPPORTATTESTDATASOURCES } from '@/config/dataSource';
 import type { Dispatch } from 'react';
 
 import type { UserState } from '@/types/store';
-import type { DataSourceItemType } from '@/config/dataSource';
 import PBack from '@/newComponents/PBack';
 import PButton from '@/newComponents/PButton';
 import PTag from '@/newComponents/PTag';
@@ -21,11 +19,8 @@ import ConnectedAccountsCards from '@/newComponents/DataSource/ConnectedAccounts
 import SupportedAttestationCards from '@/newComponents/DataSource/SupportedAttestationCards';
 import ConnectByAPI from '@/newComponents/DataSource/ConnectByAPI';
 import CreateZkAttestation from '@/newComponents/ZkAttestation/CreateZkAttestation';
-import empty from '@/assets/newImg/dataSource/empty.svg';
 import './index.scss';
-import { webDataSourceTemplate } from '@/config/webDataSourceTemplate';
 import useMsgs from '@/hooks/useMsgs';
-const DataSouces = Object.values(DATASOURCEMAP);
 
 const DataSourceItem = memo(() => {
   const { addMsg } = useMsgs();
@@ -93,40 +88,6 @@ const DataSourceItem = memo(() => {
             dispatch(setConnectWalletDialogVisibleAction(1));
             return;
           }
-        }
-        if (activeConnectType === 'API') {
-          setVisibleConnectByAPI(true);
-        } else if (activeConnectType === 'Web') {
-          let currRequestObj = webProofTypes.find(
-            (r: any) => r.dataSource === lowerCaseDataSourceName
-          );
-          /*if (lowerCaseDataSourceName === 'tiktok') {
-        currRequestObj.datasourceTemplate.requests[0] = {
-          name: 'first',
-          url: 'https://www.tiktok.com/api/user/detail/',
-          queryParams: ['WebIdLastTime'],
-          method: 'GET',
-          headers: ['User-Agent'],
-          cookies: ['sessionid', 'tt-target-idc'],
-        };
-      }*/
-          //if currRequestObj is undefined, try to find locally
-          if (!currRequestObj) {
-            currRequestObj = webDataSourceTemplate[lowerCaseDataSourceName];
-          }
-          chrome.runtime.sendMessage({
-            type: 'dataSourceWeb',
-            name: 'init',
-            operation: 'connect',
-            params: {
-              ...currRequestObj,
-            },
-          });
-        } else if (activeConnectType === 'Auth') {
-          var authorizeSourceKey = lowerCaseDataSourceName.toUpperCase();
-          authorize(authorizeSourceKey, () => {
-            dispatch(setSocialSourcesAsync());
-          });
         }
       }
     },
@@ -224,30 +185,6 @@ const DataSourceItem = memo(() => {
               </div>
             )}
           </div>
-
-          {/* <div className="hasNoContent">
-              <img src={empty} alt="" />
-              <div className="introTxt">
-                <div className="title">No data connected</div>
-                <div className="desc">
-                  {activeDataSouceMetaInfo.unConnectTip}
-                </div>
-              </div>
-              <PButton
-                className="connectBtn"
-                text={btnTxtEl}
-                loading={
-                  activeConnectDataSource.dataSourceId ===
-                    lowerCaseDataSourceName &&
-                  activeConnectDataSource.loading === 1
-                }
-                size="s"
-                onClick={() => {
-                  handleConnect(1);
-                }}
-              />
-            </div> */}
-          
         </div>
       </div>
       {visibleConnectByWeb && (
