@@ -76,6 +76,7 @@ const creatUserInfo = async () => {
         timestamp,
         address,
       });
+      console.log('getUserIdentity', res);
       const { rc, result } = res;
       if (rc === 0) {
         const { bearerToken, identifier } = result;

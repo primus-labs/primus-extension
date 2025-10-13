@@ -232,9 +232,10 @@ export const padoZKAttestationJSSDKMsgListener = async (
           const dataSourceTemplateObj = JSON.parse(dataSourceTemplate);
           let jumpTo = JSON.parse(dataPageTemplate).baseUrl;
           const additionParams = params.attRequest?.additionParams;
+          let additionParamsObj = {};
           if (additionParams) {
             try {
-              const additionParamsObj = JSON.parse(additionParams);
+              additionParamsObj = JSON.parse(additionParams);
               if (additionParamsObj.launch_page) {
                 jumpTo = additionParamsObj.launch_page;
               }
@@ -407,7 +408,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
               proxyUrl,
             },
             attTemplateID,
-            extendedParams: params.attRequest?.extendedParams
+            extendedParams: params.attRequest?.extendedParams,
+            additionParamsObj,
           };
         } else {
           const resParams = {

@@ -139,7 +139,7 @@ export const checkResIsMatchConditionFn = (
   });
   return isMatch;
 };
-export const  validateXPathWithLibs = (html, xpath) => {
+export const validateXPathWithLibs = (html, xpath) => {
   try {
     // Match duplicate aria-label/data-item-id attributes, keep the first one, and remove subsequent duplicates
     // const cleanedHtml = html
@@ -171,7 +171,7 @@ export const  validateXPathWithLibs = (html, xpath) => {
     );
     return [];
   }
-}
+};
 export const checkResHtmlIsMatchConditionFn = (jsonPathArr, html) => {
   const isMatch = jsonPathArr.every((jpItem) => {
     try {
@@ -194,3 +194,37 @@ export const getUTCDayLastSecondTime = (timestamp) => {
   const targetTime = nowTime.endOf('day').valueOf();
   return targetTime;
 };
+// Replace existing parameters in the URL and add new parameters
+export function updateUrlParams(url, paramsObj) {
+  const urlObj = new URL(url);
+  const searchParams = urlObj.searchParams;
+
+  Object.entries(paramsObj).forEach(([key, value]) => {
+    if (searchParams.has(key)) {
+      searchParams.set(key, value);
+    } else {
+      searchParams.append(key, value);
+    }
+  });
+
+  urlObj.search = searchParams.toString();
+  return urlObj.toString();
+}
+
+export function parseUrlQuery(url) {
+  const urlObj = new URL(url);
+
+  const searchParams = urlObj.searchParams;
+
+  const queryObj = {};
+
+  searchParams.forEach((value, key) => {
+    if (!isNaN(value) && value !== '') {
+      queryObj[key] = Number(value);
+    } else {
+      queryObj[key] = value;
+    }
+  });
+
+  return queryObj;
+}

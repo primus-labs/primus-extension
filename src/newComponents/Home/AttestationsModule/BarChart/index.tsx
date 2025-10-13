@@ -122,7 +122,7 @@ const PBarChart: FC<BarChartProps> = memo(({ xDatas = [], yDatas = [] }) => {
           const chainId = Object.keys(EASInfo).find(
             (i) => i.replace(/\s+/g, '') === name
           );
-          const CName = EASInfo[chainId].showName;
+          const CName = EASInfo[chainId as any].showName;
           // console.log('222params', params, CName);
           return `${seriesName}<br/>${CName}: ${value}`;
         },

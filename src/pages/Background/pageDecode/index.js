@@ -22,6 +22,11 @@ import {
   rowForNilion,
 } from '../nilionEvent/index.js';
 import {
+  templateIdForbBinanceEarnHistory30Days,
+  startTimeDistanceForBinanceEarnHistory,
+  rowForBinanceEarnHistory,
+} from '../binanceEarnHistoryEvent/index.js';
+import {
   templateIdForTwitch,
   formatJsonArrFnForTwitch,
   changeFieldsObjFnForTwitch,
@@ -49,6 +54,8 @@ import {
   checkResHtmlIsMatchConditionFn,
   getNMonthsBeforeTime,
   getUTCDayLastSecondTime,
+  updateUrlParams,
+  parseUrlQuery,
 } from './utils';
 
 let PRE_ATTEST_PROMOT_V2 = [
@@ -357,6 +364,7 @@ export const pageDecodeMsgListener = async (
     const checkSDKTargetRequestFn = async (requestId, templateRequestUrl) => {
       const {
         datasourceTemplate: { requests, responses },
+        additionParamsObj,
       } = activeTemplate;
       const thisRequestUrlIdx = requests.findIndex(
         (r) => r.url === templateRequestUrl
@@ -449,6 +457,54 @@ export const pageDecodeMsgListener = async (
                 storeRequestsMap(matchRequestId, {
                   ...requestsMap[matchRequestId],
                   body: newBody,
+                });
+              }
+
+              if (
+                [templateIdForbBinanceEarnHistory30Days].includes(
+                  activeTemplate?.attTemplateID
+                )
+              ) {
+                const oldUrl = requestsMap[matchRequestId].url;
+                const oldQueryParams = parseUrlQuery(oldUrl);
+                let newStartTime = getNMonthsBeforeTime(
+                  oldQueryParams.endTime,
+                  startTimeDistanceForBinanceEarnHistory
+                );
+                const newUrlParams = {
+                  pageSize: rowForBinanceEarnHistory,
+                  startTime: newStartTime,
+                  // asset: '',
+                };
+                
+                if (additionParamsObj?.binanceBaseAsset) {
+                  newUrlParams.asset = additionParamsObj?.binanceBaseAsset;
+                }
+                if (
+                  additionParamsObj?.binanceMonthNum &&
+                  typeof additionParamsObj?.binanceMonthNum === 'number'
+                ) {
+                  newStartTime = getNMonthsBeforeTime(
+                    oldQueryParams.endTime,
+                    additionParamsObj?.binanceMonthNum
+                  );
+                  newUrlParams.startTime = newStartTime;
+                }
+                if (
+                  additionParamsObj?.binanceRows &&
+                  additionParamsObj?.binanceRows < rowForBinanceEarnHistory
+                ) {
+                  newUrlParams.pageSize =
+                    typeof additionParamsObj?.binanceRows === 'number'
+                      ? additionParamsObj?.binanceRows
+                      : Number(additionParamsObj?.rowForBinanceEarnHistory);
+                }
+                const newUrl = updateUrlParams(oldUrl, newUrlParams);
+                targetRequestUrl = newUrl;
+
+                storeRequestsMap(matchRequestId, {
+                  ...requestsMap[matchRequestId],
+                  url: newUrl,
                 });
               }
               let matchRequestUrlResult;
