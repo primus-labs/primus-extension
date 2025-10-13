@@ -25,6 +25,8 @@ import {
   templateIdForbBinanceEarnHistory30Days,
   startTimeDistanceForBinanceEarnHistory,
   rowForBinanceEarnHistory,
+  changeFieldsObjFnForBinanceEarnHistory,
+  formatRequestResponseFnForBinanceEarnHistory,
 } from '../binanceEarnHistoryEvent/index.js';
 import {
   templateIdForTwitch,
@@ -476,7 +478,7 @@ export const pageDecodeMsgListener = async (
                   startTime: newStartTime,
                   // asset: '',
                 };
-                
+
                 if (additionParamsObj?.binanceBaseAsset) {
                   newUrlParams.asset = additionParamsObj?.binanceBaseAsset;
                 }
@@ -499,8 +501,23 @@ export const pageDecodeMsgListener = async (
                       ? additionParamsObj?.binanceRows
                       : Number(additionParamsObj?.rowForBinanceEarnHistory);
                 }
+
                 const newUrl = updateUrlParams(oldUrl, newUrlParams);
                 targetRequestUrl = newUrl;
+
+                const oldUrl2 = `https://www.binance.com/bapi/earn/v1/private/lending/union/redemption/list?pageIndex=1&pageSize=20&startTime=1744732800000&endTime=1760371199999&lendingType=DAILY`;
+                const newUrl2 = updateUrlParams(oldUrl2, newUrlParams);
+                changeFieldsObjFnForBinanceEarnHistory(
+                  'add',
+                  'secondUrl',
+                  newUrl2
+                );
+                // TODO
+                let matchRequestUrlResult2 = await extraRequestFn2({
+                  ...requestsMap[matchRequestId],
+                  header: requestsMap[matchRequestId].headers,
+                  url: newUrl2,
+                });
 
                 storeRequestsMap(matchRequestId, {
                   ...requestsMap[matchRequestId],
@@ -908,6 +925,17 @@ export const pageDecodeMsgListener = async (
         } else if (activeTemplate.attTemplateID === templateIdForTwitch) {
           const { formatRequests: req, formatResponse: res } =
             formatRequestResponseFnForTwitch(formatRequests, formatResponse);
+          formatRequests = req;
+          formatResponse = res;
+        } else if (
+          activeTemplate.attTemplateID ===
+          templateIdForbBinanceEarnHistory30Days
+        ) {
+          const { formatRequests: req, formatResponse: res } =
+            formatRequestResponseFnForBinanceEarnHistory(
+              formatRequests,
+              formatResponse
+            );
           formatRequests = req;
           formatResponse = res;
         }
