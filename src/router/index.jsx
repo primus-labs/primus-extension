@@ -11,7 +11,6 @@ import EventDetail from '@/newPages/EventDetail';
 import Setting from '@/newPages/Setting';
 import ComingSoon from '@/newPages/ComingSoon';
 import Home from '@/newPages/Home';
-import DataDashboard from '@/newPages/DataDashboard';
 const router = [
   {
     path: '/',
@@ -55,10 +54,6 @@ const router = [
             element: <EventDetail />,
           },
         ],
-      },
-      {
-        path: 'dataDashboard',
-        element: <DataDashboard />,
       },
       {
         path: 'developer',

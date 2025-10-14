@@ -3,7 +3,7 @@ import useAllSources from '@/hooks/useAllSources';
 import useSocialStatistic from '@/hooks/useSocialStatistic';
 import useAttestationsStatistics from '@/hooks/useAttestationsStatistics';
 import useRewardsStatistics from '@/hooks/useRewardsStatistics';
-import AssetsDistribution from './AssetsDistribution';
+// import AssetsDistribution from './AssetsDistribution';
 import Social from './Social';
 import './index.scss';
 const DataSourcesModule = memo(() => {
@@ -16,7 +16,7 @@ const DataSourcesModule = memo(() => {
   }, [rewardsList, attestationsSubmitOnChainLen]);
   return (
     <div className={`dataSourcesModule ${noRightContent ? 'fdRow' : ''}`}>
-      {sortedConnectedAssetsSourcesList.length > 0 && <AssetsDistribution />}
+      {/* {sortedConnectedAssetsSourcesList.length > 0 && <AssetsDistribution />} */}
       {socialDataSourcesLen > 0 && <Social />}
     </div>
   );
