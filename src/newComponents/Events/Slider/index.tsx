@@ -40,32 +40,32 @@ var settings = {
 };
 
 const eventIntroMap = {
-  [LINEAEVENTNAME]: {
-    id: LINEAEVENTNAME,
-    title: 'The Linea Voyage: Proof of Humanity',
-    desc: [
-      'Complete an attestation with a KYCed account on Binance.',
-      'Bringing more PoH attestations to Verax and Linea ecosystem!',
-    ],
-    points: [
-      { pointIconFont: 'icon-iconBlockChain', pointDesc: 'LXP' },
-      { pointIconFont: 'icon-iconGift', pointDesc: '100 Points' },
-    ],
-    bg: bannerBgLinea,
-  },
-  [BASEVENTNAME]: {
-    id: BASEVENTNAME,
-    title: 'BNBChain Attestation Alliance',
-    desc: [
-      'Bringing more traditional data attestations to the BNB ecosystem.',
-      'Finish simple tasks to win your XP！',
-    ],
-    points: [
-      { pointIconFont: 'icon-iconBlockChain', pointDesc: 'BAS XP' },
-      { pointIconFont: 'icon-iconGift', pointDesc: '100 Points' },
-    ],
-    bg: bannerBgBas,
-  },
+  // [LINEAEVENTNAME]: {
+  //   id: LINEAEVENTNAME,
+  //   title: 'The Linea Voyage: Proof of Humanity',
+  //   desc: [
+  //     'Complete an attestation with a KYCed account on Binance.',
+  //     'Bringing more PoH attestations to Verax and Linea ecosystem!',
+  //   ],
+  //   points: [
+  //     { pointIconFont: 'icon-iconBlockChain', pointDesc: 'LXP' },
+  //     { pointIconFont: 'icon-iconGift', pointDesc: '100 Points' },
+  //   ],
+  //   bg: bannerBgLinea,
+  // },
+  // [BASEVENTNAME]: {
+  //   id: BASEVENTNAME,
+  //   title: 'BNBChain Attestation Alliance',
+  //   desc: [
+  //     'Bringing more traditional data attestations to the BNB ecosystem.',
+  //     'Finish simple tasks to win your XP！',
+  //   ],
+  //   points: [
+  //     { pointIconFont: 'icon-iconBlockChain', pointDesc: 'BAS XP' },
+  //     { pointIconFont: 'icon-iconGift', pointDesc: '100 Points' },
+  //   ],
+  //   bg: bannerBgBas,
+  // },
   fund: {
     id: 'fund',
     title: 'Send Crypto to Anyone',

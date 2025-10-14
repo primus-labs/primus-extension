@@ -25,9 +25,10 @@ const Overview = memo(() => {
     useState<string>();
   const navigate = useNavigate();
   let dataSourceList = ['x', 'tiktok'];
-  if (size.width >= 1342) {
-    dataSourceList = ['x', 'tiktok', 'binance', 'okx', 'bybit'];
-  } else if (size.width >= 1128) {
+  // if (size.width >= 1342) {
+  //   dataSourceList = ['x', 'tiktok', 'binance', 'okx', 'bybit'];
+  // } else
+  if (size.width >= 1128) {
     dataSourceList = ['x', 'tiktok', 'binance', 'okx'];
   } else if (size.width >= 914) {
     dataSourceList = ['x', 'tiktok', 'binance'];
@@ -59,7 +60,8 @@ const Overview = memo(() => {
     //     );
     //   }
     // }
-    navigate(`/datas/data?dataSourceId=${i}`);
+    // navigate(`/datas/data?dataSourceId=${i}`);
+    navigate(`/Attestation?dataSourceId=${i}`);
   }, []);
   // const handleClick = useCallback(
   //   (i) => {
@@ -90,7 +92,7 @@ const Overview = memo(() => {
     [checkIsConnectedDataSourceFn, handleClick]
   );
   const handleMore = useCallback(() => {
-    navigate('/datas');
+    navigate('/Attestation');
   }, [navigate]);
   return (
     <div className="homeDataSources">

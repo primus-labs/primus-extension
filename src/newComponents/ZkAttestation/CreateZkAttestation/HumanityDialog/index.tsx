@@ -477,12 +477,12 @@ const Nav: React.FC<PButtonProps> = memo(
                   <h1>Create Attestation</h1>
                   <h2>You're creating {type.toLowerCase()}.</h2>
                 </header>
-                {presets ? (
+                {/* {presets ? (
                   <div className="dataSourceWrapper">
                     <label>Data Source</label>
                     {dataSourceEl}
                   </div>
-                ) : (
+                ) : ( */}
                   <>
                     {step === 1 && (
                       <section className="detailWrapper">
@@ -509,7 +509,7 @@ const Nav: React.FC<PButtonProps> = memo(
                       </section>
                     )}
                   </>
-                )}
+                {/* )} */}
                 {step === 1 && (
                   <SetDataSource onSubmit={handleSubmitSetPwdDialog} />
                 )}

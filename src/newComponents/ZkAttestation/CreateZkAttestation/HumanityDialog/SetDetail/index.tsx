@@ -171,7 +171,6 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     }, [activeDataSouceUserInfo]);
 
     useEffect(() => {
-      if (!presets.verificationContent) {
         if (pswForm.verificationContent) {
           let newValue = '';
 
@@ -184,8 +183,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
           }
           handleChangePswForm(newValue, 'verificationValue');
         }
-      }
-    }, [pswForm.verificationContent, handleChangePswForm, presets]);
+    }, [pswForm.verificationContent, handleChangePswForm]);
     useEffect(() => {
       setPswForm(presets);
     }, [presets]);
@@ -209,10 +207,11 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     }, [pswForm]);
     return (
       <div className="pFormWrapper detailForm3">
-        <div
+        {/* <div
           className={`formItem ${presets.verificationContent ? 'preset' : ''}`}
-        >
-          {presets.verificationContent ? (
+        > */}
+        <div className={`formItem `}>
+          {/* {presets.verificationContent ? (
             <>
               <div className="label">Verification Content</div>
               <div className="value">
@@ -235,16 +234,31 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               value={pswForm.verificationContent}
               disabled={presets?.verificationContent}
             />
-          )}
+          )} */}
+          <PSelect
+            className={verificationContentCN}
+            label="Verification Content"
+            align="horizontal"
+            placeholder="Select content"
+            list={contentList}
+            onChange={(p) => {
+              handleChangePswForm(p, 'verificationContent');
+            }}
+            value={pswForm.verificationContent}
+            // disabled={presets?.verificationContent}
+          />
         </div>
-        <div
+        {/* <div
           className={`formItem ${presets.verificationValue ? 'preset' : ''} ${
             !presets.verificationContent && pswForm.verificationContent
               ? 'hasDefaultValue'
               : ''
           }`}
+        > */}
+        <div
+          className={`formItem `}
         >
-          {pswForm.verificationContent ? (
+          {/* {pswForm.verificationContent ? (
             <>
               <div className="label">Verification Condition</div>
               <div className="value">
@@ -264,7 +278,19 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               value={pswForm.verificationValue}
               disabled={presets?.verificationValue}
             />
-          )}
+          )} */}
+          <PSelect
+            className={verificationValueCN}
+            label="Verification Condition"
+            align="horizontal"
+            placeholder="Select value"
+            list={valueList}
+            onChange={(p) => {
+              handleChangePswForm(p, 'verificationValue');
+            }}
+            value={pswForm.verificationValue}
+            // disabled={presets?.verificationValue}
+          />
         </div>
         {activeAccount && (
           <div className="staticItem">

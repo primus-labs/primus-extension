@@ -1,6 +1,6 @@
 import React, { memo, useRef, useState, useCallback } from 'react';
 import './index.scss';
-import TokenPie from '@/newComponents/Home/DataSourcesModule/TokenPie';
+// import TokenPie from '@/newComponents/Home/DataSourcesModule/TokenPie';
 import PButton from '@/newComponents/PButton';
 import PMask from '@/newComponents/PMask';
 import PClose from '@/newComponents/PClose';
@@ -278,7 +278,7 @@ const ShareComponent: React.FC<PButtonProps> = memo(
                           {scoreShareProps.totalBalance}
                         </div>
                       </div>
-                      <TokenPie />
+                      {/* <TokenPie /> */}
                     </div>
                   </div>
                 )}

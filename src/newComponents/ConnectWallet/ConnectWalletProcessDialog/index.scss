@@ -19,11 +19,11 @@
       .walletImg {
         width: 70px;
       }
-      .spiner {
+      >.spiner {
         @include pSpiner(105px, 105px, 5px,var(--icon-tokens-icon-primary, #161616),var(--layer-tokens-layer-primary, #fff),2s);
         position: absolute;
-        top: 11.5px;
-        left: 11.5px;
+        top: 11.5px !important;
+        left: 11.5px !important;
         // transform: translate(-50%, -50%);
       }
     }
