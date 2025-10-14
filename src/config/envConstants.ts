@@ -10,9 +10,9 @@ import store from '@/store';
 import type { UserState } from '@/types/store';
 type ENVTYPE = 'development' | 'test' | 'production';
 
-// export const CURENV = process.env.NODE_ENV as ENVTYPE;
+export const CURENV = process.env.NODE_ENV as ENVTYPE;
 // export const CURENV = 'development';
-export const CURENV = 'production';
+// export const CURENV = 'production';
 console.log('222CURENV', CURENV, process.env);
 const PADOURLMAP = {
   development: 'wss://api-dev.padolabs.org/algorithm',
