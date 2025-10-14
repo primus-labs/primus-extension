@@ -22,6 +22,8 @@ export const formatRequestResponseFnForBinanceEarnHistory = (
   formatResponse
 ) => {
   formatRequests[1] = { ...formatRequests[0],url: binanceEarnHistoryFields['secondUrl'],name:'sdk-1'};
-  formatResponse[1] = { ...formatResponse[0]};
+  formatResponse[1] = { ...formatResponse[0] };
+  formatResponse[0].conditions.subconditions[0].reveal_id = 'subscriptionId';
+  formatResponse[1].conditions.subconditions[0].reveal_id = 'redemptionId';
   return { formatRequests, formatResponse };
 };
