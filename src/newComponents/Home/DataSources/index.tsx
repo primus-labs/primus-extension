@@ -5,7 +5,6 @@ import { setActiveConnectDataSource } from '@/store/actions';
 import './index.scss';
 import PButton from '@/newComponents/PButton';
 import DataSourceBrief from '@/newComponents/DataSource/DataSourceBrief';
-import ConnectDataSource from '@/newComponents/DataSource/ConnectDataSource';
 import PTooltip from '@/newComponents/PTooltip';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -145,7 +144,6 @@ const Overview = memo(() => {
           );
         })}
       </ul>
-      <ConnectDataSource />
     </div>
   );
 });

@@ -270,14 +270,15 @@ export const algorithmMsgListener = async (
               !padoZKAttestationJSSDKBeginAttest ||
               padoZKAttestationJSSDKBeginAttest === '1'
             ) {
-              const acc = await getDataSourceAccount(
-                activeAttestationParams.dataSourceId
-              );
+              // const acc = await getDataSourceAccount(
+              //   activeAttestationParams.dataSourceId
+              // );
               fullAttestation = {
                 ...content,
                 ...parsedActiveRequestAttestation,
                 ...activeAttestationParams,
-                account: acc,
+                // account: acc,
+                account: ''
               };
               if (fullAttestation.verificationContent === 'X Followers') {
                 let count = 0;

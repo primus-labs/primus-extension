@@ -1,7 +1,5 @@
 import React from 'react';
 import Guide from '@/pages/Home/Home.jsx';
-import DataSourceOverview from '@/newPages/DataSourceOverview/index.tsx';
-import DataSourceItem from '@/newPages/DataSourceItem/index.tsx';
 import Layout from '@/newComponents/Layout/index.tsx';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import TransactionDetail from '@/pages/Transaction/TransactionDetail';
@@ -34,20 +32,6 @@ const router = [
         path: 'home',
         name: 'Home',
         element: <Home />,
-      },
-      {
-        path: 'datas',
-        name: 'Data Source',
-        children: [
-          {
-            index: true,
-            element: <DataSourceOverview />,
-          },
-          {
-            path: 'data',
-            element: <DataSourceItem />,
-          },
-        ],
       },
       {
         path: 'Attestation',

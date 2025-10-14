@@ -4,7 +4,7 @@ import { setActiveConnectDataSource } from '@/store/actions';
 import useAllSources from '@/hooks/useAllSources';
 import PButton from '@/newComponents/PButton';
 import PClose from '@/newComponents/PClose';
-import ConnectDataSource from '@/newComponents/DataSource/ConnectDataSource';
+// import ConnectDataSource from '@/newComponents/DataSource/ConnectDataSource';
 import './index.scss';
 import { ONEMINUTE } from '@/config/constants';
 import useInterval from '@/hooks/useInterval';
@@ -85,7 +85,7 @@ const ExpiredTips = memo(() => {
           );
         })}
       </ul>
-      <ConnectDataSource />
+      {/* <ConnectDataSource /> */}
     </div>
   ) : (
     <></>
