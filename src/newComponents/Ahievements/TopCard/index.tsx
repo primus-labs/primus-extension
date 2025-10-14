@@ -21,7 +21,6 @@ import ShareButton from '@/newComponents/Ahievements/TopCard/ShareButton';
 
 type AchievementTopCardProps = {
   handleRewardsHistory: any;
-  handleSharePoints: any;
   handleShareReferralCode: any;
   referralCode;
   totalScore;
@@ -36,7 +35,6 @@ const AchievementTopCard: React.FC<AchievementTopCardProps> = memo(
     referrals,
     countedReferrals,
     handleRewardsHistory,
-    handleSharePoints,
     handleShareReferralCode,
   }) => {
     const { msgs, addMsg } = useMsgs();
@@ -59,16 +57,6 @@ const AchievementTopCard: React.FC<AchievementTopCardProps> = memo(
             <div className="pointsEarned-text">
               <p>Points Earned</p>
             </div>
-            <div className="pointsShare">
-              <span className={'pointsShareText'}>Share on social media</span>
-              <PButton
-                className="referralShareIcon"
-                type="icon"
-                icon={<i className="iconfont icon-iconShareActive"></i>}
-                onClick={handleSharePoints}
-              />
-              {/*<ShareButton imgHover={shareHover} img={pointsEarnedShareIcon} onClick={handleSharePoints} btnDesc={"Share on social media"}/>*/}
-            </div>
           </div>
           <div className="pointsEarned">
             <div className="points-score">{totalScore}</div>
@@ -82,16 +70,7 @@ const AchievementTopCard: React.FC<AchievementTopCardProps> = memo(
         <div className="rightCard">
           <div className={'referral-text-line'}>
             <div className={'referral-text'}>Referrals</div>
-            <div className={'referralShare'}>
-              <span className={'referralShareText'}>Share on social media</span>
-              <PButton
-                className="referralShareIcon"
-                type="icon"
-                icon={<i className="iconfont icon-iconShareActive"></i>}
-                onClick={handleShareReferralCode}
-              />
-              {/*<ShareButton imgHover={shareHover} img={pointsEarnedShareIcon} onClick={handleShareReferralCode} btnDesc={"Share on social media"}/>*/}
-            </div>
+            
           </div>
           <div className={'referral-times'}>{referrals}</div>
           <div className="referral">

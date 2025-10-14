@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 
+import Banner from '@/newComponents/Ahievements/Banner';
 import AchievementTopCard from '@/newComponents/Ahievements/TopCard';
 import AchievementTaskItem from '@/newComponents/Ahievements/AchievementTaskItem';
 
@@ -168,10 +169,7 @@ const AchievementHome = memo(() => {
     handleCreate();
   };
 
-  const handleSharePoints = () => {
-    setShareType('score');
-    setVisibleShareDiag(true);
-  };
+  
 
   const handleShareReferralCode = () => {
     setShareType('referralCode');
@@ -217,13 +215,13 @@ const AchievementHome = memo(() => {
   return (
     <div className="pageAchievementTaskItem">
       <div className="pageContent">
+        <Banner/>
         <AchievementTopCard
           referrals={referrals}
           countedReferrals={countedReferrals}
           totalScore={totalScore}
           referralCode={referralCode}
           handleRewardsHistory={handleRewordHistory}
-          handleSharePoints={handleSharePoints}
           handleShareReferralCode={handleShareReferralCode}
         ></AchievementTopCard>
         <div className={'achievementTasks'}>
