@@ -1,6 +1,6 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ATTESTATIONTYPEMAP, ATTESTATIONTYPELIST } from '@/config/attestation';
+import { ATTESTATIONTYPELIST } from '@/config/attestation';
 
 import type { UserState } from '@/types/store';
 import PInput from '@/newComponents/PInput';

@@ -1,24 +1,9 @@
-import React, {
-  useState,
-  useMemo,
-  useCallback,
-  useEffect,
-  memo,
-  useRef,
-} from 'react';
+import React, { memo } from 'react';
 
 import './index.scss';
-import pointsEarnedIcon from '@/assets/newImg/achievements/pointsEarnedIcon.svg';
-import pointsEarnedShareIcon from '@/assets/newImg/achievements/pointsEarnedShareIcon.svg';
-import shareHover from '@/assets/newImg/achievements/shareHover.svg';
-import textCopyIcon from '@/assets/newImg/achievements/textCopyIcon.svg';
-import { getUserInfo } from '@/services/api/achievements';
 import copy from 'copy-to-clipboard';
 import useMsgs from '@/hooks/useMsgs';
 import PButton from '@/newComponents/PButton';
-import Icon from 'antd/lib/icon';
-import ShareButton from '@/newComponents/Ahievements/TopCard/ShareButton';
-
 type AchievementTopCardProps = {
   handleRewardsHistory: any;
   handleShareReferralCode: any;
@@ -70,7 +55,6 @@ const AchievementTopCard: React.FC<AchievementTopCardProps> = memo(
         <div className="rightCard">
           <div className={'referral-text-line'}>
             <div className={'referral-text'}>Referrals</div>
-            
           </div>
           <div className={'referral-times'}>{referrals}</div>
           <div className="referral">

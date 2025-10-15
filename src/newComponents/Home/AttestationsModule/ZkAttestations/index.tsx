@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useState, useMemo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAttestationsStatistics from '@/hooks/useAttestationsStatistics';
 import { EASInfo } from '@/config/chain';

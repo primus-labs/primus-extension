@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState, useCallback } from 'react';
+import React, { memo, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAttestLoading, setActiveAttestation } from '@/store/actions';
 import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
@@ -23,11 +23,8 @@ const PClose: React.FC<PBackProps> = memo(
     const attestLoading = useSelector(
       (state: UserState) => state.attestLoading
     );
-    // const [checkIsConnectFlag, setCheckIsConnectFlag] = useState<boolean>(false);
     const { connected } = useCheckIsConnectedWallet(true);
     const handleClose = useCallback(() => {
-      // dispatch(setAttestLoading(0));
-      // dispatch(setActiveAttestation({ loading: 0 }));
       deleteErrorMsgs();
       onClose();
     }, [onClose]);

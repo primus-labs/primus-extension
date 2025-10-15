@@ -10,7 +10,6 @@ import {
 } from 'echarts/components';
 // Import renderer, note that introducing the CanvasRenderer or SVGRenderer is a required step
 import { CanvasRenderer } from 'echarts/renderers';
-import { formatNumeral } from '@/utils/utils';
 import { ATTESTATIONTYPEMAP } from '@/config/attestation';
 import { EASInfo } from '@/config/chain';
 import './index.scss';

@@ -1,14 +1,11 @@
-import React, { memo, useCallback, useMemo, useState, useEffect } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import PButton from '@/newComponents/PButton';
-import PTooltip from '@/newComponents/PTooltip';
 import './index.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { initSetNotificationsAction } from '@/store/actions';
 import { UserState } from '@/types/store';
 import { Dispatch } from 'react';
 
 const NotificationDropdown: React.FC = memo(({}) => {
-  const dispatch: Dispatch<any> = useDispatch();
   const notifications = useSelector((state: UserState) => state.notifications);
   const [list, setList] = useState<any>([]);
   // const list = useMemo(() => {

@@ -13,7 +13,6 @@ import useEventDetail from '@/hooks/useEventDetail';
 import useAuthorization2 from '@/hooks/useAuthorization2';
 
 import { eventReport } from '@/services/api/usertracker';
-import { getAccount, postMsg } from '@/utils/utils';
 import { BASEVENTNAME, ETHSIGNEVENTNAME } from '@/config/events';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';

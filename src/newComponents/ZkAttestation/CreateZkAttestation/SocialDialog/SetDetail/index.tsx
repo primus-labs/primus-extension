@@ -3,14 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setActiveAttestation, setAttestLoading } from '@/store/actions';
 import useMsgs from '@/hooks/useMsgs';
 import {
-  HUMANITYVERIFICATIONCONTENTTYPELIST,
   HUMANITYVERIFICATIONCONTENTTYPEMAP,
-  HUMANITYVERIFICATIONVALUETYPELIST,
   ALLVERIFICATIONCONTENTTYPEEMAP,
   SOCIALVERIFICATIONVALUETYPELIST,
 } from '@/config/attestation';
 import { DATASOURCEMAP } from '@/config/dataSource';
-import useDataSource from '@/hooks/useDataSource';
 import { getAccount } from '@/utils/utils';
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';

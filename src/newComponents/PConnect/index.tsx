@@ -1,4 +1,4 @@
-import React, { useState, useMemo, memo, useCallback, useEffect } from 'react';
+import React, { memo, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setConnectWalletDialogVisibleAction } from '@/store/actions';
 import PButton from '@/newComponents/PButton';

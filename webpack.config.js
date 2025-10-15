@@ -37,13 +37,6 @@ var options = {
   entry: {
     home: path.join(__dirname, 'src', 'pages', 'Home', 'index.jsx'),
     background: path.join(__dirname, 'src', 'pages', 'Background', 'index.js'),
-    dataSourceWeb: path.join(
-      __dirname,
-      'src',
-      'content',
-      'dataSourceWeb',
-      'index.jsx'
-    ),
     pageDecode: path.join(
       __dirname,
       'src',

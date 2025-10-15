@@ -7,7 +7,6 @@ import PButton from '@/newComponents/PButton';
 
 import { postMsg } from '@/utils/utils';
 import { guideMap } from '@/config/dataSource';
-import { initWalletAddressActionAsync } from '@/store/actions';
 
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';

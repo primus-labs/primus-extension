@@ -5,25 +5,13 @@ import Slider from 'react-slick';
 import { useNavigate } from 'react-router-dom';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import {
-  BASEVENTNAME,
-  LINEAEVENTNAME,
-  ETHSIGNEVENTNAME,
-} from '@/config/events';
 import { FUNDLINK } from '@/config/constants';
 import PButton from '@/newComponents/PButton';
-import adLinea from '@/assets/newImg/events/adLinea.svg';
-import adBas from '@/assets/newImg/events/adBas.svg';
-import adEthSign from '@/assets/newImg/events/adEthSign.svg';
-import bannerBgBas from '@/assets/newImg/events/bannerBgBas.svg';
 import bannerBgFund from '@/assets/newImg/events/bannerBgFund.svg';
 // import bannerBgBas from '@/assets/newImg/events/a0.svg';
 // import bannerBgBas from '@/assets/newImg/events/a1.svg';
 // import bannerBgBas from '@/assets/newImg/events/a3.svg';
 // import bannerBgBas from '@/assets/newImg/events/a4.svg';
-
-import bannerBgLinea from '@/assets/newImg/events/bannerBgLinea.svg';
-import bannerBgEthSign from '@/assets/newImg/events/bannerBgEthSign.svg';
 import './index.scss';
 
 interface PBackProps {}
@@ -157,19 +145,6 @@ const PBack: React.FC<PBackProps> = memo(({}) => {
             </div>
           );
         })}
-        {/* {Object.values(eventMap).map((i) => {
-          return (
-            <img
-              className="sliderImg"
-              src={i.adImg}
-              alt=""
-              onClick={() => {
-                handleClick(i);
-              }}
-              key={i.id}
-            />
-          );
-        })} */}
       </Slider>
     </div>
   );

@@ -1,6 +1,5 @@
-import React, { memo, useCallback, useState, useEffect } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { setActiveConnectDataSource } from '@/store/actions';
 
 import './index.scss';
 import PButton from '@/newComponents/PButton';

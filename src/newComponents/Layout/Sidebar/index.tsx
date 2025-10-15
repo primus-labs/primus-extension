@@ -4,7 +4,6 @@ import type { UserState } from '@/types/store';
 
 import Nav from '../../Nav';
 import PSwitch from '@/newComponents/PSwitch';
-import logo from '@/assets/img/logo.svg';
 import logoForLight from '@/assets/newImg/layout/logoForLight.svg';
 import logoForDark from '@/assets/newImg/layout/logoForDark.svg';
 import './index.scss';

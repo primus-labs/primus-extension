@@ -12,7 +12,6 @@ import blueRect from '@/assets/newImg/achievements/blueRect.svg';
 import x from '@/assets/img/iconDataSourceX.svg';
 import discord from '@/assets/img/iconDataSourceDiscord.png';
 import telegram from '@/assets/newImg/achievements/telegram.svg';
-import bgShare from '@/assets/newImg/dataDashboard/bgShare.svg';
 // @ts-ignore
 import { toPng } from 'html-to-image';
 import {

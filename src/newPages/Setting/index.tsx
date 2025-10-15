@@ -2,17 +2,15 @@ import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import './index.scss';
 import PSelect from '@/newComponents/PSelect';
-import textCopyIcon from '@/assets/newImg/achievements/textCopyIcon.svg';
-import mode from '@/assets/newImg/settings/mode.svg';
 import { getUserInfo } from '@/services/api/achievements';
 import copy from 'copy-to-clipboard';
-import { Button, Divider } from 'antd';
+import { Divider } from 'antd';
 import SettingsSetPwdDialog from '@/newComponents/Settings/SettingSetPwdDialog';
 import WebComeBackDialog from '@/newComponents/Settings/WebComeBack';
 import useMsgs from '@/hooks/useMsgs';
 import PButton from '@/newComponents/PButton';
 import { useNavigate } from 'react-router-dom';
-import {  DEFAULTDATASOURCEPOLLINGTIMENUM } from '@/config/constants';
+import { DEFAULTDATASOURCEPOLLINGTIMENUM } from '@/config/constants';
 // eslint-disable-next-line react/display-name
 const Setting = memo(() => {
   const [currencies, setCurrencies] = useState([]);

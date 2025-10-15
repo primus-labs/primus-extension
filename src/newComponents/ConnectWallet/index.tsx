@@ -1,4 +1,4 @@
-import React, { memo, useMemo, useCallback, useState, useEffect } from 'react';
+import React, { memo, useCallback, useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { setActiveConnectDataSource } from '@/store/actions';
@@ -6,13 +6,9 @@ import { utils } from 'ethers';
 import useMsgs from '@/hooks/useMsgs';
 import useWallet from '@/hooks/useWallet';
 import { formatAddress } from '@/utils/utils';
-import PMask from '@/newComponents/PMask';
-import PClose from '@/newComponents/PClose';
 import ConnectWalletDialog from './ConnectWalletDialog';
 import ConnectWalletProcessDialog from './ConnectWalletProcessDialog';
-import SetAPI from '@/newComponents/SetAPIDialog/SetAPIForm';
 
-import iconDone from '@/assets/newImg/layout/iconDone.svg';
 import type { UserState } from '@/types/store';
 import './index.scss';
 

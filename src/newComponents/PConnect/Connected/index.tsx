@@ -1,11 +1,4 @@
-import React, {
-  FC,
-  useState,
-  useMemo,
-  memo,
-  useCallback,
-  useEffect,
-} from 'react';
+import React, { FC, useMemo, memo, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { utils } from 'ethers';
 import { formatAddress } from '@/utils/utils';
@@ -146,7 +139,7 @@ const PConnect: FC<PConnectProps> = memo(({ onConnect }) => {
                             )}
                           </span>
                         </div>
-                        
+
                         {addrK !== connectedWallet?.address && (
                           <img
                             src={iconClose}

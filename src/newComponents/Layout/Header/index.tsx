@@ -1,11 +1,10 @@
-import React, { memo, useMemo, useCallback, useState, useEffect } from 'react';
+import React, { memo, useMemo, useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { menuList } from '@/config/menu';
 import PConnect from '@/newComponents/PConnect';
 import PPTabs from '@/newComponents/PTabs';
 import Notification from '@/newComponents/Notification';
 
-import iconAvatar from '@/assets/newImg/layout/iconAvatar.svg';
 import './index.scss';
 const tList = [
   { label: 'Events', value: '1', link: '/events' },

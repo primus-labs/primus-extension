@@ -33,7 +33,6 @@ import { eventReport } from '@/services/api/usertracker';
 import './pageDecode/index.js';
 import { pageDecodeMsgListener } from './pageDecode/index.js';
 import { PadoWebsiteMsgListener } from './pageWebsite.js';
-import { dataSourceWebMsgListener } from './dataSourceWeb.js';
 import { padoZKAttestationJSSDKMsgListener } from './padoZKAttestationJSSDK/index.js';
 import { algorithmMsgListener } from './algorithm.js';
 import { devconsoleMsgListener } from './devconsole/index.js';
@@ -641,15 +640,6 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     if (name === 'cancelAttest') {
       chrome.runtime.sendMessage(message);
     }
-  }
-  if (type === 'dataSourceWeb') {
-    dataSourceWebMsgListener(
-      message,
-      sender,
-      sendResponse,
-      USERPASSWORD,
-      fullscreenPort
-    );
   }
   if (type === 'padoZKAttestationJSSDK') {
     padoZKAttestationJSSDKMsgListener(
