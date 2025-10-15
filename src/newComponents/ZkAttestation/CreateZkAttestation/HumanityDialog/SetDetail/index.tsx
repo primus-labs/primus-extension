@@ -1,6 +1,6 @@
 import React, { useState, useMemo, memo, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom';
 import { setActiveAttestation, setAttestLoading } from '@/store/actions';
 import useMsgs from '@/hooks/useMsgs';
 import {
@@ -220,19 +220,34 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             disabled={presets && pathname.startsWith('/events')}
           />
         </div>
-        <div className={`formItem `}>
-          <PSelect
-            className={verificationValueCN}
-            label="Verification Condition"
-            align="horizontal"
-            placeholder="Select value"
-            list={valueList}
-            onChange={(p) => {
-              handleChangePswForm(p, 'verificationValue');
-            }}
-            value={pswForm.verificationValue}
-            disabled={presets && pathname.startsWith('/events')}
-          />
+        <div
+          className={`formItem ${presets.verificationValue ? 'preset' : ''} ${
+            !presets.verificationContent && pswForm.verificationContent
+              ? 'hasDefaultValue'
+              : ''
+          }`}
+        >
+          {pswForm.verificationContent ? (
+            <>
+              <div className="label">Verification Condition</div>
+              <div className="value">
+                {presets.verificationValue || pswForm.verificationValue}
+              </div>
+            </>
+          ) : (
+            <PSelect
+              className={verificationValueCN}
+              label="Verification Condition"
+              align="horizontal"
+              placeholder="Select value"
+              list={valueList}
+              onChange={(p) => {
+                handleChangePswForm(p, 'verificationValue');
+              }}
+              value={pswForm.verificationValue}
+              disabled={presets?.verificationValue}
+            />
+          )}
         </div>
         {activeAccount && (
           <div className="staticItem">

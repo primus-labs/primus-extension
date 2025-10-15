@@ -122,7 +122,7 @@ const ZkAttestation = memo(() => {
   );
   const handleSubmitAssetDialog = useCallback(() => {
     if (presetDataSourceId) {
-      navigate(`/attestation`, { replace: true });
+      navigate(`/Attestation`, { replace: true });
     }
   }, [presetDataSourceId]);
   const handleCloseAssetDialog = useCallback(() => {
