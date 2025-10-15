@@ -9,7 +9,7 @@ const Search: React.FC = () => {
 
   const hubUrl = useMemo(() => {
     const configStr =
-      sysConfig.DEVELOPER_HUB_SITE || 'http://app.primuslabs.xyz'; // TODO
+      sysConfig.REPUTATIONRECORD_LINK || 'http://app.primuslabs.xyz';
     return configStr;
   }, [sysConfig]);
   const handleStart = useCallback(() => {

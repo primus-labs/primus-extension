@@ -34,7 +34,7 @@ const Overview = memo(() => {
       title: 'Data Connected',
       num: 0,
       operationName: 'Connect Data Source',
-      link: '/datas',
+      // link: '/datas',
     },
     Attestation: {
       id: 'Attestation',
@@ -60,7 +60,9 @@ const Overview = memo(() => {
 
   const handleClick = useCallback(
     (link) => {
-      navigate(link);
+      if (link) {
+        navigate(link);
+      }
     },
     [navigate]
   );

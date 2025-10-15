@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useEffect, memo } from 'react';
-
+import React, { useState, useCallback, useEffect, memo, useMemo } from 'react';
+import dayjs from 'dayjs';
 import Banner from '@/newComponents/Ahievements/Banner';
 import AchievementTopCard from '@/newComponents/Ahievements/TopCard';
 import AchievementTaskItem from '@/newComponents/Ahievements/AchievementTaskItem';
@@ -20,6 +20,17 @@ import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
 import { UserState } from '@/types/store';
 
 const AchievementHome = memo(() => {
+  const sysConfig = useSelector((state: UserState) => state.sysConfig);
+  const REPUTATIONRECORD_SHOWTIME = useMemo(() => {
+    const configStr = sysConfig.REPUTATIONRECORD_SHOWTIME;
+    return configStr;
+  }, [sysConfig]);
+  const isShowREPUTATIONRECORD = useMemo(() => {
+    const nowTime = +new Date();
+    const showTime = REPUTATIONRECORD_SHOWTIME - 0;
+    return dayjs(nowTime).isAfter(showTime);
+  }, [REPUTATIONRECORD_SHOWTIME]);
+
   const [checkIsConnectFlag, setCheckIsConnectFlag] = useState<boolean>(true);
   useCheckIsConnectedWallet(checkIsConnectFlag);
   const connectWalletDialogVisible = useSelector(
@@ -215,7 +226,7 @@ const AchievementHome = memo(() => {
   return (
     <div className="pageAchievementTaskItem">
       <div className="pageContent">
-        <Banner />
+        {isShowREPUTATIONRECORD && <Banner />}
         <AchievementTopCard
           referrals={referrals}
           countedReferrals={countedReferrals}
