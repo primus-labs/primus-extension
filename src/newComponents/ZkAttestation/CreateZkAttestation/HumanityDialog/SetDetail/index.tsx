@@ -1,5 +1,6 @@
 import React, { useState, useMemo, memo, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom'
 import { setActiveAttestation, setAttestLoading } from '@/store/actions';
 import useMsgs from '@/hooks/useMsgs';
 import {
@@ -27,6 +28,8 @@ interface SetPwdDialogProps {
 }
 const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
   ({ onSubmit, presets }) => {
+    const location = useLocation();
+    const { pathname } = location;
     const { deleteErrorMsgs } = useMsgs();
     const { dataSourceId } = presets;
     // const { userInfo: activeDataSouceUserInfo } = useDataSource(dataSourceId);
@@ -214,6 +217,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               handleChangePswForm(p, 'verificationContent');
             }}
             value={pswForm.verificationContent}
+            disabled={presets && pathname.startsWith('/events')}
           />
         </div>
         <div className={`formItem `}>
@@ -227,6 +231,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
               handleChangePswForm(p, 'verificationValue');
             }}
             value={pswForm.verificationValue}
+            disabled={presets && pathname.startsWith('/events')}
           />
         </div>
         {activeAccount && (

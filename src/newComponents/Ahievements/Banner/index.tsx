@@ -4,7 +4,7 @@ import type { UserState } from '@/types/store';
 import PButton from '@/newComponents/PButton';
 import './index.scss';
 
-const Search: React.FC = () => {
+const Banner: React.FC = () => {
   const sysConfig = useSelector((state: UserState) => state.sysConfig);
 
   const hubUrl = useMemo(() => {
@@ -39,4 +39,4 @@ const Search: React.FC = () => {
   );
 };
 
-export default Search;
+export default Banner;

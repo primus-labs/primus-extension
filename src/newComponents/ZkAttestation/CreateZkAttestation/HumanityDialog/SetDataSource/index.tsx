@@ -27,8 +27,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit }) => {
       'okx',
       'tiktok',
       'x',
-      'google',
-      'discord',
+      // 'google',
+      // 'discord',
     ];
     // 'zan' 'chatgpt'
     const newArr = sourceNameArr.map((i) => {

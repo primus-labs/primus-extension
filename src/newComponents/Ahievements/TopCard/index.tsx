@@ -66,19 +66,7 @@ const AchievementTopCard: React.FC<AchievementTopCardProps> = memo(
                 {countedReferrals}
               </div>
             </div>
-            <div className={'referral-code'}>
-              <div className={'referral-code-text'}>Referral Code</div>
-              <div className={'referral-code-main'}>
-                <div className={'referral-code-main-text'}>{referralCode}</div>
-                <PButton
-                  type="icon"
-                  className={'referral-code-copy-ico'}
-                  icon={<i className="iconfont icon-iconCopy"></i>}
-                  onClick={copyReferralCodeFn}
-                />
-                {/*<img className={'referral-code-copy-ico'} src={textCopyIcon} onClick={copyReferralCodeFn}></img>*/}
-              </div>
-            </div>
+            
           </div>
         </div>
       </div>

@@ -67,6 +67,8 @@ const ZkAttestation = memo(() => {
         setVisibleAssetDialog(attType);
         setAttestationPresets(presetObj);
       }
+    } else {
+      setAttestationPresets(undefined);
     }
   }, [presetDataSourceId]);
   useEffect(() => {
@@ -127,7 +129,7 @@ const ZkAttestation = memo(() => {
     setVisibleAssetDialog('');
     handleSubmitAssetDialog();
   }, [handleSubmitAssetDialog]);
-  
+
   const handleCloseOnChainDialog = useCallback(() => {
     // setVisibleOnChainDialog(false);
     dispatch(setActiveOnChain({ loading: 0 }));

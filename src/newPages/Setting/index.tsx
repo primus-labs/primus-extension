@@ -1,7 +1,6 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import './index.scss';
-import PSelect from '@/newComponents/PSelect';
 import { getUserInfo } from '@/services/api/achievements';
 import copy from 'copy-to-clipboard';
 import { Divider } from 'antd';
@@ -14,12 +13,8 @@ import { DEFAULTDATASOURCEPOLLINGTIMENUM } from '@/config/constants';
 // eslint-disable-next-line react/display-name
 const Setting = memo(() => {
   const [currencies, setCurrencies] = useState([]);
-  const [currencyChosen, setCurrencyChosen] = useState('USD');
 
   const [updateFrequency, setUpdateFrequency] = useState([]);
-  const [updateFrequencyChosen, setUpdateFrequencyChosen] = useState(
-    DEFAULTDATASOURCEPOLLINGTIMENUM
-  );
   const [mainWallet, setMainWallet] = useState('');
   const [serialNum, setSerialNum] = useState('');
 
@@ -56,24 +51,6 @@ const Setting = memo(() => {
     checkIfHadSetPwd();
   }, []);
 
-  const currencyItems = useMemo(() => {
-    return currencies.map((item) => {
-      return {
-        label: item,
-        value: item,
-      };
-    });
-  }, [currencies]);
-
-  const updateFrequencyItems = useMemo(() => {
-    return updateFrequency.map((item) => {
-      return {
-        label: item + ' Minute',
-        value: item,
-      };
-    });
-  }, [updateFrequency]);
-
   const copyMainWalletFn = () => {
     copy(mainWallet);
     // eslint-disable-next-line no-undef
@@ -108,88 +85,6 @@ const Setting = memo(() => {
   return (
     <div className={'outerDiv'}>
       <div className="pageContent">
-        <div className={'cardDiv1'}>
-          <div className={'currencyDiv'}>
-            <div className={'descDiv'}>
-              <div className={'title'}>Preferred currency</div>
-              <div className={'content'}>
-                Choose the currency shown to your asset balance
-              </div>
-            </div>
-            <div
-              className={'selectDiv'}
-              style={{
-                width: '149px',
-                height: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              {/*<Select*/}
-              {/*  style={{ width: '149px', height: '32px' }}*/}
-              {/*  defaultValue={currencyChosen}*/}
-              {/*  options={currencyItems}*/}
-              {/*  onChange={(v) => {*/}
-              {/*    setCurrencyChosen(v);*/}
-              {/*  }}>*/}
-              {/*</Select>*/}
-              <PSelect
-                className={'selectDivInput'}
-                list={currencyItems}
-                onChange={(v) => {
-                  setCurrencyChosen(v);
-                }}
-                value={currencyChosen}
-              />
-            </div>
-          </div>
-          <Divider
-            style={{
-              width: '1072px',
-              marginTop: '16px',
-              marginBottom: '16px',
-              borderBlockStart: '1px solid var(--border-tokens-border-primary)',
-            }}
-          />
-          <div className={'currencyDiv'}>
-            <div className={'descDiv'}>
-              <p className={'title'}>Data update frequency</p>
-              <p className={'content'}>
-                Select the frequency to automatically update your fetched data
-                sources.
-              </p>
-            </div>
-            <div
-              className={'selectDiv'}
-              style={{
-                width: '149px',
-                height: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              {/*<Select*/}
-              {/*  style={{ width: '149px', height: '32px' }}*/}
-              {/*  defaultValue={updateFrequencyChosen}*/}
-              {/*  options={updateFrequencyItems}*/}
-              {/*  onChange={(v) => {*/}
-              {/*    setUpdateFrequencyChosen(v);*/}
-              {/*  }}>*/}
-              {/*</Select>*/}
-
-              <PSelect
-                className={'selectDivInput'}
-                list={updateFrequencyItems}
-                onChange={(v) => {
-                  setUpdateFrequencyChosen(v);
-                }}
-                value={updateFrequencyChosen}
-              />
-            </div>
-          </div>
-        </div>
 
         <div className={'cardDiv1'}>
           <div className={'currencyDiv'}>
