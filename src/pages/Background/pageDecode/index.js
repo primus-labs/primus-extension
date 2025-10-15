@@ -1224,18 +1224,6 @@ export const pageDecodeMsgListener = async (
             requestId,
             newCapturedInfo
           );
-          const requireUrlArr = [
-            'https://www.tiktok.com/passport/web/account/info/',
-            'https://api.x.com/1.1/account/settings.json',
-          ];
-          const curRequireUrl = requireUrlArr.find((i) =>
-            currRequestUrl.includes(i)
-          );
-          if (curRequireUrl) {
-            await chrome.storage.local.set({
-              [curRequireUrl]: JSON.stringify(newCurrRequestObj),
-            });
-          }
           if (
             needQueryDetail &&
             formatUrlKey.startsWith(
@@ -1336,7 +1324,7 @@ export const pageDecodeMsgListener = async (
         if (dataSource === 'chatgpt') {
           console.log('onCompletedFn', dataSource, details);
           // chatgpt has only one requestUrl
-          await extraRequestFn();
+          // await extraRequestFn();// For simplified version comments
           console.log('setUIStep-toVerify');
           sendMsgToDataSourcePage({
             type: 'pageDecode',

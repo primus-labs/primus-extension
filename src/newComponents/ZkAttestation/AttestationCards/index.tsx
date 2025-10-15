@@ -418,16 +418,6 @@ const Cards: React.FC<PDropdownProps> = memo(
                       <div className="descItem">
                         <div className="label">Data account</div>
                         <div className="value">
-                          {/* {i.attestationType === 'On-chain Transactions'
-                            ? formatAddress(
-                                utils.getAddress(i.address),
-                                7,
-                                5,
-                                '...'
-                              )
-                            : i.account
-                            ? `${i.dataSourceId === 'x' ? '@' : ''}${i.account}`
-                            : i.sourceUseridHash} */}
                           {i.attestationType === 'On-chain Transactions'
                             ? formatAddress(
                                 utils.getAddress(i.address),
@@ -436,8 +426,9 @@ const Cards: React.FC<PDropdownProps> = memo(
                                 '...'
                               )
                             : i.account
-                            ? i.account
+                            ? `${i.dataSourceId === 'x' ? '@' : ''}${i.account}`
                             : i.sourceUseridHash}
+                          
                         </div>
                       </div>
                       <div className="descItem">
