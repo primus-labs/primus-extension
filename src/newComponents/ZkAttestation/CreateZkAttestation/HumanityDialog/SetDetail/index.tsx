@@ -185,7 +185,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     }, [pswForm.verificationContent, handleChangePswForm]);
     useEffect(() => {
       setPswForm(presets);
-    }, [presets]);
+    }, []);
+    // }, [presets, ignorePresets]);
     const initActiveDataSouceUserInfo = useCallback(async () => {
       const res = await chrome.storage.local.get([dataSourceId]);
       if (res[dataSourceId]) {
@@ -231,7 +232,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             <>
               <div className="label">Verification Condition</div>
               <div className="value">
-                {presets.verificationValue || pswForm.verificationValue}
+                {pswForm.verificationValue}
               </div>
             </>
           ) : (

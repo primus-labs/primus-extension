@@ -3,8 +3,9 @@
 @import '@/assets/newCss/mixins.scss';
 
 .attestationsModule {
-  width: calc((100% - var(--spacing-16)) / 2);
-  @include fcss;
+  // width: calc((100% - var(--spacing-16)) / 2);
+  width: 100%;
+  @include frss;
   gap: var(--spacing-16);
 }
 @media (max-width: 1365px) {
