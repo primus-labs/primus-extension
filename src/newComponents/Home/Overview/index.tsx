@@ -34,7 +34,7 @@ const Overview = memo(() => {
       title: 'Data Connected',
       num: 0,
       operationName: 'Connect Data Source',
-      // link: '/datas',
+      link: '',
     },
     Attestation: {
       id: 'Attestation',
