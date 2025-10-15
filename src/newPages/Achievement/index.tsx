@@ -28,6 +28,7 @@ const AchievementHome = memo(() => {
   const isShowREPUTATIONRECORD = useMemo(() => {
     const nowTime = +new Date();
     const showTime = REPUTATIONRECORD_SHOWTIME - 0;
+    debugger
     return dayjs(nowTime).isAfter(showTime);
   }, [REPUTATIONRECORD_SHOWTIME]);
 

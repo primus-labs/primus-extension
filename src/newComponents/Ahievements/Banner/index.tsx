@@ -6,7 +6,17 @@ import './index.scss';
 
 const Banner: React.FC = () => {
   const sysConfig = useSelector((state: UserState) => state.sysConfig);
-
+  const configTextObj = useMemo(() => {
+    const configStr = sysConfig.REPUTATIONRECORD_SHOWTEXT;
+    if (configStr) {
+      return JSON.parse(configStr);
+    } else {
+      return {
+        title: 'Primus AlphaNet is live — join the new journey!',
+        desc: 'All your extension points are counted.',
+      };
+    }
+  }, [sysConfig]);
   const hubUrl = useMemo(() => {
     const configStr =
       sysConfig.REPUTATIONRECORD_LINK || 'http://app.primuslabs.xyz';
@@ -20,11 +30,9 @@ const Banner: React.FC = () => {
       <div className="intro">
         <i className="iconfont icon-iconInfoColorful" />
         <div className="txtWrapper">
-          <div className="title">
-            Primus AlphaNet is live — join the new journey!
-          </div>
+          <div className="title">{configTextObj?.title}</div>
           <div className="desc">
-            <p>All your extension points are counted.</p>
+            <p>{configTextObj?.desc}</p>
           </div>
         </div>
       </div>
