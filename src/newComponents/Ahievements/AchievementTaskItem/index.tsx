@@ -1,12 +1,6 @@
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useState,
-  useMemo,
-} from 'react';
+import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
 import type { Dispatch } from 'react';
-
+import dayjs from 'dayjs';
 import './index.scss';
 import PButton from '@/newComponents/PButton';
 import taskFinishedIcon from '@/assets/newImg/achievements/taskFinishedIcon.svg';
@@ -57,12 +51,22 @@ export type TaskItemWithClick = {
 
 const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
   (taskItemWithClick: TaskItemWithClick) => {
+
     const { sourceMap2 } = useAllSources();
     const dispatch: Dispatch<any> = useDispatch();
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
     const DISCORDINVITEURL = useMemo(() => {
       return sysConfig.DISCORD_INVITE_LINK;
     }, [sysConfig]);
+    const REPUTATIONRECORD_SHOWTIME = useMemo(() => {
+      const configStr = sysConfig.REPUTATIONRECORD_SHOWTIME;
+      return configStr;
+    }, [sysConfig]);
+    const isShowREPUTATIONRECORD = useMemo(() => {
+      const nowTime = +new Date();
+      const showTime = REPUTATIONRECORD_SHOWTIME - 0;
+      return dayjs(nowTime).isAfter(showTime);
+    }, [REPUTATIONRECORD_SHOWTIME]);
     const taskItem = taskItemWithClick.taskItem;
     const showCodeDiag = taskItemWithClick.showCodeDiag;
     const refreshTotalScore = taskItemWithClick.refreshTotalScore;
@@ -979,13 +983,16 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
             onClick={handleClickFn}
             className={'achievementTaskitemFinishBtn'}
             loading={btnIsLoading}
-            disabled
-            />
-            // disabled={[
-            //   'CONNECT_HUOBI_DATA',
-            //   'CONNECT_MEXC_DATA',
-            //   'CONNECT_GITHUB_DATA',
-            // ].includes(taskItem.taskIdentifier)}
+            disabled={
+              isShowREPUTATIONRECORD
+                ? true
+                : [
+                    'CONNECT_HUOBI_DATA',
+                    'CONNECT_MEXC_DATA',
+                    'CONNECT_GITHUB_DATA',
+                  ].includes(taskItem.taskIdentifier)
+            }
+          />
         )}
       </div>
     );
