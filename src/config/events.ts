@@ -35,7 +35,7 @@ export const eventMetaMap = {
         pointIconFont: 'icon-iconBlockChain',
         pointDesc: 'BAS XPS',
       },
-      { pointIconFont: 'icon-iconGift', pointDesc: '100 points' },
+      // { pointIconFont: 'icon-iconGift', pointDesc: '100 points' },
     ],
 
     nameInAttestation: 'BAS event-specific',
@@ -73,7 +73,7 @@ export const eventMetaMap = {
         pointIconFont: 'icon-iconBlockChain',
         pointDesc: 'Linea Voyage XP',
       },
-      { pointIconFont: 'icon-iconGift', pointDesc: '100 points' },
+      // { pointIconFont: 'icon-iconGift', pointDesc: '100 points' },
     ],
 
     nameInAttestation: 'Linea voyage specific',
@@ -122,7 +122,7 @@ export const eventMetaMap = {
         pointIconFont: 'icon-iconBlockChain',
         pointDesc: 'Early Birld NFT',
       },
-      { pointIconFont: 'icon-iconGift', pointDesc: '100 points' },
+      // { pointIconFont: 'icon-iconGift', pointDesc: '100 points' },
     ],
     nameInAttestation: 'Early Bird NFT',
     picTxt: 'Early Bird NFT Rewards',
@@ -151,7 +151,9 @@ export const eventMetaMap = {
 
     chainDesc: 'Linea Voyage XP',
     gift: '100 points',
-    points: [{ pointIconFont: 'icon-iconGift', pointDesc: '100 points' }],
+    points: [
+      // { pointIconFont: 'icon-iconGift', pointDesc: '100 points' }
+    ],
 
     nameInAttestation: 'SignX Program',
     picTxt: 'SignX Program',

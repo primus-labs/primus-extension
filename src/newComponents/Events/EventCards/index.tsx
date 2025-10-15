@@ -83,16 +83,17 @@ const Cards: React.FC<PDropdownProps> = memo(({ list }) => {
               </div>
               <div className="txtWrapper">
                 <div className="title">{i.title}</div>
-                <div className="descItems">
-                  {i.points.map((p, index) => {
-                    return (
-                      <div className="descItem" key={index}>
-                        <div className={`iconfont ${p.pointIconFont}`}></div>
-                        <span>{p.pointDesc}</span>
-                      </div>
-                    );
-                  })}
-                  {/* {i.periodType === '1' && (
+                {i.points?.length > 0 && (
+                  <div className="descItems">
+                    {i.points.map((p, index) => {
+                      return (
+                        <div className="descItem" key={index}>
+                          <div className={`iconfont ${p.pointIconFont}`}></div>
+                          <span>{p.pointDesc}</span>
+                        </div>
+                      );
+                    })}
+                    {/* {i.periodType === '1' && (
                       <div className="descItem">
                         <i className="iconfont icon-iconBlockChain"></i>
                         <span>{i.chainDesc}</span>
@@ -108,7 +109,9 @@ const Cards: React.FC<PDropdownProps> = memo(({ list }) => {
                       <i className="iconfont icon-iconGift"></i>
                       <span>{i.gift}</span>
                     </div> */}
-                </div>
+                  </div>
+                )}
+
                 <div className="desc">{i.desc}</div>
               </div>
             </div>

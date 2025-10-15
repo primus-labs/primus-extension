@@ -32,7 +32,7 @@ const Cards: React.FC<PDropdownProps> = memo(({}) => {
             pointIconFont: 'icon-iconBlockChain',
             pointDesc: 'Linea Voyage XP',
           },
-          { pointIconFont: 'icon-iconGift', pointDesc: '100 points' },
+          // { pointIconFont: 'icon-iconGift', pointDesc: '100 points' },
         ],
         // chainDesc: 'Linea Voyage XP', // required when period is 1
       },
@@ -52,7 +52,7 @@ const Cards: React.FC<PDropdownProps> = memo(({}) => {
             pointIconFont: 'icon-iconBlockChain',
             pointDesc: 'BAS XPS',
           },
-          { pointIconFont: 'icon-iconGift', pointDesc: '100 points' },
+          // { pointIconFont: 'icon-iconGift', pointDesc: '100 points' },
         ],
       },
       {
@@ -67,7 +67,9 @@ const Cards: React.FC<PDropdownProps> = memo(({}) => {
 
         title: 'SignX Program',
         desc: 'Building Trust in Trustless Systems',
-        points: [{ pointIconFont: 'icon-iconGift', pointDesc: '100 points' }],
+        points: [
+          // { pointIconFont: 'icon-iconGift', pointDesc: '100 points' }
+        ],
       },
       // {
       //   id: EARLYBIRDNFTEVENTNAME,
