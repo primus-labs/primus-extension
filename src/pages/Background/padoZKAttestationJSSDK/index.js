@@ -545,7 +545,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
           algorithmType,
         };
 
-        acc = await getDataSourceAccount(activeAttestationParams.dataSourceId);
+        // acc = await getDataSourceAccount(activeAttestationParams.dataSourceId);
+        acc = '';
         activeAttestationParams.account = acc;
 
         if (

@@ -1,10 +1,9 @@
-import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
+import React, { useState, useCallback, useEffect, memo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
 import { eventMetaMap } from '@/config/events';
-import type { Dispatch } from 'react';
 import SplicedIcons from '@/newComponents/SplicedIcons';
 import iconPado from '@/assets/newImg/events/iconPado.svg';
 import './index.scss';
@@ -27,7 +26,6 @@ type StepItem = {
 };
 
 const DataSourceItem = memo(() => {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const eventId = searchParams.get('id') as string;
   const [isComplete, setIsComplete] = useState<boolean>(false);

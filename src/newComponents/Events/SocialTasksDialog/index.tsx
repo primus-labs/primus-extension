@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, memo, useCallback } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import useJoinDiscord from '@/hooks/useJoinDiscord';
 import { DATASOURCEMAP } from '@/config/dataSource';
@@ -54,8 +54,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     }, [taskStatusMap]);
 
     const onFollowX = useCallback(async () => {
-      const targetUrl =
-        'https://x.com/intent/follow?screen_name=primus_labs';
+      const targetUrl = 'https://x.com/intent/follow?screen_name=primus_labs';
       const openXUrlFn = async () => {
         const currentWindowTabs = await chrome.tabs.query({
           active: true,

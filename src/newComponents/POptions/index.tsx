@@ -1,7 +1,7 @@
 import React, { useState, useCallback, memo } from 'react';
 import { WALLETLIST } from '@/config/wallet';
 import type { SyntheticEvent } from 'react';
-import type { newWALLETITEMTYPE, WALLETMAPTYPE } from '@/types/config';
+import type { newWALLETITEMTYPE } from '@/types/config';
 
 import './index.scss';
 

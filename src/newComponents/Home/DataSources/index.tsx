@@ -1,11 +1,9 @@
-import React, { memo, useCallback, useState, useEffect } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { setActiveConnectDataSource } from '@/store/actions';
 
 import './index.scss';
 import PButton from '@/newComponents/PButton';
 import DataSourceBrief from '@/newComponents/DataSource/DataSourceBrief';
-import ConnectDataSource from '@/newComponents/DataSource/ConnectDataSource';
 import PTooltip from '@/newComponents/PTooltip';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -26,9 +24,10 @@ const Overview = memo(() => {
     useState<string>();
   const navigate = useNavigate();
   let dataSourceList = ['x', 'tiktok'];
-  if (size.width >= 1342) {
-    dataSourceList = ['x', 'tiktok', 'binance', 'okx', 'bybit'];
-  } else if (size.width >= 1128) {
+  // if (size.width >= 1342) {
+  //   dataSourceList = ['x', 'tiktok', 'binance', 'okx', 'bybit'];
+  // } else
+  if (size.width >= 1128) {
     dataSourceList = ['x', 'tiktok', 'binance', 'okx'];
   } else if (size.width >= 914) {
     dataSourceList = ['x', 'tiktok', 'binance'];
@@ -60,7 +59,8 @@ const Overview = memo(() => {
     //     );
     //   }
     // }
-    navigate(`/datas/data?dataSourceId=${i}`);
+    // navigate(`/datas/data?dataSourceId=${i}`);
+    navigate(`/Attestation?dataSourceId=${i}`);
   }, []);
   // const handleClick = useCallback(
   //   (i) => {
@@ -91,7 +91,7 @@ const Overview = memo(() => {
     [checkIsConnectedDataSourceFn, handleClick]
   );
   const handleMore = useCallback(() => {
-    navigate('/datas');
+    navigate('/Attestation');
   }, [navigate]);
   return (
     <div className="homeDataSources">
@@ -145,7 +145,6 @@ const Overview = memo(() => {
           );
         })}
       </ul>
-      <ConnectDataSource />
     </div>
   );
 });

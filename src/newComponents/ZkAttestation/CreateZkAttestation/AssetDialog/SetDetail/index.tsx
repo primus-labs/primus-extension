@@ -11,13 +11,10 @@ import {
   ALLVERIFICATIONCONTENTTYPEEMAP,
 } from '@/config/attestation';
 import { DATASOURCEMAP } from '@/config/dataSource';
-import useDataSource from '@/hooks/useDataSource';
 import {
   mul,
   gt,
-  gte,
   getTotalBalFromNumObjAPriceObj,
-  getTotalBalFromAssetsMap,
   getAccount,
 } from '@/utils/utils';
 
@@ -29,7 +26,6 @@ import PTooltip from '@/newComponents/PTooltip';
 import PInput from '@/newComponents/PInput';
 
 import './index.scss';
-import useAllSources from '@/hooks/useAllSources';
 import useAssetsStatistic from '@/hooks/useAssetsStatistic';
 type PswFormType = {
   dataSourceId: string;

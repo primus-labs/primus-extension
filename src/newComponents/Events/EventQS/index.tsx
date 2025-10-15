@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
+import React, { useState, useCallback, useEffect, memo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
   BASEVENTNAME,

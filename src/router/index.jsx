@@ -1,7 +1,5 @@
 import React from 'react';
 import Guide from '@/pages/Home/Home.jsx';
-import DataSourceOverview from '@/newPages/DataSourceOverview/index.tsx';
-import DataSourceItem from '@/newPages/DataSourceItem/index.tsx';
 import Layout from '@/newComponents/Layout/index.tsx';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import TransactionDetail from '@/pages/Transaction/TransactionDetail';
@@ -13,7 +11,6 @@ import EventDetail from '@/newPages/EventDetail';
 import Setting from '@/newPages/Setting';
 import ComingSoon from '@/newPages/ComingSoon';
 import Home from '@/newPages/Home';
-import DataDashboard from '@/newPages/DataDashboard';
 const router = [
   {
     path: '/',
@@ -34,20 +31,6 @@ const router = [
         path: 'home',
         name: 'Home',
         element: <Home />,
-      },
-      {
-        path: 'datas',
-        name: 'Data Source',
-        children: [
-          {
-            index: true,
-            element: <DataSourceOverview />,
-          },
-          {
-            path: 'data',
-            element: <DataSourceItem />,
-          },
-        ],
       },
       {
         path: 'Attestation',
@@ -71,10 +54,6 @@ const router = [
             element: <EventDetail />,
           },
         ],
-      },
-      {
-        path: 'dataDashboard',
-        element: <DataDashboard />,
       },
       {
         path: 'developer',

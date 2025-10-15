@@ -1,11 +1,4 @@
-import React, {
-  useState,
-  useRef,
-  useMemo,
-  memo,
-  useEffect,
-  useCallback,
-} from 'react';
+import React, { useState, memo, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { setThemeAction } from '@/store/actions';
 import type { Dispatch } from 'react';
@@ -34,7 +27,7 @@ const Test: React.FC = memo(({}) => {
   return (
     <div className="test">
       <div className="left">
-        <Sidebar/>
+        <Sidebar />
       </div>
       <div className="right">
         <section className="pSection">

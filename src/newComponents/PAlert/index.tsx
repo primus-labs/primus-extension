@@ -1,5 +1,5 @@
 import React, { useMemo, memo, useCallback } from 'react';
-import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import useMsgs from '@/hooks/useMsgs';
 import PButton from '@/newComponents/PButton';
 import PClose from '@/newComponents/PClose';

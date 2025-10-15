@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { DATASOURCEMAPVALUES } from '@/config/dataSource';
@@ -6,7 +6,7 @@ import type { UserState } from '@/types/store';
 import PInput from '@/newComponents/PInput';
 import PSelect from '@/newComponents/PSelect';
 import iconSearch from '@/assets/newImg/layout/iconSearch.svg';
-import './index.scss'
+import './index.scss';
 
 const Search: React.FC = () => {
   const dispatch = useDispatch();

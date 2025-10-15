@@ -3,7 +3,6 @@ import { useLocation, Outlet, ScrollRestoration } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import rem from '@/utils/rem.js';
 import {
-  setSysConfigAction,
   initSourceUpdateFrequencyActionAsync,
   setProofTypesAsync,
   setExSourcesAsync,
@@ -17,7 +16,6 @@ import {
   initIfHadPwdAsync,
   setConnectedWalletsActionAsync,
   initEventsActionAsync,
-  setNftsActionAsync,
   initNftsActionAsync,
   // setEarlyBirdNFTAsync,
   // setEventsLotteryResultsAsync,
@@ -25,11 +23,9 @@ import {
   initSetNewRewardsAction,
   initSetNotificationsAction,
 } from '@/store/actions';
-import useUpdateOnChainSources from '@/hooks/useUpdateOnChainSources';
 import useListener from '@/hooks/useListener';
 import useALGAttest from '@/hooks/useALGAttest';
 import useKeepConnect from '@/hooks/useKeepConnect';
-import usePollingUpdateAllSources from '@/hooks/usePollingUpdateAllSources';
 import useCheckCompletedEvents from '@/hooks/useCheckCompletedEvents';
 import { postMsg, compareVersions } from '@/utils/utils';
 import { updateAlgoUrl } from '@/config/envConstants';
@@ -52,12 +48,9 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
   const pageRightInstance = useRef<any>(null);
   const pageInstance = useRef<any>(null);
   const pagelayoutInstance = useRef(null);
-  const { pathname } = useLocation();
   const theme = useSelector((state: UserState) => state.theme);
   const userInfo = useSelector((state: UserState) => state.userInfo);
-  const connectedWallet = useSelector(
-    (state: UserState) => state.connectedWallet
-  );
+ 
   // console.log('222userInfo', userInfo);
   const dispatch: Dispatch<any> = useDispatch();
   const padoServicePort = useSelector(
@@ -67,7 +60,6 @@ const Layout: React.FC<LayoutProps> = memo(({ children }) => {
   useListener();
   useALGAttest();
   useKeepConnect();
-  usePollingUpdateAllSources();
   useCheckCompletedEvents();
 
   const initStoreData = useCallback(async () => {

@@ -1,5 +1,6 @@
-import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
+import React, { useState, useCallback, useEffect, memo } from 'react';
 
+import Banner from '@/newComponents/Ahievements/Banner';
 import AchievementTopCard from '@/newComponents/Ahievements/TopCard';
 import AchievementTaskItem from '@/newComponents/Ahievements/AchievementTaskItem';
 
@@ -22,7 +23,7 @@ const AchievementHome = memo(() => {
   const [checkIsConnectFlag, setCheckIsConnectFlag] = useState<boolean>(true);
   useCheckIsConnectedWallet(checkIsConnectFlag);
   const connectWalletDialogVisible = useSelector(
-    (state:UserState) => state.connectWalletDialogVisible
+    (state: UserState) => state.connectWalletDialogVisible
   );
   useEffect(() => {
     if (connectWalletDialogVisible === 0) {
@@ -51,7 +52,9 @@ const AchievementHome = memo(() => {
 
   const dispatch = useDispatch();
   const [connected, setConnected] = useState<boolean>(false);
-  const connectedWallet = useSelector((state:UserState) => state.connectedWallet);
+  const connectedWallet = useSelector(
+    (state: UserState) => state.connectedWallet
+  );
   const activeConnectWallet = useSelector(
     (state: UserState) => state.activeConnectWallet
   );
@@ -168,11 +171,6 @@ const AchievementHome = memo(() => {
     handleCreate();
   };
 
-  const handleSharePoints = () => {
-    setShareType('score');
-    setVisibleShareDiag(true);
-  };
-
   const handleShareReferralCode = () => {
     setShareType('referralCode');
     setVisibleShareDiag(true);
@@ -217,13 +215,13 @@ const AchievementHome = memo(() => {
   return (
     <div className="pageAchievementTaskItem">
       <div className="pageContent">
+        <Banner />
         <AchievementTopCard
           referrals={referrals}
           countedReferrals={countedReferrals}
           totalScore={totalScore}
           referralCode={referralCode}
           handleRewardsHistory={handleRewordHistory}
-          handleSharePoints={handleSharePoints}
           handleShareReferralCode={handleShareReferralCode}
         ></AchievementTopCard>
         <div className={'achievementTasks'}>

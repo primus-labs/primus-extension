@@ -7,9 +7,8 @@ import useAttestBrevis from '@/hooks/useAttestBrevis';
 import useEventDetail from '@/hooks/useEventDetail';
 import { BASEVENTNAME } from '@/config/events';
 import { DATASOURCEMAP } from '@/config/dataSource';
-import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
 import { formatAddress } from '@/utils/utils';
-import { switchAccount, requestSign } from '@/services/wallets/metamask';
+import { switchAccount } from '@/services/wallets/metamask';
 
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
@@ -78,7 +77,7 @@ const Nav: React.FC<PButtonProps> = memo(
       setStep(2);
     }, []);
     const handleSubmitSetDetail = useCallback(
-      async (form:any = {}) => {
+      async (form: any = {}) => {
         // setAssetForm((f) => ({ ...f, ...form }));
         // 1.store attestation in process params in react store
         const activeAttestationParams = {
@@ -89,7 +88,9 @@ const Nav: React.FC<PButtonProps> = memo(
           // loading: 1,
         };
         // form.sourceUseridHash = activeSource?.address?.toLowerCase() as string;
-        dispatch(setActiveAttestation({ ...activeAttestationParams, loading: 1 }));
+        dispatch(
+          setActiveAttestation({ ...activeAttestationParams, loading: 1 })
+        );
         dispatch(setAttestLoading(1));
         // 2.check select account if connected
         // 3.request
@@ -97,7 +98,9 @@ const Nav: React.FC<PButtonProps> = memo(
           setStep(3);
           const curConnectedAddr = connectedWallet?.address;
           // if did‘t connected with the selected account
-          if (curConnectedAddr?.toLowerCase() !== form?.account?.toLowerCase()) {
+          if (
+            curConnectedAddr?.toLowerCase() !== form?.account?.toLowerCase()
+          ) {
             const formatAddr = formatAddress(
               form?.account || '',
               7,

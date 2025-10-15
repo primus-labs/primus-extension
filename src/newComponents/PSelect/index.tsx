@@ -6,13 +6,11 @@ import React, {
   memo,
   useCallback,
 } from 'react';
-import { useSelector } from 'react-redux';
 import PDropdown from '../PDropdown';
 import PTooltip from '@/newComponents/PTooltip';
 import PButton from '@/newComponents/PButton';
 
 import type { MouseEvent } from 'react';
-import type { UserState } from '@/types/store';
 
 import './index.scss';
 

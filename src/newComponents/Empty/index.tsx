@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
+import React, { memo, useEffect } from 'react';
 
 import empty from '@/assets/newImg/zkAttestation/empty.svg';
 import './index.scss';
@@ -21,7 +21,14 @@ const Empty: React.FC<EmptyProps> = memo(
           <div className="title">{title}</div>
           <div className="desc">{desc}</div>
         </div>
-        {btnTxt && <PButton text={btnTxt} type="primary" onClick={onSubmit as () => void} className="submitBtn"/>}
+        {btnTxt && (
+          <PButton
+            text={btnTxt}
+            type="primary"
+            onClick={onSubmit as () => void}
+            className="submitBtn"
+          />
+        )}
       </div>
     );
   }

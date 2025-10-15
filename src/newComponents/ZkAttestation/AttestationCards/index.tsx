@@ -4,11 +4,9 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import dayjs from 'dayjs';
 import { utils } from 'ethers';
-import { getCurrentDate, formatAddress } from '@/utils/utils';
+import { formatAddress } from '@/utils/utils';
 import { setCredentialsAsync, setActiveOnChain } from '@/store/actions';
 import { getUserInfo } from '@/services/api/achievements';
-import useDataSource from '@/hooks/useDataSource';
-import useAllSources from '@/hooks/useAllSources';
 import { compareVersions } from '@/utils/utils';
 import { ETHSIGNEVENTNAME, eventMetaMap } from '@/config/events';
 import { DATASOURCEMAP } from '@/config/dataSource';
@@ -16,7 +14,6 @@ import { PADOADDRESS } from '@/config/envConstants';
 import { EASInfo, CURENV } from '@/config/chain';
 import {
   ATTESTATIONTYPEMAP,
-  ASSETSVERIFICATIONCONTENTTYPEEMAP,
   ALLVERIFICATIONCONTENTTYPEEMAP,
 } from '@/config/attestation';
 
@@ -103,7 +100,7 @@ const Cards: React.FC<PDropdownProps> = memo(
           );
         });
       }
-      // console.log('222credentialsFromStore-compatible-sorted', newList);
+      console.log('222credentialsFromStore-compatible-sorted', newList);
       return newList;
     }, [credentialsFromStore, attestationQueryStr, attestationQueryType]);
     const isDisableMoreFn = useCallback((i) => {
@@ -421,7 +418,7 @@ const Cards: React.FC<PDropdownProps> = memo(
                       <div className="descItem">
                         <div className="label">Data account</div>
                         <div className="value">
-                          {i.attestationType === 'On-chain Transactions'
+                          {/* {i.attestationType === 'On-chain Transactions'
                             ? formatAddress(
                                 utils.getAddress(i.address),
                                 7,
@@ -430,6 +427,16 @@ const Cards: React.FC<PDropdownProps> = memo(
                               )
                             : i.account
                             ? `${i.dataSourceId === 'x' ? '@' : ''}${i.account}`
+                            : i.sourceUseridHash} */}
+                          {i.attestationType === 'On-chain Transactions'
+                            ? formatAddress(
+                                utils.getAddress(i.address),
+                                7,
+                                5,
+                                '...'
+                              )
+                            : i.account
+                            ? i.account
                             : i.sourceUseridHash}
                         </div>
                       </div>

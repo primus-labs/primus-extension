@@ -1,10 +1,7 @@
-import React, { useState, useEffect, memo, useCallback, useMemo } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { setActiveOnChain } from '@/store/actions';
+import React, { useState, useEffect, memo } from 'react';
+import { useSelector } from 'react-redux';
 import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
 import type { UserState } from '@/types/store';
-import type { Dispatch } from 'react';
 import CurrentEvents from '@/newComponents/Events/CurrentEvents';
 import PastEvents from '@/newComponents/Events/PastEvents';
 
@@ -25,7 +22,7 @@ const Events = memo(() => {
     <div className="pageEvents">
       <div className="pageContent">
         <CurrentEvents />
-        <PastEvents/>
+        <PastEvents />
       </div>
     </div>
   );

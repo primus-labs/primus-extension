@@ -22,7 +22,9 @@
     gap: var(--spacing-16);
 
     .dataSourceItem {
-      width: calc((100% - var(--spacing-16) * 4) / 5);
+
+       width: calc((100% - var(--spacing-16) * 3) / 4);
+      // width: calc((100% - var(--spacing-16) * 4) / 5);
       height: 100%;
       @include fcss;
       gap: var(--spacing-16);
@@ -72,15 +74,15 @@
     }
   }
 }
-@media (max-width: 1341px) {
-  .homeDataSources {
-    .dataSourceItems {
-      .dataSourceItem {
-        width: calc((100% - var(--spacing-16) * 3) / 4);
-      }
-    }
-  }
-}
+// @media (max-width: 1341px) {
+//   .homeDataSources {
+//     .dataSourceItems {
+//       .dataSourceItem {
+//         width: calc((100% - var(--spacing-16) * 3) / 4);
+//       }
+//     }
+//   }
+// }
 @media (max-width: 1127px) {
   .homeDataSources {
     .dataSourceItems {

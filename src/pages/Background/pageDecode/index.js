@@ -875,12 +875,12 @@ export const pageDecodeMsgListener = async (
         }
         formatRequests.push({ ...r, url: r.name === 'first' ? r.url : url });
       }
-      const activeInfo = formatRequests.find((i) => i.headers);
-      const activeHeader = Object.assign({}, activeInfo?.headers);
-      const authInfoName = dataSource + '-auth';
-      await chrome.storage.local.set({
-        [authInfoName]: JSON.stringify(activeHeader),
-      });
+      // const activeInfo = formatRequests.find((i) => i.headers);
+      // const activeHeader = Object.assign({}, activeInfo?.headers);
+      // const authInfoName = dataSource + '-auth';
+      // await chrome.storage.local.set({
+      //   [authInfoName]: JSON.stringify(activeHeader),
+      // });
       let formatResponse = JSON.parse(JSON.stringify(responses));
       if (dataSource === 'chatgpt') {
         const { chatGPTExpression } = activeTemplate;
@@ -1481,18 +1481,18 @@ export const pageDecodeMsgListener = async (
         method: 'getAttestation',
         params: JSON.parse(JSON.stringify(aligorithmParams)),
       });
-      if (!activeTemplate.sdkVersion) {
-        const { constructorF } = DATASOURCEMAP[dataSource];
-        if (constructorF) {
-          const ex = new constructorF();
-          // const storageRes = await chrome.storage.local.get([dataSource]);
-          // const hadConnectedCurrDataSource = !!storageRes[dataSource];
-          await storeDataSource(dataSource, ex, port, {
-            withoutMsg: true,
-            attestationRequestid: aligorithmParams.requestid,
-          });
-        }
-      }
+      // if (!activeTemplate.sdkVersion) {
+      //   const { constructorF } = DATASOURCEMAP[dataSource];
+      //   if (constructorF) {
+      //     const ex = new constructorF();
+      //     // const storageRes = await chrome.storage.local.get([dataSource]);
+      //     // const hadConnectedCurrDataSource = !!storageRes[dataSource];
+      //     await storeDataSource(dataSource, ex, port, {
+      //       withoutMsg: true,
+      //       attestationRequestid: aligorithmParams.requestid,
+      //     });
+      //   }
+      // }
     }
 
     if (name === 'close' || name === 'cancel') {

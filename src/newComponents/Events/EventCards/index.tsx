@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
+import React, { memo } from 'react';
 import { EARLYBIRDNFTEVENTNAME } from '@/config/events';
 import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';

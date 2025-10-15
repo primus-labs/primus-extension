@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, memo, useCallback } from 'react';
+import React, { memo } from 'react';
 import PMask from '@/newComponents/PMask';
 import PButton from '@/newComponents/PButton';
 import PClose from '@/newComponents/PClose';
@@ -18,7 +18,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             <header>
               <h1>Sure to delete?</h1>
               <h2>
-              Attestations that are not submitted cannot be recovered or searched for by the create wallet address.
+                Attestations that are not submitted cannot be recovered or
+                searched for by the create wallet address.
               </h2>
             </header>
             <PButton

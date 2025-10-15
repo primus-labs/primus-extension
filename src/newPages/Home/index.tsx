@@ -4,7 +4,7 @@ import Overview from '@/newComponents/Home/Overview';
 import Support from '@/newComponents/Home/Support';
 import DataSources from '@/newComponents/Home/DataSources';
 import WebComeBackDialog from '@/newComponents/Settings/WebComeBack';
-import DataSourcesModule from '@/newComponents/Home/DataSourcesModule';
+// import DataSourcesModule from '@/newComponents/Home/DataSourcesModule';
 import AttestationsModule from '@/newComponents/Home/AttestationsModule';
 import './index.scss';
 import { useSelector } from 'react-redux';
@@ -52,7 +52,7 @@ const Home = memo(() => {
         </div>
         <DataSources />
         <div className="pRow">
-          <DataSourcesModule />
+          {/* <DataSourcesModule /> */}
           <AttestationsModule />
         </div>
       </div>

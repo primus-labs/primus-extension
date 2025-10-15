@@ -1,6 +1,6 @@
 import React, { memo, useRef, useState, useCallback } from 'react';
 import './index.scss';
-import TokenPie from '@/newComponents/Home/DataSourcesModule/TokenPie';
+// import TokenPie from '@/newComponents/Home/DataSourcesModule/TokenPie';
 import PButton from '@/newComponents/PButton';
 import PMask from '@/newComponents/PMask';
 import PClose from '@/newComponents/PClose';
@@ -12,7 +12,6 @@ import blueRect from '@/assets/newImg/achievements/blueRect.svg';
 import x from '@/assets/img/iconDataSourceX.svg';
 import discord from '@/assets/img/iconDataSourceDiscord.png';
 import telegram from '@/assets/newImg/achievements/telegram.svg';
-import bgShare from '@/assets/newImg/dataDashboard/bgShare.svg';
 // @ts-ignore
 import { toPng } from 'html-to-image';
 import {
@@ -278,7 +277,7 @@ const ShareComponent: React.FC<PButtonProps> = memo(
                           {scoreShareProps.totalBalance}
                         </div>
                       </div>
-                      <TokenPie />
+                      {/* <TokenPie /> */}
                     </div>
                   </div>
                 )}
