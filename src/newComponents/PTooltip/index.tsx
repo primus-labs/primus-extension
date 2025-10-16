@@ -1,6 +1,5 @@
 import React, { memo } from 'react';
 import './index.scss';
-import { div } from '../../utils/utils';
 interface PBackProps {
   children: any;
   title: string;

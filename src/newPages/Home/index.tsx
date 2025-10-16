@@ -4,11 +4,14 @@ import Overview from '@/newComponents/Home/Overview';
 import Support from '@/newComponents/Home/Support';
 import DataSources from '@/newComponents/Home/DataSources';
 import WebComeBackDialog from '@/newComponents/Settings/WebComeBack';
-import DataSourcesModule from '@/newComponents/Home/DataSourcesModule';
+// import DataSourcesModule from '@/newComponents/Home/DataSourcesModule';
 import AttestationsModule from '@/newComponents/Home/AttestationsModule';
 import './index.scss';
 import { useSelector } from 'react-redux';
 import { UserState } from '@/types/store';
+import useCreateAccount from '@/hooks/useCreateAccount';
+import useListener from '@/hooks/useListener';
+import { postMsg } from '@/utils/utils';
 
 const Home = memo(() => {
   const [showInputPasswordDialog, setShowInputPasswordDialog] =
@@ -24,6 +27,35 @@ const Home = memo(() => {
   useEffect(() => {
     checkIfHadSetPwd();
   }, [checkIfHadSetPwd]);
+
+  const { createAccountFn } = useCreateAccount();
+  useListener();
+  const padoServicePort = useSelector((state: any) => state.padoServicePort);
+
+  const initAccount = useCallback(async () => {
+    const { keyStore, padoCreatedWalletAddress, privateKey, userInfo } =
+      await chrome.storage.local.get([
+        'keyStore',
+        'padoCreatedWalletAddress',
+        'privateKey',
+        'userInfo',
+      ]);
+    if (!privateKey && !keyStore && !userInfo) {
+      const msg = {
+        fullScreenType: 'wallet',
+        reqMethodName: 'create',
+        params: {},
+      };
+      postMsg(padoServicePort, msg);
+    }
+    if (privateKey && !userInfo) {
+      createAccountFn();
+    }
+  }, []);
+
+  useEffect(() => {
+    initAccount();
+  }, [initAccount]);
   return (
     <div className="pageHome">
       <div className="pageContent">
@@ -52,7 +84,7 @@ const Home = memo(() => {
         </div>
         <DataSources />
         <div className="pRow">
-          <DataSourcesModule />
+          {/* <DataSourcesModule /> */}
           <AttestationsModule />
         </div>
       </div>

@@ -20,12 +20,57 @@ import './index.scss';
 import useMsgs from '@/hooks/useMsgs';
 
 const ZkAttestation = memo(() => {
+  const navigate = useNavigate();
+  const [attestationPresets, setAttestationPresets] = useState();
+  const [searchParams] = useSearchParams();
+  const presetDataSourceId = searchParams.get('dataSourceId');
   const { addMsg } = useMsgs();
   const [checkIsConnectFlag, setCheckIsConnectFlag] = useState<boolean>(true);
   useCheckIsConnectedWallet(checkIsConnectFlag);
   const connectWalletDialogVisible = useSelector(
     (state: UserState) => state.connectWalletDialogVisible
   );
+  useEffect(() => {
+    if (presetDataSourceId) {
+      let attType = '';
+      let presetObj: any = undefined;
+      if (presetDataSourceId === 'x') {
+        attType = 'Humanity Verification';
+        presetObj = {
+          dataSourceId: 'x',
+          verificationContent: 'Account ownership',
+          verificationValue: 'Account owner',
+        };
+      } else if (presetDataSourceId === 'tiktok') {
+        attType = 'Humanity Verification';
+        presetObj = {
+          dataSourceId: 'tiktok',
+          verificationContent: 'Account ownership',
+          verificationValue: 'Account owner',
+        };
+      } else if (presetDataSourceId === 'binance') {
+        attType = 'Humanity Verification';
+        presetObj = {
+          dataSourceId: 'binance',
+          verificationContent: 'Account ownership',
+          verificationValue: 'Account owner',
+        };
+      } else if (presetDataSourceId === 'okx') {
+        attType = 'Humanity Verification';
+        presetObj = {
+          dataSourceId: 'okx',
+          verificationContent: 'KYC Status',
+          verificationValue: 'Basic Verification',
+        };
+      }
+      if (attType && presetObj) {
+        setVisibleAssetDialog(attType);
+        setAttestationPresets(presetObj);
+      }
+    } else {
+      setAttestationPresets(undefined);
+    }
+  }, [presetDataSourceId]);
   useEffect(() => {
     if (connectWalletDialogVisible === 0) {
       setCheckIsConnectFlag(false);
@@ -75,10 +120,16 @@ const ZkAttestation = memo(() => {
     },
     [attestLoading]
   );
+  const handleSubmitAssetDialog = useCallback(() => {
+    if (presetDataSourceId) {
+      navigate(`/Attestation`, { replace: true });
+    }
+  }, [presetDataSourceId]);
   const handleCloseAssetDialog = useCallback(() => {
     setVisibleAssetDialog('');
-  }, []);
-  const handleSubmitAssetDialog = useCallback(() => {}, []);
+    handleSubmitAssetDialog();
+  }, [handleSubmitAssetDialog]);
+
   const handleCloseOnChainDialog = useCallback(() => {
     // setVisibleOnChainDialog(false);
     dispatch(setActiveOnChain({ loading: 0 }));
@@ -114,6 +165,7 @@ const ZkAttestation = memo(() => {
         )}
         {visibleAssetDialog && (
           <CreateZkAttestation
+            presets={attestationPresets}
             type={visibleAssetDialog}
             onClose={handleCloseAssetDialog}
             onSubmit={handleSubmitAssetDialog}

@@ -7,10 +7,10 @@ import {
   GridComponent,
   TooltipComponent,
   TitleComponent,
+  LegendComponent,
 } from 'echarts/components';
 // Import renderer, note that introducing the CanvasRenderer or SVGRenderer is a required step
 import { CanvasRenderer } from 'echarts/renderers';
-import { formatNumeral } from '@/utils/utils';
 import { ATTESTATIONTYPEMAP } from '@/config/attestation';
 import { EASInfo } from '@/config/chain';
 import './index.scss';
@@ -23,6 +23,7 @@ echarts.use([
   GridComponent,
   BarChart,
   CanvasRenderer,
+  LegendComponent,
 ]);
 type BarChartProps = {
   xDatas: any[];
@@ -122,7 +123,7 @@ const PBarChart: FC<BarChartProps> = memo(({ xDatas = [], yDatas = [] }) => {
           const chainId = Object.keys(EASInfo).find(
             (i) => i.replace(/\s+/g, '') === name
           );
-          const CName = EASInfo[chainId].showName;
+          const CName = EASInfo[chainId as any].showName;
           // console.log('222params', params, CName);
           return `${seriesName}<br/>${CName}: ${value}`;
         },

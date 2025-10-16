@@ -7,21 +7,13 @@ import {
   ONCHAINVERIFICATIONCONTENTTYPELIST,
   ALLVERIFICATIONCONTENTTYPEEMAP,
 } from '@/config/attestation';
-import useDataSource from '@/hooks/useDataSource';
-import {
-  gt,
-  getTotalBalFromNumObjAPriceObj,
-  getTotalBalFromAssetsMap,
-  formatAddress,
-} from '@/utils/utils';
+import { formatAddress } from '@/utils/utils';
 
 import type { UserState } from '@/types/store';
-import type { Dispatch } from 'react';
 import PSelect from '@/newComponents/PSelect';
 import PButton from '@/newComponents/PButton';
 
 import './index.scss';
-import iconWalletMetamask from '@/assets/img/iconWalletMetamask.svg';
 import iconProviderBrevis from '@/assets/newImg/zkAttestation/iconProviderBrevis.svg';
 type PswFormType = {
   verificationContent: '';

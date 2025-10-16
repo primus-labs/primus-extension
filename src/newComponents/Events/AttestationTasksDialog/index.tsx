@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useMemo, memo, useCallback } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { eventMetaMap } from '@/config/events';
 import type { UserState } from '@/types/store';
-import CreateZkAttestation from '@/newComponents/ZkAttestation/CreateZkAttestation';
-
 import PMask from '@/newComponents/PMask';
 import PButton from '@/newComponents/PButton';
 import PClose from '@/newComponents/PClose';

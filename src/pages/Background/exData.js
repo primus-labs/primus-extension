@@ -327,6 +327,12 @@ export async function assembleAlgorithmParamsForSDK(form, ext) {
   const zkPadoUrl = await getZkPadoUrl();
 
   const appSignParameters = JSON.parse(ext.appSignParameters);
+  let specialTask = '';
+  if (appSignParameters?.computeMode === 'nonecomplete') {
+    specialTask = "CompleteHttpResponseCiphertext";
+  } else if (appSignParameters?.computeMode === 'nonepartial') {
+    specialTask = 'PartialHttpResponseCiphertext';
+  }
   const params = {
     source: dataSource,
     requestid: prevRequestid || timeStampStr,
@@ -350,6 +356,7 @@ export async function assembleAlgorithmParamsForSDK(form, ext) {
         ? appSignParameters.additionParams
         : '',
     },
+    specialTask,
   };
   if (ext.padoUrl && ext.proxyUrl) {
     params.padoUrl = ext.padoUrl;

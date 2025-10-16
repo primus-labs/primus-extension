@@ -1,4 +1,3 @@
-import jp from 'jsonpath';
 import {
   assembleAlgorithmParams,
   assembleAlgorithmParamsForSDK,
@@ -17,11 +16,30 @@ import {
   formatRequestResponseFnForMonad,
 } from '../lumaMonadEvent/index.js';
 import {
+  templateIdForNilion7Days,
+  templateIdForNilion1Month,
+  startTimeDistanceForNilion,
+  rowForNilion,
+} from '../nilionEvent/index.js';
+import {
+  templateIdForbBinanceEarnHistory30Days,
+  startTimeDistanceForBinanceEarnHistory,
+  rowForBinanceEarnHistory,
+  changeFieldsObjFnForBinanceEarnHistory,
+  formatRequestResponseFnForBinanceEarnHistory,
+} from '../binanceEarnHistoryEvent/index.js';
+import {
   templateIdForTwitch,
   formatJsonArrFnForTwitch,
   changeFieldsObjFnForTwitch,
   formatRequestResponseFnForTwitch,
 } from '../twitchEvent/index.js';
+import {
+  lumaAccountTemplateId,
+  lumaAccountTemplateReg,
+  getLumaAccountTargetJumpUrl,
+  getUserIdFromCookie,
+} from '../scoreEvent/index.js';
 import {
   isObject,
   parseCookie,
@@ -30,7 +48,17 @@ import {
   getErrorMsgFn,
   sendMsgToTab,
 } from '../utils/utils';
-import { extraRequestFn2, errorFn, checkResIsMatchConditionFn } from './utils';
+import {
+  extraRequestFn2,
+  extraRequestHtmlFn,
+  errorFn,
+  checkResIsMatchConditionFn,
+  checkResHtmlIsMatchConditionFn,
+  getNMonthsBeforeTime,
+  getUTCDayLastSecondTime,
+  updateUrlParams,
+  parseUrlQuery,
+} from './utils';
 
 let PRE_ATTEST_PROMOT_V2 = [
   {
@@ -338,6 +366,7 @@ export const pageDecodeMsgListener = async (
     const checkSDKTargetRequestFn = async (requestId, templateRequestUrl) => {
       const {
         datasourceTemplate: { requests, responses },
+        additionParamsObj,
       } = activeTemplate;
       const thisRequestUrlIdx = requests.findIndex(
         (r) => r.url === templateRequestUrl
@@ -345,104 +374,240 @@ export const pageDecodeMsgListener = async (
       const thisRequestObj = requests[thisRequestUrlIdx];
       const thisResponseObj = responses[thisRequestUrlIdx];
 
-      const { url, urlType, queryParams } = thisRequestObj;
-      const thisRequestUrlFoundFlag = Object.keys(requestsMap).find(
+      const { url, urlType, queryParams, ignoreResponse } = thisRequestObj;
+      const thisRequestUrlFoundFlag = Object.values(requestsMap).find(
         (v) => v.templateRequestUrl === url && v.isTarget === 1
       );
+
       if (!thisRequestUrlFoundFlag) {
-        const matchRequestIdArr = Object.keys(requestsMap).filter((key) => {
-          const checkRes = checkIsRequiredUrl({
-            requestUrl: requestsMap[key].url,
-            requiredUrl: url,
-            urlType: urlType || 'REGX',
-            queryParams: queryParams,
+        if (ignoreResponse) {
+          Object.values(requestsMap).some((sInfo) => {
+            if (sInfo.templateRequestUrl === url && sInfo.headers) {
+              sInfo.isTarget = 1;
+              return true;
+            }
           });
-          return checkRes;
-        });
-        for (const matchRequestId of [...matchRequestIdArr]) {
-          if (requestsMap[matchRequestId]?.isTarget === 1) {
-            break;
-          } else if (requestsMap[matchRequestId]?.isTarget === 2) {
-          } else {
-            let jsonPathArr = thisResponseObj.conditions.subconditions.map(
-              (i) => {
-                if (i?.op === 'MATCH_ONE') {
-                  return i;
-                } else {
-                  return i.field;
-                }
-              }
-            );
-            let targetRequestUrl = requestsMap[matchRequestId].url;
-            if (activeTemplate?.attTemplateID === templateIdForMonad) {
-              // 'https://api.lu.ma/home/get-events?period=past&pagination_limit=1000';
-              targetRequestUrl = eventListUrlForMonad(targetRequestUrl); // TODO
-            }
-            let matchRequestUrlResult = await extraRequestFn2({
-              ...requestsMap[matchRequestId],
-              header: requestsMap[matchRequestId].headers,
-              url: targetRequestUrl,
+        } else {
+          const matchRequestIdArr = Object.keys(requestsMap).filter((key) => {
+            const checkRes = checkIsRequiredUrl({
+              requestUrl: requestsMap[key].url,
+              requiredUrl: url,
+              urlType: urlType || 'REGX',
+              queryParams: queryParams,
             });
-            let isTargetUrl = false;
-            
-
-            if (
-              matchRequestUrlResult &&
-              activeTemplate?.attTemplateID === templateIdForTwitch
-            ) {
-              let formarRes = formatJsonArrFnForTwitch(
-                jsonPathArr,
-                requestsMap[matchRequestId],
-                thisRequestObj.matchReqBodyKey,
-                matchRequestUrlResult
-              );
-              if (formarRes?.checkRes) {
-                jsonPathArr = formarRes.jsonpath;
-                isTargetUrl = true;
-              }
-            } else {
-              isTargetUrl = checkResIsMatchConditionFn(
-                jsonPathArr,
-                matchRequestUrlResult
-              );
-            }
-
-            if (
-              matchRequestUrlResult &&
-              activeTemplate?.attTemplateID === templateIdForMonad
-            ) {
-              const notMetHandler = async () => {
-                const notMetCode = '00104';
-                const netMetMsg = await getErrorMsgFn(
-                  activeTemplate.attestationType,
-                  notMetCode
-                );
-                handleEnd(netMetMsg);
-                sendMsgToSdk({
-                  type: 'padoZKAttestationJSSDK',
-                  name: 'startAttestationRes',
-                  params: {
-                    result: false,
-                    errorData: {
-                      code: notMetCode,
-                    },
-                  },
-                });
-              };
-              isTargetUrl = await checkTargetRequestFnForMonad(
-                targetRequestUrl,
-                matchRequestUrlResult,
-                requestsMap[matchRequestId],
-                notMetHandler
-              );
-            }
-
-            if (isTargetUrl) {
-              storeRequestsMap(matchRequestId, { isTarget: 1 });
+            return checkRes;
+          });
+          for (const matchRequestId of [...matchRequestIdArr]) {
+            if (requestsMap[matchRequestId]?.isTarget === 1) {
               break;
+            } else if (requestsMap[matchRequestId]?.isTarget === 2) {
             } else {
-              if (requestsMap[matchRequestId]) {
-                storeRequestsMap(matchRequestId, { isTarget: 2 });
+              let jsonPathArr = thisResponseObj.conditions.subconditions.map(
+                (i) => {
+                  if (i?.op === 'MATCH_ONE') {
+                    return i;
+                  } else {
+                    return i.field;
+                  }
+                }
+              );
+              let targetRequestUrl = requestsMap[matchRequestId].url;
+              if (activeTemplate?.attTemplateID === templateIdForMonad) {
+                // 'https://api.lu.ma/home/get-events?period=past&pagination_limit=1000';
+                targetRequestUrl = eventListUrlForMonad(targetRequestUrl); // TODO
+              }
+
+              if (
+                [templateIdForNilion7Days, templateIdForNilion1Month].includes(
+                  activeTemplate?.attTemplateID
+                )
+              ) {
+                const lastBody = requestsMap[matchRequestId].body;
+                let newBody = {
+                  ...lastBody,
+                };
+                if (
+                  activeTemplate?.attTemplateID === templateIdForNilion1Month
+                ) {
+                  const newStartTime = getNMonthsBeforeTime(
+                    lastBody.endTime,
+                    startTimeDistanceForNilion
+                  );
+                  // console.log('nilion', 'binance time:', lastBody.endTime);
+                  // console.log(
+                  //   'utc time:',
+                  //   getUTCDayLastSecondTime(lastBody.endTime)
+                  // );
+                  newBody = {
+                    ...lastBody,
+                    rows: rowForNilion,
+                    startTime: newStartTime,
+                    direction: '',
+                    baseAsset: '',
+                    quoteAsset: '',
+                    hideCancel: false,
+                    queryTimeType: 'INSERT_TIME',
+                  };
+                } else if (
+                  activeTemplate?.attTemplateID === templateIdForNilion7Days
+                ) {
+                  newBody = {
+                    ...lastBody,
+                    rows: rowForNilion,
+                  };
+                }
+                storeRequestsMap(matchRequestId, {
+                  ...requestsMap[matchRequestId],
+                  body: newBody,
+                });
+              }
+
+              if (
+                [templateIdForbBinanceEarnHistory30Days].includes(
+                  activeTemplate?.attTemplateID
+                )
+              ) {
+                const oldUrl = requestsMap[matchRequestId].url;
+                const oldQueryParams = parseUrlQuery(oldUrl);
+                let newStartTime = getNMonthsBeforeTime(
+                  oldQueryParams.endTime,
+                  startTimeDistanceForBinanceEarnHistory
+                );
+                const newUrlParams = {
+                  pageSize: rowForBinanceEarnHistory,
+                  startTime: newStartTime,
+                  // asset: '',
+                };
+
+                if (additionParamsObj?.binanceBaseAsset) {
+                  newUrlParams.asset = additionParamsObj?.binanceBaseAsset;
+                }
+                if (
+                  additionParamsObj?.binanceMonthNum &&
+                  typeof additionParamsObj?.binanceMonthNum === 'number'
+                ) {
+                  newStartTime = getNMonthsBeforeTime(
+                    oldQueryParams.endTime,
+                    additionParamsObj?.binanceMonthNum
+                  );
+                  newUrlParams.startTime = newStartTime;
+                }
+                if (
+                  additionParamsObj?.binanceRows &&
+                  additionParamsObj?.binanceRows < rowForBinanceEarnHistory
+                ) {
+                  newUrlParams.pageSize =
+                    typeof additionParamsObj?.binanceRows === 'number'
+                      ? additionParamsObj?.binanceRows
+                      : Number(additionParamsObj?.rowForBinanceEarnHistory);
+                }
+
+                const newUrl = updateUrlParams(oldUrl, newUrlParams);
+                targetRequestUrl = newUrl;
+
+                const oldUrl2 = `https://www.binance.com/bapi/earn/v1/private/lending/union/redemption/list?pageIndex=1&pageSize=20&startTime=1744732800000&endTime=1760371199999&lendingType=DAILY`;
+                const newUrl2 = updateUrlParams(oldUrl2, newUrlParams);
+                changeFieldsObjFnForBinanceEarnHistory(
+                  'add',
+                  'secondUrl',
+                  newUrl2
+                );
+                // TODO
+                let matchRequestUrlResult2 = await extraRequestFn2({
+                  ...requestsMap[matchRequestId],
+                  header: requestsMap[matchRequestId].headers,
+                  url: newUrl2,
+                });
+
+                storeRequestsMap(matchRequestId, {
+                  ...requestsMap[matchRequestId],
+                  url: newUrl,
+                });
+              }
+              let matchRequestUrlResult;
+              let isTargetUrl = false;
+              if (requestsMap[matchRequestId].type === 'main_frame') {
+                matchRequestUrlResult = await extraRequestHtmlFn({
+                  ...requestsMap[matchRequestId],
+                  header: requestsMap[matchRequestId].headers,
+                  url: targetRequestUrl,
+                });
+                if (matchRequestUrlResult) {
+                  isTargetUrl = checkResHtmlIsMatchConditionFn(
+                    jsonPathArr,
+                    matchRequestUrlResult
+                  );
+                  if (isTargetUrl) {
+                    storeRequestsMap(matchRequestId, { isTarget: 1 });
+                    break;
+                  }
+                }
+              } else {
+                matchRequestUrlResult = await extraRequestFn2({
+                  ...requestsMap[matchRequestId],
+                  header: requestsMap[matchRequestId].headers,
+                  url: targetRequestUrl,
+                });
+              }
+
+              if (
+                matchRequestUrlResult &&
+                activeTemplate?.attTemplateID === templateIdForTwitch
+              ) {
+                let formarRes = formatJsonArrFnForTwitch(
+                  jsonPathArr,
+                  requestsMap[matchRequestId],
+                  thisRequestObj.matchReqBodyKey,
+                  matchRequestUrlResult
+                );
+                if (formarRes?.checkRes) {
+                  jsonPathArr = formarRes.jsonpath;
+                  isTargetUrl = true;
+                }
+              } else {
+                isTargetUrl = checkResIsMatchConditionFn(
+                  jsonPathArr,
+                  matchRequestUrlResult
+                );
+              }
+
+              if (
+                matchRequestUrlResult &&
+                activeTemplate?.attTemplateID === templateIdForMonad
+              ) {
+                const notMetHandler = async () => {
+                  const notMetCode = '00104';
+                  const netMetMsg = await getErrorMsgFn(
+                    activeTemplate.attestationType,
+                    notMetCode
+                  );
+                  handleEnd(netMetMsg);
+                  sendMsgToSdk({
+                    type: 'padoZKAttestationJSSDK',
+                    name: 'startAttestationRes',
+                    params: {
+                      result: false,
+                      errorData: {
+                        code: notMetCode,
+                      },
+                    },
+                  });
+                };
+                isTargetUrl = await checkTargetRequestFnForMonad(
+                  targetRequestUrl,
+                  matchRequestUrlResult,
+                  requestsMap[matchRequestId],
+                  notMetHandler
+                );
+              }
+
+              if (isTargetUrl) {
+                storeRequestsMap(matchRequestId, { isTarget: 1 });
+                break;
+              } else {
+                if (requestsMap[matchRequestId]) {
+                  storeRequestsMap(matchRequestId, { isTarget: 2 });
+                }
               }
             }
           }
@@ -514,6 +679,19 @@ export const pageDecodeMsgListener = async (
               );
               return !!curFlag;
             });
+
+            // const allRequestUrlFoundFlag = Object.values(requestsMap).some(
+            //   (sInfo) => {
+            //     if (
+            //       sInfo.templateRequestUrl.includes('get_creator_channels') &&
+            //       sInfo.headers &&
+            //       sInfo.body
+            //     ) {
+            //       sInfo.isTarget = 1;
+            //       return true;
+            //     }
+            //   }
+            // );
             fl = f && !!allRequestUrlFoundFlag;
           } else {
             fl = f;
@@ -697,12 +875,12 @@ export const pageDecodeMsgListener = async (
         }
         formatRequests.push({ ...r, url: r.name === 'first' ? r.url : url });
       }
-      const activeInfo = formatRequests.find((i) => i.headers);
-      const activeHeader = Object.assign({}, activeInfo?.headers);
-      const authInfoName = dataSource + '-auth';
-      await chrome.storage.local.set({
-        [authInfoName]: JSON.stringify(activeHeader),
-      });
+      // const activeInfo = formatRequests.find((i) => i.headers);
+      // const activeHeader = Object.assign({}, activeInfo?.headers);
+      // const authInfoName = dataSource + '-auth';
+      // await chrome.storage.local.set({
+      //   [authInfoName]: JSON.stringify(activeHeader),
+      // });
       let formatResponse = JSON.parse(JSON.stringify(responses));
       if (dataSource === 'chatgpt') {
         const { chatGPTExpression } = activeTemplate;
@@ -747,6 +925,17 @@ export const pageDecodeMsgListener = async (
         } else if (activeTemplate.attTemplateID === templateIdForTwitch) {
           const { formatRequests: req, formatResponse: res } =
             formatRequestResponseFnForTwitch(formatRequests, formatResponse);
+          formatRequests = req;
+          formatResponse = res;
+        } else if (
+          activeTemplate.attTemplateID ===
+          templateIdForbBinanceEarnHistory30Days
+        ) {
+          const { formatRequests: req, formatResponse: res } =
+            formatRequestResponseFnForBinanceEarnHistory(
+              formatRequests,
+              formatResponse
+            );
           formatRequests = req;
           formatResponse = res;
         }
@@ -904,9 +1093,17 @@ export const pageDecodeMsgListener = async (
       chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
       chrome.webRequest.onCompleted.removeListener(onCompletedFn);
       onBeforeSendHeadersFn = async (details) => {
-        if (details.tabId !== dataSourcePageTabId) {
+        if (
+          details?.initiator?.startsWith(
+            `chrome-extension://${chrome.runtime.id}`
+          )
+        ) {
           return;
         }
+        if (![-1, dataSourcePageTabId].includes(details.tabId)) {
+          return;
+        }
+
         if (details.method === 'OPTIONS') {
           return;
         }
@@ -915,7 +1112,9 @@ export const pageDecodeMsgListener = async (
           jumpTo,
           datasourceTemplate: { requests },
           sdkVersion,
+          attTemplateID,
         } = activeTemplate;
+
         const {
           url: currRequestUrl,
           requestHeaders,
@@ -948,6 +1147,28 @@ export const pageDecodeMsgListener = async (
           }
         }
         let templateRequestUrl = '';
+
+        if (attTemplateID === lumaAccountTemplateId) {
+          const checkRes = checkIsRequiredUrl({
+            requestUrl: currRequestUrl,
+            requiredUrl: lumaAccountTemplateReg,
+            urlType: 'REGX',
+          });
+          if (checkRes) {
+            // console.log('formatHeader', formatHeader);
+            const userId = getUserIdFromCookie(formatHeader?.Cookie);
+            if (userId) {
+              const lumaAccountTargetJumpUrl =
+                getLumaAccountTargetJumpUrl(userId);
+              await chrome.tabs.update(dataSourcePageTabId, {
+                url: lumaAccountTargetJumpUrl,
+              });
+              return;
+            } else {
+              return;
+            }
+          }
+        }
         const isTarget = requests.some((r) => {
           if (r.name === 'first') {
             return false;
@@ -967,7 +1188,6 @@ export const pageDecodeMsgListener = async (
             }
             formatUrlKey = hostUrl;
           }
-
           const checkRes = checkIsRequiredUrl({
             requestUrl: currRequestUrl,
             requiredUrl: r.url,
@@ -977,9 +1197,16 @@ export const pageDecodeMsgListener = async (
           if (checkRes) {
             templateRequestUrl = r.url;
           }
+
           return checkRes;
         });
-
+        // console.log(
+        //   'captured:',
+        //   currRequestUrl,
+        //   'isTarget:',
+        //   isTarget,
+        //   details
+        // );
         if (isTarget) {
           console.log('monad-details', details);
           let newCapturedInfo = {
@@ -988,6 +1215,7 @@ export const pageDecodeMsgListener = async (
             url: currRequestUrl,
             requestId,
             templateRequestUrl,
+            type: details.type, // type: "main_frame"
           };
           if (addQueryStr) {
             newCapturedInfo.queryString = addQueryStr;
@@ -996,18 +1224,6 @@ export const pageDecodeMsgListener = async (
             requestId,
             newCapturedInfo
           );
-          const requireUrlArr = [
-            'https://www.tiktok.com/passport/web/account/info/',
-            'https://api.x.com/1.1/account/settings.json',
-          ];
-          const curRequireUrl = requireUrlArr.find((i) =>
-            currRequestUrl.includes(i)
-          );
-          if (curRequireUrl) {
-            await chrome.storage.local.set({
-              [curRequireUrl]: JSON.stringify(newCurrRequestObj),
-            });
-          }
           if (
             needQueryDetail &&
             formatUrlKey.startsWith(
@@ -1036,7 +1252,14 @@ export const pageDecodeMsgListener = async (
         }
       };
       onBeforeRequestFn = async (subDetails) => {
-        if (subDetails.tabId !== dataSourcePageTabId) {
+        if (
+          subDetails?.initiator?.startsWith(
+            `chrome-extension://${chrome.runtime.id}`
+          )
+        ) {
+          return;
+        }
+        if (![-1, dataSourcePageTabId].includes(subDetails.tabId)) {
           return;
         }
         if (subDetails.method === 'OPTIONS') {
@@ -1086,7 +1309,14 @@ export const pageDecodeMsgListener = async (
         }
       };
       onCompletedFn = async (details) => {
-        if (details.tabId !== dataSourcePageTabId) {
+        if (
+          details?.initiator?.startsWith(
+            `chrome-extension://${chrome.runtime.id}`
+          )
+        ) {
+          return;
+        }
+        if (![-1, dataSourcePageTabId].includes(details.tabId)) {
           return;
         }
         let { dataSource } = activeTemplate;
@@ -1094,7 +1324,7 @@ export const pageDecodeMsgListener = async (
         if (dataSource === 'chatgpt') {
           console.log('onCompletedFn', dataSource, details);
           // chatgpt has only one requestUrl
-          await extraRequestFn();
+          // await extraRequestFn();// For simplified version comments
           console.log('setUIStep-toVerify');
           sendMsgToDataSourcePage({
             type: 'pageDecode',
@@ -1113,20 +1343,21 @@ export const pageDecodeMsgListener = async (
 
       chrome.webRequest.onBeforeSendHeaders.addListener(
         onBeforeSendHeadersFn,
-        { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
+        { urls: ['<all_urls>'], types: ['xmlhttprequest', 'main_frame'] },
         ['requestHeaders', 'extraHeaders']
       );
       chrome.webRequest.onBeforeRequest.addListener(
         onBeforeRequestFn,
-        { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
+        { urls: ['<all_urls>'], types: ['xmlhttprequest', 'main_frame'] },
         ['requestBody']
       );
 
       chrome.webRequest.onCompleted.addListener(
         onCompletedFn,
-        { urls: interceptorUrlArr, types: ['xmlhttprequest'] },
+        { urls: interceptorUrlArr, types: ['xmlhttprequest', 'main_frame'] },
         ['responseHeaders', 'extraHeaders']
       );
+
       const tabCreatedByPado = await chrome.tabs.create({
         url: jumpTo,
       });
@@ -1238,18 +1469,18 @@ export const pageDecodeMsgListener = async (
         method: 'getAttestation',
         params: JSON.parse(JSON.stringify(aligorithmParams)),
       });
-      if (!activeTemplate.sdkVersion) {
-        const { constructorF } = DATASOURCEMAP[dataSource];
-        if (constructorF) {
-          const ex = new constructorF();
-          // const storageRes = await chrome.storage.local.get([dataSource]);
-          // const hadConnectedCurrDataSource = !!storageRes[dataSource];
-          await storeDataSource(dataSource, ex, port, {
-            withoutMsg: true,
-            attestationRequestid: aligorithmParams.requestid,
-          });
-        }
-      }
+      // if (!activeTemplate.sdkVersion) {
+      //   const { constructorF } = DATASOURCEMAP[dataSource];
+      //   if (constructorF) {
+      //     const ex = new constructorF();
+      //     // const storageRes = await chrome.storage.local.get([dataSource]);
+      //     // const hadConnectedCurrDataSource = !!storageRes[dataSource];
+      //     await storeDataSource(dataSource, ex, port, {
+      //       withoutMsg: true,
+      //       attestationRequestid: aligorithmParams.requestid,
+      //     });
+      //   }
+      // }
     }
 
     if (name === 'close' || name === 'cancel') {

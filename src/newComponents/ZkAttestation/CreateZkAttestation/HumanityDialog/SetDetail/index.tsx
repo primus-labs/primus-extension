@@ -1,22 +1,19 @@
 import React, { useState, useMemo, memo, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { setActiveAttestation, setAttestLoading } from '@/store/actions';
 import useMsgs from '@/hooks/useMsgs';
 import {
-  HUMANITYVERIFICATIONCONTENTTYPELIST,
   HUMANITYVERIFICATIONCONTENTTYPEMAP,
   HUMANITYVERIFICATIONVALUETYPELIST,
-  ALLVERIFICATIONCONTENTTYPEEMAP,
 } from '@/config/attestation';
 import { DATASOURCEMAP } from '@/config/dataSource';
-import useDataSource from '@/hooks/useDataSource';
 import { getAccount } from '@/utils/utils';
 import type { UserState } from '@/types/store';
 import type { Dispatch } from 'react';
 import PSelect from '@/newComponents/PSelect';
 import PButton from '@/newComponents/PButton';
 import PTooltip from '@/newComponents/PTooltip';
-import PInput from '@/newComponents/PInput';
 
 import './index.scss';
 type PswFormType = {
@@ -31,6 +28,8 @@ interface SetPwdDialogProps {
 }
 const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
   ({ onSubmit, presets }) => {
+    const location = useLocation();
+    const { pathname } = location;
     const { deleteErrorMsgs } = useMsgs();
     const { dataSourceId } = presets;
     // const { userInfo: activeDataSouceUserInfo } = useDataSource(dataSourceId);
@@ -171,24 +170,23 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     }, [activeDataSouceUserInfo]);
 
     useEffect(() => {
-      if (!presets.verificationContent) {
-        if (pswForm.verificationContent) {
-          let newValue = '';
+      if (pswForm.verificationContent) {
+        let newValue = '';
 
-          if (pswForm.verificationContent === 'KYC Status') {
-            newValue = 'Basic Verification';
-          } else if (pswForm.verificationContent === 'Account ownership') {
-            newValue = 'Account owner';
-          } else if (pswForm.verificationContent === 'GPT message') {
-            newValue = 'Defined input';
-          }
-          handleChangePswForm(newValue, 'verificationValue');
+        if (pswForm.verificationContent === 'KYC Status') {
+          newValue = 'Basic Verification';
+        } else if (pswForm.verificationContent === 'Account ownership') {
+          newValue = 'Account owner';
+        } else if (pswForm.verificationContent === 'GPT message') {
+          newValue = 'Defined input';
         }
+        handleChangePswForm(newValue, 'verificationValue');
       }
-    }, [pswForm.verificationContent, handleChangePswForm, presets]);
+    }, [pswForm.verificationContent, handleChangePswForm]);
     useEffect(() => {
       setPswForm(presets);
-    }, [presets]);
+    }, []);
+    // }, [presets, ignorePresets]);
     const initActiveDataSouceUserInfo = useCallback(async () => {
       const res = await chrome.storage.local.get([dataSourceId]);
       if (res[dataSourceId]) {
@@ -209,33 +207,19 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
     }, [pswForm]);
     return (
       <div className="pFormWrapper detailForm3">
-        <div
-          className={`formItem ${presets.verificationContent ? 'preset' : ''}`}
-        >
-          {presets.verificationContent ? (
-            <>
-              <div className="label">Verification Content</div>
-              <div className="value">
-                {
-                  ALLVERIFICATIONCONTENTTYPEEMAP[presets.verificationContent]
-                    .label
-                }
-              </div>
-            </>
-          ) : (
-            <PSelect
-              className={verificationContentCN}
-              label="Verification Content"
-              align="horizontal"
-              placeholder="Select content"
-              list={contentList}
-              onChange={(p) => {
-                handleChangePswForm(p, 'verificationContent');
-              }}
-              value={pswForm.verificationContent}
-              disabled={presets?.verificationContent}
-            />
-          )}
+        <div className={`formItem `}>
+          <PSelect
+            className={verificationContentCN}
+            label="Verification Content"
+            align="horizontal"
+            placeholder="Select content"
+            list={contentList}
+            onChange={(p) => {
+              handleChangePswForm(p, 'verificationContent');
+            }}
+            value={pswForm.verificationContent}
+            disabled={presets && pathname.startsWith('/events')}
+          />
         </div>
         <div
           className={`formItem ${presets.verificationValue ? 'preset' : ''} ${
@@ -248,7 +232,7 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
             <>
               <div className="label">Verification Condition</div>
               <div className="value">
-                {presets.verificationValue || pswForm.verificationValue}
+                {pswForm.verificationValue}
               </div>
             </>
           ) : (

@@ -1,5 +1,4 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { ATTESTATIONTYPELIST } from '@/config/attestation';
 import PButton from '@/newComponents/PButton';
 import './index.scss';

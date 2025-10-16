@@ -3,7 +3,8 @@
 @import '@/assets/newCss/mixins.scss';
 
 .homeZkattestations {
-  width: 100%;
+  width: calc((100% - var(--spacing-16)) / 2);
+  // width: 100%;
   @include fcss;
   gap: var(--spacing-16);
   .title {

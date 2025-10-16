@@ -7,7 +7,6 @@ import PClose from '@/newComponents/PClose';
 import iconConnectWalletSuc from '@/assets/newImg/layout/iconConnectWalletSuc.png';
 import iconConnectWalletFail from '@/assets/newImg/layout/iconConnectWalletFail.svg';
 import iconConnectWalletWarn from '@/assets/newImg/layout/iconConnectWalletWarn.svg';
-import iconWalletMetamask from '@/assets/img/iconWalletMetamask.svg';
 import './index.scss';
 import PButton from '@/newComponents/PButton';
 

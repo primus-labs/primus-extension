@@ -1,23 +1,15 @@
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  useMemo,
-} from 'react';
+import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
 import type { Dispatch } from 'react';
-
+import dayjs from 'dayjs';
 import './index.scss';
 import PButton from '@/newComponents/PButton';
-import taskItemIcon from '@/assets/newImg/achievements/taskItemIcon.svg';
 import taskFinishedIcon from '@/assets/newImg/achievements/taskFinishedIcon.svg';
 import {
   checkHasFinishJoinDiscord,
   finishTask,
   taskStatusCheck,
 } from '@/services/api/achievements';
-import { getAuthUrl, getCurrentDate, postMsg } from '@/utils/utils';
+import { getAuthUrl, getCurrentDate } from '@/utils/utils';
 import { v4 as uuidv4 } from 'uuid';
 import { MSGSHOWTIME1, MSGSHOWTIME2 } from '@/config/constants';
 
@@ -32,7 +24,6 @@ import {
 import { SocailStoreVersion } from '@/config/constants';
 import { checkIsLogin } from '@/services/api/user';
 import useMsgs from '@/hooks/useMsgs';
-import { eventReport } from '@/services/api/usertracker';
 import { useSelector, useDispatch } from 'react-redux';
 import type { UserState } from '@/types/store';
 import { setSocialSourcesAsync } from '@/store/actions';
@@ -60,12 +51,22 @@ export type TaskItemWithClick = {
 
 const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
   (taskItemWithClick: TaskItemWithClick) => {
+
     const { sourceMap2 } = useAllSources();
     const dispatch: Dispatch<any> = useDispatch();
     const sysConfig = useSelector((state: UserState) => state.sysConfig);
     const DISCORDINVITEURL = useMemo(() => {
       return sysConfig.DISCORD_INVITE_LINK;
     }, [sysConfig]);
+    const REPUTATIONRECORD_SHOWTIME = useMemo(() => {
+      const configStr = sysConfig.REPUTATIONRECORD_SHOWTIME;
+      return configStr;
+    }, [sysConfig]);
+    const isShowREPUTATIONRECORD = useMemo(() => {
+      const nowTime = +new Date();
+      const showTime = REPUTATIONRECORD_SHOWTIME - 0;
+      return dayjs(nowTime).isAfter(showTime);
+    }, [REPUTATIONRECORD_SHOWTIME]);
     const taskItem = taskItemWithClick.taskItem;
     const showCodeDiag = taskItemWithClick.showCodeDiag;
     const refreshTotalScore = taskItemWithClick.refreshTotalScore;
@@ -982,11 +983,15 @@ const AchievementTaskItem: React.FC<TaskItemWithClick> = memo(
             onClick={handleClickFn}
             className={'achievementTaskitemFinishBtn'}
             loading={btnIsLoading}
-            disabled={[
-              'CONNECT_HUOBI_DATA',
-              'CONNECT_MEXC_DATA',
-              'CONNECT_GITHUB_DATA',
-            ].includes(taskItem.taskIdentifier)}
+            disabled={
+              isShowREPUTATIONRECORD
+                ? true
+                : [
+                    'CONNECT_HUOBI_DATA',
+                    'CONNECT_MEXC_DATA',
+                    'CONNECT_GITHUB_DATA',
+                  ].includes(taskItem.taskIdentifier)
+            }
           />
         )}
       </div>

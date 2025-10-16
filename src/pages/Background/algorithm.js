@@ -161,6 +161,16 @@ export const algorithmMsgListener = async (
             data: message.res,
           };
         }
+        console.log('send getAttestationRes msg to dappTab');
+        console.log('dappTabId', dappTabId);
+        // async function getTabInfo(tabId) {
+        try {
+          const tab = await chrome.tabs.get(dappTabId);
+          console.log('tab info：', tab);
+        } catch (error) {
+          console.error('Failed to get tab info：', error);
+        }
+        // }
         chrome.tabs.sendMessage(dappTabId, {
           type: 'padoZKAttestationJSSDK',
           name: 'getAttestationRes',
@@ -216,6 +226,37 @@ export const algorithmMsgListener = async (
         }
 
         if (retcode === '0') {
+          const sucFn = async (resData) => {
+            pageDecodeMsgListener(
+              {
+                name: 'end',
+                params: {
+                  result: 'success',
+                },
+              },
+              sender,
+              sendResponse,
+              USERPASSWORD,
+              fullscreenPort,
+              hasGetTwitterScreenName,
+              processAlgorithmReq
+            );
+            await chrome.storage.local.remove([
+              'padoZKAttestationJSSDKBeginAttest',
+              'padoZKAttestationJSSDKWalletAddress',
+              'padoZKAttestationJSSDKAttestationPresetParams',
+              'padoZKAttestationJSSDKXFollowerCount',
+              'activeRequestAttestation',
+            ]);
+            chrome.tabs.sendMessage(dappTabId, {
+              type: 'padoZKAttestationJSSDK',
+              name: 'startAttestationRes',
+              params: {
+                result: true,
+                data: resData,
+              },
+            });
+          };
           if (
             content.balanceGreaterThanBaseValue === 'true' &&
             content.signature
@@ -229,14 +270,15 @@ export const algorithmMsgListener = async (
               !padoZKAttestationJSSDKBeginAttest ||
               padoZKAttestationJSSDKBeginAttest === '1'
             ) {
-              const acc = await getDataSourceAccount(
-                activeAttestationParams.dataSourceId
-              );
+              // const acc = await getDataSourceAccount(
+              //   activeAttestationParams.dataSourceId
+              // );
               fullAttestation = {
                 ...content,
                 ...parsedActiveRequestAttestation,
                 ...activeAttestationParams,
-                account: acc,
+                // account: acc,
+                account: ''
               };
               if (fullAttestation.verificationContent === 'X Followers') {
                 let count = 0;
@@ -261,37 +303,6 @@ export const algorithmMsgListener = async (
               });
             }
 
-            const sucFn = async (resData) => {
-              pageDecodeMsgListener(
-                {
-                  name: 'end',
-                  params: {
-                    result: 'success',
-                  },
-                },
-                sender,
-                sendResponse,
-                USERPASSWORD,
-                fullscreenPort,
-                hasGetTwitterScreenName,
-                processAlgorithmReq
-              );
-              await chrome.storage.local.remove([
-                'padoZKAttestationJSSDKBeginAttest',
-                'padoZKAttestationJSSDKWalletAddress',
-                'padoZKAttestationJSSDKAttestationPresetParams',
-                'padoZKAttestationJSSDKXFollowerCount',
-                'activeRequestAttestation',
-              ]);
-              chrome.tabs.sendMessage(dappTabId, {
-                type: 'padoZKAttestationJSSDK',
-                name: 'startAttestationRes',
-                params: {
-                  result: true,
-                  data: resData,
-                },
-              });
-            };
             if (padoZKAttestationJSSDKBeginAttest === '1') {
               const { rc, result } = await regenerateAttest(
                 fullAttestation,
@@ -306,7 +317,10 @@ export const algorithmMsgListener = async (
                 await sucFn(resData);
               }
             } else {
-              await sucFn(JSON.parse(content.encodedData));
+              // await sucFn(JSON.parse(content.encodedData));
+              const passRes = JSON.parse(content.encodedData);
+              passRes.extendedData = content.extendedData;
+              await sucFn(passRes);
             }
 
             const uniqueId = strToHexSha256(content.signature);
@@ -333,20 +347,64 @@ export const algorithmMsgListener = async (
             let errorCode;
 
             const { extraData } = content;
+            const tipMapForSdk = {
+              '-1200010': 'Invalid message.', // chatgpt input error
+              '-1002001': 'Invalid App ID.',
+              '-1002002': 'Invalid App Secret.',
+            };
+            const tipMapForPrimusNetworkSdk = {
+              '-500': 'Unexpected attester node program failure.',
+              '-10100':
+                'Task cannot be executed again due to unexpected failure.',
+              '-10101':
+                'This task has already been completed. No need to resubmit.',
+              '-10102': 'This task is still in progress. No need to resubmit.',
+              '-10103':
+                'Submission limit reached for this task. Initiate a new task to continue.',
+              '-10104':
+                'Failed to get task details. Please check the attester node condition or task ID.',
+              '-10105':
+                'Invalid attestation parameters. Please check the connection between the node and the template server.',
+              '-10106':
+                'Attestation template ID mismatch between task and attester node.',
+              '-10107':
+                'The user wallet address provided during attestation mismatch with submission.',
+              '-10108':
+                'Invalid task ID. Please ensure the submitted ID matches the task.',
+              '-10109':
+                'Task cannot be executed again. Please check your task fees.',
+              '-10110':
+                'Attester node mismatch. Ensure the node matches the task specification and resubmit.',
+              '-10111':
+                'Task submitted past the allowed time limit (15 minutes).',
+            };
+            const totalTipMapForSdk = Object.assign(
+              {},
+              tipMapForSdk,
+              tipMapForPrimusNetworkSdk
+            );
             if (
               extraData &&
               JSON.parse(extraData) &&
-              ['-1200010', '-1002001', '-1002002'].includes(
+              Object.keys(totalTipMapForSdk).includes(
                 JSON.parse(extraData).errorCode + ''
               )
             ) {
-              const tipMapForSdk = {
-                '-1200010': 'Invalid message.', // chatgpt input error
-                '-1002001': 'Invalid App ID.',
-                '-1002002': 'Invalid App Secret.',
-              };
               errorCode = JSON.parse(extraData).errorCode + '';
-              const showTip = tipMapForSdk[errorCode];
+              const extendedParamsObj = activeAttestationParams.extendedParams
+                ? JSON.parse(activeAttestationParams.extendedParams)
+                : {};
+              if (
+                extendedParamsObj.handleReSubmitCodes &&
+                extendedParamsObj.handleReSubmitCodes.includes(errorCode)
+              ) {
+                sucFn({
+                  attestation: JSON.stringify({}),
+                  taskId: extendedParamsObj.taskId,
+                });
+                return;
+              }
+              const showTip = totalTipMapForSdk[errorCode];
               Object.assign(msgObj, {
                 type: '',
                 desc: showTip,

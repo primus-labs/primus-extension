@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useMemo, memo, useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { memo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import PMask from '@/newComponents/PMask';
@@ -14,11 +13,10 @@ interface SetPwdDialogProps {
   // onCancel: () => void;
 }
 
-
 const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(
   ({ onClose, onSubmit, sourceName }) => {
     const [searchParams] = useSearchParams();
-    
+
     return (
       <PMask>
         {/* onClose={onClose} closeable={!fromEvents} */}

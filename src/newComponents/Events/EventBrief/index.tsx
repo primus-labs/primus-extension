@@ -1,10 +1,9 @@
-import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
+import React, { useState, useCallback, useEffect, memo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import dayjs from 'dayjs';
 import utc from 'dayjs-plugin-utc';
 import { eventMetaMap } from '@/config/events';
-import type { Dispatch } from 'react';
 import SplicedIcons from '@/newComponents/SplicedIcons';
 import iconPado from '@/assets/newImg/events/iconPado.svg';
 import './index.scss';
@@ -27,7 +26,6 @@ type StepItem = {
 };
 
 const DataSourceItem = memo(() => {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const eventId = searchParams.get('id') as string;
   const [isComplete, setIsComplete] = useState<boolean>(false);
@@ -104,16 +102,17 @@ const DataSourceItem = memo(() => {
         {isComplete && <img src={tagCompleted} alt="" className="tag" />}
       </div>
       <div className="txtWrapper">
-        <div className="descItems">
-          {metaInfo.points.map((p, index) => {
-            return (
-              <div className="descItem" key={index}>
-                <div className={`iconfont ${p.pointIconFont}`}></div>
-                <span>{p.pointDesc}</span>
-              </div>
-            );
-          })}
-          {/* {metaInfo.periodType === '1' && (
+        {metaInfo.points?.length > 0 && (
+          <div className="descItems">
+            {metaInfo.points.map((p, index) => {
+              return (
+                <div className="descItem" key={index}>
+                  <div className={`iconfont ${p.pointIconFont}`}></div>
+                  <span>{p.pointDesc}</span>
+                </div>
+              );
+            })}
+            {/* {metaInfo.periodType === '1' && (
             <div className="descItem">
               <i className="iconfont icon-iconBlockChain"></i>
               <span>{metaInfo.chainDesc}</span>
@@ -129,7 +128,9 @@ const DataSourceItem = memo(() => {
             <i className="iconfont icon-iconGift"></i>
             <span>{metaInfo.gift}</span>
           </div> */}
-        </div>
+          </div>
+        )}
+
         <div className="desc">{metaInfo.longDesc}</div>
       </div>
     </div>

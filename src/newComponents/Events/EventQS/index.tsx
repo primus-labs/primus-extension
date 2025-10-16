@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
+import React, { useState, useCallback, useEffect, memo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
   BASEVENTNAME,
@@ -34,12 +34,12 @@ const basQsMap = {
     answer:
       'Yes, you can join this event with different wallet address. When you change the connected wallet above the task list, the task status will reset and you can go through it with the newly connected wallet address. Remember, you also need to connect the new address on the BAS attestation alliance campaign page to earn your BAS XPS with this new address.',
   },
-  5: {
-    id: 5,
-    question: 'How are Primus points for this event counted?',
-    answer:
-      'For Primus points, it is counted based on your Primus extension account, which means the points will not be double counted when you switch wallet address.',
-  },
+  // 5: {
+  //   id: 5,
+  //   question: 'How are Primus points for this event counted?',
+  //   answer:
+  //     'For Primus points, it is counted based on your Primus extension account, which means the points will not be double counted when you switch wallet address.',
+  // },
 };
 const lineaQsMap = {
   1: {
@@ -88,13 +88,13 @@ const lineaQsMap = {
       'No, you cannot use another wallet address to join this event. As Linea requires an uniqueness Binance account binding requirement, only one Binance account can bind to one wallet address during the attestation process. If you have already complete this event using one wallet address, you will see “Not meet the uniqueness requirement” error message while using a different wallet address to join this event again.',
     // expand: true,
   },
-  5: {
-    id: 5,
-    question: 'How are Primus points for this event counted?',
-    answer:
-      'For Primus points, it is counted based on your Primus extension account, which means the points will not be double counted when you switch wallet address.',
-    // expand: true,
-  },
+  // 5: {
+  //   id: 5,
+  //   question: 'How are Primus points for this event counted?',
+  //   answer:
+  //     'For Primus points, it is counted based on your Primus extension account, which means the points will not be double counted when you switch wallet address.',
+  //   // expand: true,
+  // },
 };
 const earluBirdQsMap = {
   1: {
@@ -111,13 +111,13 @@ const earluBirdQsMap = {
       'As the attestation is undergoing the zkTLS process, it often depends on your internet connection. A quick solution is to connect to a new wifi network or switch to a different VPN node, if possible. If you receive an error message with an error code, feel free to contact us in the Discord #help channel.',
     // expand: true,
   },
-  3: {
-    id: 3,
-    question: 'How are Primus points for this event counted?',
-    answer:
-      'For Primus points, it is counted based on your Primus extension account, which means the points will not be double counted when you switch wallet address.',
-    // expand: true,
-  },
+  // 3: {
+  //   id: 3,
+  //   question: 'How are Primus points for this event counted?',
+  //   answer:
+  //     'For Primus points, it is counted based on your Primus extension account, which means the points will not be double counted when you switch wallet address.',
+  //   // expand: true,
+  // },
 };
 const ethSignQsMap = {
   1: {
@@ -141,13 +141,13 @@ const ethSignQsMap = {
       'Yes, you can join this event with different wallet address. When you change the connected wallet above the task list, the task status will reset and you can go through it with the newly connected wallet address.',
     // expand: true,
   },
-  4: {
-    id: 4,
-    question: 'How are Primus points for this event counted?',
-    answer:
-      'For Primus points, it is counted based on your Primus extension account, which means the points will not be double counted when you switch wallet address.',
-    // expand: true,
-  },
+  // 4: {
+  //   id: 4,
+  //   question: 'How are Primus points for this event counted?',
+  //   answer:
+  //     'For Primus points, it is counted based on your Primus extension account, which means the points will not be double counted when you switch wallet address.',
+  //   // expand: true,
+  // },
 };
 const eventQsMap = {
   [BASEVENTNAME]: basQsMap,

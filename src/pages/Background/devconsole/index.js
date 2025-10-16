@@ -78,12 +78,15 @@ export const devconsoleMsgListener = async (
         type,
         tabId,
         requestId,
+        initiator,
       } = details;
-      if (
-        tabId === checkDataSourcePageTabId &&
-        ['xmlhttprequest', 'fetch'].includes(type) &&
-        method !== 'OPTIONS'
-      ) {
+      if (initiator?.startsWith(`chrome-extension://${chrome.runtime.id}`)) {
+        return;
+      }
+      if (![-1, checkDataSourcePageTabId].includes(tabId)) {
+        return;
+      }
+      if (['xmlhttprequest', 'fetch'].includes(type) && method !== 'OPTIONS') {
         // console.log('444-onBeforeSendHeadersFn-details', details);
         let formatUrlKey = currRequestUrl;
         let locationPageUrl = '';
@@ -129,13 +132,16 @@ export const devconsoleMsgListener = async (
         tabId,
         method,
         requestId,
+        initiator,
       } = subDetails;
       await removeRequestsMap(requestId);
-      if (
-        tabId === checkDataSourcePageTabId &&
-        ['xmlhttprequest', 'fetch'].includes(type) &&
-        method !== 'OPTIONS'
-      ) {
+      if (initiator?.startsWith(`chrome-extension://${chrome.runtime.id}`)) {
+        return;
+      }
+      if (![-1, checkDataSourcePageTabId].includes(tabId)) {
+        return;
+      }
+      if (['xmlhttprequest', 'fetch'].includes(type) && method !== 'OPTIONS') {
         let formatUrlKey = currRequestUrl;
         if (requestBody && requestBody.raw) {
           const rawBody = requestBody.raw[0];

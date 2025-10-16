@@ -50,12 +50,12 @@
           padding: 0 33px;
           @include frbc;
           .intro {
-            @include fcbs;
+            @include fccs;
             gap: var(--spacing-14);
             height: 94px;
             .brief {
               @include fcss;
-              gap: var(--spacing-2);
+              gap: var(--spacing-6);
               h1 {
                 @include HeadlineH1;
                 color: var(--text-tokens-text-primary);

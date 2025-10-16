@@ -16,18 +16,18 @@ export const menuList: NavItem[] = [
     iconName: 'icon-iconMenuHome',
     link: '/home',
   },
-  {
-    label: 'Data Source',
-    value: 'Data Source',
-    iconName: 'icon-iconMenuDataSource',
-    link: '/datas',
-  },
-  {
-    label: 'Data Dashboard',
-    value: 'Data Dashboard',
-    iconName: 'icon-iconMenuDataOverview',
-    link: '/dataDashboard',
-  },
+  // {
+  //   label: 'Data Source',
+  //   value: 'Data Source',
+  //   iconName: 'icon-iconMenuDataSource',
+  //   link: '/datas',
+  // },
+  // {
+  //   label: 'Data Dashboard',
+  //   value: 'Data Dashboard',
+  //   iconName: 'icon-iconMenuDataOverview',
+  //   link: '/dataDashboard',
+  // },
   {
     label: 'Attestation',
     value: 'Attestation',

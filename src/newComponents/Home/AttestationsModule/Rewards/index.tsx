@@ -1,6 +1,4 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import useSocialStatistic from '@/hooks/useSocialStatistic';
-import ModuleStatistics from '../../ModuleStatistics';
 import './index.scss';
 import PButton from '@/newComponents/PButton';
 import { useNavigate } from 'react-router-dom';

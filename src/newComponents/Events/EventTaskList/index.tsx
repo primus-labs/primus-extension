@@ -8,7 +8,7 @@ import {
   initSetNewRewardsAction,
   setNewRewards,
 } from '@/store/actions';
-import { setActiveOnChain, initRewardsActionAsync } from '@/store/actions';
+import { setActiveOnChain } from '@/store/actions';
 import useCheckIsConnectedWallet from '@/hooks/useCheckIsConnectedWallet';
 import useEventDetail from '@/hooks/useEventDetail';
 import useMsgs from '@/hooks/useMsgs';
@@ -34,7 +34,6 @@ import AttestationTasks from '../AttestationTasks';
 import SubmitOnChain from '@/newComponents/ZkAttestation/SubmitOnChain';
 import iconOpenSea from '@/assets/img/events/iconOpenSea.svg';
 import './index.scss';
-
 
 dayjs.extend(utc);
 

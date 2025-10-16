@@ -1,8 +1,5 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import './index.scss';
-import PButton from '@/newComponents/PButton';
-import iconAlarm from '@/assets/newImg/home/iconAlarm.svg';
 import iconDataSourceTwitter from '@/assets/img/iconDataSourceX.svg';
 import iconDataSourceDiscord from '@/assets/img/iconDataSourceDiscord.png';
 import { useSelector } from 'react-redux';

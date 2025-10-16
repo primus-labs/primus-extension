@@ -1,5 +1,4 @@
 import React, { useState, useMemo, memo, useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import useAllSources from '@/hooks/useAllSources';
 import PSelect from '@/newComponents/PSelect';
@@ -24,7 +23,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit }) => {
   }, [formLegal, dataSourceName]);
   const tList = useMemo(() => {
     // const sourceNameArr = ['binance', 'okx', 'coinbase'];
-    const sourceNameArr = ['binance', 'okx', 'bitget', 'bybit'];
+    // const sourceNameArr = ['binance', 'okx', 'bitget', 'bybit'];
+    const sourceNameArr = ['binance', 'okx', 'bybit'];
     const newArr = sourceNameArr.map((i) => {
       const metaInfo = DATASOURCEMAP[i];
       const isDisabled = i==='coinbase' && !sourceMap2[i];

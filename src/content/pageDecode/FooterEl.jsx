@@ -51,7 +51,16 @@ const FooterEl = ({ status, resultStatus, errorTxt, activeRequest }) => {
           verificationContent,
           verificationValue,
         });
-        el = `Verifying ${vC}`;
+        if (
+          activeRequest?.attTemplateID ===
+          '07866310-b51d-4ba6-bc10-f6e9272475f8'
+        ) {
+          const userName = activeRequest?.jumpTo.split('/').pop();
+          el = el = `Verifying Your Follow of @${userName}`;
+        } else {
+          el = `Verifying ${vC}`;
+        }
+
         break;
       case 'result':
         if (resultStatus === 'success') {

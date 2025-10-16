@@ -33,11 +33,11 @@ import { eventReport } from '@/services/api/usertracker';
 import './pageDecode/index.js';
 import { pageDecodeMsgListener } from './pageDecode/index.js';
 import { PadoWebsiteMsgListener } from './pageWebsite.js';
-import { dataSourceWebMsgListener } from './dataSourceWeb.js';
 import { padoZKAttestationJSSDKMsgListener } from './padoZKAttestationJSSDK/index.js';
 import { algorithmMsgListener } from './algorithm.js';
 import { devconsoleMsgListener } from './devconsole/index.js';
 import { listener as lumaMonadEventMsgListener } from './lumaMonadEvent/index.js';
+import { listener as xEventMsgListener } from './xEvent/index.js';
 const Web3EthAccounts = require('web3-eth-accounts');
 console.log('Background initialization');
 let fullscreenPort = null;
@@ -75,6 +75,7 @@ const creatUserInfo = async () => {
         timestamp,
         address,
       });
+      console.log('getUserIdentity', res);
       const { rc, result } = res;
       if (rc === 0) {
         const { bearerToken, identifier } = result;
@@ -641,15 +642,6 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       chrome.runtime.sendMessage(message);
     }
   }
-  if (type === 'dataSourceWeb') {
-    dataSourceWebMsgListener(
-      message,
-      sender,
-      sendResponse,
-      USERPASSWORD,
-      fullscreenPort
-    );
-  }
   if (type === 'padoZKAttestationJSSDK') {
     padoZKAttestationJSSDKMsgListener(
       message,
@@ -672,5 +664,11 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   if (type === 'lumaMonadEvent') {
     console.log('content2', message);
     lumaMonadEventMsgListener(message, sender);
+  }
+  if (type === 'xEvent') {
+    xEventMsgListener(message, sender);
+  }
+  if (type === 'xPage') {
+    xEventMsgListener(message, sender);
   }
 });

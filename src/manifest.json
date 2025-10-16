@@ -93,6 +93,26 @@
         "https://test-luckydraw.primuslabs.xyz/*"
       ],
       "js": ["lumaMonadEvent.bundle.js"]
+    },
+    {
+      "matches": [
+        "https://x.com/intent/follow?screen_name=*",
+        "https://x.com/intent/retweet?tweet_id=*"
+      ],
+      "js": ["xPage.bundle.js"]
+    },
+    {
+      "matches": [
+        "http://localhost:5173/*",
+        "http://api-dev.padolabs.org:38098/*",
+        "http://app.primuslabs.xyz/*",
+        "https://app.primuslabs.xyz/*",
+        "http://localhost:5174/*",
+        "http://api-dev.padolabs.org:38093/*",
+        "http://pay.primuslabs.xyz/*",
+        "https://pay.primuslabs.xyz/*"
+      ],
+      "js": ["xEvent.bundle.js"]
     }
   ]
 }

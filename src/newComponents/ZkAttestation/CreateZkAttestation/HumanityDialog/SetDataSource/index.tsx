@@ -1,5 +1,4 @@
 import React, { useState, useMemo, memo, useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import useAllSources from '@/hooks/useAllSources';
 import PSelect from '@/newComponents/PSelect';
@@ -28,8 +27,8 @@ const SetPwdDialog: React.FC<SetPwdDialogProps> = memo(({ onSubmit }) => {
       'okx',
       'tiktok',
       'x',
-      'google',
-      'discord',
+      // 'google',
+      // 'discord',
     ];
     // 'zan' 'chatgpt'
     const newArr = sourceNameArr.map((i) => {

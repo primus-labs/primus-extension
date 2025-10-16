@@ -6,7 +6,7 @@ import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
 import { updateAlgoUrl } from '@/config/envConstants';
 import { pageDecodeMsgListener } from '../pageDecode/index.js';
 import { attestBrevisFn } from './brevis';
-import { schemaNameFn } from './utils';
+import { schemaNameFn, getAlgoApi } from './utils';
 
 import { CURENV, ONCHAINLIST, EASINFOMAP } from '@/config/chain';
 import { getDataSourceAccount } from '../dataSourceUtils';
@@ -20,6 +20,7 @@ import {
 let hasGetTwitterScreenName = false;
 let sdkParams = {};
 let sdkVersion = '';
+let sdkName = '';
 const fetchAttestationTemplateList = async () => {
   try {
     const fetchRes = await getProofTypes({
@@ -79,6 +80,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     await fetchAttestationTemplateList();
     await fetchConfigure();
     sdkVersion = params?.sdkVersion;
+    sdkName = params?.sdkName;
 
     const { configMap } = await chrome.storage.local.get(['configMap']);
     let sdkSupportHosts = [];
@@ -115,12 +117,15 @@ export const padoZKAttestationJSSDKMsgListener = async (
     processAlgorithmReq({
       reqMethodName: 'start',
     });
-    updateAlgoUrl();
+    if (!sdkName) {
+      updateAlgoUrl();
+    }
 
     console.log('333pado-bg-receive-initAttestation', dappTabId);
   }
   if (name === 'startAttestation') {
     sdkVersion = params?.sdkVersion;
+    sdkName = params?.sdkName;
     console.log('debuge-zktls-startAttestation', sdkVersion, params);
     await chrome.storage.local.set({
       padoZKAttestationJSSDKBeginAttest: sdkVersion || '1',
@@ -163,19 +168,40 @@ export const padoZKAttestationJSSDKMsgListener = async (
     chainName = params.chainName;
     let walletAddress;
 
-    let padoUrl;
     let algorithmType;
     if (sdkVersion) {
       algorithmType = params.attRequest?.attMode?.algorithmType || 'proxytls';
     } else {
       algorithmType = params.algorithmType;
     }
-    if (algorithmType === 'proxytls') {
-      padoUrl = await getZkPadoUrl();
-    } else {
-      padoUrl = await getPadoUrl();
+
+    const algoApisParam = sdkName ? params.attRequest?.algoApis : undefined;
+    
+    if (sdkName && !params.attRequest?.algoApis?.[0]) {
+      console.log('network-sdk params error');
+      const resParams = {
+        result: false,
+        errorData: {
+          title: 'Invalid Algorithm Parameters',
+          desc: 'Invalid Algorithm Parameters',
+          code: '00015',
+        },
+      };
+      const { padoZKAttestationJSSDKDappTabId: dappTabId } =
+        await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
+      chrome.tabs.sendMessage(dappTabId, {
+        type: 'padoZKAttestationJSSDK',
+        name: 'getAttestationRes',
+        params: resParams,
+      });
+      return;
     }
-    const proxyUrl = await getProxyUrl();
+    // TODO
+
+    const padoUrlKey = algorithmType === 'proxytls' ? 'zkPadoUrl' : 'padoUrl';
+    let padoUrl = await getAlgoApi(padoUrlKey, algoApisParam);
+    let proxyUrl = await getAlgoApi('proxyUrl', algoApisParam);
+
     chrome.runtime.sendMessage({
       type: 'algorithm',
       method: 'startOffline',
@@ -204,7 +230,22 @@ export const padoZKAttestationJSSDKMsgListener = async (
           } = result;
 
           const dataSourceTemplateObj = JSON.parse(dataSourceTemplate);
-          const jumpTo = JSON.parse(dataPageTemplate).baseUrl;
+          let jumpTo = JSON.parse(dataPageTemplate).baseUrl;
+          const additionParams = params.attRequest?.additionParams;
+          let additionParamsObj = {};
+          if (additionParams) {
+            try {
+              additionParamsObj = JSON.parse(additionParams);
+              if (additionParamsObj.launch_page) {
+                jumpTo = additionParamsObj.launch_page;
+              }
+            } catch (err) {
+              console.log(
+                'Invalid json string ,additionParamsObj.launch_page err',
+                err
+              );
+            }
+          }
           const host =
             dataSourceTemplateObj[0]?.requestTemplate?.host ||
             new URL(jumpTo).host;
@@ -216,6 +257,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
                   targetUrlType,
                   method,
                   matchReqBodyKey,
+                  ignoreResponse,
                 },
               } = curr;
               const requestItem = {
@@ -224,6 +266,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
                 urlType: targetUrlType,
                 method,
                 matchReqBodyKey,
+                ignoreResponse,
               };
               prev.push(requestItem);
               return prev;
@@ -266,7 +309,17 @@ export const padoZKAttestationJSSDKMsgListener = async (
                   subconditionItem.type = 'FIELD_REVEAL';
                   subconditionItem.reveal_id = key;
                 };
-                if (subItemCondition) {
+                const handleNoneComputeFn = () => {
+                  subconditionItem.op = 'NONE';
+                  subconditionItem.type = 'FIELD_VALUE';
+                };
+                const computeMode = params.attRequest?.computeMode;
+                if (
+                  computeMode === 'nonecomplete' ||
+                  computeMode === 'nonepartial'
+                ) {
+                  handleNoneComputeFn();
+                } else if (subItemCondition) {
                   const { op, value, field, type } = subItemCondition;
                   subconditionItem.op = op;
                   if (
@@ -355,6 +408,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
               proxyUrl,
             },
             attTemplateID,
+            extendedParams: params.attRequest?.extendedParams,
+            additionParamsObj,
           };
         } else {
           const resParams = {
@@ -490,7 +545,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
           algorithmType,
         };
 
-        acc = await getDataSourceAccount(activeAttestationParams.dataSourceId);
+        // acc = await getDataSourceAccount(activeAttestationParams.dataSourceId);
+        acc = '';
         activeAttestationParams.account = acc;
 
         if (
@@ -849,12 +905,6 @@ chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
         type: 'pageDecode',
         name: 'cancel',
       },
-      sender,
-      sendResponse,
-      USERPASSWORD,
-      fullscreenPort,
-      hasGetTwitterScreenName,
-      processAlgorithmReq
     );
   }
 });

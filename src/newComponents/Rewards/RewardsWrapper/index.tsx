@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
+import React, { memo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import useRewardsStatistics from '@/hooks/useRewardsStatistics';

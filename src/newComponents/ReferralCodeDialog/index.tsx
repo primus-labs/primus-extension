@@ -1,15 +1,9 @@
-import React, { memo, useMemo, useCallback, useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import React, { memo, useMemo, useCallback, useState } from 'react';
 import PMask from '@/newComponents/PMask';
 import PClose from '@/newComponents/PClose';
-import SetPwd from '@/newComponents/SetPwdDialog/SetPwdForm';
-import SetAPI from '@/newComponents/SetAPIDialog/SetAPIForm';
-import OrderItem from '@/newComponents/OrderItem';
-import iconDone from '@/assets/newImg/layout/iconDone.svg';
 
 import PInput from '@/newComponents/PInput';
 import PButton from '@/newComponents/PButton';
-import type { UserState } from '@/types/store';
 import './index.scss';
 
 interface PButtonProps {

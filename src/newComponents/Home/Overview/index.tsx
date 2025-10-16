@@ -2,7 +2,7 @@ import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { getUserInfo } from '@/services/api/achievements';
-
+import useAttestationsStatistics from '@/hooks/useAttestationsStatistics';
 import useAllSources from '@/hooks/useAllSources';
 import { DATASOURCEMAP } from '@/config/dataSource2';
 import { EASInfo } from '@/config/chain';
@@ -23,24 +23,32 @@ type ItemMap = {
   };
 };
 const Overview = memo(() => {
+  const { attestationsSubmitOnChainLen } = useAttestationsStatistics();
   const { sourceMap2 } = useAllSources();
   const navigate = useNavigate();
   const [connectedDataSources, setConnectedDataSources] = useState<any>();
   const [onChains, setOnChains] = useState<any>();
   // const [totalScore, setTotalScore] = useState<string>();
   const [itemMap, setItemMap] = useState<ItemMap>({
-    dataSource: {
-      id: 'dataSource',
-      title: 'Data Connected',
-      num: 0,
-      operationName: 'Connect Data Source',
-      link: '/datas',
-    },
+    // dataSource: {
+    //   id: 'dataSource',
+    //   title: 'Data Connected',
+    //   num: 0,
+    //   operationName: 'Connect Data Source',
+    //   link: '',
+    // },
     Attestation: {
       id: 'Attestation',
       title: 'Attestations',
       num: 0,
       operationName: 'Create Attestation',
+      link: '/Attestation',
+    },
+    onChainRecords: {
+      id: 'onChainRecords',
+      title: 'On-chain Records',
+      num: 0,
+      operationName: 'Submit Attestation',
       link: '/Attestation',
     },
     achievement: {
@@ -60,30 +68,39 @@ const Overview = memo(() => {
 
   const handleClick = useCallback(
     (link) => {
-      navigate(link);
+      if (link) {
+        navigate(link);
+      }
     },
     [navigate]
   );
-  const initDataFn = useCallback(() => {
-    const m = Object.keys(sourceMap2).reduce((prev, curr) => {
-      const dataSourceId = curr.startsWith('0x') ? 'web3 wallet' : curr;
-      if (dataSourceId in prev) {
-      } else {
-        prev[dataSourceId] = {
-          id: curr,
-          icon: DATASOURCEMAP[dataSourceId].icon,
-        };
-      }
-      return prev;
-    }, {});
-    setConnectedDataSources(m);
+  // const initDataFn = useCallback(() => {
+  //   const m = Object.keys(sourceMap2).reduce((prev, curr) => {
+  //     const dataSourceId = curr.startsWith('0x') ? 'web3 wallet' : curr;
+  //     if (dataSourceId in prev) {
+  //     } else {
+  //       prev[dataSourceId] = {
+  //         id: curr,
+  //         icon: DATASOURCEMAP[dataSourceId].icon,
+  //       };
+  //     }
+  //     return prev;
+  //   }, {});
+  //   setConnectedDataSources(m);
 
+  //   setItemMap((i) => {
+  //     i.dataSource.num = Object.keys(m).length;
+  //     let newM = { ...i };
+  //     return newM;
+  //   });
+  // }, [sourceMap2]);
+  const initDataFn = useCallback(() => {
     setItemMap((i) => {
-      i.dataSource.num = Object.keys(m).length;
+      i.onChainRecords.num = attestationsSubmitOnChainLen;
       let newM = { ...i };
       return newM;
     });
-  }, [sourceMap2]);
+  }, [attestationsSubmitOnChainLen]);
   const initOnChainFn = useCallback(() => {
     const m = Object.values(credentialsFromStore).reduce((prev, curr) => {
       const provided = curr?.provided;
@@ -167,9 +184,10 @@ const Overview = memo(() => {
               <div className="desc">
                 <div className="num">{i.num}</div>
                 {i.num > 0 ? (
-                  ['dataSource', 'Attestation'].includes(i.id) && (
-                    <SplicedIcons list={iconListFn(i.id)} />
-                  )
+                  // ['dataSource', 'Attestation'].includes(i.id) && (
+                  //   <SplicedIcons list={iconListFn(i.id)} />
+                  // )
+                <></>
                 ) : (
                   <PButton
                     className="operationBtn"

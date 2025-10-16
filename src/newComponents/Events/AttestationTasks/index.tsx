@@ -1,15 +1,11 @@
 import React, { useState, useEffect, useMemo, memo, useCallback } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { ATTESTATIONTYPEMAP } from '@/config/attestation';
 
 import type { UserState } from '@/types/store';
 import CreateZkAttestation from '@/newComponents/ZkAttestation/CreateZkAttestation';
 
-import PMask from '@/newComponents/PMask';
-import PButton from '@/newComponents/PButton';
-import PClose from '@/newComponents/PClose';
-import iconCircleSuc from '@/assets/newImg/layout/iconCircleSuc.svg';
 import AttestationTasksDialog from '../AttestationTasksDialog';
 import './index.scss';
 
