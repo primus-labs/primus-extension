@@ -22,11 +22,9 @@ import {
   rowForNilion,
 } from '../nilionEvent/index.js';
 import {
-  templateIdForbBinanceEarnHistory30Days,
-  startTimeDistanceForBinanceEarnHistory,
-  rowForBinanceEarnHistory,
-  changeFieldsObjFnForBinanceEarnHistory,
+  templateIdForBinanceEarnHistory,
   formatRequestResponseFnForBinanceEarnHistory,
+  updateRequestMapFnForbBinanceEarnHistory,
 } from '../binanceEarnHistoryEvent/index.js';
 import {
   templateIdForTwitch,
@@ -55,9 +53,6 @@ import {
   checkResIsMatchConditionFn,
   checkResHtmlIsMatchConditionFn,
   getNMonthsBeforeTime,
-  getUTCDayLastSecondTime,
-  updateUrlParams,
-  parseUrlQuery,
 } from './utils';
 
 let PRE_ATTEST_PROMOT_V2 = [
@@ -463,66 +458,16 @@ export const pageDecodeMsgListener = async (
               }
 
               if (
-                [templateIdForbBinanceEarnHistory30Days].includes(
+                [templateIdForBinanceEarnHistory].includes(
                   activeTemplate?.attTemplateID
                 )
               ) {
-                const oldUrl = requestsMap[matchRequestId].url;
-                const oldQueryParams = parseUrlQuery(oldUrl);
-                let newStartTime = getNMonthsBeforeTime(
-                  oldQueryParams.endTime,
-                  startTimeDistanceForBinanceEarnHistory
+                const newRequestMap = updateRequestMapFnForbBinanceEarnHistory(
+                  requestsMap[matchRequestId],
+                  additionParamsObj
                 );
-                const newUrlParams = {
-                  pageSize: rowForBinanceEarnHistory,
-                  startTime: newStartTime,
-                  // asset: '',
-                };
-
-                if (additionParamsObj?.binanceBaseAsset) {
-                  newUrlParams.asset = additionParamsObj?.binanceBaseAsset;
-                }
-                if (
-                  additionParamsObj?.binanceMonthNum &&
-                  typeof additionParamsObj?.binanceMonthNum === 'number'
-                ) {
-                  newStartTime = getNMonthsBeforeTime(
-                    oldQueryParams.endTime,
-                    additionParamsObj?.binanceMonthNum
-                  );
-                  newUrlParams.startTime = newStartTime;
-                }
-                if (
-                  additionParamsObj?.binanceRows &&
-                  additionParamsObj?.binanceRows < rowForBinanceEarnHistory
-                ) {
-                  newUrlParams.pageSize =
-                    typeof additionParamsObj?.binanceRows === 'number'
-                      ? additionParamsObj?.binanceRows
-                      : Number(additionParamsObj?.rowForBinanceEarnHistory);
-                }
-
-                const newUrl = updateUrlParams(oldUrl, newUrlParams);
-                targetRequestUrl = newUrl;
-
-                const oldUrl2 = `https://www.binance.com/bapi/earn/v1/private/lending/union/redemption/list?pageIndex=1&pageSize=20&startTime=1744732800000&endTime=1760371199999&lendingType=DAILY`;
-                const newUrl2 = updateUrlParams(oldUrl2, newUrlParams);
-                changeFieldsObjFnForBinanceEarnHistory(
-                  'add',
-                  'secondUrl',
-                  newUrl2
-                );
-                // TODO
-                let matchRequestUrlResult2 = await extraRequestFn2({
-                  ...requestsMap[matchRequestId],
-                  header: requestsMap[matchRequestId].headers,
-                  url: newUrl2,
-                });
-
-                storeRequestsMap(matchRequestId, {
-                  ...requestsMap[matchRequestId],
-                  url: newUrl,
-                });
+                targetRequestUrl = newRequestMap.url;
+                storeRequestsMap(matchRequestId, newRequestMap);
               }
               let matchRequestUrlResult;
               let isTargetUrl = false;
@@ -928,8 +873,7 @@ export const pageDecodeMsgListener = async (
           formatRequests = req;
           formatResponse = res;
         } else if (
-          activeTemplate.attTemplateID ===
-          templateIdForbBinanceEarnHistory30Days
+          activeTemplate.attTemplateID === templateIdForBinanceEarnHistory
         ) {
           const { formatRequests: req, formatResponse: res } =
             formatRequestResponseFnForBinanceEarnHistory(
