@@ -1,9 +1,7 @@
 import { eventReport } from '@/services/api/usertracker';
-import { regenerateAttestation } from '@/services/api/cred';
 import { pageDecodeMsgListener } from './pageDecode/index.js';
 import { postMsg, strToHexSha256 } from '@/utils/utils';
-import { getDataSourceAccount } from './dataSourceUtils';
-import { schemaNameFn, regenerateAttest } from './padoZKAttestationJSSDK/utils';
+import { regenerateAttest } from './padoZKAttestationJSSDK/utils';
 import { padoExtensionVersion } from '@/config/constants';
 import { addSDKParamsToReportParamsFn } from './utils/reportEvent.js';
 

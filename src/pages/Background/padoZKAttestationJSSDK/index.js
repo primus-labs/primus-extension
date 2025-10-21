@@ -9,8 +9,6 @@ import { attestBrevisFn } from './brevis';
 import { schemaNameFn, getAlgoApi } from './utils';
 
 import { CURENV, ONCHAINLIST, EASINFOMAP } from '@/config/chain';
-import { getDataSourceAccount } from '../dataSourceUtils';
-import { getPadoUrl, getProxyUrl, getZkPadoUrl } from '@/config/envConstants';
 import { STARTOFFLINETIMEOUT } from '@/config/constants';
 import {
   templateIdForMonad,

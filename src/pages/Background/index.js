@@ -8,20 +8,12 @@ import {
 import { getSysConfig, getProofTypes } from '@/services/api/config';
 import { requestSignTypedData } from '@/services/wallets/utils';
 
-import {
-  getCurrentDate,
-  postMsg,
-  sub,
-  compareVersions,
-  getAccount,
-  strToHexSha256,
-} from '@/utils/utils';
+import { getCurrentDate, postMsg, sub } from '@/utils/utils';
 import { addSDKParamsToReportParamsFn } from './utils/reportEvent.js';
 
 import {
   SocailStoreVersion,
   padoExtensionVersion,
-  ATTESTATIONPOLLINGTIMEOUT,
 } from '@/config/constants';
 import {
   default as processExReq,

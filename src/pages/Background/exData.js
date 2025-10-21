@@ -4,7 +4,7 @@ import { SCROLLEVENTNAME, BASEVENTNAME } from '@/config/events';
 import { schemaTypeMap } from '@/config/constants';
 import { CredVersion } from '@/config/attestation';
 import { getPadoUrl, getProxyUrl, getZkPadoUrl } from '@/config/envConstants';
-import { getCurrentDate, sub, postMsg, strToHex } from '@/utils/utils';
+import { postMsg, strToHex } from '@/utils/utils';
 import { storeDataSource } from './dataSourceUtils';
 
 export let EXCHANGEINFO = {
@@ -329,7 +329,7 @@ export async function assembleAlgorithmParamsForSDK(form, ext) {
   const appSignParameters = JSON.parse(ext.appSignParameters);
   let specialTask = '';
   if (appSignParameters?.computeMode === 'nonecomplete') {
-    specialTask = "CompleteHttpResponseCiphertext";
+    specialTask = 'CompleteHttpResponseCiphertext';
   } else if (appSignParameters?.computeMode === 'nonepartial') {
     specialTask = 'PartialHttpResponseCiphertext';
   }
@@ -569,20 +569,4 @@ export const resetExchangesCipher = async (USERPASSWORD, newPwd) => {
       }
     }
   }
-  // cipherNameArr.forEach(async (cipherName) => {
-  //   // decrypt
-  //   const cipherData = res[cipherName];
-  //   if (cipherData) {
-  //     try {
-  //       const apiKeyInfo = JSON.parse(decrypt(cipherData, USERPASSWORD));
-  //       // encrypt
-  //       const encryptedKey = encrypt(JSON.stringify(apiKeyInfo), newPwd);
-  //       await chrome.storage.local.set({
-  //         [cipherName]: JSON.stringify(encryptedKey),
-  //       });
-  //     } catch (err) {
-  //       console.log('resetExchangesCipher error:', err);
-  //     }
-  //   }
-  // });
 };

@@ -2,8 +2,6 @@ import {
   assembleAlgorithmParams,
   assembleAlgorithmParamsForSDK,
 } from '../exData';
-import { storeDataSource } from '../dataSourceUtils';
-import { DATASOURCEMAP } from '@/config/dataSource';
 import { PADOSERVERURL } from '@/config/envConstants';
 import { padoExtensionVersion } from '@/config/constants';
 import { eventReport } from '@/services/api/usertracker';
