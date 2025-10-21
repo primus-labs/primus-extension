@@ -15,6 +15,7 @@ import {
   monadCalculations,
 } from '../lumaMonadEvent/index.js';
 import { getErrorMsgTitleFn } from '../utils/handleError.js';
+import { addSDKParamsToReportParamsFn } from '../utils/reportEvent.js';
 
 let hasGetTwitterScreenName = false;
 let sdkParams = {};
@@ -756,6 +757,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     if (activeAttestationParams.event) {
       eventInfo.rawData.event = activeAttestationParams.event;
     }
+    eventInfo.rawData = await addSDKParamsToReportParamsFn(eventInfo.rawData);
 
     eventReport(eventInfo);
   }
