@@ -260,6 +260,7 @@ const handleDataSourcePageDialogTimeout = async (processAlgorithmReq) => {
     if (beginAttest === '1') {
       rawData.getAttestationResultRes = getAttestationResultRes;
     }
+
     if (!getAttestationResultRes) {
       var eventInfo = {
         eventType: 'ATTESTATION_GENERATE',
@@ -296,6 +297,7 @@ const handleDataSourcePageDialogTimeout = async (processAlgorithmReq) => {
         if (parsedActiveRequestAttestation.event) {
           rawData.event = parsedActiveRequestAttestation.event;
         }
+        rawData = await addSDKParamsToReportParamsFn(rawData);
         eventReportFn(rawData);
       }
     }

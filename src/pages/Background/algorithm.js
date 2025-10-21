@@ -4,6 +4,7 @@ import { postMsg, strToHexSha256 } from '@/utils/utils';
 import { regenerateAttest } from './padoZKAttestationJSSDK/utils';
 import { padoExtensionVersion } from '@/config/constants';
 import { addSDKParamsToReportParamsFn } from './utils/reportEvent.js';
+import { getErrorMsgTitleFn } from './utils/handleError.js';
 
 export const algorithmMsgListener = async (
   message,
@@ -34,14 +35,6 @@ export const algorithmMsgListener = async (
   const extendedParamsObj = activeAttestationParams?.extendedParams
     ? JSON.parse(activeAttestationParams.extendedParams)
     : {};
-  const getErrorMsgTitleFn = () => {
-    let eT = ['Assets Verification', 'Humanity Verification'].includes(
-      activeAttestationParams.attestationType
-    )
-      ? `${activeAttestationParams.attestationType} failed!`
-      : `${activeAttestationParams.attestationType} proof failed!`;
-    return eT;
-  };
   if (resMethodName === `start`) {
     // var eventInfo = {
     //   eventType: 'ATTESTATION_INIT_1',
@@ -110,7 +103,7 @@ export const algorithmMsgListener = async (
           // if (retcode === '2' || retcode === '1')
           result = false;
 
-          let errorMsgTitle = getErrorMsgTitleFn();
+          let errorMsgTitle = await getErrorMsgTitleFn();
 
           errorMsgTitle =
             retcode === '2'
@@ -200,7 +193,7 @@ export const algorithmMsgListener = async (
         const parsedActiveRequestAttestation = activeRequestAttestation
           ? JSON.parse(activeRequestAttestation)
           : {};
-        let errorMsgTitle = getErrorMsgTitleFn();
+        let errorMsgTitle = await getErrorMsgTitleFn();
         var eventInfo = {
           eventType: 'ATTESTATION_GENERATE',
           rawData: {

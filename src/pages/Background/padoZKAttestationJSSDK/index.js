@@ -14,6 +14,7 @@ import {
   templateIdForMonad,
   monadCalculations,
 } from '../lumaMonadEvent/index.js';
+import { getErrorMsgTitleFn } from '../utils/handleError.js';
 
 let hasGetTwitterScreenName = false;
 let sdkParams = {};
@@ -174,7 +175,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     }
 
     const algoApisParam = sdkName ? params.attRequest?.algoApis : undefined;
-    
+
     if (sdkName && !params.attRequest?.algoApis?.[0]) {
       console.log('network-sdk params error');
       const resParams = {
@@ -670,12 +671,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
     const activeAttestationParams = JSON.parse(
       padoZKAttestationJSSDKAttestationPresetParams
     );
-    const errorMsgTitle = [
-      'Assets Verification',
-      'Humanity Verification',
-    ].includes(activeAttestationParams.attestationType)
-      ? `${activeAttestationParams.attestationType} failed!`
-      : `${activeAttestationParams.attestationType} proof failed!`;
+    const errorMsgTitle = await getErrorMsgTitleFn();
+
     const code = '00002';
     const msgObj = {
       type: attestTipMap[code].type,
@@ -898,11 +895,9 @@ chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
     'padoZKAttestationJSSDKDappTabId',
   ]);
   if (tabId === dappTabId && padoZKAttestationJSSDKBeginAttest) {
-    pageDecodeMsgListener(
-      {
-        type: 'pageDecode',
-        name: 'cancel',
-      },
-    );
+    pageDecodeMsgListener({
+      type: 'pageDecode',
+      name: 'cancel',
+    });
   }
 });
