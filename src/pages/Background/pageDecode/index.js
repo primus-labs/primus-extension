@@ -231,6 +231,95 @@ const extraRequestFn = async () => {
     console.log('fetch chatgpt conversation error', e);
   }
 };
+const eventReportGenerateFn = async (rawData) => {
+  var eventInfo = {
+    eventType: 'ATTESTATION_GENERATE',
+    rawData,
+  };
+  eventReport(eventInfo);
+};
+const handle00013 = async () => {
+  let rawData = {};
+  let baseRawData = {
+    status: 'FAILED',
+    reason: 'Something went wrong',
+    detail: {
+      code: '00013',
+      desc: 'Target data missing',
+    },
+  };
+  const {
+    padoZKAttestationJSSDKBeginAttest,
+    padoZKAttestationJSSDKAttestationPresetParams,
+    activeRequestAttestation,
+  } = await chrome.storage.local.get([
+    'padoZKAttestationJSSDKBeginAttest',
+    'padoZKAttestationJSSDKAttestationPresetParams',
+    'activeRequestAttestation',
+  ]);
+  if (padoZKAttestationJSSDKBeginAttest) {
+    if (padoZKAttestationJSSDKAttestationPresetParams) {
+      const parsedActiveRequestAttestation = JSON.parse(
+        padoZKAttestationJSSDKAttestationPresetParams
+      );
+      if (
+        !reportRequestIds.includes(parsedActiveRequestAttestation.requestid)
+      ) {
+        reportRequestIds.push(parsedActiveRequestAttestation.requestid);
+        const userAddress = parsedActiveRequestAttestation?.ext
+          ?.appSignParameters
+          ? JSON.parse(parsedActiveRequestAttestation.ext.appSignParameters)
+              .userAddress
+          : '';
+
+        rawData = {
+          source: parsedActiveRequestAttestation.dataSourceId,
+          schemaType: parsedActiveRequestAttestation.schemaType,
+          sigFormat: parsedActiveRequestAttestation.sigFormat,
+          attestOrigin: parsedActiveRequestAttestation.attestOrigin,
+          event: parsedActiveRequestAttestation.attestOrigin,
+          templateId: parsedActiveRequestAttestation.attTemplateID,
+          address: userAddress,
+          ...baseRawData,
+        };
+        if (parsedActiveRequestAttestation.event) {
+          rawData.event = parsedActiveRequestAttestation.event;
+        }
+        rawData = await addSDKParamsToReportParamsFn(rawData);
+        eventReportGenerateFn(rawData);
+      }
+    }
+  } else {
+    if (activeRequestAttestation) {
+      const parsedActiveRequestAttestation = JSON.parse(
+        activeRequestAttestation
+      );
+      if (
+        !reportRequestIds.includes(parsedActiveRequestAttestation.requestid)
+      ) {
+        reportRequestIds.push(parsedActiveRequestAttestation.requestid);
+        rawData = {
+          source: parsedActiveRequestAttestation.source,
+          schemaType: parsedActiveRequestAttestation.schemaType,
+          sigFormat: parsedActiveRequestAttestation.sigFormat,
+          address: parsedActiveRequestAttestation?.address,
+          ...baseRawData,
+        };
+        if (parsedActiveRequestAttestation.event) {
+          rawData.event = parsedActiveRequestAttestation.event;
+        }
+        eventReportGenerateFn(rawData);
+      }
+    }
+  }
+  errorFn({
+    title:
+      'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
+    desc: 'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
+    code: '00013',
+  });
+};
+
 const handleDataSourcePageDialogTimeout = async (processAlgorithmReq) => {
   let rawData = {};
   let baseRawData = {
@@ -1421,12 +1510,7 @@ export const pageDecodeMsgListener = async (
       handleEnd(request);
     }
     if (name === 'interceptionFail') {
-      errorFn({
-        title:
-          'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
-        desc: 'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
-        code: '00013',
-      });
+      handle00013();
     }
     if (name === 'dataSourcePageDialogTimeout') {
       handleDataSourcePageDialogTimeout(processAlgorithmReq);
@@ -1436,12 +1520,7 @@ export const pageDecodeMsgListener = async (
       chandleClose(params, processAlgorithmReq);
     }
     if (name === 'interceptionFail') {
-      errorFn({
-        title:
-          'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
-        desc: 'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
-        code: '00013',
-      });
+      handle00013();
     }
     if (name === 'dataSourcePageDialogTimeout') {
       handleDataSourcePageDialogTimeout(processAlgorithmReq);
