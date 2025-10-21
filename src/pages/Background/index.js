@@ -16,6 +16,7 @@ import {
   getAccount,
   strToHexSha256,
 } from '@/utils/utils';
+import { addSDKParamsToReportParamsFn } from './utils/reportEvent.js';
 
 import {
   SocailStoreVersion,
@@ -597,21 +598,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
           ...params,
         },
       };
-      const {
-        padoZKAttestationJSSDKBeginAttest,
-        padoZKAttestationJSSDKAttestationPresetParams,
-      } = await chrome.storage.local.get([
-        'padoZKAttestationJSSDKBeginAttest',
-        'padoZKAttestationJSSDKAttestationPresetParams',
-      ]);
-      if (padoZKAttestationJSSDKBeginAttest) {
-        const prestParamsObj = JSON.parse(
-          padoZKAttestationJSSDKAttestationPresetParams
-        );
-        eventInfo.rawData.attestOrigin = prestParamsObj.attestOrigin;
-        eventInfo.rawData.event = prestParamsObj.attestOrigin;
-        eventInfo.rawData.templateId = prestParamsObj.attTemplateID;
-      }
+      eventInfo.rawData = await addSDKParamsToReportParamsFn(eventInfo.rawData);
       eventReport(eventInfo);
     }
   }

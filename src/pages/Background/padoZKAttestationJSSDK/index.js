@@ -394,7 +394,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
             verificationContent: name,
             verificationValue: description,
             fetchType: 'Web',
-            attestOrigin: params.attRequest?.appId, // TODO-zktls
+            attestOrigin: params.attRequest?.appId || sdkVersion,
             account: '',
             attestationType: category,
             requestid,

@@ -46,6 +46,7 @@ import {
   getErrorMsgFn,
   sendMsgToTab,
 } from '../utils/utils';
+import { addSDKParamsToReportParamsFn } from '../utils/reportEvent.js';
 import {
   extraRequestFn2,
   extraRequestHtmlFn,
@@ -1392,21 +1393,7 @@ export const pageDecodeMsgListener = async (
           order: '3',
         },
       };
-      const {
-        padoZKAttestationJSSDKBeginAttest,
-        padoZKAttestationJSSDKAttestationPresetParams,
-      } = await chrome.storage.local.get([
-        'padoZKAttestationJSSDKBeginAttest',
-        'padoZKAttestationJSSDKAttestationPresetParams',
-      ]);
-      if (padoZKAttestationJSSDKBeginAttest) {
-        const prestParamsObj = JSON.parse(
-          padoZKAttestationJSSDKAttestationPresetParams
-        );
-        eventInfo.rawData.attestOrigin = prestParamsObj.attestOrigin;
-        eventInfo.rawData.event = prestParamsObj.attestOrigin;
-        eventInfo.rawData.templateId = prestParamsObj.attTemplateID;
-      }
+      eventInfo.rawData = await addSDKParamsToReportParamsFn(eventInfo.rawData);
       eventReport(eventInfo);
       chrome.runtime.sendMessage({
         type: 'algorithm',
