@@ -38,7 +38,7 @@ export const request = async (fetchParams, baseUrl, padoExtensionVersion) => {
     const userInfoObj = JSON.parse(userInfo);
     const { id, token } = userInfoObj;
     if (
-      !url.startsWith('https://storage.googleapis.com/primus-online') &&
+      !url.startsWith('https://storage.googleapis.com/primuslabs-online') &&
       token
     ) {
       golbalHeader.Authorization = `Bearer ${token}`;
