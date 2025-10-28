@@ -35,15 +35,19 @@ export const formatRequestResponseFnForBinanceEarnHistory = (
     conditions: {
       ...oldR1.conditions, // subscriptionList
       subconditions: [
+        // {
+        //   ...oldR1.conditions.subconditions[0],
+        //   reveal_id: 'subscriptionAsset',
+        //   field: '$.data[*].asset',
+        // },
+        // {
+        //   ...oldR1.conditions.subconditions[0],
+        //   reveal_id: 'subscriptionAmount',
+        //   field: '$.data[*].amount',
+        // },
         {
           ...oldR1.conditions.subconditions[0],
-          reveal_id: 'subscriptionAsset',
-          field: '$.data[*].asset',
-        },
-        {
-          ...oldR1.conditions.subconditions[0],
-          reveal_id: 'subscriptionAmount',
-          field: '$.data[*].amount',
+          reveal_id: 'subscriptionList',
         },
       ],
     },

@@ -11,8 +11,9 @@ checkFollowElTimer = setInterval(() => {
   var element = document.querySelector(
     "[data-testid='confirmationSheetConfirm']"
   );
-  console.log('222x follow btn', element);
+  
   if (element) {
+    console.log('222x follow btn', element);
     element.addEventListener('click', () => {
       const currentUrl = window.location.href;
       const url = new URL(currentUrl);
