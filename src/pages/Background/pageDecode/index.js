@@ -37,6 +37,10 @@ import {
   getUserIdFromCookie,
 } from '../scoreEvent/index.js';
 import {
+  templateIdForPhalaAccount,
+  formatRequestResponseFnForPhalaAccount,
+} from '../phala/index.js';
+import {
   isObject,
   parseCookie,
   isUrlWithQueryFn,
@@ -972,7 +976,16 @@ export const pageDecodeMsgListener = async (
             );
           formatRequests = req;
           formatResponse = res;
-        }
+        } else if (activeTemplate.attTemplateID === templateIdForPhalaAccount) {
+          const { formatRequests: req, formatResponse: res } =
+            formatRequestResponseFnForPhalaAccount(
+              formatRequests,
+              formatResponse
+            );
+          formatRequests = req;
+          formatResponse = res;
+        } 
+        
         for (const fr of formatRequests) {
           if (fr.headers) {
             fr.headers['Accept-Encoding'] = 'identity';
