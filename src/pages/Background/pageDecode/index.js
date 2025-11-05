@@ -809,6 +809,7 @@ export const pageDecodeMsgListener = async (
             algorithmType: activeTemplate.algorithmType,
             requestid: activeTemplate.requestid,
             sslCipherSuite: activeTemplate.sslCipherSuite,
+            allJsonResponseFlag: activeTemplate.allJsonResponseFlag,
           },
           activeTemplate.ext
         );
@@ -984,8 +985,8 @@ export const pageDecodeMsgListener = async (
             );
           formatRequests = req;
           formatResponse = res;
-        } 
-        
+        }
+
         for (const fr of formatRequests) {
           if (fr.headers) {
             fr.headers['Accept-Encoding'] = 'identity';

@@ -338,6 +338,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
                     subconditionItem.value = value;
                   } else if (op === 'SHA256') {
                     subconditionItem.type = 'FIELD_VALUE';
+                    subconditionItem.reveal_id = key; // TODO delete
                   } else if (op === 'REVEAL_STRING') {
                     handleREVEALFn();
                   } else if (op === 'MATCH_ONE') {
@@ -410,6 +411,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
             attTemplateID,
             extendedParams: params.attRequest?.extendedParams,
             additionParamsObj,
+            allJsonResponseFlag: params.attRequest?.allJsonResponseFlag,
           };
         } else {
           const resParams = {

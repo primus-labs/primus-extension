@@ -301,6 +301,7 @@ export const algorithmMsgListener = async (
               // await sucFn(JSON.parse(content.encodedData));
               const passRes = JSON.parse(content.encodedData);
               passRes.extendedData = content.extendedData;
+              passRes.allJsonResponse = content.allJsonResponse;
               await sucFn(passRes);
             }
 

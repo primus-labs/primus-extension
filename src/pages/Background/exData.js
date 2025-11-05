@@ -313,6 +313,7 @@ export async function assembleAlgorithmParamsForSDK(form, ext) {
     algorithmType = 'proxytls',
     requestid: prevRequestid,
     sslCipherSuite,
+    allJsonResponseFlag,
   } = form;
   // const urlObj = new URL(dataPageTemplate.baseUrl);
   // const baseName = urlObj.host;
@@ -357,6 +358,7 @@ export async function assembleAlgorithmParamsForSDK(form, ext) {
         : '',
     },
     specialTask,
+    getAllJsonResponse: allJsonResponseFlag === 'true' ? 'true' : 'false',
   };
   if (ext.padoUrl && ext.proxyUrl) {
     params.padoUrl = ext.padoUrl;
