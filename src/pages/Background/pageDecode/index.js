@@ -39,6 +39,8 @@ import {
 import {
   templateIdForPhalaAccount,
   formatRequestResponseFnForPhalaAccount,
+  formatRequestResponseFnForPhalaCvmList,
+  templateIdForPhalaCvmList,
 } from '../phala/index.js';
 import {
   isObject,
@@ -985,8 +987,15 @@ export const pageDecodeMsgListener = async (
             );
           formatRequests = req;
           formatResponse = res;
+        } else if (activeTemplate.attTemplateID === templateIdForPhalaCvmList) {
+          const { formatRequests: req, formatResponse: res } =
+            formatRequestResponseFnForPhalaCvmList(
+              formatRequests,
+              formatResponse
+            );
+          formatRequests = req;
+          formatResponse = res;
         }
-
         for (const fr of formatRequests) {
           if (fr.headers) {
             fr.headers['Accept-Encoding'] = 'identity';

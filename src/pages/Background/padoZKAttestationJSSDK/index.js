@@ -336,9 +336,13 @@ export const padoZKAttestationJSSDKMsgListener = async (
                   ) {
                     subconditionItem.type = 'FIELD_RANGE';
                     subconditionItem.value = value;
-                  } else if (op === 'SHA256') {
+                  } else if (['SHA256'].includes(op)) {
                     subconditionItem.type = 'FIELD_VALUE';
-                    subconditionItem.reveal_id = key; // TODO delete
+                    subconditionItem.reveal_id = key;
+                  } else if (['SHA256_EX', 'REVEAL_HEX_STRING'].includes(op)) {
+                    subconditionItem.type = 'FIELD_REVEAL';
+                    subconditionItem.op = 'REVEAL_HEX_STRING';
+                    subconditionItem.reveal_id = key;
                   } else if (op === 'REVEAL_STRING') {
                     handleREVEALFn();
                   } else if (op === 'MATCH_ONE') {
