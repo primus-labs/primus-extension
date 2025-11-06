@@ -111,3 +111,77 @@ export const updateRequestMapFnForbBinanceEarnHistory = (
 
   return oldRequestMap;
 };
+
+export const templateIdForBinanceEarnHistoryABalance =
+  'aa85c07d-cb6b-457e-8531-fe6a3c96b4fc';
+export const templateIdForBinanceEarnHistoryABalanceThirdRequestUrl =
+  'https://www.binance.com/bapi/earn/v1/private/finance-earn/position/group-by-asset';
+export const formatRequestResponseFnForBinanceEarnHistoryABalance = (
+  formatRequests,
+  formatResponse
+) => {
+  const {
+    formatRequests: newFormatRequests,
+    formatResponse: newFormatResponse,
+  } = formatRequestResponseFnForBinanceEarnHistory(
+    formatRequests,
+    formatResponse
+  );
+  // set third request url
+  const formatRequest2 = JSON.parse(
+    JSON.stringify({ ...newFormatRequests[0] })
+  );
+  newFormatRequests[2] = {
+    ...formatRequest2,
+    url: templateIdForBinanceEarnHistoryABalanceThirdRequestUrl,
+    name: 'sdk-2',
+  };
+
+  const [oldRes1, oldRes2] = newFormatResponse;
+  const {
+    conditions: {
+      subconditions: [{ field, reveal_id }],
+    },
+  } = oldRes1;
+  oldRes1.conditions.subconditions[0] = {
+    op: 'REVEAL_HEX_STRING',
+    type: 'FIELD_REVEAL',
+    field: { type: 'FIELD_ARITHMETIC', op: 'SHA256', field },
+    reveal_id,
+  };
+
+  const {
+    conditions: {
+      subconditions: [{ field: field2, reveal_id: reveal_id2 }],
+    },
+  } = oldRes2;
+  oldRes2.conditions.subconditions[0] = {
+    op: 'REVEAL_HEX_STRING',
+    type: 'FIELD_REVEAL',
+    field: { type: 'FIELD_ARITHMETIC', op: 'SHA256', field: field2 },
+    reveal_id: reveal_id2,
+  };
+
+  newFormatResponse[2] = {
+    ...oldRes1,
+    conditions: {
+      ...oldRes1.conditions,
+      subconditions: [
+        {
+          op: 'REVEAL_HEX_STRING',
+          type: 'FIELD_REVEAL',
+          field: {
+            type: 'FIELD_ARITHMETIC',
+            op: 'SHA256',
+            field: '$.data.assetDetails',
+          },
+          reveal_id: 'assetDetails',
+        },
+      ],
+    },
+  };
+  return {
+    formatRequests: newFormatRequests,
+    formatResponse: newFormatResponse,
+  };
+};

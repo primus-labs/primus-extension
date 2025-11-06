@@ -23,6 +23,8 @@ import {
   templateIdForBinanceEarnHistory,
   formatRequestResponseFnForBinanceEarnHistory,
   updateRequestMapFnForbBinanceEarnHistory,
+  templateIdForBinanceEarnHistoryABalance,
+  formatRequestResponseFnForBinanceEarnHistoryABalance,
 } from '../binanceEarnHistoryEvent/index.js';
 import {
   templateIdForTwitch,
@@ -554,9 +556,10 @@ export const pageDecodeMsgListener = async (
               }
 
               if (
-                [templateIdForBinanceEarnHistory].includes(
-                  activeTemplate?.attTemplateID
-                )
+                [
+                  templateIdForBinanceEarnHistory,
+                  templateIdForBinanceEarnHistoryABalance,
+                ].includes(activeTemplate?.attTemplateID)
               ) {
                 const newRequestMap = updateRequestMapFnForbBinanceEarnHistory(
                   requestsMap[matchRequestId],
@@ -969,11 +972,20 @@ export const pageDecodeMsgListener = async (
             formatRequestResponseFnForTwitch(formatRequests, formatResponse);
           formatRequests = req;
           formatResponse = res;
-        } else if (
-          activeTemplate.attTemplateID === templateIdForBinanceEarnHistory
-        ) {
+        } else if (activeTemplate.attTemplateID === templateIdForBinanceEarnHistory) {
           const { formatRequests: req, formatResponse: res } =
             formatRequestResponseFnForBinanceEarnHistory(
+              formatRequests,
+              formatResponse
+            );
+          formatRequests = req;
+          formatResponse = res;
+        } else if (
+          activeTemplate.attTemplateID ===
+          templateIdForBinanceEarnHistoryABalance
+        ) {
+          const { formatRequests: req, formatResponse: res } =
+            formatRequestResponseFnForBinanceEarnHistoryABalance(
               formatRequests,
               formatResponse
             );
