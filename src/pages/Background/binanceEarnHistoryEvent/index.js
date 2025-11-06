@@ -146,19 +146,19 @@ export const formatRequestResponseFnForBinanceEarnHistoryABalance = (
   oldRes1.conditions.subconditions[0] = {
     op: 'REVEAL_HEX_STRING',
     type: 'FIELD_REVEAL',
-    field: { type: 'FIELD_ARITHMETIC', op: 'SHA256', field },
+    field: { type: 'FIELD_ARITHMETIC', op: 'SHA256', field: '$' },
     reveal_id,
   };
 
   const {
     conditions: {
-      subconditions: [{ field: field2, reveal_id: reveal_id2 }],
+      subconditions: [{ reveal_id: reveal_id2 }],
     },
   } = oldRes2;
   oldRes2.conditions.subconditions[0] = {
     op: 'REVEAL_HEX_STRING',
     type: 'FIELD_REVEAL',
-    field: { type: 'FIELD_ARITHMETIC', op: 'SHA256', field: field2 },
+    field: { type: 'FIELD_ARITHMETIC', op: 'SHA256', field: '$' },
     reveal_id: reveal_id2,
   };
 
@@ -173,7 +173,7 @@ export const formatRequestResponseFnForBinanceEarnHistoryABalance = (
           field: {
             type: 'FIELD_ARITHMETIC',
             op: 'SHA256',
-            field: '$.data.assetDetails',
+            field: '$', // .data.assetDetails
           },
           reveal_id: 'assetDetails',
         },
