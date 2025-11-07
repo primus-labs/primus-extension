@@ -114,8 +114,10 @@ export const updateRequestMapFnForbBinanceEarnHistory = (
 
 export const templateIdForBinanceEarnHistoryABalance =
   'aa85c07d-cb6b-457e-8531-fe6a3c96b4fc';
+// export const templateIdForBinanceEarnHistoryABalanceThirdRequestUrl =
+//   'https://www.binance.com/bapi/earn/v1/private/finance-earn/position/group-by-asset';
 export const templateIdForBinanceEarnHistoryABalanceThirdRequestUrl =
-  'https://www.binance.com/bapi/earn/v1/private/finance-earn/position/group-by-asset';
+  'https://www.binance.com/bapi/earn/v2/private/lending/daily/token/position?pageIndex=1&pageSize=100&sortType=ASC&sortBy=ASSET';
 export const formatRequestResponseFnForBinanceEarnHistoryABalance = (
   formatRequests,
   formatResponse
