@@ -41,8 +41,12 @@ import {
 import {
   templateIdForPhalaAccount,
   formatRequestResponseFnForPhalaAccount,
-  formatRequestResponseFnForPhalaCvmList,
+  formatRequestResponseFnForReputationPhalaCvmList,
+  templateIdForReputaionPhalaCvmList,
+  phalaCvmListRequestUrl,
+  checkTargetRequestFnForReputationPhalaCvmList,
   templateIdForPhalaCvmList,
+  formatRequestResponseFnForPhalaCvmList,
 } from '../phala/index.js';
 import {
   isObject,
@@ -614,35 +618,46 @@ export const pageDecodeMsgListener = async (
                   matchRequestUrlResult
                 );
               }
-
+              const notMetHandler = async () => {
+                const notMetCode = '00104';
+                const netMetMsg = await getErrorMsgFn(
+                  activeTemplate.attestationType,
+                  notMetCode
+                );
+                handleEnd(netMetMsg);
+                sendMsgToSdk({
+                  type: 'padoZKAttestationJSSDK',
+                  name: 'startAttestationRes',
+                  params: {
+                    result: false,
+                    errorData: {
+                      code: notMetCode,
+                    },
+                  },
+                });
+              };
               if (
                 matchRequestUrlResult &&
                 activeTemplate?.attTemplateID === templateIdForMonad
               ) {
-                const notMetHandler = async () => {
-                  const notMetCode = '00104';
-                  const netMetMsg = await getErrorMsgFn(
-                    activeTemplate.attestationType,
-                    notMetCode
-                  );
-                  handleEnd(netMetMsg);
-                  sendMsgToSdk({
-                    type: 'padoZKAttestationJSSDK',
-                    name: 'startAttestationRes',
-                    params: {
-                      result: false,
-                      errorData: {
-                        code: notMetCode,
-                      },
-                    },
-                  });
-                };
                 isTargetUrl = await checkTargetRequestFnForMonad(
                   targetRequestUrl,
                   matchRequestUrlResult,
                   requestsMap[matchRequestId],
                   notMetHandler
                 );
+              }
+              if (
+                matchRequestUrlResult &&
+                activeTemplate?.attTemplateID ===
+                  templateIdForReputaionPhalaCvmList &&
+                targetRequestUrl.includes(phalaCvmListRequestUrl)
+              ) {
+                isTargetUrl =
+                  await checkTargetRequestFnForReputationPhalaCvmList(
+                    matchRequestUrlResult,
+                    notMetHandler
+                  );
               }
 
               if (isTargetUrl) {
@@ -972,7 +987,9 @@ export const pageDecodeMsgListener = async (
             formatRequestResponseFnForTwitch(formatRequests, formatResponse);
           formatRequests = req;
           formatResponse = res;
-        } else if (activeTemplate.attTemplateID === templateIdForBinanceEarnHistory) {
+        } else if (
+          activeTemplate.attTemplateID === templateIdForBinanceEarnHistory
+        ) {
           const { formatRequests: req, formatResponse: res } =
             formatRequestResponseFnForBinanceEarnHistory(
               formatRequests,
@@ -994,6 +1011,16 @@ export const pageDecodeMsgListener = async (
         } else if (activeTemplate.attTemplateID === templateIdForPhalaAccount) {
           const { formatRequests: req, formatResponse: res } =
             formatRequestResponseFnForPhalaAccount(
+              formatRequests,
+              formatResponse
+            );
+          formatRequests = req;
+          formatResponse = res;
+        } else if (
+          activeTemplate.attTemplateID === templateIdForReputaionPhalaCvmList
+        ) {
+          const { formatRequests: req, formatResponse: res } =
+            formatRequestResponseFnForReputationPhalaCvmList(
               formatRequests,
               formatResponse
             );

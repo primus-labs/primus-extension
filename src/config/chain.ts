@@ -11,8 +11,8 @@ import iconNetwork6 from '@/assets/img/iconNetwork6.png';
 import iconChainEthereum from '@/assets/img/iconUpChainEthereum.png';
 import iconOptimism from '@/assets/img/iconOptimism.svg';
 // import { CURENV } from './envConstants';
-export const CURENV = process.env.NODE_ENV as any;
-// export const CURENV = 'production';
+// export const CURENV = process.env.NODE_ENV as any;
+export const CURENV = 'production';
 export const EASINFOMAP = {
   development: {
     'Scroll Sepolia': {
