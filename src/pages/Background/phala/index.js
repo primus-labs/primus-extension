@@ -97,13 +97,11 @@ export const checkTargetRequestFnForReputationPhalaCvmList = async (
       await notMetHandler();
     }
   } else {
-    await notMetHandler();
+    return false;
   }
 };
 
-
-
-// old reputation phala zkvm
+// old reputation phala cvm zkvm
 export const templateIdForPhalaCvmList = 'efcce302-2405-4b4e-8920-952abec1f91c';
 export const formatRequestResponseFnForPhalaCvmList = (
   formatRequests,

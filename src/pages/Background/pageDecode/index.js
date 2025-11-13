@@ -25,6 +25,9 @@ import {
   updateRequestMapFnForbBinanceEarnHistory,
   templateIdForBinanceEarnHistoryABalance,
   formatRequestResponseFnForBinanceEarnHistoryABalance,
+  templateIdForReputationPhalaBinanceEarnBalance,
+  checkTargetRequestFnForReputationPhalaBinanceEarnBalance,
+  formatRequestResponseFnForReputationPhalaBinanceEarnBalance,
 } from '../binanceEarnHistoryEvent/index.js';
 import {
   templateIdForTwitch,
@@ -563,6 +566,7 @@ export const pageDecodeMsgListener = async (
                 [
                   templateIdForBinanceEarnHistory,
                   templateIdForBinanceEarnHistoryABalance,
+                  templateIdForBinanceEarnHistoryABalance,
                 ].includes(activeTemplate?.attTemplateID)
               ) {
                 const newRequestMap = updateRequestMapFnForbBinanceEarnHistory(
@@ -657,6 +661,19 @@ export const pageDecodeMsgListener = async (
                   await checkTargetRequestFnForReputationPhalaCvmList(
                     matchRequestUrlResult,
                     notMetHandler
+                  );
+              }
+
+              if (
+                matchRequestUrlResult &&
+                activeTemplate?.attTemplateID ===
+                  templateIdForReputationPhalaBinanceEarnBalance
+              ) {
+                isTargetUrl =
+                  await checkTargetRequestFnForReputationPhalaBinanceEarnBalance(
+                    matchRequestUrlResult,
+                    notMetHandler,
+                    additionParamsObj
                   );
               }
 
@@ -1034,6 +1051,14 @@ export const pageDecodeMsgListener = async (
             );
           formatRequests = req;
           formatResponse = res;
+        } else if (activeTemplate.attTemplateID === templateIdForReputationPhalaBinanceEarnBalance) {
+           const { formatRequests: req, formatResponse: res } =
+             formatRequestResponseFnForReputationPhalaBinanceEarnBalance(
+               formatRequests,
+               formatResponse
+             );
+           formatRequests = req;
+           formatResponse = res;
         }
         for (const fr of formatRequests) {
           if (fr.headers) {

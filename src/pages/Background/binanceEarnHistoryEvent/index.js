@@ -82,13 +82,13 @@ export const updateRequestMapFnForbBinanceEarnHistory = (
     pageSize,
   };
 
-  if (additionParamsObj?.startTime) {
+  if (startTime && additionParamsObj?.startTime) {
     newUrlParams.startTime = additionParamsObj?.startTime;
   }
-  if (additionParamsObj?.endTime) {
+  if (endTime && additionParamsObj?.endTime) {
     newUrlParams.endTime = additionParamsObj?.endTime;
   }
-  if (additionParamsObj?.pageSize) {
+  if (pageSize && additionParamsObj?.pageSize) {
     newUrlParams.pageSize = additionParamsObj?.pageSize;
   }
   if (additionParamsObj?.asset) {
@@ -112,6 +112,7 @@ export const updateRequestMapFnForbBinanceEarnHistory = (
   return oldRequestMap;
 };
 
+// old reputation phala event
 export const templateIdForBinanceEarnHistoryABalance =
   'aa85c07d-cb6b-457e-8531-fe6a3c96b4fc';
 // export const templateIdForBinanceEarnHistoryABalanceThirdRequestUrl =
@@ -185,5 +186,73 @@ export const formatRequestResponseFnForBinanceEarnHistoryABalance = (
   return {
     formatRequests: newFormatRequests,
     formatResponse: newFormatResponse,
+  };
+};
+
+//  new reputation phala event
+export const templateIdForReputationPhalaBinanceEarnBalance =
+  '031720f6-5b78-405c-a91c-3b6efd1586ce'; // binance eran account some token(params) balance
+export const checkTargetRequestFnForReputationPhalaBinanceEarnBalance = async (
+  matchRequestUrlResult,
+  notMetHandler,
+  additionParamsObj
+) => {
+  const asset = additionParamsObj?.asset;
+  const metHandler = async (reputationPhalaBinanceEarnAssetIdx) => {
+    changeFieldsObjFnForBinanceEarnHistory(
+      'add',
+      'reputationPhalaBinanceEarnAsset',
+      reputationPhalaBinanceEarnAssetIdx
+    );
+  };
+  changeFieldsObjFnForBinanceEarnHistory('reset');
+  if (matchRequestUrlResult) {
+    const { code, data } = matchRequestUrlResult;
+    if (code === '000000') {
+      let targetAssetIdx = data.findIndex((i) => i.asset === asset);
+      if (!asset) {
+        targetAssetIdx = 0;
+      }
+      if (targetAssetIdx >= 0) {
+        metHandler(targetAssetIdx);
+        return true;
+      } else {
+        notMetHandler();
+      }
+    } else {
+      return false;
+    }
+  } else {
+    return false;
+  }
+};
+export const formatRequestResponseFnForReputationPhalaBinanceEarnBalance = (
+  formatRequests,
+  formatResponse
+) => {
+  const targetIdx = binanceEarnHistoryFields.reputationPhalaBinanceEarnAsset;
+  formatResponse[0].conditions.subconditions = [
+    {
+      field: `$.data[${targetIdx}].asset`,
+      op: 'REVEAL_STRING',
+      type: 'FIELD_REVEAL',
+      reveal_id: 'asset',
+    },
+    {
+      field: `$.data[${targetIdx}].totalAmount`,
+      op: 'REVEAL_STRING',
+      type: 'FIELD_REVEAL',
+      reveal_id: 'totalAmount',
+    },
+    {
+      field: `$.data[${targetIdx}].userId`,
+      op: 'REVEAL_STRING',
+      type: 'FIELD_REVEAL',
+      reveal_id: 'userId',
+    },
+  ];
+  return {
+    formatRequests,
+    formatResponse,
   };
 };
