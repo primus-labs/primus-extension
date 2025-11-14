@@ -50,12 +50,12 @@ export const formatRequestResponseFnForReputationPhalaCvmList = (
   };
 
   newFormatResponse[1].conditions.subconditions = phalaFields.cvmIdList.map(
-    (i) => {
+    (i,k) => {
       return {
         field: `$.${i}.uptime`,
         op: 'REVEAL_STRING',
         type: 'FIELD_REVEAL',
-        reveal_id: i,
+        reveal_id: `cvm${k+1}`,
       };
     }
   );
