@@ -58,7 +58,6 @@ export const checkTargetRequestFnForOkxSomeTokenBalance = async (
     const amountRangeLevel = getLevel(balance, balanceLevelRules);
     const { min, max } =
       getRangeByLevel(amountRangeLevel, balanceLevelRules) || {};
-    debugger;
     changeFieldsObjFnForOkx('add', 'okxSomeTokenAmountRangeLevel', String(min));
   };
   return checkTargetAssetIdxFn(
@@ -69,7 +68,7 @@ export const checkTargetRequestFnForOkxSomeTokenBalance = async (
   );
 };
 
-export const formatRequestResponseFnForOkxSpotSomeTokenBalance = (
+export const formatRequestResponseFnForOkxSomeTokenBalance = (
   formatRequests,
   formatResponse
 ) => {

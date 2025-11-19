@@ -59,8 +59,13 @@ import {
   templateIdForOkxSomeTokenBalance,
   templateIdForOkxSomeTokenBalanceRequestUrl,
   checkTargetRequestFnForOkxSomeTokenBalance,
-  formatRequestResponseFnForOkxSpotSomeTokenBalance,
+  formatRequestResponseFnForOkxSomeTokenBalance,
 } from '../okx/index.js';
+import {
+  templateIdForCoinstatsSomeTokenBalance,
+  checkTargetRequestFnForCoinstatsSomeTokenBalance,
+  formatRequestResponseFnForCoinstatsSpotSomeTokenBalance,
+} from '../coinstats/index.js';
 import {
   isObject,
   parseCookie,
@@ -715,12 +720,24 @@ export const pageDecodeMsgListener = async (
                   templateIdForOkxSomeTokenBalanceRequestUrl
                 )
               ) {
-                debugger;
                 isTargetUrl = await checkTargetRequestFnForOkxSomeTokenBalance(
                   matchRequestUrlResult,
                   notMetHandler,
                   extendedParamsObj
                 );
+              }
+
+              if (
+                matchRequestUrlResult &&
+                activeTemplate?.attTemplateID ===
+                  templateIdForCoinstatsSomeTokenBalance
+              ) {
+                isTargetUrl =
+                  await checkTargetRequestFnForCoinstatsSomeTokenBalance(
+                    matchRequestUrlResult,
+                    notMetHandler,
+                    extendedParamsObj
+                  );
               }
 
               if (isTargetUrl) {
@@ -1122,7 +1139,18 @@ export const pageDecodeMsgListener = async (
           activeTemplate.attTemplateID === templateIdForOkxSomeTokenBalance
         ) {
           const { formatRequests: req, formatResponse: res } =
-            formatRequestResponseFnForOkxSpotSomeTokenBalance(
+            formatRequestResponseFnForOkxSomeTokenBalance(
+              formatRequests,
+              formatResponse
+            );
+          formatRequests = req;
+          formatResponse = res;
+        } else if (
+          activeTemplate.attTemplateID ===
+          templateIdForCoinstatsSomeTokenBalance
+        ) {
+          const { formatRequests: req, formatResponse: res } =
+            formatRequestResponseFnForCoinstatsSpotSomeTokenBalance(
               formatRequests,
               formatResponse
             );
