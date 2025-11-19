@@ -28,6 +28,10 @@ import {
   templateIdForReputationPhalaBinanceEarnBalance,
   checkTargetRequestFnForReputationPhalaBinanceEarnBalance,
   formatRequestResponseFnForReputationPhalaBinanceEarnBalance,
+  templateIdForBinanceSomeTokenBalance,
+  templateIdForBinanceSomeTokenBalanceRequestUrl,
+  checkTargetRequestFnForBinanceSomeTokenBalance,
+  formatRequestResponseFnForBinanceSomeTokenBalance,
 } from '../binanceEarnHistoryEvent/index.js';
 import {
   templateIdForTwitch,
@@ -51,6 +55,12 @@ import {
   templateIdForPhalaCvmList,
   formatRequestResponseFnForPhalaCvmList,
 } from '../phala/index.js';
+import {
+  templateIdForOkxSomeTokenBalance,
+  templateIdForOkxSomeTokenBalanceRequestUrl,
+  checkTargetRequestFnForOkxSomeTokenBalance,
+  formatRequestResponseFnForOkxSpotSomeTokenBalance,
+} from '../okx/index.js';
 import {
   isObject,
   parseCookie,
@@ -467,7 +477,12 @@ export const pageDecodeMsgListener = async (
       const {
         datasourceTemplate: { requests, responses },
         additionParamsObj,
+        extendedParams,
       } = activeTemplate;
+      const extendedParamsObj = extendedParams
+        ? JSON.parse(extendedParams)
+        : {};
+
       const thisRequestUrlIdx = requests.findIndex(
         (r) => r.url === templateRequestUrl
       );
@@ -675,6 +690,37 @@ export const pageDecodeMsgListener = async (
                     notMetHandler,
                     additionParamsObj
                   );
+              }
+              if (
+                matchRequestUrlResult &&
+                activeTemplate?.attTemplateID ===
+                  templateIdForBinanceSomeTokenBalance &&
+                targetRequestUrl.includes(
+                  templateIdForBinanceSomeTokenBalanceRequestUrl
+                )
+              ) {
+                isTargetUrl =
+                  await checkTargetRequestFnForBinanceSomeTokenBalance(
+                    matchRequestUrlResult,
+                    notMetHandler,
+                    extendedParamsObj
+                  );
+              }
+
+              if (
+                matchRequestUrlResult &&
+                activeTemplate?.attTemplateID ===
+                  templateIdForOkxSomeTokenBalance &&
+                targetRequestUrl.includes(
+                  templateIdForOkxSomeTokenBalanceRequestUrl
+                )
+              ) {
+                debugger;
+                isTargetUrl = await checkTargetRequestFnForOkxSomeTokenBalance(
+                  matchRequestUrlResult,
+                  notMetHandler,
+                  extendedParamsObj
+                );
               }
 
               if (isTargetUrl) {
@@ -1051,15 +1097,39 @@ export const pageDecodeMsgListener = async (
             );
           formatRequests = req;
           formatResponse = res;
-        } else if (activeTemplate.attTemplateID === templateIdForReputationPhalaBinanceEarnBalance) {
-           const { formatRequests: req, formatResponse: res } =
-             formatRequestResponseFnForReputationPhalaBinanceEarnBalance(
-               formatRequests,
-               formatResponse
-             );
-           formatRequests = req;
-           formatResponse = res;
+        } else if (
+          activeTemplate.attTemplateID ===
+          templateIdForReputationPhalaBinanceEarnBalance
+        ) {
+          const { formatRequests: req, formatResponse: res } =
+            formatRequestResponseFnForReputationPhalaBinanceEarnBalance(
+              formatRequests,
+              formatResponse
+            );
+          formatRequests = req;
+          formatResponse = res;
+        } else if (
+          activeTemplate.attTemplateID === templateIdForBinanceSomeTokenBalance
+        ) {
+          const { formatRequests: req, formatResponse: res } =
+            formatRequestResponseFnForBinanceSomeTokenBalance(
+              formatRequests,
+              formatResponse
+            );
+          formatRequests = req;
+          formatResponse = res;
+        } else if (
+          activeTemplate.attTemplateID === templateIdForOkxSomeTokenBalance
+        ) {
+          const { formatRequests: req, formatResponse: res } =
+            formatRequestResponseFnForOkxSpotSomeTokenBalance(
+              formatRequests,
+              formatResponse
+            );
+          formatRequests = req;
+          formatResponse = res;
         }
+
         for (const fr of formatRequests) {
           if (fr.headers) {
             fr.headers['Accept-Encoding'] = 'identity';

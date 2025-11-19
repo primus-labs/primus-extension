@@ -1,5 +1,5 @@
 import { updateUrlParams, parseUrlQuery } from '../utils/utils';
-
+import { getLevel, getRangeByLevel } from '../utils/amountRange';
 export const templateIdForBinanceEarnHistory =
   'aa85c07d-cb6b-457e-8531-fe6a3c96b4fb';
 
@@ -197,7 +197,6 @@ export const checkTargetRequestFnForReputationPhalaBinanceEarnBalance = async (
   notMetHandler,
   additionParamsObj
 ) => {
-  const asset = additionParamsObj?.asset;
   const metHandler = async (reputationPhalaBinanceEarnAssetIdx) => {
     changeFieldsObjFnForBinanceEarnHistory(
       'add',
@@ -205,26 +204,12 @@ export const checkTargetRequestFnForReputationPhalaBinanceEarnBalance = async (
       reputationPhalaBinanceEarnAssetIdx
     );
   };
-  changeFieldsObjFnForBinanceEarnHistory('reset');
-  if (matchRequestUrlResult) {
-    const { code, data } = matchRequestUrlResult;
-    if (code === '000000') {
-      let targetAssetIdx = data.findIndex((i) => i.asset === asset);
-      if (!asset) {
-        targetAssetIdx = 0;
-      }
-      if (targetAssetIdx >= 0) {
-        metHandler(targetAssetIdx);
-        return true;
-      } else {
-        notMetHandler();
-      }
-    } else {
-      return false;
-    }
-  } else {
-    return false;
-  }
+  return checkTargetAssetIdxFn(
+    matchRequestUrlResult,
+    notMetHandler,
+    additionParamsObj,
+    metHandler
+  );
 };
 export const formatRequestResponseFnForReputationPhalaBinanceEarnBalance = (
   formatRequests,
@@ -249,6 +234,97 @@ export const formatRequestResponseFnForReputationPhalaBinanceEarnBalance = (
       op: 'REVEAL_STRING',
       type: 'FIELD_REVEAL',
       reveal_id: 'userId',
+    },
+  ];
+  return {
+    formatRequests,
+    formatResponse,
+  };
+};
+export const checkTargetAssetIdxFn = async (
+  matchRequestUrlResult,
+  notMetHandler,
+  additionParamsObj,
+  metHandler
+) => {
+  const { asset } = additionParamsObj ?? {};
+  changeFieldsObjFnForBinanceEarnHistory('reset');
+  if (matchRequestUrlResult) {
+    const { code, data } = matchRequestUrlResult;
+    if (code === '000000') {
+      let targetAssetIdx = data.findIndex((i) => i.asset === asset);
+      if (!asset) {
+        targetAssetIdx = 0;
+      }
+      if (targetAssetIdx >= 0) {
+        metHandler(targetAssetIdx, data[targetAssetIdx]);
+        return true;
+      } else {
+        notMetHandler();
+      }
+    } else {
+      return false;
+    }
+  } else {
+    return false;
+  }
+};
+
+export const templateIdForBinanceSomeTokenBalance =
+  'fdd4b203-2c02-49c3-89bf-fa51942c1f3a'; // binance some token(params) balance
+export const templateIdForBinanceSomeTokenBalanceRequestUrl =
+  'https://www.binance.com/bapi/asset/v2/private/asset-service/wallet/asset';
+export const checkTargetRequestFnForBinanceSomeTokenBalance = async (
+  matchRequestUrlResult,
+  notMetHandler,
+  extendedParamsObj
+) => {
+  const { balanceLevelRules } = extendedParamsObj ?? {};
+  const metHandler = async (idx, val) => {
+    changeFieldsObjFnForBinanceEarnHistory(
+      'add',
+      'binanceSpotSomeTokenIdx',
+      idx
+    );
+    const balance = val.amount;
+    const amountRangeLevel = getLevel(balance, balanceLevelRules);
+    const { min, max } =
+      getRangeByLevel(amountRangeLevel, balanceLevelRules) || {};
+    changeFieldsObjFnForBinanceEarnHistory(
+      'add',
+      'binanceSomeTokenAmountRangeLevel',
+      String(min)
+    );
+  };
+  return checkTargetAssetIdxFn(
+    matchRequestUrlResult,
+    notMetHandler,
+    extendedParamsObj,
+    metHandler
+  );
+};
+
+export const formatRequestResponseFnForBinanceSomeTokenBalance = (
+  formatRequests,
+  formatResponse
+) => {
+  const { binanceSpotSomeTokenIdx, binanceSomeTokenAmountRangeLevel } =
+    binanceEarnHistoryFields;
+  formatResponse[1].conditions.subconditions = [
+    {
+      field: `$.data[${binanceSpotSomeTokenIdx}].asset`,
+      op: 'REVEAL_STRING',
+      type: 'FIELD_REVEAL',
+      reveal_id: 'asset',
+    },
+    {
+      field: `$.data[${binanceSpotSomeTokenIdx}].amount`,
+      reveal_id: 'balance',
+      // op: 'REVEAL_STRING',
+      // type: 'FIELD_REVEAL',
+      type: 'FIELD_RANGE',
+      op: '>',
+      value: binanceSomeTokenAmountRangeLevel,
     },
   ];
   return {
