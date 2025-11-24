@@ -9,7 +9,6 @@ import customFetch from '../utils/request';
 import {
   templateIdForMonad,
   eventListUrlForMonad,
-  changeFieldsObjFnForMonad,
   checkTargetRequestFnForMonad,
   formatRequestResponseFnForMonad,
 } from '../lumaMonadEvent/index.js';
@@ -36,7 +35,6 @@ import {
 import {
   templateIdForTwitch,
   formatJsonArrFnForTwitch,
-  changeFieldsObjFnForTwitch,
   formatRequestResponseFnForTwitch,
 } from '../twitchEvent/index.js';
 import {
@@ -164,8 +162,6 @@ const resetVarsFn = () => {
   chatgptHasLogin = false;
   requestsMap = {};
   reportRequestIds = [];
-  changeFieldsObjFnForMonad('reset');
-  changeFieldsObjFnForTwitch('reset');
   chrome.runtime.onMessage.removeListener(listenerFn);
 };
 const handlerForSdk = async (processAlgorithmReq, operation) => {

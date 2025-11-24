@@ -1,4 +1,6 @@
 import { reputationPhalaCvmListCheckTime } from '@/services/api/phala';
+import { changeFieldsObjFn } from '../utils/localVar';
+
 export const templateIdForPhalaAccount = '3630e4cc-9329-44c5-a4ed-25fbe5e195a3';
 export const templateIdForReputaionPhalaCvmList =
   'efcce302-2405-4b4e-8920-952abec1f91e';
@@ -8,18 +10,6 @@ export const phalaCvmListRequestUrl =
   'https://cloud.phala.network/api/status/batch';
 
 export let phalaFields = {};
-
-export const changeFieldsObjFnForPhala = (op, key, value) => {
-  if (op === 'delete') {
-    delete phalaFields[key];
-  } else if (op === 'add') {
-    phalaFields[key] = value;
-  } else if (op === 'update') {
-    phalaFields[key] = value;
-  } else if (op === 'reset') {
-    phalaFields = {};
-  }
-};
 
 export const formatRequestResponseFnForPhalaAccount = (
   formatRequests,
@@ -50,12 +40,12 @@ export const formatRequestResponseFnForReputationPhalaCvmList = (
   };
 
   newFormatResponse[1].conditions.subconditions = phalaFields.cvmIdList.map(
-    (i,k) => {
+    (i, k) => {
       return {
         field: `$.${i}.uptime`,
         op: 'REVEAL_STRING',
         type: 'FIELD_REVEAL',
-        reveal_id: `cvm${k+1}`,
+        reveal_id: `cvm${k + 1}`,
       };
     }
   );
@@ -80,9 +70,9 @@ export const checkTargetRequestFnForReputationPhalaCvmList = async (
   notMetHandler
 ) => {
   const metHandler = async (cvmIdList) => {
-    changeFieldsObjFnForPhala('add', 'cvmIdList', cvmIdList);
+    changeFieldsObjFn(phalaFields, 'add', 'cvmIdList', cvmIdList);
   };
-  changeFieldsObjFnForPhala('reset');
+  changeFieldsObjFn(phalaFields, 'reset');
   if (matchRequestUrlResult) {
     const cvmIdArr = Object.keys(matchRequestUrlResult);
     const updateTimeArr = Object.values(matchRequestUrlResult).map(

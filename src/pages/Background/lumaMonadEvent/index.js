@@ -1,5 +1,6 @@
 import { extraRequestFn2 } from '../pageDecode/utils';
 import { parseCookie } from '../utils/utils';
+import { changeFieldsObjFn } from '../utils/localVar';
 
 let callerTabId;
 let createdTabIdByExtension;
@@ -59,18 +60,6 @@ export const monadCalculations = {
   ],
 };
 
-export const changeFieldsObjFnForMonad = (op, key, value) => {
-  if (op === 'delete') {
-    delete monadFields[key];
-  } else if (op === 'add') {
-    monadFields[key] = value;
-  } else if (op === 'update') {
-    monadFields[key] = value;
-  } else if (op === 'reset') {
-    monadFields = {};
-  }
-};
-
 export const checkTargetRequestFnForMonad = async (
   targetRequestUrl,
   matchRequestUrlResult,
@@ -78,18 +67,19 @@ export const checkTargetRequestFnForMonad = async (
   notMetHandler
 ) => {
   let checkRes = false;
+  changeFieldsObjFn(monadFields, 'reset');
   const metHandler = async (eventList, monadEventIdx, metUrl) => {
-    changeFieldsObjFnForMonad('add', 'name', {
+    changeFieldsObjFn(monadFields, 'add', 'name', {
       key: 'name',
       value: eventList[monadEventIdx].event.name,
       jsonPath: `$.entries[${monadEventIdx}].event.name`,
     });
-    changeFieldsObjFnForMonad('add', 'approval_status', {
+    changeFieldsObjFn(monadFields, 'add', 'approval_status', {
       key: 'approval_status',
       value: eventList[monadEventIdx].role.approval_status,
       jsonPath: `$.entries[${monadEventIdx}].role.approval_status`,
     });
-    changeFieldsObjFnForMonad('add', 'eventListUrl', {
+    changeFieldsObjFn(monadFields, 'add', 'eventListUrl', {
       key: 'eventListUrl',
       value: metUrl,
     });
@@ -102,7 +92,7 @@ export const checkTargetRequestFnForMonad = async (
         header: requestMetaInfo?.headers,
         url: profileUrl,
       });
-      changeFieldsObjFnForMonad('add', 'api_id', {
+      changeFieldsObjFn(monadFields, 'add', 'api_id', {
         key: 'api_id',
         value: profileUrlResult?.user.api_id,
         jsonPath: `$.user.api_id`,

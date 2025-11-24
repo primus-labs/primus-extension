@@ -1,21 +1,11 @@
 import { updateUrlParams, parseUrlQuery } from '../utils/utils';
-import { getLevel, getRangeByLevel } from '../utils/amountRange';
+import { getLevelObj } from '../utils/amountRange';
+import { changeFieldsObjFn } from '../utils/localVar';
+
 export const templateIdForBinanceEarnHistory =
   'aa85c07d-cb6b-457e-8531-fe6a3c96b4fb';
 
-export let binanceEarnHistoryFields = {};
-
-export const changeFieldsObjFnForBinanceEarnHistory = (op, key, value) => {
-  if (op === 'delete') {
-    delete binanceEarnHistoryFields[key];
-  } else if (op === 'add') {
-    binanceEarnHistoryFields[key] = value;
-  } else if (op === 'update') {
-    binanceEarnHistoryFields[key] = value;
-  } else if (op === 'reset') {
-    binanceEarnHistoryFields = {};
-  }
-};
+export let fields = {};
 
 export const formatRequestResponseFnForBinanceEarnHistory = (
   formatRequests,
@@ -25,7 +15,7 @@ export const formatRequestResponseFnForBinanceEarnHistory = (
   // const formatResponse2 = JSON.parse(JSON.stringify({ ...formatResponse[0] }));
   formatRequests[1] = {
     ...formatRequest2,
-    url: binanceEarnHistoryFields['secondUrl'],
+    url: fields['secondUrl'],
     name: 'sdk-1',
   };
   const [oldR1] = formatResponse;
@@ -100,7 +90,7 @@ export const updateRequestMapFnForbBinanceEarnHistory = (
 
   const oldUrl2 = `https://www.binance.com/bapi/earn/v1/private/lending/union/redemption/list?pageIndex=1&pageSize=20&startTime=1744732800000&endTime=1760371199999&lendingType=DAILY`;
   const newUrl2 = updateUrlParams(oldUrl2, newUrlParams);
-  changeFieldsObjFnForBinanceEarnHistory('add', 'secondUrl', newUrl2);
+  changeFieldsObjFn(fields, 'add', 'secondUrl', newUrl2);
 
   // TODO
   // let matchRequestUrlResult2 = extraRequestFn2({
@@ -198,7 +188,8 @@ export const checkTargetRequestFnForReputationPhalaBinanceEarnBalance = async (
   additionParamsObj
 ) => {
   const metHandler = async (reputationPhalaBinanceEarnAssetIdx) => {
-    changeFieldsObjFnForBinanceEarnHistory(
+    changeFieldsObjFn(
+      fields,
       'add',
       'reputationPhalaBinanceEarnAsset',
       reputationPhalaBinanceEarnAssetIdx
@@ -215,7 +206,7 @@ export const formatRequestResponseFnForReputationPhalaBinanceEarnBalance = (
   formatRequests,
   formatResponse
 ) => {
-  const targetIdx = binanceEarnHistoryFields.reputationPhalaBinanceEarnAsset;
+  const targetIdx = fields.reputationPhalaBinanceEarnAsset;
   formatResponse[0].conditions.subconditions = [
     {
       field: `$.data[${targetIdx}].asset`,
@@ -248,7 +239,7 @@ export const checkTargetAssetIdxFn = async (
   metHandler
 ) => {
   const { asset } = additionParamsObj ?? {};
-  changeFieldsObjFnForBinanceEarnHistory('reset');
+  changeFieldsObjFn(fields, 'reset');
   if (matchRequestUrlResult) {
     const { code, data } = matchRequestUrlResult;
     if (code === '000000') {
@@ -281,19 +272,16 @@ export const checkTargetRequestFnForBinanceSomeTokenBalance = async (
 ) => {
   const { balanceLevelRules } = extendedParamsObj ?? {};
   const metHandler = async (idx, val) => {
-    changeFieldsObjFnForBinanceEarnHistory(
-      'add',
-      'binanceSpotSomeTokenIdx',
-      idx
-    );
     const balance = val.amount;
-    const amountRangeLevel = getLevel(balance, balanceLevelRules);
-    const { min, max } =
-      getRangeByLevel(amountRangeLevel, balanceLevelRules) || {};
-    changeFieldsObjFnForBinanceEarnHistory(
+    const { min, startIntervalType } =
+      getLevelObj(balance, balanceLevelRules) || {};
+    changeFieldsObjFn(fields, 'add', 'binanceSpotSomeTokenIdx', idx);
+    changeFieldsObjFn(fields, 'add', 'someTokenAmountRangeMin', String(min));
+    changeFieldsObjFn(
+      fields,
       'add',
-      'binanceSomeTokenAmountRangeLevel',
-      String(min)
+      'someTokenAmountRangeOp',
+      startIntervalType === 'open' ? '>' : '>='
     );
   };
   return checkTargetAssetIdxFn(
@@ -308,8 +296,11 @@ export const formatRequestResponseFnForBinanceSomeTokenBalance = (
   formatRequests,
   formatResponse
 ) => {
-  const { binanceSpotSomeTokenIdx, binanceSomeTokenAmountRangeLevel } =
-    binanceEarnHistoryFields;
+  const {
+    binanceSpotSomeTokenIdx,
+    someTokenAmountRangeMin,
+    someTokenAmountRangeOp,
+  } = fields;
   formatResponse[1].conditions.subconditions = [
     {
       field: `$.data[${binanceSpotSomeTokenIdx}].asset`,
@@ -323,8 +314,8 @@ export const formatRequestResponseFnForBinanceSomeTokenBalance = (
       // op: 'REVEAL_STRING',
       // type: 'FIELD_REVEAL',
       type: 'FIELD_RANGE',
-      op: '>',
-      value: binanceSomeTokenAmountRangeLevel,
+      op: someTokenAmountRangeOp,
+      value: someTokenAmountRangeMin,
     },
   ];
   return {

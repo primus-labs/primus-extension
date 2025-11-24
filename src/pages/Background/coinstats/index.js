@@ -1,16 +1,8 @@
-import { getLevel, getRangeByLevel } from '../utils/amountRange';
+import { getLevelObj } from '../utils/amountRange';
+import { changeFieldsObjFn } from '../utils/localVar';
+
 let fields = {};
-const changeFieldsObjFn = (op, key, value) => {
-  if (op === 'delete') {
-    delete fields[key];
-  } else if (op === 'add') {
-    fields[key] = value;
-  } else if (op === 'update') {
-    fields[key] = value;
-  } else if (op === 'reset') {
-    fields = {};
-  }
-};
+
 export const checkTargetAssetIdxFn = async (
   matchRequestUrlResult,
   notMetHandler,
@@ -18,7 +10,7 @@ export const checkTargetAssetIdxFn = async (
   metHandler
 ) => {
   const asset = additionParamsObj?.asset;
-  changeFieldsObjFn('reset');
+  changeFieldsObjFn(fields, 'reset');
   if (matchRequestUrlResult && Array.isArray(matchRequestUrlResult)) {
     const [allAssetsObj, ...walletAddressesObjArr] = matchRequestUrlResult;
     if (allAssetsObj?.n === 'All Assets') {
@@ -55,13 +47,23 @@ export const checkTargetRequestFnForCoinstatsSomeTokenBalance = async (
 ) => {
   const { balanceLevelRules } = extendedParamsObj ?? {};
   const metHandler = async (idx, val, walletAddressesObjArr) => {
-    changeFieldsObjFn('add', 'someTokenIdx', idx);
     const balance = val.c;
-    const amountRangeLevel = getLevel(balance, balanceLevelRules);
-    const { min, max } =
-      getRangeByLevel(amountRangeLevel, balanceLevelRules) || {};
-    changeFieldsObjFn('add', 'someTokenAmountRangeLevel', String(min));
-    changeFieldsObjFn('add', 'walletAddressesObjArr', walletAddressesObjArr);
+    const { min, startIntervalType } =
+      getLevelObj(balance, balanceLevelRules) || {};
+    changeFieldsObjFn(fields, 'add', 'someTokenIdx', idx);
+    changeFieldsObjFn(fields, 'add', 'someTokenAmountRangeMin', String(min));
+    changeFieldsObjFn(
+      fields,
+      'add',
+      'someTokenAmountRangeOp',
+      startIntervalType === 'open' ? '>' : '>='
+    );
+    changeFieldsObjFn(
+      fields,
+      'add',
+      'walletAddressesObjArr',
+      walletAddressesObjArr
+    );
   };
   return checkTargetAssetIdxFn(
     matchRequestUrlResult,
@@ -75,8 +77,12 @@ export const formatRequestResponseFnForCoinstatsSpotSomeTokenBalance = (
   formatRequests,
   formatResponse
 ) => {
-  const { someTokenIdx, someTokenAmountRangeLevel, walletAddressesObjArr } =
-    fields;
+  const {
+    someTokenIdx,
+    someTokenAmountRangeMin,
+    someTokenAmountRangeOp,
+    walletAddressesObjArr,
+  } = fields;
   const walletAddressesConditionStrArr = walletAddressesObjArr.map(
     (walletAddressesObj, k) => {
       return {
@@ -106,8 +112,8 @@ export const formatRequestResponseFnForCoinstatsSpotSomeTokenBalance = (
       field: `$[0].pi[${someTokenIdx}].c`,
       reveal_id: 'balance',
       type: 'FIELD_RANGE',
-      op: '>',
-      value: someTokenAmountRangeLevel,
+      op: someTokenAmountRangeOp,
+      value: someTokenAmountRangeMin,
     },
     ...walletAddressesConditionStrArr,
   ];

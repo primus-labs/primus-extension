@@ -1,12 +1,21 @@
 import { utils } from 'ethers';
 // Common configuration: centrally define level-to-range rules (sorted in ascending order)
-const LEVEL_RULES = [
-  { level: 1, min: 0, max: 10 }, // 0 < x ≤ 10 → Level 1
-  { level: 2, min: 10, max: 50 }, // 10 < x ≤ 50 → Level 2
-  { level: 3, min: 50, max: 100 }, // 50 < x ≤ 100 → Level 3
-  { level: 4, min: 100, max: 200 }, // 100 < x ≤ 200 → Level 4
-  { level: 5, min: 200, max: Infinity }, // x > 200 → Level 5
-];
+// const LEVEL_RULES = [
+//   {
+//     level: 1,
+//     min: 0,
+//     max: 10,
+//     startIntervalType: 'open',
+//     endIntervalType: 'closed',
+//   }, // 0 < x ≤ 10 → Level 1
+//   {
+//     level: 2,
+//     min: 10,
+//     max: 50,
+//     startIntervalType: 'open',
+//     endIntervalType: 'closed',
+//   }, // 10 < x ≤ 50 → Level 2
+// ];
 
 /**
  * Get corresponding level based on input value (using common configuration)
@@ -15,31 +24,7 @@ const LEVEL_RULES = [
  */
 // = LEVEL_RULES
 export function getLevel(num, rulesArr) {
-  if (num === null || num === undefined) return 0;
-  const numStr = String(num).trim();
-  if (!numStr || Number(numStr) <= 0) return 0;
-  const valueBN = utils.parseUnits(numStr, 18);
-
-  // Iterate through configuration to find matching level
-  for (const rule of rulesArr) {
-    // if (value > rule.min && value <= rule.max) {
-    //   return rule.level;
-    // }
-    if (rule.max === Infinity) {
-      const minBN = utils.parseUnits(String(rule.min), 18);
-      if (valueBN.gt(minBN)) return rule.level;
-      continue;
-    }
-
-    const minBN = utils.parseUnits(String(rule.min), 18);
-    const maxBN = utils.parseUnits(String(rule.max), 18);
-
-    if (valueBN.gt(minBN) && valueBN.lte(maxBN)) {
-      return rule.level;
-    }
-  }
-
-  return 0; // Fallback (theoretically unreachable)
+  return getLevelObj(num, rulesArr)?.level;
 }
 
 /**
@@ -51,4 +36,36 @@ export function getRangeByLevel(level, rulesArr) {
   // Find the range corresponding to the level from configuration
   const rule = rulesArr.find((rule) => rule.level === level);
   return rule ?? {};
+}
+
+export function getLevelObj(num, rulesArr) {
+  if (num === null || num === undefined) return 0;
+  const numStr = String(num).trim();
+  if (!numStr || Number(numStr) <= 0) return 0;
+  const valueBN = utils.parseUnits(numStr, 18);
+
+  // Iterate through configuration to find matching level
+  for (const rule of rulesArr) {
+    const { min, max, startIntervalType, endIntervalType, level } = rule;
+    // if (value > rule.min && value <= rule.max) {
+    //   return rule.level;
+    // }
+    const startPointCompareName = startIntervalType === 'open' ? 'gt' : 'gte';
+    const endPointCompareName = endIntervalType === 'open' ? 'lt' : 'lte';
+    if (max === Infinity) {
+      const minBN = utils.parseUnits(String(min), 18);
+      if (valueBN[startPointCompareName](minBN)) return level;
+      continue;
+    }
+    const minBN = utils.parseUnits(String(rule.min), 18);
+    const maxBN = utils.parseUnits(String(rule.max), 18);
+    if (
+      valueBN[startPointCompareName](minBN) &&
+      valueBN[endPointCompareName](maxBN)
+    ) {
+      return rule;
+    }
+  }
+
+  return undefined; // Fallback (theoretically unreachable)
 }
