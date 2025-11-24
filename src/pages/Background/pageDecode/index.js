@@ -523,7 +523,9 @@ export const pageDecodeMsgListener = async (
                   if (i?.op === 'MATCH_ONE') {
                     return i;
                   } else {
-                    return i.field;
+                    return isObject(i.field) && i.field?.field
+                      ? i.field.field
+                      : i.field;
                   }
                 }
               );

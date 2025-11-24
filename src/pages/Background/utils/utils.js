@@ -13,7 +13,8 @@ export function encodeFormData(data) {
 }
 
 export function isObject(obj) {
-  return typeof obj === 'object' && obj !== null && !Array.isArray(obj);
+  return Object.prototype.toString.call(obj) === '[object Object]';
+  // return typeof obj === 'object' && obj !== null && !Array.isArray(obj);
 }
 
 export function matchReg(regStr, str) {

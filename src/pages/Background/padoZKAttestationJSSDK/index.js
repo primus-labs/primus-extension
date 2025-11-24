@@ -343,6 +343,11 @@ export const padoZKAttestationJSSDKMsgListener = async (
                     subconditionItem.type = 'FIELD_REVEAL';
                     subconditionItem.op = 'REVEAL_HEX_STRING';
                     subconditionItem.reveal_id = key;
+                    subconditionItem.field = {
+                      type: 'FIELD_ARITHMETIC',
+                      op: 'SHA256',
+                      field: subconditionItem.field,
+                    };
                   } else if (op === 'REVEAL_STRING') {
                     handleREVEALFn();
                   } else if (op === 'MATCH_ONE') {
