@@ -152,8 +152,15 @@ export const algorithmMsgListener = async (
             data: message.res,
           };
         }
-        console.log('send getAttestationRes msg to dappTab');
-        console.log('dappTabId', dappTabId);
+        console.log(
+          'send getAttestationRes msg to dappTab',
+          'dappTabId',
+          dappTabId,
+          'time:',
+          new Date().toLocaleString(),
+          'resParams',
+          JSON.stringify(resParams)
+        );
         // async function getTabInfo(tabId) {
         try {
           const tab = await chrome.tabs.get(dappTabId);

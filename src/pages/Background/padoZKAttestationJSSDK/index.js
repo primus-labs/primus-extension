@@ -126,7 +126,14 @@ export const padoZKAttestationJSSDKMsgListener = async (
   if (name === 'startAttestation') {
     sdkVersion = params?.sdkVersion;
     sdkName = params?.sdkName;
-    console.log('debuge-zktls-startAttestation', sdkVersion, params);
+    console.log(
+      'debuge-zktls-startAttestation',
+      sdkVersion,
+      'time:',
+      new Date().toLocaleString(),
+      'params',
+      JSON.stringify(params)
+    );
     await chrome.storage.local.set({
       padoZKAttestationJSSDKBeginAttest: sdkVersion || '1',
     });
