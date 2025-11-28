@@ -182,6 +182,26 @@ export const formatRequestResponseFnForBinanceEarnHistoryABalance = (
 //  new reputation phala event
 export const templateIdForReputationPhalaBinanceEarnBalance =
   '031720f6-5b78-405c-a91c-3b6efd1586ce'; // binance eran account some token(params) balance
+
+  export const updateRequestMapFnForReputationPhalaBinanceEarnBalance = (
+    oldRequestMap,
+    additionParamsObj
+  ) => {
+    const oldUrl = oldRequestMap.url;
+    const oldQueryParams = parseUrlQuery(oldUrl);
+    const { pageSize } = oldQueryParams;
+    // asset
+    const newUrlParams = {
+      pageSize,
+    };
+    if (pageSize && additionParamsObj?.pageSize) {
+      newUrlParams.pageSize = additionParamsObj?.pageSize;
+    }
+
+    const newUrl = updateUrlParams(oldUrl, newUrlParams);
+    oldRequestMap.url = newUrl;
+    return oldRequestMap;
+  };
 export const checkTargetRequestFnForReputationPhalaBinanceEarnBalance = async (
   matchRequestUrlResult,
   notMetHandler,

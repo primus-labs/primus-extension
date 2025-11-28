@@ -25,6 +25,7 @@ import {
   templateIdForBinanceEarnHistoryABalance,
   formatRequestResponseFnForBinanceEarnHistoryABalance,
   templateIdForReputationPhalaBinanceEarnBalance,
+  updateRequestMapFnForReputationPhalaBinanceEarnBalance,
   checkTargetRequestFnForReputationPhalaBinanceEarnBalance,
   formatRequestResponseFnForReputationPhalaBinanceEarnBalance,
   templateIdForBinanceSomeTokenBalance,
@@ -591,6 +592,20 @@ export const pageDecodeMsgListener = async (
                   requestsMap[matchRequestId],
                   additionParamsObj
                 );
+                targetRequestUrl = newRequestMap.url;
+                storeRequestsMap(matchRequestId, newRequestMap);
+              }
+
+              if (
+                [templateIdForReputationPhalaBinanceEarnBalance].includes(
+                  activeTemplate?.attTemplateID
+                )
+              ) {
+                const newRequestMap =
+                  updateRequestMapFnForReputationPhalaBinanceEarnBalance(
+                    requestsMap[matchRequestId],
+                    additionParamsObj
+                  );
                 targetRequestUrl = newRequestMap.url;
                 storeRequestsMap(matchRequestId, newRequestMap);
               }
