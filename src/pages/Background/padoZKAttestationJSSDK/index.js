@@ -76,7 +76,12 @@ export const padoZKAttestationJSSDKMsgListener = async (
   const { name, params } = request;
 
   if (name === 'initAttestation') {
-    console.log('debuge-zktls-initAttestation', params?.sdkVersion);
+    console.log(
+      'debuge-zktls-initAttestation',
+      params?.sdkVersion,
+      'dapptabTabId:',
+      sender.tab.id
+    );
     await fetchAttestationTemplateList();
     await fetchConfigure();
     sdkVersion = params?.sdkVersion;
