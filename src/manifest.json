@@ -77,7 +77,7 @@
     },
     {
       "matches": [
-        "http://localhost:5173/*",
+        "http://localhost:*/*",
         "http://api-dev.padolabs.org:38082/*",
         "http://api-dev.padolabs.org:38089/*",
         "https://dev.primuslabs.xyz/*",
@@ -88,7 +88,7 @@
     },
     {
       "matches": [
-        "http://localhost:5173/*",
+        "http://localhost:*/*",
         "https://luckydraw.primuslabs.xyz/*",
         "https://test-luckydraw.primuslabs.xyz/*"
       ],
@@ -103,11 +103,10 @@
     },
     {
       "matches": [
-        "http://localhost:5173/*",
+        "http://localhost:*/*",
         "http://api-dev.padolabs.org:38098/*",
         "http://app.primuslabs.xyz/*",
         "https://app.primuslabs.xyz/*",
-        "http://localhost:5174/*",
         "http://api-dev.padolabs.org:38093/*",
         "http://pay.primuslabs.xyz/*",
         "https://pay.primuslabs.xyz/*"

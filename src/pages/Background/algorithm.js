@@ -5,6 +5,7 @@ import { regenerateAttest } from './padoZKAttestationJSSDK/utils';
 import { padoExtensionVersion } from '@/config/constants';
 import { addSDKParamsToReportParamsFn } from './utils/reportEvent.js';
 import { getErrorMsgTitleFn } from './utils/handleError.js';
+import { sendInitAttestationRes } from './utils/msgTransfer.js';
 
 export const algorithmMsgListener = async (
   message,
@@ -36,11 +37,6 @@ export const algorithmMsgListener = async (
     ? JSON.parse(activeAttestationParams.extendedParams)
     : {};
   if (resMethodName === `start`) {
-    // var eventInfo = {
-    //   eventType: 'ATTESTATION_INIT_1',
-    //   rawData: {},
-    // };
-    // eventReport(eventInfo);
     processAlgorithmReq({
       reqMethodName: 'init',
     });
@@ -66,31 +62,7 @@ export const algorithmMsgListener = async (
 
   if (padoZKAttestationJSSDKBeginAttest) {
     if (resMethodName === 'start') {
-      const { padoZKAttestationJSSDKDappTabId: dappTabId, webProofTypes } =
-        await chrome.storage.local.get([
-          'padoZKAttestationJSSDKDappTabId',
-          'webProofTypes',
-        ]);
-      // console.log('333jssdk-init-completed', dappTabId);
-      const attestationTypeIdList = (
-        webProofTypes ? JSON.parse(webProofTypes) : []
-      ).map((i) => {
-        return {
-          text: i.description,
-          value: i.id,
-        };
-      });
-      chrome.tabs.sendMessage(dappTabId, {
-        type: 'padoZKAttestationJSSDK',
-        name: 'initAttestationRes',
-        params: {
-          result: true,
-          data: {
-            attestationTypeIdList,
-            padoExtensionVersion,
-          },
-        },
-      });
+      await sendInitAttestationRes();
     }
     if (resMethodName === 'getAttestation') {
       const { retcode, isUserClick } = JSON.parse(message.res);
@@ -320,7 +292,7 @@ export const algorithmMsgListener = async (
               // event: fromEvents,
               address: content?.address,
             });
-            eventReport(eventInfo);
+            // eventReport(eventInfo);
           } else if (
             !content.signature ||
             content.balanceGreaterThanBaseValue === 'false'
@@ -367,10 +339,16 @@ export const algorithmMsgListener = async (
               '-10111':
                 'Task submitted past the allowed time limit (15 minutes).',
             };
+            const tipMapForSubscription = {
+              '-1002003': 'Trial quota exhausted.',
+              '-1002004': 'Subscription expired.',
+              '-1002005': 'Quota exhausted.',
+            };
             const totalTipMapForSdk = Object.assign(
               {},
               tipMapForSdk,
-              tipMapForPrimusNetworkSdk
+              tipMapForPrimusNetworkSdk,
+              tipMapForSubscription
             );
             if (
               extraData &&
@@ -470,7 +448,7 @@ export const algorithmMsgListener = async (
               // event: fromEvents,
               address: parsedActiveRequestAttestation?.address,
             });
-            eventReport(eventInfo);
+            // eventReport(eventInfo);
           }
         } else if (retcode === '2') {
           const {
@@ -522,7 +500,7 @@ export const algorithmMsgListener = async (
             // event: fromEvents
             address: parsedActiveRequestAttestation?.address,
           });
-          eventReport(eventInfo);
+          // eventReport(eventInfo);
           pageDecodeMsgListener(
             {
               name: 'end',

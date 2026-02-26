@@ -10,6 +10,7 @@ import { requestSignTypedData } from '@/services/wallets/utils';
 
 import { getCurrentDate, postMsg, sub } from '@/utils/utils';
 import { addSDKParamsToReportParamsFn } from './utils/reportEvent.js';
+import { sendInitAttestationRes } from './utils/msgTransfer.js';
 
 import {
   SocailStoreVersion,
@@ -175,35 +176,13 @@ const processAlgorithmReq = async (message, port) => {
       console.log(`${new Date().toLocaleString()} offscreen document created`);
     } else {
       const {
-        padoZKAttestationJSSDKBeginAttest,
-        padoZKAttestationJSSDKDappTabId: dappTabId,
-        webProofTypes,
+        padoZKAttestationJSSDKBeginAttest
       } = await chrome.storage.local.get([
-        'padoZKAttestationJSSDKBeginAttest',
-        'padoZKAttestationJSSDKDappTabId',
-        'webProofTypes',
+        'padoZKAttestationJSSDKBeginAttest'
       ]);
 
       if (padoZKAttestationJSSDKBeginAttest) {
-        const attestationTypeIdList = (
-          webProofTypes ? JSON.parse(webProofTypes) : []
-        ).map((i) => {
-          return {
-            text: i.description,
-            value: i.id,
-          };
-        });
-        chrome.tabs.sendMessage(dappTabId, {
-          type: 'padoZKAttestationJSSDK',
-          name: 'initAttestationRes',
-          params: {
-            result: true,
-            data: {
-              attestationTypeIdList,
-              padoExtensionVersion,
-            },
-          },
-        });
+        await sendInitAttestationRes();
       }
       console.log(
         `${new Date().toLocaleString()} offscreen document has already created`

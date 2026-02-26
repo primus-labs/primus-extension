@@ -756,6 +756,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     const userAddress = activeAttestationParams?.ext?.appSignParameters
       ? JSON.parse(activeAttestationParams.ext.appSignParameters).userAddress
       : '';
+      // TODO?
     var eventInfo = {
       eventType: 'ATTESTATION_GENERATE',
       rawData: {
