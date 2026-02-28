@@ -267,26 +267,20 @@ const eventReportGenerateFn = async (rawData) => {
   };
   eventReport(eventInfo);
 };
-const handle00013 = async () => {
-  errorFn({
-    title:
-      'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
-    desc: 'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
-    code: '00013',
-  });
+const handle00013 = async (options = {}) => {
+  errorFn(
+    {
+      title:
+        'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
+      desc: 'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
+      code: '00013',
+    },
+    undefined,
+    options
+  );
 };
 
 const handleDataSourcePageDialogTimeout = async (processAlgorithmReq) => {
-  let rawData = {};
-  let baseRawData = {
-    status: 'FAILED',
-    reason: 'Something went wrong',
-    detail: {
-      code: '00014',
-      desc: 'The verification process timed out.',
-    },
-  };
-
   var eventInfo = {
     eventType: 'ATTESTATION_GENERATE',
     rawData: {
@@ -295,16 +289,6 @@ const handleDataSourcePageDialogTimeout = async (processAlgorithmReq) => {
         code: '00014',
         desc: ""
       },
-      // // "source": source,
-      // clientType: CLIENTTYPE,
-      // appId: "",
-      // // templateId: schemaType,
-      // // address: address,
-      
-      // ext: {
-      //   // sigFormat: sigFormat,
-      //   // event: fromEvents,
-      // }
     }
   };
   const {
@@ -367,13 +351,20 @@ const handleDataSourcePageDialogTimeout = async (processAlgorithmReq) => {
         // rawData = await addSDKParamsToReportParamsFn(rawData);
         // eventReportFn(rawData);
 
-        const {dataSourceId,attTemplateID,address} = parsedActiveRequestAttestation
+        const { 
+          dataSourceId,
+          attTemplateID,
+          ext: {
+            appSignParameters 
+          }, 
+          clientType} = parsedActiveRequestAttestation
+        
         Object.assign(eventInfo.rawData, {
           source: dataSourceId,
-          // clientType: CLIENTTYPE, // TODO
+          clientType,
           appId: "",
           templateId: attTemplateID,
-          address: userAddress,
+          address: JSON.parse(appSignParameters)?.userAddress,
           ext: {
           }
         });
@@ -381,12 +372,10 @@ const handleDataSourcePageDialogTimeout = async (processAlgorithmReq) => {
       }
     }
   } else {
-    console.log('00014-activeRequestAttestation',activeRequestAttestation)
     if (activeRequestAttestation) {
       const parsedActiveRequestAttestation = JSON.parse(
         activeRequestAttestation
       );
-      console.log('00014-reportRequestIds',parsedActiveRequestAttestation.requestid,reportRequestIds)
       if (
         !reportRequestIds.includes(parsedActiveRequestAttestation.requestid)
       ) {
@@ -415,8 +404,6 @@ const handleDataSourcePageDialogTimeout = async (processAlgorithmReq) => {
             event
           }
         });
-        
-        console.log('00014-event report', eventInfo.rawData, parsedActiveRequestAttestation.user)
         await eventReportFn(eventInfo.rawData);
         await chrome.storage.local.remove(['activeRequestAttestation'])
       }
@@ -1690,7 +1677,13 @@ export const pageDecodeMsgListener = async (
       handleEnd(request);
     }
     if (name === 'interceptionFail') {
-      handle00013();
+      const { padoZKAttestationJSSDKBeginAttest } =
+        await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
+      handle00013(
+        padoZKAttestationJSSDKBeginAttest
+          ? {}
+          : { skipRemoveActiveRequestAttestation: true }
+      );
     }
     if (name === 'dataSourcePageDialogTimeout') {
       handleDataSourcePageDialogTimeout(processAlgorithmReq);
@@ -1700,7 +1693,14 @@ export const pageDecodeMsgListener = async (
       chandleClose(params, processAlgorithmReq);
     }
     if (name === 'interceptionFail') {
-      handle00013();
+      const { padoZKAttestationJSSDKBeginAttest } =
+        await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
+        debugger
+      handle00013(
+        padoZKAttestationJSSDKBeginAttest
+          ? {}
+          : { skipRemoveActiveRequestAttestation: true }
+      );
     }
     if (name === 'dataSourcePageDialogTimeout') {
       handleDataSourcePageDialogTimeout(processAlgorithmReq);

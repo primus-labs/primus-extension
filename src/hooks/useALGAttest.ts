@@ -27,19 +27,44 @@ import {
   getAccount,
 } from '@/utils/utils';
 
-import { BASEVENTNAME, LINEAEVENTNAME } from '@/config/events';
+import {
+  BASEVENTNAME,
+  LINEAEVENTNAME,
+  SCROLLEVENTNAME,
+} from '@/config/events';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import {
   ATTESTATIONPOLLINGTIMEOUT,
   ATTESTATIONPOLLINGTIME,
 } from '@/config/constants';
-import { ATTESTATIONTYPEMAP } from '@/config/attestation';
+import { ATTESTATIONTYPEMAP, ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
 
 import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 import type { DataSourceMapType } from '@/types/dataSource';
 import type { ActiveRequestType } from '@/types/config';
 const CLIENTTYPE = '@primuslabs/extension';
+
+function inferSchemaTypeFromActiveAttestation(
+  activeAttestation: any,
+  webProofTypes: any[]
+): string {
+  if (!activeAttestation?.verificationContent || !webProofTypes?.length) {
+    return '';
+  }
+  const contentObj =
+    ALLVERIFICATIONCONTENTTYPEEMAP[activeAttestation.verificationContent];
+  if (!contentObj) return '';
+  const found = webProofTypes.find(
+    (i: any) =>
+      i.dataSource === activeAttestation.dataSourceId &&
+      (i.name === contentObj?.label ||
+        i.name === contentObj?.templateName ||
+        i.name === contentObj?.value)
+  );
+  return found?.schemaType ?? '';
+}
+
 const useALGAttest = function useAttest() {
   const { pathname } = useLocation();
   const { sourceMap2 } = useAllSources();
@@ -78,6 +103,37 @@ const useALGAttest = function useAttest() {
     setIntervalSwitch(false);
     setTimeoutSwitch(false);
   }, []);
+
+  const activeAttestationRef = useRef(activeAttestation);
+  const webProofTypesRef = useRef(webProofTypes);
+  const fromEventsRef = useRef(fromEvents);
+  const listenerContextRef = useRef<{
+    dispatch: Dispatch<any>;
+    addMsg: (msg: any) => void;
+    attestLoading: number;
+    clearFetchAttestationTimer: () => void;
+  }>({ dispatch, addMsg, attestLoading, clearFetchAttestationTimer });
+
+  useEffect(() => {
+    activeAttestationRef.current = activeAttestation;
+    webProofTypesRef.current = webProofTypes;
+    fromEventsRef.current = fromEvents;
+    listenerContextRef.current = {
+      dispatch,
+      addMsg,
+      attestLoading,
+      clearFetchAttestationTimer,
+    };
+  }, [
+    activeAttestation,
+    webProofTypes,
+    fromEvents,
+    dispatch,
+    addMsg,
+    attestLoading,
+    clearFetchAttestationTimer,
+  ]);
+
   const storeEventInfoFn = useCallback(async (fullAttestation) => {
     const {
       event: eventId,
@@ -611,110 +667,183 @@ const useALGAttest = function useAttest() {
   useEffect(() => {
     const listerFn = async (message: any) => {
       const { type, name } = message;
+      const ctx = listenerContextRef.current;
+      const activeAttestation = activeAttestationRef.current;
+      const webProofTypes = webProofTypesRef.current;
+      const fromEvents = fromEventsRef.current;
       if (type === 'pageDecode') {
         const { padoZKAttestationJSSDKBeginAttest } =
           await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
         if (padoZKAttestationJSSDKBeginAttest) {
           return;
         }
-        // console.log('222message', message, activeAttestation);
         const errorMsgTitle = [
           'Assets Verification',
           'Humanity Verification',
-        ].includes(activeAttestation.attestationType)
+        ].includes(activeAttestation?.attestationType)
           ? `${activeAttestation.attestationType} failed!`
           : `${activeAttestation.attestationType} proof failed!`;
         let title = errorMsgTitle;
 
         if (name === 'cancel') {
-          addMsg({
+          ctx.addMsg({
             type: 'error',
             title,
             desc: 'Unable to proceed. Please try again later.',
           });
-          dispatch(setAttestLoading(3));
-          dispatch(
+          ctx.dispatch(setAttestLoading(3));
+          ctx.dispatch(
             setActiveAttestation({
               loading: 3,
               msgObj: { btnTxt: 'Try Again' },
             })
           );
         } else if (name === 'start') {
-          // dispatch(setAttestLoading(1));
-          // dispatch(setActiveAttestation({ loading: 1 }));
+          await chrome.storage.local.remove(['interceptionFailReportTimestamp']);
         } else if (name === 'stop') {
-          if (attestLoading === 1) {
-            addMsg({
+          if (ctx.attestLoading === 1) {
+            ctx.addMsg({
               type: 'error',
               title,
               desc: 'Unable to proceed. Please try again later.',
             });
-            dispatch(setAttestLoading(3));
-            dispatch(
+            ctx.dispatch(setAttestLoading(3));
+            ctx.dispatch(
               setActiveAttestation({
                 loading: 3,
                 msgObj: { btnTxt: 'Try Again' },
               })
             );
           }
-          // if (activeRequest?.type === 'loading' || !activeRequest?.type) {
-          //   setActiveRequest({
-          //     type: 'warn',
-          //     title: 'Unable to proceed',
-          //     desc: 'Please try again later.',
-          //   });
-          // }
-          // if (activeRequest?.type === 'loading') {
-          //   setIntervalSwitch(false);
-          // }
         } else if (name === 'interceptionFail') {
-          clearFetchAttestationTimer();
-          await chrome.storage.local.remove(['activeRequestAttestation']);
-          addMsg({
+          ctx.clearFetchAttestationTimer();
+          const { interceptionFailReportTimestamp } =
+            await chrome.storage.local.get(['interceptionFailReportTimestamp']);
+          if (
+            interceptionFailReportTimestamp &&
+            Date.now() - Number(interceptionFailReportTimestamp) < 2000
+          ) {
+            return;
+          }
+          await chrome.storage.local.set({
+            interceptionFailReportTimestamp: Date.now().toString(),
+          });
+          const { activeRequestAttestation } =
+            await chrome.storage.local.get(['activeRequestAttestation']);
+          if (activeRequestAttestation) {
+            const parsed = JSON.parse(activeRequestAttestation);
+            const { source, schemaType, address, sigFormat } = parsed;
+            const eventInfo: any = {
+              eventType: 'ATTESTATION_GENERATE',
+              rawData: {
+                source,
+                clientType: CLIENTTYPE,
+                appId: '',
+                templateId: schemaType,
+                address,
+                ext: { sigFormat, event: fromEvents },
+                status: 'FAILED',
+                detail: {
+                  code: '00013',
+                  desc: 'Unable to proceed. Target data missing.',
+                },
+              },
+            };
+            eventReport(eventInfo);
+            await chrome.storage.local.remove(['activeRequestAttestation']);
+          } else {
+            const inferredSchemaType = inferSchemaTypeFromActiveAttestation(
+              activeAttestation,
+              webProofTypes
+            );
+            const {
+              connectedWalletAddress,
+              scrollEvent,
+              [BASEVENTNAME]: basEventValue,
+              padoZKAttestationJSSDKWalletAddress,
+            } = await chrome.storage.local.get([
+              'connectedWalletAddress',
+              'scrollEvent',
+              BASEVENTNAME,
+              'padoZKAttestationJSSDKWalletAddress',
+            ]);
+            let formatAddress: string | undefined;
+            if (connectedWalletAddress) {
+              formatAddress = JSON.parse(connectedWalletAddress).address;
+            }
+            if (fromEvents === SCROLLEVENTNAME && scrollEvent) {
+              const scrollEventObj = JSON.parse(scrollEvent) as {
+                address?: string;
+              };
+              if (scrollEventObj?.address) {
+                formatAddress = scrollEventObj.address;
+              }
+            } else if (fromEvents === BASEVENTNAME && basEventValue) {
+              const lastInfo = JSON.parse(basEventValue) as { address?: string };
+              if (lastInfo?.address) {
+                formatAddress = lastInfo.address;
+              }
+            }
+            if (padoZKAttestationJSSDKWalletAddress) {
+              formatAddress = padoZKAttestationJSSDKWalletAddress;
+            }
+            const eventInfo: any = {
+              eventType: 'ATTESTATION_GENERATE',
+              rawData: {
+                source: activeAttestation?.dataSourceId ?? '',
+                clientType: CLIENTTYPE,
+                appId: '',
+                templateId:
+                  (inferredSchemaType || activeAttestation?.attestationType) ??
+                  '',
+                address: formatAddress ?? '',
+                ext: { event: fromEvents },
+                status: 'FAILED',
+                detail: {
+                  code: '00013',
+                  desc: 'Unable to proceed. Target data missing.',
+                },
+              },
+            };
+            eventReport(eventInfo);
+          }
+          ctx.addMsg({
             type: 'error',
             title,
             desc: 'Unable to proceed. Target data missing.',
           });
-          dispatch(setAttestLoading(3));
-          dispatch(
+          ctx.dispatch(setAttestLoading(3));
+          ctx.dispatch(
             setActiveAttestation({
               loading: 3,
               msgObj: { btnTxt: 'Try Again' },
             })
           );
         } else if (name === 'dataSourcePageDialogTimeout') {
-          clearFetchAttestationTimer();
-          // await chrome.storage.local.remove(['activeRequestAttestation']);
-          addMsg({
+          ctx.clearFetchAttestationTimer();
+          ctx.addMsg({
             type: 'error',
             title,
             desc: 'The process did not respond within 2 minutes. Please try again later.',
           });
-          dispatch(setAttestLoading(3));
-          dispatch(
+          ctx.dispatch(setAttestLoading(3));
+          ctx.dispatch(
             setActiveAttestation({
               loading: 3,
               msgObj: { btnTxt: 'Try Again' },
             })
           );
         }
-        // else if (
-        //   message.name === 'closeDataSourcePage' &&
-        //   message.tryFlag
-        // ) {
-        //   LINEA_DEFI_VOYAGETryAgainFn();
-        // }
         if (['stop', 'cancel', 'close'].includes(name)) {
-          clearFetchAttestationTimer();
+          ctx.clearFetchAttestationTimer();
           if (['stop', 'cancel'].includes(name)) {
             chrome.storage.local.remove(['activeRequestAttestation']);
           }
         }
       } else if (type === 'googleAuth') {
         if (name === 'cancelAttest') {
-          // google attest fail use dialog tip, not alert msg
-          dispatch(setAttestLoading(3));
-          dispatch(
+          ctx.dispatch(setAttestLoading(3));
+          ctx.dispatch(
             setActiveAttestation({
               loading: 3,
               msgObj: {
@@ -732,7 +861,7 @@ const useALGAttest = function useAttest() {
     return () => {
       chrome.runtime.onMessage.removeListener(listerFn);
     };
-  }, [dispatch, attestLoading, activeAttestation]);
+  }, []);
   useEffect(() => {
     if (attestLoading === 1) {
       if (!['web3 wallet'].includes(activeAttestation.dataSourceId)) {

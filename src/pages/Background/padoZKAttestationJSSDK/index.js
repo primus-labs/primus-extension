@@ -433,6 +433,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
             extendedParams: params.attRequest?.extendedParams,
             additionParamsObj,
             allJsonResponseFlag: params.attRequest?.allJsonResponseFlag,
+            clientType: sdkName,
           };
         } else {
           const resParams = {

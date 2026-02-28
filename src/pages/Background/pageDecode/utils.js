@@ -72,25 +72,31 @@ export const extraRequestHtmlFn = async (params) => {
   });
 };
 
-export const errorFn = async (errorData, dataSourcePageTabId) => {
+export const errorFn = async (errorData, dataSourcePageTabId, options = {}) => {
   let resParams = {
     result: false,
     errorData,
   };
   const { padoZKAttestationJSSDKDappTabId: dappTabId } =
     await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
-  chrome.tabs.sendMessage(dappTabId, {
-    type: 'padoZKAttestationJSSDK',
-    name: 'getAttestationRes',
-    params: resParams,
-  });
-  await chrome.storage.local.remove([
+    if(dappTabId) {
+      chrome.tabs.sendMessage(dappTabId, {
+        type: 'padoZKAttestationJSSDK',
+        name: 'getAttestationRes',
+        params: resParams,
+      });
+    }
+  
+  const keysToRemove = [
     'padoZKAttestationJSSDKBeginAttest',
     'padoZKAttestationJSSDKWalletAddress',
     'padoZKAttestationJSSDKAttestationPresetParams',
     'padoZKAttestationJSSDKXFollowerCount',
-    'activeRequestAttestation',
-  ]);
+  ];
+  if (!options.skipRemoveActiveRequestAttestation) {
+    keysToRemove.push('activeRequestAttestation');
+  }
+  await chrome.storage.local.remove(keysToRemove);
   if (dataSourcePageTabId) {
     await chrome.tabs.remove(dataSourcePageTabId);
   }
