@@ -83,6 +83,8 @@ import {
   getNMonthsBeforeTime,
 } from './utils';
 
+const CLIENTTYPE = '@primuslabs/extension';
+
 let PRE_ATTEST_PROMOT_V2 = [
   {
     text: ['Processing data'],
@@ -266,79 +268,6 @@ const eventReportGenerateFn = async (rawData) => {
   eventReport(eventInfo);
 };
 const handle00013 = async () => {
-  let rawData = {};
-  let baseRawData = {
-    status: 'FAILED',
-    reason: 'Something went wrong',
-    detail: {
-      code: '00013',
-      desc: 'Target data missing',
-    },
-  };
-  const {
-    padoZKAttestationJSSDKBeginAttest,
-    padoZKAttestationJSSDKAttestationPresetParams,
-    activeRequestAttestation,
-  } = await chrome.storage.local.get([
-    'padoZKAttestationJSSDKBeginAttest',
-    'padoZKAttestationJSSDKAttestationPresetParams',
-    'activeRequestAttestation',
-  ]);
-  if (padoZKAttestationJSSDKBeginAttest) {
-    if (padoZKAttestationJSSDKAttestationPresetParams) {
-      const parsedActiveRequestAttestation = JSON.parse(
-        padoZKAttestationJSSDKAttestationPresetParams
-      );
-      if (
-        !reportRequestIds.includes(parsedActiveRequestAttestation.requestid)
-      ) {
-        reportRequestIds.push(parsedActiveRequestAttestation.requestid);
-        const userAddress = parsedActiveRequestAttestation?.ext
-          ?.appSignParameters
-          ? JSON.parse(parsedActiveRequestAttestation.ext.appSignParameters)
-              .userAddress
-          : '';
-
-        rawData = {
-          source: parsedActiveRequestAttestation.dataSourceId,
-          schemaType: parsedActiveRequestAttestation.schemaType,
-          sigFormat: parsedActiveRequestAttestation.sigFormat,
-          attestOrigin: parsedActiveRequestAttestation.attestOrigin,
-          event: parsedActiveRequestAttestation.attestOrigin,
-          templateId: parsedActiveRequestAttestation.attTemplateID,
-          address: userAddress,
-          ...baseRawData,
-        };
-        if (parsedActiveRequestAttestation.event) {
-          rawData.event = parsedActiveRequestAttestation.event;
-        }
-        rawData = await addSDKParamsToReportParamsFn(rawData);
-        eventReportGenerateFn(rawData);
-      }
-    }
-  } else {
-    if (activeRequestAttestation) {
-      const parsedActiveRequestAttestation = JSON.parse(
-        activeRequestAttestation
-      );
-      if (
-        !reportRequestIds.includes(parsedActiveRequestAttestation.requestid)
-      ) {
-        reportRequestIds.push(parsedActiveRequestAttestation.requestid);
-        rawData = {
-          source: parsedActiveRequestAttestation.source,
-          schemaType: parsedActiveRequestAttestation.schemaType,
-          sigFormat: parsedActiveRequestAttestation.sigFormat,
-          address: parsedActiveRequestAttestation?.address,
-          ...baseRawData,
-        };
-        if (parsedActiveRequestAttestation.event) {
-          rawData.event = parsedActiveRequestAttestation.event;
-        }
-        eventReportGenerateFn(rawData);
-      }
-    }
-  }
   errorFn({
     title:
       'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
@@ -357,6 +286,27 @@ const handleDataSourcePageDialogTimeout = async (processAlgorithmReq) => {
       desc: 'The verification process timed out.',
     },
   };
+
+  var eventInfo = {
+    eventType: 'ATTESTATION_GENERATE',
+    rawData: {
+      status: "FAILED",
+      detail: {
+        code: '00014',
+        desc: ""
+      },
+      // // "source": source,
+      // clientType: CLIENTTYPE,
+      // appId: "",
+      // // templateId: schemaType,
+      // // address: address,
+      
+      // ext: {
+      //   // sigFormat: sigFormat,
+      //   // event: fromEvents,
+      // }
+    }
+  };
   const {
     padoZKAttestationJSSDKBeginAttest,
     padoZKAttestationJSSDKAttestationPresetParams,
@@ -374,15 +324,16 @@ const handleDataSourcePageDialogTimeout = async (processAlgorithmReq) => {
       ]);
 
     if (beginAttest === '1') {
-      rawData.getAttestationResultRes = getAttestationResultRes;
+      Object.assign(rawData, {
+        ext: {
+          ...rawData.ext,
+          getAttestationResultRes: getAttestationResultRes
+        }
+      });
     }
 
     if (!getAttestationResultRes) {
-      var eventInfo = {
-        eventType: 'ATTESTATION_GENERATE',
-        rawData,
-      };
-      eventReport(eventInfo);
+      eventReportGenerateFn(rawData)
     }
   };
   if (padoZKAttestationJSSDKBeginAttest) {
@@ -400,43 +351,74 @@ const handleDataSourcePageDialogTimeout = async (processAlgorithmReq) => {
               .userAddress
           : '';
         // TODO-event
-        rawData = {
-          source: parsedActiveRequestAttestation.dataSourceId,
-          schemaType: parsedActiveRequestAttestation.schemaType,
-          sigFormat: parsedActiveRequestAttestation.sigFormat,
-          attestOrigin: parsedActiveRequestAttestation.attestOrigin,
-          event: parsedActiveRequestAttestation.attestOrigin,
-          templateId: parsedActiveRequestAttestation.attTemplateID,
+        // rawData = {
+        //   source: parsedActiveRequestAttestation.dataSourceId,
+        //   schemaType: parsedActiveRequestAttestation.schemaType,
+        //   sigFormat: parsedActiveRequestAttestation.sigFormat,
+        //   attestOrigin: parsedActiveRequestAttestation.attestOrigin,
+        //   event: parsedActiveRequestAttestation.attestOrigin,
+        //   templateId: parsedActiveRequestAttestation.attTemplateID,
+        //   address: userAddress,
+        //   ...baseRawData,
+        // };
+        // if (parsedActiveRequestAttestation.event) {
+        //   rawData.event = parsedActiveRequestAttestation.event;
+        // }
+        // rawData = await addSDKParamsToReportParamsFn(rawData);
+        // eventReportFn(rawData);
+
+        const {dataSourceId,attTemplateID,address} = parsedActiveRequestAttestation
+        Object.assign(eventInfo.rawData, {
+          source: dataSourceId,
+          // clientType: CLIENTTYPE, // TODO
+          appId: "",
+          templateId: attTemplateID,
           address: userAddress,
-          ...baseRawData,
-        };
-        if (parsedActiveRequestAttestation.event) {
-          rawData.event = parsedActiveRequestAttestation.event;
-        }
-        rawData = await addSDKParamsToReportParamsFn(rawData);
-        eventReportFn(rawData);
+          ext: {
+          }
+        });
+        eventReportFn(eventInfo.rawData)
       }
     }
   } else {
+    console.log('00014-activeRequestAttestation',activeRequestAttestation)
     if (activeRequestAttestation) {
       const parsedActiveRequestAttestation = JSON.parse(
         activeRequestAttestation
       );
+      console.log('00014-reportRequestIds',parsedActiveRequestAttestation.requestid,reportRequestIds)
       if (
         !reportRequestIds.includes(parsedActiveRequestAttestation.requestid)
       ) {
         reportRequestIds.push(parsedActiveRequestAttestation.requestid);
-        rawData = {
-          source: parsedActiveRequestAttestation.source,
-          schemaType: parsedActiveRequestAttestation.schemaType,
-          sigFormat: parsedActiveRequestAttestation.sigFormat,
-          address: parsedActiveRequestAttestation?.address,
-          ...baseRawData,
-        };
-        if (parsedActiveRequestAttestation.event) {
-          rawData.event = parsedActiveRequestAttestation.event;
-        }
-        eventReportFn(rawData);
+        // rawData = {
+        //   source: parsedActiveRequestAttestation.source,
+        //   schemaType: parsedActiveRequestAttestation.schemaType,
+        //   sigFormat: parsedActiveRequestAttestation.sigFormat,
+        //   address: parsedActiveRequestAttestation?.address,
+        //   ...baseRawData,
+        // };
+        // if (parsedActiveRequestAttestation.event) {
+        //   rawData.event = parsedActiveRequestAttestation.event;
+        // }
+        
+
+        const {source,schemaType,sigFormat,user,event} = parsedActiveRequestAttestation
+        Object.assign(eventInfo.rawData, {
+          source,
+          clientType: CLIENTTYPE,
+          appId: "",
+          templateId: schemaType,
+          address: user?.address,
+          ext: {
+            sigFormat,
+            event
+          }
+        });
+        
+        console.log('00014-event report', eventInfo.rawData, parsedActiveRequestAttestation.user)
+        await eventReportFn(eventInfo.rawData);
+        await chrome.storage.local.remove(['activeRequestAttestation'])
       }
     }
   }

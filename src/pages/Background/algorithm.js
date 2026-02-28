@@ -173,17 +173,6 @@ export const algorithmMsgListener = async (
           ? JSON.parse(activeRequestAttestation)
           : {};
         let errorMsgTitle = await getErrorMsgTitleFn();
-        var eventInfo = {
-          eventType: 'ATTESTATION_GENERATE',
-          rawData: {
-            source: parsedActiveRequestAttestation.source,
-            schemaType: parsedActiveRequestAttestation.schemaType,
-            sigFormat: parsedActiveRequestAttestation.sigFormat,
-          },
-        };
-        eventInfo.rawData = await addSDKParamsToReportParamsFn(
-          eventInfo.rawData
-        );
 
         if (retcode === '0') {
           const sucFn = async (resData) => {
@@ -284,15 +273,6 @@ export const algorithmMsgListener = async (
               await sucFn(passRes);
             }
 
-            const uniqueId = strToHexSha256(content.signature);
-            eventInfo.rawData = Object.assign(eventInfo.rawData, {
-              attestationId: uniqueId,
-              status: 'SUCCESS',
-              reason: '',
-              // event: fromEvents,
-              address: content?.address,
-            });
-            // eventReport(eventInfo);
           } else if (
             !content.signature ||
             content.balanceGreaterThanBaseValue === 'false'
@@ -442,13 +422,6 @@ export const algorithmMsgListener = async (
               params: resParams,
             });
 
-            eventInfo.rawData = Object.assign(eventInfo.rawData, {
-              status: 'FAILED',
-              reason: 'Not met the requirements',
-              // event: fromEvents,
-              address: parsedActiveRequestAttestation?.address,
-            });
-            // eventReport(eventInfo);
           }
         } else if (retcode === '2') {
           const {
@@ -483,24 +456,6 @@ export const algorithmMsgListener = async (
             code: `Error ${code}`,
           });
 
-          if (
-            retdesc.indexOf('connect to proxy error') > -1 ||
-            retdesc.indexOf('WebSocket On Error') > -1 ||
-            retdesc.indexOf('connection error') > -1
-          ) {
-            eventInfoMsg = 'Unstable internet connection';
-          }
-          eventInfo.rawData = Object.assign(eventInfo.rawData, {
-            status: 'FAILED',
-            reason: eventInfoMsg,
-            detail: {
-              code,
-              desc,
-            },
-            // event: fromEvents
-            address: parsedActiveRequestAttestation?.address,
-          });
-          // eventReport(eventInfo);
           pageDecodeMsgListener(
             {
               name: 'end',

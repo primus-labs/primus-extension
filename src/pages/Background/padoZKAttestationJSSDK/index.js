@@ -753,37 +753,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
       name: 'startAttestationRes',
       params: resParams,
     });
-    const userAddress = activeAttestationParams?.ext?.appSignParameters
-      ? JSON.parse(activeAttestationParams.ext.appSignParameters).userAddress
-      : '';
-      // TODO?
-    var eventInfo = {
-      eventType: 'ATTESTATION_GENERATE',
-      rawData: {
-        source: activeAttestationParams.dataSourceId,
-        attestOrigin: activeAttestationParams.attestOrigin,
-        event: activeAttestationParams.attestOrigin,
-        templateId: activeAttestationParams.attTemplateID,
-        status: 'FAILED',
-        reason: 'timeout',
-        address: userAddress,
-      },
-    };
-    const { beginAttest, getAttestationResultRes } =
-      await chrome.storage.local.get([
-        'beginAttest',
-        'getAttestationResultRes',
-      ]);
-
-    if (beginAttest === '1') {
-      eventInfo.rawData.getAttestationResultRes = getAttestationResultRes;
-    }
-    if (activeAttestationParams.event) {
-      eventInfo.rawData.event = activeAttestationParams.event;
-    }
-    eventInfo.rawData = await addSDKParamsToReportParamsFn(eventInfo.rawData);
-
-    eventReport(eventInfo);
   }
 
   if (name === 'sendToChainRes') {

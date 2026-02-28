@@ -39,7 +39,7 @@ import type { Dispatch } from 'react';
 import type { UserState } from '@/types/store';
 import type { DataSourceMapType } from '@/types/dataSource';
 import type { ActiveRequestType } from '@/types/config';
-
+const CLIENTTYPE = '@primuslabs/extension';
 const useALGAttest = function useAttest() {
   const { pathname } = useLocation();
   const { sourceMap2 } = useAllSources();
@@ -169,18 +169,27 @@ const useALGAttest = function useAttest() {
               },
             });
           }
+          const errorCode = retcode === '2' ? '00001' : '00000';
+          const {source,schemaType,address,sigFormat} = parsedActiveRequestAttestation
           var eventInfo: any = {
             eventType: 'ATTESTATION_GENERATE',
             rawData: {
-              source: parsedActiveRequestAttestation.source,
-              schemaType: parsedActiveRequestAttestation.schemaType,
-              sigFormat: parsedActiveRequestAttestation.sigFormat,
-              // attestationId: uniqueId,
-              status: 'FAILED',
-              reason: 'algorithm is not initialized',
-              event: fromEvents,
-              address: parsedActiveRequestAttestation?.address,
-            },
+                "source": source,
+                clientType: CLIENTTYPE,
+                "appId": "",
+                "templateId": schemaType,
+                "address": address,
+                "status": "FAILED",
+                "detail": {
+                    "code": errorCode,
+                    "desc": ""
+                },
+                "ext": {
+                  "sigFormat": sigFormat,
+                  "event": fromEvents,
+                }
+              
+            }
           };
           eventReport(eventInfo);
         }
@@ -207,13 +216,21 @@ const useALGAttest = function useAttest() {
         ].includes(activeAttestation.attestationType)
           ? `${activeAttestation.attestationType} failed!`
           : `${activeAttestation.attestationType} proof failed!`;
+
+        const {source,schemaType,address,sigFormat} = parsedActiveRequestAttestation
         var eventInfo: any = {
           eventType: 'ATTESTATION_GENERATE',
           rawData: {
-            source: parsedActiveRequestAttestation.source,
-            schemaType: parsedActiveRequestAttestation.schemaType,
-            sigFormat: parsedActiveRequestAttestation.sigFormat,
-          },
+              "source": source,
+              "clientType": CLIENTTYPE,
+              "appId": "",
+              "templateId": schemaType,
+              "address": address,
+              "ext": {
+                "sigFormat": sigFormat,
+                "event": fromEvents,
+              }
+          }
         };
 
         if (retcode === '0') {
@@ -292,12 +309,13 @@ const useALGAttest = function useAttest() {
             dispatch(setActiveAttestation({ loading: 2, msgObj }));
 
             const uniqueId = strToHexSha256(fullAttestation.signature);
-            eventInfo.rawData = Object.assign(eventInfo.rawData, {
-              attestationId: uniqueId,
+            Object.assign(eventInfo.rawData, {
               status: 'SUCCESS',
-              reason: '',
-              event: fromEvents,
-              address: fullAttestation?.address,
+              address: fullAttestation?.address, 
+              ext: {
+                ...eventInfo.rawData.ext,
+                attestationId: uniqueId
+              }
             });
             eventReport(eventInfo);
           } else if (
@@ -315,32 +333,32 @@ const useALGAttest = function useAttest() {
             let btnTxt = '';
 
             let errorCode;
-            if (!content.signature && content.encodedData) {
-              if (content.extraData) {
-                // chatgpt input error
-                errorCode = JSON.parse(content.extraData).errorCode + '';
-                if (errorCode === '-1200010') {
-                  Object.assign(msgObj, {
-                    type: '',
-                    desc: 'Invalid message.',
-                    sourcePageTip: 'Invalid message.',
-                  });
-                } else {
-                  errorCode = '00103'; // linea event had bund
-                  Object.assign(msgObj, {
-                    type: attestTipMap[errorCode].type,
-                    desc: attestTipMap[errorCode].desc,
-                    sourcePageTip: attestTipMap[errorCode].title,
-                  });
-                }
-              } else {
-                errorCode = '00103'; // linea event had bund
-                Object.assign(msgObj, {
-                  type: attestTipMap[errorCode].type,
-                  desc: attestTipMap[errorCode].desc,
-                  sourcePageTip: attestTipMap[errorCode].title,
-                });
-              }
+            const totalTipMapForSdk = {
+              '-1200010': 'Invalid message.', // chatgpt input error
+            }
+            const { extraData,signature,encodedData } = content;
+            if (
+              extraData &&
+              JSON.parse(extraData) &&
+              Object.keys(totalTipMapForSdk).includes(
+                JSON.parse(extraData).errorCode + ''
+              )
+            ) {
+              errorCode = JSON.parse(extraData).errorCode + '';
+              const showTip = totalTipMapForSdk[errorCode];
+              Object.assign(msgObj, {
+                type: '',
+                desc: showTip,
+                sourcePageTip: showTip,
+              });
+            } else if (!signature && encodedData) {
+              errorCode = '00103'; // linea event had bund
+              const {type,desc,title} = attestTipMap[errorCode];
+              Object.assign(msgObj, {
+                type,
+                desc,
+                sourcePageTip: title,
+              });
             } else if (
               activeAttestation?.verificationContent === 'Assets Proof' &&
               activeAttestation?.dataSourceId === 'binance'
@@ -383,11 +401,13 @@ const useALGAttest = function useAttest() {
               })
             );
 
-            eventInfo.rawData = Object.assign(eventInfo.rawData, {
+            Object.assign(eventInfo.rawData, {
               status: 'FAILED',
-              reason: 'Not met the requirements',
-              event: fromEvents,
-              address: parsedActiveRequestAttestation?.address,
+              address: parsedActiveRequestAttestation?.address, 
+              detail: {
+                code: errorCode,
+                desc: ""
+              },
             });
             eventReport(eventInfo);
           }
@@ -442,15 +462,18 @@ const useALGAttest = function useAttest() {
           ) {
             eventInfoMsg = 'Unstable internet connection';
           }
-          eventInfo.rawData = Object.assign(eventInfo.rawData, {
+
+          Object.assign(eventInfo.rawData, {
             status: 'FAILED',
-            reason: eventInfoMsg,
+            address: parsedActiveRequestAttestation?.address, 
             detail: {
               code,
-              desc,
+              desc
             },
-            event: fromEvents,
-            address: parsedActiveRequestAttestation?.address,
+            ext: {
+              ...eventInfo.rawData.ext,
+              reason: eventInfoMsg,
+            }
           });
           eventReport(eventInfo);
           if (parsedActiveRequestAttestation.reqType === 'web') {
@@ -534,22 +557,28 @@ const useALGAttest = function useAttest() {
         'getAttestationResultRes',
       ]);
 
-    var eventInfo: any = {
-      eventType: 'ATTESTATION_GENERATE',
-      rawData: {
-        source: parsedActiveRequestAttestation.source,
-        schemaType: parsedActiveRequestAttestation.schemaType,
-        sigFormat: parsedActiveRequestAttestation.sigFormat,
-        // attestationId: uniqueId,
-        status: 'FAILED',
-        reason: 'timeout',
-        event: fromEvents,
-        address: parsedActiveRequestAttestation?.address,
-      },
-    };
 
     if (beginAttest === '1') {
-      eventInfo.rawData.getAttestationResultRes = getAttestationResultRes;
+      const {source,schemaType,address,sigFormat} = parsedActiveRequestAttestation
+      var eventInfo: any = {
+        eventType: 'ATTESTATION_GENERATE',
+        rawData: {
+            source: source,
+            clientType: CLIENTTYPE,
+            appId: "",
+            templateId: schemaType,
+            address: address,
+            ext: {
+              sigFormat: sigFormat,
+              event: fromEvents,
+              getAttestationResultRes: getAttestationResultRes
+            },
+            detail: {
+              code: '00002',
+              desc: '',
+            }
+        }
+      };
       eventReport(eventInfo);
     }
 
@@ -655,7 +684,7 @@ const useALGAttest = function useAttest() {
           );
         } else if (name === 'dataSourcePageDialogTimeout') {
           clearFetchAttestationTimer();
-          await chrome.storage.local.remove(['activeRequestAttestation']);
+          // await chrome.storage.local.remove(['activeRequestAttestation']);
           addMsg({
             type: 'error',
             title,
