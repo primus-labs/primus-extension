@@ -9,13 +9,13 @@ import { attestBrevisFn } from './brevis';
 import { schemaNameFn, getAlgoApi } from './utils';
 
 import { CURENV, ONCHAINLIST, EASINFOMAP } from '@/config/chain';
-import { getDataSourceAccount } from '../dataSourceUtils';
-import { getPadoUrl, getProxyUrl, getZkPadoUrl } from '@/config/envConstants';
 import { STARTOFFLINETIMEOUT } from '@/config/constants';
 import {
   templateIdForMonad,
   monadCalculations,
 } from '../lumaMonadEvent/index.js';
+import { getErrorMsgTitleFn } from '../utils/handleError.js';
+import { addSDKParamsToReportParamsFn } from '../utils/reportEvent.js';
 
 let hasGetTwitterScreenName = false;
 let sdkParams = {};
@@ -76,7 +76,12 @@ export const padoZKAttestationJSSDKMsgListener = async (
   const { name, params } = request;
 
   if (name === 'initAttestation') {
-    console.log('debuge-zktls-initAttestation', params?.sdkVersion);
+    console.log(
+      'debuge-zktls-initAttestation',
+      params?.sdkVersion,
+      'dapptabTabId:',
+      sender.tab.id
+    );
     await fetchAttestationTemplateList();
     await fetchConfigure();
     sdkVersion = params?.sdkVersion;
@@ -126,7 +131,14 @@ export const padoZKAttestationJSSDKMsgListener = async (
   if (name === 'startAttestation') {
     sdkVersion = params?.sdkVersion;
     sdkName = params?.sdkName;
-    console.log('debuge-zktls-startAttestation', sdkVersion, params);
+    console.log(
+      'debuge-zktls-startAttestation',
+      sdkVersion,
+      'time:',
+      new Date().toLocaleString(),
+      'params',
+      JSON.stringify(params)
+    );
     await chrome.storage.local.set({
       padoZKAttestationJSSDKBeginAttest: sdkVersion || '1',
     });
@@ -176,7 +188,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     }
 
     const algoApisParam = sdkName ? params.attRequest?.algoApis : undefined;
-    
+
     if (sdkName && !params.attRequest?.algoApis?.[0]) {
       console.log('network-sdk params error');
       const resParams = {
@@ -336,8 +348,18 @@ export const padoZKAttestationJSSDKMsgListener = async (
                   ) {
                     subconditionItem.type = 'FIELD_RANGE';
                     subconditionItem.value = value;
-                  } else if (op === 'SHA256') {
+                  } else if (['SHA256'].includes(op)) {
                     subconditionItem.type = 'FIELD_VALUE';
+                    subconditionItem.reveal_id = key;
+                  } else if (['SHA256_EX', 'REVEAL_HEX_STRING'].includes(op)) {
+                    subconditionItem.type = 'FIELD_REVEAL';
+                    subconditionItem.op = 'REVEAL_HEX_STRING';
+                    subconditionItem.reveal_id = key;
+                    subconditionItem.field = {
+                      type: 'FIELD_ARITHMETIC',
+                      op: 'SHA256',
+                      field: subconditionItem.field,
+                    };
                   } else if (op === 'REVEAL_STRING') {
                     handleREVEALFn();
                   } else if (op === 'MATCH_ONE') {
@@ -394,7 +416,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
             verificationContent: name,
             verificationValue: description,
             fetchType: 'Web',
-            attestOrigin: params.attRequest?.appId, // TODO-zktls
+            attestOrigin: params.attRequest?.appId || sdkVersion,
             account: '',
             attestationType: category,
             requestid,
@@ -410,6 +432,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
             attTemplateID,
             extendedParams: params.attRequest?.extendedParams,
             additionParamsObj,
+            allJsonResponseFlag: params.attRequest?.allJsonResponseFlag,
           };
         } else {
           const resParams = {
@@ -672,12 +695,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
     const activeAttestationParams = JSON.parse(
       padoZKAttestationJSSDKAttestationPresetParams
     );
-    const errorMsgTitle = [
-      'Assets Verification',
-      'Humanity Verification',
-    ].includes(activeAttestationParams.attestationType)
-      ? `${activeAttestationParams.attestationType} failed!`
-      : `${activeAttestationParams.attestationType} proof failed!`;
+    const errorMsgTitle = await getErrorMsgTitleFn();
+
     const code = '00002';
     const msgObj = {
       type: attestTipMap[code].type,
@@ -761,6 +780,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     if (activeAttestationParams.event) {
       eventInfo.rawData.event = activeAttestationParams.event;
     }
+    eventInfo.rawData = await addSDKParamsToReportParamsFn(eventInfo.rawData);
 
     eventReport(eventInfo);
   }
@@ -900,11 +920,9 @@ chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
     'padoZKAttestationJSSDKDappTabId',
   ]);
   if (tabId === dappTabId && padoZKAttestationJSSDKBeginAttest) {
-    pageDecodeMsgListener(
-      {
-        type: 'pageDecode',
-        name: 'cancel',
-      },
-    );
+    pageDecodeMsgListener({
+      type: 'pageDecode',
+      name: 'cancel',
+    });
   }
 });

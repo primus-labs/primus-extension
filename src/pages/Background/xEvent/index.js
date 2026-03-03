@@ -1,40 +1,53 @@
 let callerTabId;
 let createdTabIdByExtension;
+let taskDoneFlag = false;
 
+const xEventMap = {
+  follow: {
+    url: `https://x.com/intent/follow`,
+    queryKey: 'screen_name',
+    eventName: 'followRes',
+  },
+  repost: {
+    url: `https://x.com/intent/retweet`,
+    queryKey: 'tweet_id',
+    eventName: 'repostRes',
+  },
+};
 export const listener = async (request, sender) => {
   const { type, name, params } = request;
   // handler request from content script
   if (type === 'xEvent') {
-    if (name === 'follow') {
+    if (Object.keys(xEventMap).includes(name)) { 
       callerTabId = null;
       callerTabId = sender.tab.id;
-      const url = `https://x.com/intent/follow?screen_name=${params.screen_name}`;
+      const queryK = xEventMap[name].queryKey;
+      const url = `${xEventMap[name].url}?${queryK}=${params[queryK]}`;
+      taskDoneFlag = false;
       const tabCreatedByPado = await chrome.tabs.create({
         url,
       });
       createdTabIdByExtension = tabCreatedByPado.id;
-    } else if (name === 'repost') {
-      callerTabId = null;
-      callerTabId = sender.tab.id;
-      const url = `https://x.com/intent/retweet?tweet_id=${params.tweet_id}`;
-      const tabCreatedByPado = await chrome.tabs.create({
-        url,
+      chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
+        if (tabId === createdTabIdByExtension) {
+          if (!taskDoneFlag) {
+            chrome.tabs.sendMessage(callerTabId, {
+              type: 'xEvent',
+              name: xEventMap[name].eventName,
+              params: {
+                result: false
+              }
+            });
+          }
+        }
       });
-      createdTabIdByExtension = tabCreatedByPado.id;
     }
   }
   // handle x‘s response
   if (type === 'xPage') {
-    const xEventMap = {
-      follow: {
-        eventName: 'followRes',
-      },
-      repost: {
-        eventName: 'repostRes',
-      },
-    };
     if (Object.keys(xEventMap).includes(name)) {
       if (createdTabIdByExtension) {
+        taskDoneFlag = true
         await chrome.tabs.remove(createdTabIdByExtension);
         chrome.tabs.sendMessage(callerTabId, {
           type: 'xEvent',

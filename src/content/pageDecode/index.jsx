@@ -298,9 +298,9 @@ chrome.runtime.sendMessage(
     if (response.name === 'append') {
       console.log('content_scripts-content-decode receive:append');
       // hide in login page
-      var disabledPathList = ['login', 'register'];
+      var disabledPathList = ['login', 'register', 'signin', 'signup'];
       var isDisabled = disabledPathList.some(
-        (i) => window.location.href.indexOf(i) > -1
+        (i) => window.location.href.toLowerCase().indexOf(i) > -1
       );
       if (isDisabled) {
         return;

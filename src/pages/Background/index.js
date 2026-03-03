@@ -8,19 +8,12 @@ import {
 import { getSysConfig, getProofTypes } from '@/services/api/config';
 import { requestSignTypedData } from '@/services/wallets/utils';
 
-import {
-  getCurrentDate,
-  postMsg,
-  sub,
-  compareVersions,
-  getAccount,
-  strToHexSha256,
-} from '@/utils/utils';
+import { getCurrentDate, postMsg, sub } from '@/utils/utils';
+import { addSDKParamsToReportParamsFn } from './utils/reportEvent.js';
 
 import {
   SocailStoreVersion,
   padoExtensionVersion,
-  ATTESTATIONPOLLINGTIMEOUT,
 } from '@/config/constants';
 import {
   default as processExReq,
@@ -597,21 +590,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
           ...params,
         },
       };
-      const {
-        padoZKAttestationJSSDKBeginAttest,
-        padoZKAttestationJSSDKAttestationPresetParams,
-      } = await chrome.storage.local.get([
-        'padoZKAttestationJSSDKBeginAttest',
-        'padoZKAttestationJSSDKAttestationPresetParams',
-      ]);
-      if (padoZKAttestationJSSDKBeginAttest) {
-        const prestParamsObj = JSON.parse(
-          padoZKAttestationJSSDKAttestationPresetParams
-        );
-        eventInfo.rawData.attestOrigin = prestParamsObj.attestOrigin;
-        eventInfo.rawData.event = prestParamsObj.attestOrigin;
-        eventInfo.rawData.templateId = prestParamsObj.attTemplateID;
-      }
+      eventInfo.rawData = await addSDKParamsToReportParamsFn(eventInfo.rawData);
       eventReport(eventInfo);
     }
   }

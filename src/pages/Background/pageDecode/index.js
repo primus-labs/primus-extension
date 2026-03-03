@@ -2,8 +2,6 @@ import {
   assembleAlgorithmParams,
   assembleAlgorithmParamsForSDK,
 } from '../exData';
-import { storeDataSource } from '../dataSourceUtils';
-import { DATASOURCEMAP } from '@/config/dataSource';
 import { PADOSERVERURL } from '@/config/envConstants';
 import { padoExtensionVersion } from '@/config/constants';
 import { eventReport } from '@/services/api/usertracker';
@@ -11,7 +9,6 @@ import customFetch from '../utils/request';
 import {
   templateIdForMonad,
   eventListUrlForMonad,
-  changeFieldsObjFnForMonad,
   checkTargetRequestFnForMonad,
   formatRequestResponseFnForMonad,
 } from '../lumaMonadEvent/index.js';
@@ -22,16 +19,23 @@ import {
   rowForNilion,
 } from '../nilionEvent/index.js';
 import {
-  templateIdForbBinanceEarnHistory30Days,
-  startTimeDistanceForBinanceEarnHistory,
-  rowForBinanceEarnHistory,
-  changeFieldsObjFnForBinanceEarnHistory,
+  templateIdForBinanceEarnHistory,
   formatRequestResponseFnForBinanceEarnHistory,
+  updateRequestMapFnForbBinanceEarnHistory,
+  templateIdForBinanceEarnHistoryABalance,
+  formatRequestResponseFnForBinanceEarnHistoryABalance,
+  templateIdForReputationPhalaBinanceEarnBalance,
+  updateRequestMapFnForReputationPhalaBinanceEarnBalance,
+  checkTargetRequestFnForReputationPhalaBinanceEarnBalance,
+  formatRequestResponseFnForReputationPhalaBinanceEarnBalance,
+  templateIdForBinanceSomeTokenBalance,
+  templateIdForBinanceSomeTokenBalanceRequestUrl,
+  checkTargetRequestFnForBinanceSomeTokenBalance,
+  formatRequestResponseFnForBinanceSomeTokenBalance,
 } from '../binanceEarnHistoryEvent/index.js';
 import {
   templateIdForTwitch,
   formatJsonArrFnForTwitch,
-  changeFieldsObjFnForTwitch,
   formatRequestResponseFnForTwitch,
 } from '../twitchEvent/index.js';
 import {
@@ -41,6 +45,27 @@ import {
   getUserIdFromCookie,
 } from '../scoreEvent/index.js';
 import {
+  templateIdForPhalaAccount,
+  formatRequestResponseFnForPhalaAccount,
+  formatRequestResponseFnForReputationPhalaCvmList,
+  templateIdForReputaionPhalaCvmList,
+  phalaCvmListRequestUrl,
+  checkTargetRequestFnForReputationPhalaCvmList,
+  templateIdForPhalaCvmList,
+  formatRequestResponseFnForPhalaCvmList,
+} from '../phala/index.js';
+import {
+  templateIdForOkxSomeTokenBalance,
+  templateIdForOkxSomeTokenBalanceRequestUrl,
+  checkTargetRequestFnForOkxSomeTokenBalance,
+  formatRequestResponseFnForOkxSomeTokenBalance,
+} from '../okx/index.js';
+import {
+  templateIdForCoinstatsSomeTokenBalance,
+  checkTargetRequestFnForCoinstatsSomeTokenBalance,
+  formatRequestResponseFnForCoinstatsSpotSomeTokenBalance,
+} from '../coinstats/index.js';
+import {
   isObject,
   parseCookie,
   isUrlWithQueryFn,
@@ -48,6 +73,7 @@ import {
   getErrorMsgFn,
   sendMsgToTab,
 } from '../utils/utils';
+import { addSDKParamsToReportParamsFn } from '../utils/reportEvent.js';
 import {
   extraRequestFn2,
   extraRequestHtmlFn,
@@ -55,9 +81,6 @@ import {
   checkResIsMatchConditionFn,
   checkResHtmlIsMatchConditionFn,
   getNMonthsBeforeTime,
-  getUTCDayLastSecondTime,
-  updateUrlParams,
-  parseUrlQuery,
 } from './utils';
 
 let PRE_ATTEST_PROMOT_V2 = [
@@ -140,8 +163,6 @@ const resetVarsFn = () => {
   chatgptHasLogin = false;
   requestsMap = {};
   reportRequestIds = [];
-  changeFieldsObjFnForMonad('reset');
-  changeFieldsObjFnForTwitch('reset');
   chrome.runtime.onMessage.removeListener(listenerFn);
 };
 const handlerForSdk = async (processAlgorithmReq, operation) => {
@@ -237,6 +258,95 @@ const extraRequestFn = async () => {
     console.log('fetch chatgpt conversation error', e);
   }
 };
+const eventReportGenerateFn = async (rawData) => {
+  var eventInfo = {
+    eventType: 'ATTESTATION_GENERATE',
+    rawData,
+  };
+  eventReport(eventInfo);
+};
+const handle00013 = async () => {
+  let rawData = {};
+  let baseRawData = {
+    status: 'FAILED',
+    reason: 'Something went wrong',
+    detail: {
+      code: '00013',
+      desc: 'Target data missing',
+    },
+  };
+  const {
+    padoZKAttestationJSSDKBeginAttest,
+    padoZKAttestationJSSDKAttestationPresetParams,
+    activeRequestAttestation,
+  } = await chrome.storage.local.get([
+    'padoZKAttestationJSSDKBeginAttest',
+    'padoZKAttestationJSSDKAttestationPresetParams',
+    'activeRequestAttestation',
+  ]);
+  if (padoZKAttestationJSSDKBeginAttest) {
+    if (padoZKAttestationJSSDKAttestationPresetParams) {
+      const parsedActiveRequestAttestation = JSON.parse(
+        padoZKAttestationJSSDKAttestationPresetParams
+      );
+      if (
+        !reportRequestIds.includes(parsedActiveRequestAttestation.requestid)
+      ) {
+        reportRequestIds.push(parsedActiveRequestAttestation.requestid);
+        const userAddress = parsedActiveRequestAttestation?.ext
+          ?.appSignParameters
+          ? JSON.parse(parsedActiveRequestAttestation.ext.appSignParameters)
+              .userAddress
+          : '';
+
+        rawData = {
+          source: parsedActiveRequestAttestation.dataSourceId,
+          schemaType: parsedActiveRequestAttestation.schemaType,
+          sigFormat: parsedActiveRequestAttestation.sigFormat,
+          attestOrigin: parsedActiveRequestAttestation.attestOrigin,
+          event: parsedActiveRequestAttestation.attestOrigin,
+          templateId: parsedActiveRequestAttestation.attTemplateID,
+          address: userAddress,
+          ...baseRawData,
+        };
+        if (parsedActiveRequestAttestation.event) {
+          rawData.event = parsedActiveRequestAttestation.event;
+        }
+        rawData = await addSDKParamsToReportParamsFn(rawData);
+        eventReportGenerateFn(rawData);
+      }
+    }
+  } else {
+    if (activeRequestAttestation) {
+      const parsedActiveRequestAttestation = JSON.parse(
+        activeRequestAttestation
+      );
+      if (
+        !reportRequestIds.includes(parsedActiveRequestAttestation.requestid)
+      ) {
+        reportRequestIds.push(parsedActiveRequestAttestation.requestid);
+        rawData = {
+          source: parsedActiveRequestAttestation.source,
+          schemaType: parsedActiveRequestAttestation.schemaType,
+          sigFormat: parsedActiveRequestAttestation.sigFormat,
+          address: parsedActiveRequestAttestation?.address,
+          ...baseRawData,
+        };
+        if (parsedActiveRequestAttestation.event) {
+          rawData.event = parsedActiveRequestAttestation.event;
+        }
+        eventReportGenerateFn(rawData);
+      }
+    }
+  }
+  errorFn({
+    title:
+      'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
+    desc: 'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
+    code: '00013',
+  });
+};
+
 const handleDataSourcePageDialogTimeout = async (processAlgorithmReq) => {
   let rawData = {};
   let baseRawData = {
@@ -266,6 +376,7 @@ const handleDataSourcePageDialogTimeout = async (processAlgorithmReq) => {
     if (beginAttest === '1') {
       rawData.getAttestationResultRes = getAttestationResultRes;
     }
+
     if (!getAttestationResultRes) {
       var eventInfo = {
         eventType: 'ATTESTATION_GENERATE',
@@ -302,6 +413,7 @@ const handleDataSourcePageDialogTimeout = async (processAlgorithmReq) => {
         if (parsedActiveRequestAttestation.event) {
           rawData.event = parsedActiveRequestAttestation.event;
         }
+        rawData = await addSDKParamsToReportParamsFn(rawData);
         eventReportFn(rawData);
       }
     }
@@ -367,7 +479,12 @@ export const pageDecodeMsgListener = async (
       const {
         datasourceTemplate: { requests, responses },
         additionParamsObj,
+        extendedParams,
       } = activeTemplate;
+      const extendedParamsObj = extendedParams
+        ? JSON.parse(extendedParams)
+        : {};
+
       const thisRequestUrlIdx = requests.findIndex(
         (r) => r.url === templateRequestUrl
       );
@@ -407,7 +524,9 @@ export const pageDecodeMsgListener = async (
                   if (i?.op === 'MATCH_ONE') {
                     return i;
                   } else {
-                    return i.field;
+                    return isObject(i.field) && i.field?.field
+                      ? i.field.field
+                      : i.field;
                   }
                 }
               );
@@ -463,66 +582,32 @@ export const pageDecodeMsgListener = async (
               }
 
               if (
-                [templateIdForbBinanceEarnHistory30Days].includes(
+                [
+                  templateIdForBinanceEarnHistory,
+                  templateIdForBinanceEarnHistoryABalance,
+                  templateIdForBinanceEarnHistoryABalance,
+                ].includes(activeTemplate?.attTemplateID)
+              ) {
+                const newRequestMap = updateRequestMapFnForbBinanceEarnHistory(
+                  requestsMap[matchRequestId],
+                  additionParamsObj
+                );
+                targetRequestUrl = newRequestMap.url;
+                storeRequestsMap(matchRequestId, newRequestMap);
+              }
+
+              if (
+                [templateIdForReputationPhalaBinanceEarnBalance].includes(
                   activeTemplate?.attTemplateID
                 )
               ) {
-                const oldUrl = requestsMap[matchRequestId].url;
-                const oldQueryParams = parseUrlQuery(oldUrl);
-                let newStartTime = getNMonthsBeforeTime(
-                  oldQueryParams.endTime,
-                  startTimeDistanceForBinanceEarnHistory
-                );
-                const newUrlParams = {
-                  pageSize: rowForBinanceEarnHistory,
-                  startTime: newStartTime,
-                  // asset: '',
-                };
-
-                if (additionParamsObj?.binanceBaseAsset) {
-                  newUrlParams.asset = additionParamsObj?.binanceBaseAsset;
-                }
-                if (
-                  additionParamsObj?.binanceMonthNum &&
-                  typeof additionParamsObj?.binanceMonthNum === 'number'
-                ) {
-                  newStartTime = getNMonthsBeforeTime(
-                    oldQueryParams.endTime,
-                    additionParamsObj?.binanceMonthNum
+                const newRequestMap =
+                  updateRequestMapFnForReputationPhalaBinanceEarnBalance(
+                    requestsMap[matchRequestId],
+                    additionParamsObj
                   );
-                  newUrlParams.startTime = newStartTime;
-                }
-                if (
-                  additionParamsObj?.binanceRows &&
-                  additionParamsObj?.binanceRows < rowForBinanceEarnHistory
-                ) {
-                  newUrlParams.pageSize =
-                    typeof additionParamsObj?.binanceRows === 'number'
-                      ? additionParamsObj?.binanceRows
-                      : Number(additionParamsObj?.rowForBinanceEarnHistory);
-                }
-
-                const newUrl = updateUrlParams(oldUrl, newUrlParams);
-                targetRequestUrl = newUrl;
-
-                const oldUrl2 = `https://www.binance.com/bapi/earn/v1/private/lending/union/redemption/list?pageIndex=1&pageSize=20&startTime=1744732800000&endTime=1760371199999&lendingType=DAILY`;
-                const newUrl2 = updateUrlParams(oldUrl2, newUrlParams);
-                changeFieldsObjFnForBinanceEarnHistory(
-                  'add',
-                  'secondUrl',
-                  newUrl2
-                );
-                // TODO
-                let matchRequestUrlResult2 = await extraRequestFn2({
-                  ...requestsMap[matchRequestId],
-                  header: requestsMap[matchRequestId].headers,
-                  url: newUrl2,
-                });
-
-                storeRequestsMap(matchRequestId, {
-                  ...requestsMap[matchRequestId],
-                  url: newUrl,
-                });
+                targetRequestUrl = newRequestMap.url;
+                storeRequestsMap(matchRequestId, newRequestMap);
               }
               let matchRequestUrlResult;
               let isTargetUrl = false;
@@ -570,35 +655,102 @@ export const pageDecodeMsgListener = async (
                   matchRequestUrlResult
                 );
               }
-
+              const notMetHandler = async () => {
+                const notMetCode = '00104';
+                const netMetMsg = await getErrorMsgFn(
+                  activeTemplate.attestationType,
+                  notMetCode
+                );
+                handleEnd(netMetMsg);
+                sendMsgToSdk({
+                  type: 'padoZKAttestationJSSDK',
+                  name: 'startAttestationRes',
+                  params: {
+                    result: false,
+                    errorData: {
+                      code: notMetCode,
+                    },
+                  },
+                });
+              };
               if (
                 matchRequestUrlResult &&
                 activeTemplate?.attTemplateID === templateIdForMonad
               ) {
-                const notMetHandler = async () => {
-                  const notMetCode = '00104';
-                  const netMetMsg = await getErrorMsgFn(
-                    activeTemplate.attestationType,
-                    notMetCode
-                  );
-                  handleEnd(netMetMsg);
-                  sendMsgToSdk({
-                    type: 'padoZKAttestationJSSDK',
-                    name: 'startAttestationRes',
-                    params: {
-                      result: false,
-                      errorData: {
-                        code: notMetCode,
-                      },
-                    },
-                  });
-                };
                 isTargetUrl = await checkTargetRequestFnForMonad(
                   targetRequestUrl,
                   matchRequestUrlResult,
                   requestsMap[matchRequestId],
                   notMetHandler
                 );
+              }
+              if (
+                matchRequestUrlResult &&
+                activeTemplate?.attTemplateID ===
+                  templateIdForReputaionPhalaCvmList &&
+                targetRequestUrl.includes(phalaCvmListRequestUrl)
+              ) {
+                isTargetUrl =
+                  await checkTargetRequestFnForReputationPhalaCvmList(
+                    matchRequestUrlResult,
+                    notMetHandler
+                  );
+              }
+
+              if (
+                matchRequestUrlResult &&
+                activeTemplate?.attTemplateID ===
+                  templateIdForReputationPhalaBinanceEarnBalance
+              ) {
+                isTargetUrl =
+                  await checkTargetRequestFnForReputationPhalaBinanceEarnBalance(
+                    matchRequestUrlResult,
+                    notMetHandler,
+                    additionParamsObj
+                  );
+              }
+              if (
+                matchRequestUrlResult &&
+                activeTemplate?.attTemplateID ===
+                  templateIdForBinanceSomeTokenBalance &&
+                targetRequestUrl.includes(
+                  templateIdForBinanceSomeTokenBalanceRequestUrl
+                )
+              ) {
+                isTargetUrl =
+                  await checkTargetRequestFnForBinanceSomeTokenBalance(
+                    matchRequestUrlResult,
+                    notMetHandler,
+                    extendedParamsObj
+                  );
+              }
+
+              if (
+                matchRequestUrlResult &&
+                activeTemplate?.attTemplateID ===
+                  templateIdForOkxSomeTokenBalance &&
+                targetRequestUrl.includes(
+                  templateIdForOkxSomeTokenBalanceRequestUrl
+                )
+              ) {
+                isTargetUrl = await checkTargetRequestFnForOkxSomeTokenBalance(
+                  matchRequestUrlResult,
+                  notMetHandler,
+                  extendedParamsObj
+                );
+              }
+
+              if (
+                matchRequestUrlResult &&
+                activeTemplate?.attTemplateID ===
+                  templateIdForCoinstatsSomeTokenBalance
+              ) {
+                isTargetUrl =
+                  await checkTargetRequestFnForCoinstatsSomeTokenBalance(
+                    matchRequestUrlResult,
+                    notMetHandler,
+                    extendedParamsObj
+                  );
               }
 
               if (isTargetUrl) {
@@ -770,6 +922,7 @@ export const pageDecodeMsgListener = async (
             algorithmType: activeTemplate.algorithmType,
             requestid: activeTemplate.requestid,
             sslCipherSuite: activeTemplate.sslCipherSuite,
+            allJsonResponseFlag: activeTemplate.allJsonResponseFlag,
           },
           activeTemplate.ext
         );
@@ -928,8 +1081,7 @@ export const pageDecodeMsgListener = async (
           formatRequests = req;
           formatResponse = res;
         } else if (
-          activeTemplate.attTemplateID ===
-          templateIdForbBinanceEarnHistory30Days
+          activeTemplate.attTemplateID === templateIdForBinanceEarnHistory
         ) {
           const { formatRequests: req, formatResponse: res } =
             formatRequestResponseFnForBinanceEarnHistory(
@@ -938,7 +1090,87 @@ export const pageDecodeMsgListener = async (
             );
           formatRequests = req;
           formatResponse = res;
+        } else if (
+          activeTemplate.attTemplateID ===
+          templateIdForBinanceEarnHistoryABalance
+        ) {
+          const { formatRequests: req, formatResponse: res } =
+            formatRequestResponseFnForBinanceEarnHistoryABalance(
+              formatRequests,
+              formatResponse
+            );
+          formatRequests = req;
+          formatResponse = res;
+        } else if (activeTemplate.attTemplateID === templateIdForPhalaAccount) {
+          const { formatRequests: req, formatResponse: res } =
+            formatRequestResponseFnForPhalaAccount(
+              formatRequests,
+              formatResponse
+            );
+          formatRequests = req;
+          formatResponse = res;
+        } else if (
+          activeTemplate.attTemplateID === templateIdForReputaionPhalaCvmList
+        ) {
+          const { formatRequests: req, formatResponse: res } =
+            formatRequestResponseFnForReputationPhalaCvmList(
+              formatRequests,
+              formatResponse
+            );
+          formatRequests = req;
+          formatResponse = res;
+        } else if (activeTemplate.attTemplateID === templateIdForPhalaCvmList) {
+          const { formatRequests: req, formatResponse: res } =
+            formatRequestResponseFnForPhalaCvmList(
+              formatRequests,
+              formatResponse
+            );
+          formatRequests = req;
+          formatResponse = res;
+        } else if (
+          activeTemplate.attTemplateID ===
+          templateIdForReputationPhalaBinanceEarnBalance
+        ) {
+          const { formatRequests: req, formatResponse: res } =
+            formatRequestResponseFnForReputationPhalaBinanceEarnBalance(
+              formatRequests,
+              formatResponse
+            );
+          formatRequests = req;
+          formatResponse = res;
+        } else if (
+          activeTemplate.attTemplateID === templateIdForBinanceSomeTokenBalance
+        ) {
+          const { formatRequests: req, formatResponse: res } =
+            formatRequestResponseFnForBinanceSomeTokenBalance(
+              formatRequests,
+              formatResponse
+            );
+          formatRequests = req;
+          formatResponse = res;
+        } else if (
+          activeTemplate.attTemplateID === templateIdForOkxSomeTokenBalance
+        ) {
+          const { formatRequests: req, formatResponse: res } =
+            formatRequestResponseFnForOkxSomeTokenBalance(
+              formatRequests,
+              formatResponse
+            );
+          formatRequests = req;
+          formatResponse = res;
+        } else if (
+          activeTemplate.attTemplateID ===
+          templateIdForCoinstatsSomeTokenBalance
+        ) {
+          const { formatRequests: req, formatResponse: res } =
+            formatRequestResponseFnForCoinstatsSpotSomeTokenBalance(
+              formatRequests,
+              formatResponse
+            );
+          formatRequests = req;
+          formatResponse = res;
         }
+
         for (const fr of formatRequests) {
           if (fr.headers) {
             fr.headers['Accept-Encoding'] = 'identity';
@@ -1448,21 +1680,7 @@ export const pageDecodeMsgListener = async (
           order: '3',
         },
       };
-      const {
-        padoZKAttestationJSSDKBeginAttest,
-        padoZKAttestationJSSDKAttestationPresetParams,
-      } = await chrome.storage.local.get([
-        'padoZKAttestationJSSDKBeginAttest',
-        'padoZKAttestationJSSDKAttestationPresetParams',
-      ]);
-      if (padoZKAttestationJSSDKBeginAttest) {
-        const prestParamsObj = JSON.parse(
-          padoZKAttestationJSSDKAttestationPresetParams
-        );
-        eventInfo.rawData.attestOrigin = prestParamsObj.attestOrigin;
-        eventInfo.rawData.event = prestParamsObj.attestOrigin;
-        eventInfo.rawData.templateId = prestParamsObj.attTemplateID;
-      }
+      eventInfo.rawData = await addSDKParamsToReportParamsFn(eventInfo.rawData);
       eventReport(eventInfo);
       chrome.runtime.sendMessage({
         type: 'algorithm',
@@ -1490,12 +1708,7 @@ export const pageDecodeMsgListener = async (
       handleEnd(request);
     }
     if (name === 'interceptionFail') {
-      errorFn({
-        title:
-          'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
-        desc: 'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
-        code: '00013',
-      });
+      handle00013();
     }
     if (name === 'dataSourcePageDialogTimeout') {
       handleDataSourcePageDialogTimeout(processAlgorithmReq);
@@ -1505,12 +1718,7 @@ export const pageDecodeMsgListener = async (
       chandleClose(params, processAlgorithmReq);
     }
     if (name === 'interceptionFail') {
-      errorFn({
-        title:
-          'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
-        desc: 'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
-        code: '00013',
-      });
+      handle00013();
     }
     if (name === 'dataSourcePageDialogTimeout') {
       handleDataSourcePageDialogTimeout(processAlgorithmReq);

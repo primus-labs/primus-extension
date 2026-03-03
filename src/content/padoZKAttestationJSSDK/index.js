@@ -90,7 +90,13 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     }
 
     if (name === 'getAttestationRes') {
-      console.log('dappTab receive getAttestationRes msg');
+      console.log(
+        'dappTab receive getAttestationRes msg',
+        'time:',
+        new Date().toLocaleString(),
+        'resParams',
+        JSON.stringify(params)
+      );
       window.postMessage({
         target: 'padoZKAttestationJSSDK',
         origin: 'padoExtension',
@@ -103,7 +109,10 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     if (name === 'startAttestationRes') {
       console.log(
         'padoExtension-content-sdk-receive-startAttestationRes',
-        params
+        'time:',
+        new Date().toLocaleString(),
+        'params',
+        JSON.stringify(params)
       );
       window.postMessage({
         target: 'padoZKAttestationJSSDK',

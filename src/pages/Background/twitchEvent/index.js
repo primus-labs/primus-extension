@@ -1,5 +1,7 @@
 import jp from 'jsonpath';
 import { checkResIsMatchConditionFn } from '../pageDecode/utils';
+import { changeFieldsObjFn } from '../utils/localVar';
+
 export const templateIdForTwitch = '515fd5af-49be-48e7-9345-d949c76e5f0d';
 export const formatJsonArrFnForTwitch = (
   jsonArr,
@@ -8,6 +10,7 @@ export const formatJsonArrFnForTwitch = (
   matchRequestUrlResult
 ) => {
   let checkRes = false;
+  changeFieldsObjFn(twitchFields, 'reset');
   const newJsonArr = JSON.parse(JSON.stringify(jsonArr));
   const curRequestParams = requestMetaInfo.body
     ? JSON.parse(requestMetaInfo.body)
@@ -40,7 +43,8 @@ export const formatJsonArrFnForTwitch = (
         );
         if (isMatch) {
           checkRes = true;
-          changeFieldsObjFnForTwitch(
+          changeFieldsObjFn(
+            twitchFields,
             'add',
             'matchOneFatherJsonpath',
             newJsonArr[complexJsonpathIdx].field
@@ -54,17 +58,7 @@ export const formatJsonArrFnForTwitch = (
 };
 
 export let twitchFields = {};
-export const changeFieldsObjFnForTwitch = (op, key, value) => {
-  if (op === 'delete') {
-    delete twitchFields[key];
-  } else if (op === 'add') {
-    twitchFields[key] = value;
-  } else if (op === 'update') {
-    twitchFields[key] = value;
-  } else if (op === 'reset') {
-    twitchFields = {};
-  }
-};
+
 export const formatRequestResponseFnForTwitch = (
   formatRequests,
   formatResponse

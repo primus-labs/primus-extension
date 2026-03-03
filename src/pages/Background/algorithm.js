@@ -1,10 +1,10 @@
 import { eventReport } from '@/services/api/usertracker';
-import { regenerateAttestation } from '@/services/api/cred';
 import { pageDecodeMsgListener } from './pageDecode/index.js';
 import { postMsg, strToHexSha256 } from '@/utils/utils';
-import { getDataSourceAccount } from './dataSourceUtils';
-import { schemaNameFn, regenerateAttest } from './padoZKAttestationJSSDK/utils';
+import { regenerateAttest } from './padoZKAttestationJSSDK/utils';
 import { padoExtensionVersion } from '@/config/constants';
+import { addSDKParamsToReportParamsFn } from './utils/reportEvent.js';
+import { getErrorMsgTitleFn } from './utils/handleError.js';
 
 export const algorithmMsgListener = async (
   message,
@@ -29,6 +29,12 @@ export const algorithmMsgListener = async (
     'activeRequestAttestation',
     'padoZKAttestationJSSDKAttestationPresetParams',
   ]);
+  const activeAttestationParams = padoZKAttestationJSSDKAttestationPresetParams
+    ? JSON.parse(padoZKAttestationJSSDKAttestationPresetParams)
+    : {};
+  const extendedParamsObj = activeAttestationParams?.extendedParams
+    ? JSON.parse(activeAttestationParams.extendedParams)
+    : {};
   if (resMethodName === `start`) {
     // var eventInfo = {
     //   eventType: 'ATTESTATION_INIT_1',
@@ -54,15 +60,7 @@ export const algorithmMsgListener = async (
         order: '6',
       },
     };
-    if (padoZKAttestationJSSDKBeginAttest) {
-      const prestParamsObj = JSON.parse(
-        padoZKAttestationJSSDKAttestationPresetParams
-      );
-
-      eventInfo.rawData.attestOrigin = prestParamsObj.attestOrigin;
-      eventInfo.rawData.event = prestParamsObj.attestOrigin;
-      eventInfo.rawData.templateId = prestParamsObj.attTemplateID;
-    }
+    eventInfo.rawData = await addSDKParamsToReportParamsFn(eventInfo.rawData);
     eventReport(eventInfo);
   }
 
@@ -104,15 +102,8 @@ export const algorithmMsgListener = async (
         } else {
           // if (retcode === '2' || retcode === '1')
           result = false;
-          const activeAttestationParams = JSON.parse(
-            padoZKAttestationJSSDKAttestationPresetParams
-          );
-          let errorMsgTitle = [
-            'Assets Verification',
-            'Humanity Verification',
-          ].includes(activeAttestationParams.attestationType)
-            ? `${activeAttestationParams.attestationType} failed!`
-            : `${activeAttestationParams.attestationType} proof failed!`;
+
+          let errorMsgTitle = await getErrorMsgTitleFn();
 
           errorMsgTitle =
             retcode === '2'
@@ -161,8 +152,15 @@ export const algorithmMsgListener = async (
             data: message.res,
           };
         }
-        console.log('send getAttestationRes msg to dappTab');
-        console.log('dappTabId', dappTabId);
+        console.log(
+          'send getAttestationRes msg to dappTab',
+          'dappTabId',
+          dappTabId,
+          'time:',
+          new Date().toLocaleString(),
+          'resParams',
+          JSON.stringify(resParams)
+        );
         // async function getTabInfo(tabId) {
         try {
           const tab = await chrome.tabs.get(dappTabId);
@@ -199,18 +197,10 @@ export const algorithmMsgListener = async (
         await chrome.storage.local.set({
           getAttestationResultRes: message.res,
         });
-        const activeAttestationParams = JSON.parse(
-          padoZKAttestationJSSDKAttestationPresetParams
-        );
         const parsedActiveRequestAttestation = activeRequestAttestation
           ? JSON.parse(activeRequestAttestation)
           : {};
-        let errorMsgTitle = [
-          'Assets Verification',
-          'Humanity Verification',
-        ].includes(activeAttestationParams.attestationType)
-          ? `${activeAttestationParams.attestationType} failed!`
-          : `${activeAttestationParams.attestationType} proof failed!`;
+        let errorMsgTitle = await getErrorMsgTitleFn();
         var eventInfo = {
           eventType: 'ATTESTATION_GENERATE',
           rawData: {
@@ -219,11 +209,9 @@ export const algorithmMsgListener = async (
             sigFormat: parsedActiveRequestAttestation.sigFormat,
           },
         };
-        if (padoZKAttestationJSSDKBeginAttest) {
-          eventInfo.rawData.attestOrigin = activeAttestationParams.attestOrigin;
-          eventInfo.rawData.event = activeAttestationParams.attestOrigin;
-          eventInfo.rawData.templateId = activeAttestationParams.attTemplateID;
-        }
+        eventInfo.rawData = await addSDKParamsToReportParamsFn(
+          eventInfo.rawData
+        );
 
         if (retcode === '0') {
           const sucFn = async (resData) => {
@@ -278,7 +266,7 @@ export const algorithmMsgListener = async (
                 ...parsedActiveRequestAttestation,
                 ...activeAttestationParams,
                 // account: acc,
-                account: ''
+                account: '',
               };
               if (fullAttestation.verificationContent === 'X Followers') {
                 let count = 0;
@@ -320,6 +308,7 @@ export const algorithmMsgListener = async (
               // await sucFn(JSON.parse(content.encodedData));
               const passRes = JSON.parse(content.encodedData);
               passRes.extendedData = content.extendedData;
+              passRes.allJsonResponse = content.allJsonResponse;
               await sucFn(passRes);
             }
 
@@ -391,9 +380,6 @@ export const algorithmMsgListener = async (
               )
             ) {
               errorCode = JSON.parse(extraData).errorCode + '';
-              const extendedParamsObj = activeAttestationParams.extendedParams
-                ? JSON.parse(activeAttestationParams.extendedParams)
-                : {};
               if (
                 extendedParamsObj.handleReSubmitCodes &&
                 extendedParamsObj.handleReSubmitCodes.includes(errorCode)
