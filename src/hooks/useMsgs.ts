@@ -17,7 +17,7 @@ const useMsgs = function useMsgs() {
       //   msgs && Object.keys(msgs).length > 0 ? { ...msgs } : oldMsgs;
 
       const { msgs: lastMsgsStr } = await chrome.storage.local.get(['msgs']);
-      const lastMsgs = JSON.parse(lastMsgsStr);
+      const lastMsgs = lastMsgsStr ? JSON.parse(lastMsgsStr) : {};
       if (lastMsgs[id]) {
         delete lastMsgs[id];
         dispatch(setMsgsAsync(lastMsgs));

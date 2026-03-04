@@ -189,7 +189,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
 
     const algoApisParam = sdkName ? params.attRequest?.algoApis : undefined;
 
-    if (sdkName && !params.attRequest?.algoApis?.[0]) {
+    if (sdkName && sdkName.indexOf('network') > -1 && !params.attRequest?.algoApis?.[0]) {
       console.log('network-sdk params error');
       const resParams = {
         result: false,
