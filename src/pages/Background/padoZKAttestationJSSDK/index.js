@@ -21,6 +21,7 @@ let hasGetTwitterScreenName = false;
 let sdkParams = {};
 let sdkVersion = '';
 let sdkName = '';
+let isNetworkSdk = false;
 const fetchAttestationTemplateList = async () => {
   try {
     const fetchRes = await getProofTypes({
@@ -86,6 +87,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     await fetchConfigure();
     sdkVersion = params?.sdkVersion;
     sdkName = params?.sdkName;
+    isNetworkSdk = sdkName && sdkName.indexOf('network') > -1;
 
     const { configMap } = await chrome.storage.local.get(['configMap']);
     let sdkSupportHosts = [];
@@ -122,15 +124,15 @@ export const padoZKAttestationJSSDKMsgListener = async (
     processAlgorithmReq({
       reqMethodName: 'start',
     });
-    if (!sdkName) {
+    if (!isNetworkSdk) {
       updateAlgoUrl();
     }
-
     console.log('333pado-bg-receive-initAttestation', dappTabId);
   }
   if (name === 'startAttestation') {
     sdkVersion = params?.sdkVersion;
     sdkName = params?.sdkName;
+    isNetworkSdk = sdkName && sdkName.indexOf('network') > -1;
     console.log(
       'debuge-zktls-startAttestation',
       sdkVersion,
@@ -187,9 +189,9 @@ export const padoZKAttestationJSSDKMsgListener = async (
       algorithmType = params.algorithmType;
     }
 
-    const algoApisParam = sdkName ? params.attRequest?.algoApis : undefined;
+    const algoApisParam = isNetworkSdk ? params.attRequest?.algoApis : undefined;
 
-    if (sdkName && sdkName.indexOf('network') > -1 && !params.attRequest?.algoApis?.[0]) {
+    if (isNetworkSdk && !params.attRequest?.algoApis?.[0]) {
       console.log('network-sdk params error');
       const resParams = {
         result: false,
