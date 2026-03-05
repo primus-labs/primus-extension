@@ -10,9 +10,9 @@ export const PadoWebsiteMsgListener = async (request, sender, sendResponse) => {
     if (eventName === 'LINEA_DEFI_VOYAGE') {
       createTabFn(`home.html#/cred?fromEvents=${eventName}`);
     } else if (eventName === BASEVENTNAME) {
-      createTabFn(`home.html#/events`);
+      createTabFn(`home.html#/home`);
     } else {
-      createTabFn(`home.html#/events`);
+      createTabFn(`home.html#/home`);
     }
   } else if (name === 'upperChain') {
     if (operation === 'openPadoWebsite') {

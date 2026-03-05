@@ -34,28 +34,10 @@ export const menuList: NavItem[] = [
     iconName: 'icon-iconMenuZkAttestation',
     link: '/Attestation',
   },
-  {
-    label: 'Events',
-    value: 'Events',
-    iconName: 'icon-iconMenuEvents',
-    link: '/events',
-  },
   // {
   //   label: 'Developer',
   //   value: 'Developer',
   //   iconName: 'icon-iconMenuDeveloper',
   //   link: '/developer',
   // },
-  {
-    label: 'Achievements',
-    value: 'Achievements',
-    iconName: 'icon-iconMenuAchievements',
-    link: '/achievements',
-  },
-  {
-    label: 'Settings',
-    value: 'Settings',
-    iconName: 'icon-iconMenuSettings',
-    link: '/settings',
-  },
 ];
