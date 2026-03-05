@@ -20,8 +20,10 @@ import { addSDKParamsToReportParamsFn } from '../utils/reportEvent.js';
 let hasGetTwitterScreenName = false;
 let sdkParams = {};
 let sdkVersion = '';
-let sdkName = '';
+
 let isNetworkSdk = false;
+let clientType = '';
+
 const fetchAttestationTemplateList = async () => {
   try {
     const fetchRes = await getProofTypes({
@@ -86,8 +88,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
     await fetchAttestationTemplateList();
     await fetchConfigure();
     sdkVersion = params?.sdkVersion;
-    sdkName = params?.sdkName;
-    isNetworkSdk = sdkName && sdkName.toLowerCase().indexOf('network') > -1;
+    isNetworkSdk = !!(params?.sdkName);
+    clientType = params?.clientType;
     const { configMap } = await chrome.storage.local.get(['configMap']);
     let sdkSupportHosts = [];
     if (
@@ -130,8 +132,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
   }
   if (name === 'startAttestation') {
     sdkVersion = params?.sdkVersion;
-    sdkName = params?.sdkName;
-    isNetworkSdk = sdkName && sdkName.toLowerCase().indexOf('network') > -1;
+    isNetworkSdk = !!(params?.sdkName);
+    clientType = params?.clientType;
     console.log(
       'debuge-zktls-startAttestation',
       sdkVersion,
@@ -434,7 +436,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
             extendedParams: params.attRequest?.extendedParams,
             additionParamsObj,
             allJsonResponseFlag: params.attRequest?.allJsonResponseFlag,
-            clientType: sdkName,
+            clientType,
           };
         } else {
           const resParams = {
