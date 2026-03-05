@@ -87,8 +87,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
     await fetchConfigure();
     sdkVersion = params?.sdkVersion;
     sdkName = params?.sdkName;
-    isNetworkSdk = sdkName && sdkName.indexOf('network') > -1;
-
+    isNetworkSdk = sdkName && sdkName.toLowerCase().indexOf('network') > -1;
     const { configMap } = await chrome.storage.local.get(['configMap']);
     let sdkSupportHosts = [];
     if (
@@ -132,7 +131,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
   if (name === 'startAttestation') {
     sdkVersion = params?.sdkVersion;
     sdkName = params?.sdkName;
-    isNetworkSdk = sdkName && sdkName.indexOf('network') > -1;
+    isNetworkSdk = sdkName && sdkName.toLowerCase().indexOf('network') > -1;
     console.log(
       'debuge-zktls-startAttestation',
       sdkVersion,

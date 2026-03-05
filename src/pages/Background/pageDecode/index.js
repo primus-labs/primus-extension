@@ -1695,7 +1695,6 @@ export const pageDecodeMsgListener = async (
     if (name === 'interceptionFail') {
       const { padoZKAttestationJSSDKBeginAttest } =
         await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
-        debugger
       handle00013(
         padoZKAttestationJSSDKBeginAttest
           ? {}
