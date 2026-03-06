@@ -7,65 +7,6 @@ import { padoExtensionVersion } from '@/config/constants';
 import { eventReport } from '@/services/api/usertracker';
 import customFetch from '../utils/request';
 import {
-  templateIdForMonad,
-  eventListUrlForMonad,
-  checkTargetRequestFnForMonad,
-  formatRequestResponseFnForMonad,
-} from '../lumaMonadEvent/index.js';
-import {
-  templateIdForNilion7Days,
-  templateIdForNilion1Month,
-  startTimeDistanceForNilion,
-  rowForNilion,
-} from '../nilionEvent/index.js';
-import {
-  templateIdForBinanceEarnHistory,
-  formatRequestResponseFnForBinanceEarnHistory,
-  updateRequestMapFnForbBinanceEarnHistory,
-  templateIdForBinanceEarnHistoryABalance,
-  formatRequestResponseFnForBinanceEarnHistoryABalance,
-  templateIdForReputationPhalaBinanceEarnBalance,
-  updateRequestMapFnForReputationPhalaBinanceEarnBalance,
-  checkTargetRequestFnForReputationPhalaBinanceEarnBalance,
-  formatRequestResponseFnForReputationPhalaBinanceEarnBalance,
-  templateIdForBinanceSomeTokenBalance,
-  templateIdForBinanceSomeTokenBalanceRequestUrl,
-  checkTargetRequestFnForBinanceSomeTokenBalance,
-  formatRequestResponseFnForBinanceSomeTokenBalance,
-} from '../binanceEarnHistoryEvent/index.js';
-import {
-  templateIdForTwitch,
-  formatJsonArrFnForTwitch,
-  formatRequestResponseFnForTwitch,
-} from '../twitchEvent/index.js';
-import {
-  lumaAccountTemplateId,
-  lumaAccountTemplateReg,
-  getLumaAccountTargetJumpUrl,
-  getUserIdFromCookie,
-} from '../scoreEvent/index.js';
-import {
-  templateIdForPhalaAccount,
-  formatRequestResponseFnForPhalaAccount,
-  formatRequestResponseFnForReputationPhalaCvmList,
-  templateIdForReputaionPhalaCvmList,
-  phalaCvmListRequestUrl,
-  checkTargetRequestFnForReputationPhalaCvmList,
-  templateIdForPhalaCvmList,
-  formatRequestResponseFnForPhalaCvmList,
-} from '../phala/index.js';
-import {
-  templateIdForOkxSomeTokenBalance,
-  templateIdForOkxSomeTokenBalanceRequestUrl,
-  checkTargetRequestFnForOkxSomeTokenBalance,
-  formatRequestResponseFnForOkxSomeTokenBalance,
-} from '../okx/index.js';
-import {
-  templateIdForCoinstatsSomeTokenBalance,
-  checkTargetRequestFnForCoinstatsSomeTokenBalance,
-  formatRequestResponseFnForCoinstatsSpotSomeTokenBalance,
-} from '../coinstats/index.js';
-import {
   isObject,
   parseCookie,
   isUrlWithQueryFn,
@@ -80,7 +21,6 @@ import {
   errorFn,
   checkResIsMatchConditionFn,
   checkResHtmlIsMatchConditionFn,
-  getNMonthsBeforeTime,
 } from './utils';
 
 const CLIENTTYPE = '@primuslabs/extension';
@@ -500,84 +440,7 @@ export const pageDecodeMsgListener = async (
                 }
               );
               let targetRequestUrl = requestsMap[matchRequestId].url;
-              if (activeTemplate?.attTemplateID === templateIdForMonad) {
-                // 'https://api.lu.ma/home/get-events?period=past&pagination_limit=1000';
-                targetRequestUrl = eventListUrlForMonad(targetRequestUrl); // TODO
-              }
 
-              if (
-                [templateIdForNilion7Days, templateIdForNilion1Month].includes(
-                  activeTemplate?.attTemplateID
-                )
-              ) {
-                const lastBody = requestsMap[matchRequestId].body;
-                let newBody = {
-                  ...lastBody,
-                };
-                if (
-                  activeTemplate?.attTemplateID === templateIdForNilion1Month
-                ) {
-                  const newStartTime = getNMonthsBeforeTime(
-                    lastBody.endTime,
-                    startTimeDistanceForNilion
-                  );
-                  // console.log('nilion', 'binance time:', lastBody.endTime);
-                  // console.log(
-                  //   'utc time:',
-                  //   getUTCDayLastSecondTime(lastBody.endTime)
-                  // );
-                  newBody = {
-                    ...lastBody,
-                    rows: rowForNilion,
-                    startTime: newStartTime,
-                    direction: '',
-                    baseAsset: '',
-                    quoteAsset: '',
-                    hideCancel: false,
-                    queryTimeType: 'INSERT_TIME',
-                  };
-                } else if (
-                  activeTemplate?.attTemplateID === templateIdForNilion7Days
-                ) {
-                  newBody = {
-                    ...lastBody,
-                    rows: rowForNilion,
-                  };
-                }
-                storeRequestsMap(matchRequestId, {
-                  ...requestsMap[matchRequestId],
-                  body: newBody,
-                });
-              }
-
-              if (
-                [
-                  templateIdForBinanceEarnHistory,
-                  templateIdForBinanceEarnHistoryABalance,
-                  templateIdForBinanceEarnHistoryABalance,
-                ].includes(activeTemplate?.attTemplateID)
-              ) {
-                const newRequestMap = updateRequestMapFnForbBinanceEarnHistory(
-                  requestsMap[matchRequestId],
-                  additionParamsObj
-                );
-                targetRequestUrl = newRequestMap.url;
-                storeRequestsMap(matchRequestId, newRequestMap);
-              }
-
-              if (
-                [templateIdForReputationPhalaBinanceEarnBalance].includes(
-                  activeTemplate?.attTemplateID
-                )
-              ) {
-                const newRequestMap =
-                  updateRequestMapFnForReputationPhalaBinanceEarnBalance(
-                    requestsMap[matchRequestId],
-                    additionParamsObj
-                  );
-                targetRequestUrl = newRequestMap.url;
-                storeRequestsMap(matchRequestId, newRequestMap);
-              }
               let matchRequestUrlResult;
               let isTargetUrl = false;
               if (requestsMap[matchRequestId].type === 'main_frame') {
@@ -604,123 +467,10 @@ export const pageDecodeMsgListener = async (
                 });
               }
 
-              if (
-                matchRequestUrlResult &&
-                activeTemplate?.attTemplateID === templateIdForTwitch
-              ) {
-                let formarRes = formatJsonArrFnForTwitch(
-                  jsonPathArr,
-                  requestsMap[matchRequestId],
-                  thisRequestObj.matchReqBodyKey,
-                  matchRequestUrlResult
-                );
-                if (formarRes?.checkRes) {
-                  jsonPathArr = formarRes.jsonpath;
-                  isTargetUrl = true;
-                }
-              } else {
-                isTargetUrl = checkResIsMatchConditionFn(
-                  jsonPathArr,
-                  matchRequestUrlResult
-                );
-              }
-              const notMetHandler = async () => {
-                const notMetCode = '00104';
-                const netMetMsg = await getErrorMsgFn(
-                  activeTemplate.attestationType,
-                  notMetCode
-                );
-                handleEnd(netMetMsg);
-                sendMsgToSdk({
-                  type: 'padoZKAttestationJSSDK',
-                  name: 'startAttestationRes',
-                  params: {
-                    result: false,
-                    errorData: {
-                      code: notMetCode,
-                    },
-                  },
-                });
-              };
-              if (
-                matchRequestUrlResult &&
-                activeTemplate?.attTemplateID === templateIdForMonad
-              ) {
-                isTargetUrl = await checkTargetRequestFnForMonad(
-                  targetRequestUrl,
-                  matchRequestUrlResult,
-                  requestsMap[matchRequestId],
-                  notMetHandler
-                );
-              }
-              if (
-                matchRequestUrlResult &&
-                activeTemplate?.attTemplateID ===
-                  templateIdForReputaionPhalaCvmList &&
-                targetRequestUrl.includes(phalaCvmListRequestUrl)
-              ) {
-                isTargetUrl =
-                  await checkTargetRequestFnForReputationPhalaCvmList(
-                    matchRequestUrlResult,
-                    notMetHandler
-                  );
-              }
-
-              if (
-                matchRequestUrlResult &&
-                activeTemplate?.attTemplateID ===
-                  templateIdForReputationPhalaBinanceEarnBalance
-              ) {
-                isTargetUrl =
-                  await checkTargetRequestFnForReputationPhalaBinanceEarnBalance(
-                    matchRequestUrlResult,
-                    notMetHandler,
-                    additionParamsObj
-                  );
-              }
-              if (
-                matchRequestUrlResult &&
-                activeTemplate?.attTemplateID ===
-                  templateIdForBinanceSomeTokenBalance &&
-                targetRequestUrl.includes(
-                  templateIdForBinanceSomeTokenBalanceRequestUrl
-                )
-              ) {
-                isTargetUrl =
-                  await checkTargetRequestFnForBinanceSomeTokenBalance(
-                    matchRequestUrlResult,
-                    notMetHandler,
-                    extendedParamsObj
-                  );
-              }
-
-              if (
-                matchRequestUrlResult &&
-                activeTemplate?.attTemplateID ===
-                  templateIdForOkxSomeTokenBalance &&
-                targetRequestUrl.includes(
-                  templateIdForOkxSomeTokenBalanceRequestUrl
-                )
-              ) {
-                isTargetUrl = await checkTargetRequestFnForOkxSomeTokenBalance(
-                  matchRequestUrlResult,
-                  notMetHandler,
-                  extendedParamsObj
-                );
-              }
-
-              if (
-                matchRequestUrlResult &&
-                activeTemplate?.attTemplateID ===
-                  templateIdForCoinstatsSomeTokenBalance
-              ) {
-                isTargetUrl =
-                  await checkTargetRequestFnForCoinstatsSomeTokenBalance(
-                    matchRequestUrlResult,
-                    notMetHandler,
-                    extendedParamsObj
-                  );
-              }
+              isTargetUrl = checkResIsMatchConditionFn(
+                jsonPathArr,
+                matchRequestUrlResult
+              );
 
               if (isTargetUrl) {
                 storeRequestsMap(matchRequestId, { isTarget: 1 });
@@ -1039,107 +789,6 @@ export const pageDecodeMsgListener = async (
           });
         });
       } else {
-        if (activeTemplate.attTemplateID === templateIdForMonad) {
-          const { formatRequests: req, formatResponse: res } =
-            formatRequestResponseFnForMonad(formatRequests, formatResponse);
-          formatRequests = req;
-          formatResponse = res;
-        } else if (activeTemplate.attTemplateID === templateIdForTwitch) {
-          const { formatRequests: req, formatResponse: res } =
-            formatRequestResponseFnForTwitch(formatRequests, formatResponse);
-          formatRequests = req;
-          formatResponse = res;
-        } else if (
-          activeTemplate.attTemplateID === templateIdForBinanceEarnHistory
-        ) {
-          const { formatRequests: req, formatResponse: res } =
-            formatRequestResponseFnForBinanceEarnHistory(
-              formatRequests,
-              formatResponse
-            );
-          formatRequests = req;
-          formatResponse = res;
-        } else if (
-          activeTemplate.attTemplateID ===
-          templateIdForBinanceEarnHistoryABalance
-        ) {
-          const { formatRequests: req, formatResponse: res } =
-            formatRequestResponseFnForBinanceEarnHistoryABalance(
-              formatRequests,
-              formatResponse
-            );
-          formatRequests = req;
-          formatResponse = res;
-        } else if (activeTemplate.attTemplateID === templateIdForPhalaAccount) {
-          const { formatRequests: req, formatResponse: res } =
-            formatRequestResponseFnForPhalaAccount(
-              formatRequests,
-              formatResponse
-            );
-          formatRequests = req;
-          formatResponse = res;
-        } else if (
-          activeTemplate.attTemplateID === templateIdForReputaionPhalaCvmList
-        ) {
-          const { formatRequests: req, formatResponse: res } =
-            formatRequestResponseFnForReputationPhalaCvmList(
-              formatRequests,
-              formatResponse
-            );
-          formatRequests = req;
-          formatResponse = res;
-        } else if (activeTemplate.attTemplateID === templateIdForPhalaCvmList) {
-          const { formatRequests: req, formatResponse: res } =
-            formatRequestResponseFnForPhalaCvmList(
-              formatRequests,
-              formatResponse
-            );
-          formatRequests = req;
-          formatResponse = res;
-        } else if (
-          activeTemplate.attTemplateID ===
-          templateIdForReputationPhalaBinanceEarnBalance
-        ) {
-          const { formatRequests: req, formatResponse: res } =
-            formatRequestResponseFnForReputationPhalaBinanceEarnBalance(
-              formatRequests,
-              formatResponse
-            );
-          formatRequests = req;
-          formatResponse = res;
-        } else if (
-          activeTemplate.attTemplateID === templateIdForBinanceSomeTokenBalance
-        ) {
-          const { formatRequests: req, formatResponse: res } =
-            formatRequestResponseFnForBinanceSomeTokenBalance(
-              formatRequests,
-              formatResponse
-            );
-          formatRequests = req;
-          formatResponse = res;
-        } else if (
-          activeTemplate.attTemplateID === templateIdForOkxSomeTokenBalance
-        ) {
-          const { formatRequests: req, formatResponse: res } =
-            formatRequestResponseFnForOkxSomeTokenBalance(
-              formatRequests,
-              formatResponse
-            );
-          formatRequests = req;
-          formatResponse = res;
-        } else if (
-          activeTemplate.attTemplateID ===
-          templateIdForCoinstatsSomeTokenBalance
-        ) {
-          const { formatRequests: req, formatResponse: res } =
-            formatRequestResponseFnForCoinstatsSpotSomeTokenBalance(
-              formatRequests,
-              formatResponse
-            );
-          formatRequests = req;
-          formatResponse = res;
-        }
-
         for (const fr of formatRequests) {
           if (fr.headers) {
             fr.headers['Accept-Encoding'] = 'identity';
@@ -1349,27 +998,6 @@ export const pageDecodeMsgListener = async (
         }
         let templateRequestUrl = '';
 
-        if (attTemplateID === lumaAccountTemplateId) {
-          const checkRes = checkIsRequiredUrl({
-            requestUrl: currRequestUrl,
-            requiredUrl: lumaAccountTemplateReg,
-            urlType: 'REGX',
-          });
-          if (checkRes) {
-            // console.log('formatHeader', formatHeader);
-            const userId = getUserIdFromCookie(formatHeader?.Cookie);
-            if (userId) {
-              const lumaAccountTargetJumpUrl =
-                getLumaAccountTargetJumpUrl(userId);
-              await chrome.tabs.update(dataSourcePageTabId, {
-                url: lumaAccountTargetJumpUrl,
-              });
-              return;
-            } else {
-              return;
-            }
-          }
-        }
         const isTarget = requests.some((r) => {
           if (r.name === 'first') {
             return false;

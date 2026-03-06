@@ -10,10 +10,6 @@ import { schemaNameFn, getAlgoApi } from './utils';
 
 import { CURENV, ONCHAINLIST, EASINFOMAP } from '@/config/chain';
 import { STARTOFFLINETIMEOUT } from '@/config/constants';
-import {
-  templateIdForMonad,
-  monadCalculations,
-} from '../lumaMonadEvent/index.js';
 import { getErrorMsgTitleFn } from '../utils/handleError.js';
 import { addSDKParamsToReportParamsFn } from '../utils/reportEvent.js';
 
@@ -406,10 +402,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
               host,
               requests: newRequests,
               responses: newResponses,
-              calculations:
-                attTemplateID === templateIdForMonad
-                  ? monadCalculations
-                  : undefined,
+              calculations: undefined,
             },
             sslCipherSuite,
           };

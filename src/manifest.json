@@ -46,25 +46,6 @@
   ],
   "content_scripts": [
     {
-      "matches": [
-        "https://padolabs.org/*",
-        "https://www.padolabs.org/*",
-        "https://events.padolabs.org/*",
-        "http://api-dev.padolabs.org:9094/*",
-        "http://api-dev.padolabs.org:8081/*",
-        "https://primuslabs.xyz/*"
-      ],
-      "js": ["padoWebsite.js"]
-    },
-    {
-      "matches": [
-        "https://twitter.com/intent/follow?screen_name=primus_labs",
-        "https://x.com/intent/follow?screen_name=primus_labs",
-        "https://x.com/intent/follow?screen_name=monad_xyz"
-      ],
-      "js": ["xFollow.js"]
-    },
-    {
       "matches": ["<all_urls>"],
       "js": ["padoZKAttestationJSSDK.bundle.js"],
       "run_at": "document_start"
@@ -85,33 +66,6 @@
       ],
       "js": ["devconsole.bundle.js"],
       "run_at": "document_start"
-    },
-    {
-      "matches": [
-        "http://localhost:*/*",
-        "https://luckydraw.primuslabs.xyz/*",
-        "https://test-luckydraw.primuslabs.xyz/*"
-      ],
-      "js": ["lumaMonadEvent.bundle.js"]
-    },
-    {
-      "matches": [
-        "https://x.com/intent/follow?screen_name=*",
-        "https://x.com/intent/retweet?tweet_id=*"
-      ],
-      "js": ["xPage.bundle.js"]
-    },
-    {
-      "matches": [
-        "http://localhost:*/*",
-        "http://api-dev.padolabs.org:38098/*",
-        "http://app.primuslabs.xyz/*",
-        "https://app.primuslabs.xyz/*",
-        "http://api-dev.padolabs.org:38093/*",
-        "http://pay.primuslabs.xyz/*",
-        "https://pay.primuslabs.xyz/*"
-      ],
-      "js": ["xEvent.bundle.js"]
     }
   ]
 }
