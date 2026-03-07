@@ -10,12 +10,6 @@ export type NavItem = {
 };
 
 export const menuList: NavItem[] = [
-  {
-    label: 'Home',
-    value: 'Home',
-    iconName: 'icon-iconMenuHome',
-    link: '/home',
-  },
   // {
   //   label: 'Data Source',
   //   value: 'Data Source',

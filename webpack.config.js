@@ -35,7 +35,6 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 var options = {
   mode: process.env.NODE_ENV || 'development',
   entry: {
-    home: path.join(__dirname, 'src', 'pages', 'Home', 'index.jsx'),
     background: path.join(__dirname, 'src', 'pages', 'Background', 'index.js'),
     pageDecode: path.join(
       __dirname,
@@ -380,12 +379,6 @@ var options = {
       ],
     }),
 
-    new HtmlWebpackPlugin({
-      template: path.join(__dirname, 'src', 'pages', 'Home', 'index.html'),
-      filename: 'home.html',
-      chunks: ['home'],
-      cache: false,
-    }),
     new FriendlyErrorsWebpackPlugin(),
     new webpack.ProvidePlugin({
       process: 'process/browser.js',

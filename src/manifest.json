@@ -58,7 +58,7 @@
     },
     {
       "matches": [
-        "http://localhost:*/*",
+        "http://localhost/*",
         "http://api-dev.padolabs.org:38082/*",
         "http://api-dev.padolabs.org:38089/*",
         "https://dev.primuslabs.xyz/*",

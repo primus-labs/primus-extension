@@ -1,20 +1,11 @@
-import { BASEVENTNAME } from '@/config/events';
 import { BNBGREENFIELDURL } from '@/config/envConstants';
 let tabCreatedByPado;
 let currExtentionId;
 
 export const PadoWebsiteMsgListener = async (request, sender, sendResponse) => {
   const { name, params } = request;
-  const { eventName, operation } = params;
-  if (name === 'createTab') {
-    if (eventName === 'LINEA_DEFI_VOYAGE') {
-      createTabFn(`home.html#/cred?fromEvents=${eventName}`);
-    } else if (eventName === BASEVENTNAME) {
-      createTabFn(`home.html#/home`);
-    } else {
-      createTabFn(`home.html#/home`);
-    }
-  } else if (name === 'upperChain') {
+  const { operation } = params;
+  if (name === 'upperChain') {
     if (operation === 'openPadoWebsite') {
       tabCreatedByPado = await chrome.tabs.create({
         url: BNBGREENFIELDURL,
@@ -35,15 +26,5 @@ export const PadoWebsiteMsgListener = async (request, sender, sendResponse) => {
         await chrome.tabs.remove(tabCreatedByPado.id);
       }, 2000);
     }
-  } else if (name === 'event') {
-    const { eventName, methodName,path } = params;
-    if (methodName === 'createTab') {
-      createTabFn(path);
-    }
   }
 };
-
-const createTabFn = (path) => {
-  let url = chrome.runtime.getURL(path);
-  chrome.tabs.create({ url });
-}
