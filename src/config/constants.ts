@@ -23,7 +23,6 @@ import iconDataSourceZan from '@/assets/img/iconDataSourceZan.svg';
 import iconDataSourceOnChainAssets from '@/assets/img/iconDataSourceOnChainAssets.svg';
 import Binance from '@/services/webdata/webexchange/webbinance';
 import WebBitGet from '@/services/webdata/webexchange/webbitget';
-// import OKX from '@/services/exchange/okx';
 import OKX from '@/services/webdata/webexchange/webokx';
 import KuCoin from '@/services/exchange/kucoin';
 import Coinbase from '@/services/exchange/coinbase';
@@ -73,9 +72,7 @@ export const ATTESTATIONPOLLINGTIME = 1 * ONESECOND;
 export const ATTESTATIONPOLLINGTIMEOUT = 2 * ONEMINUTE;
 export const STARTOFFLINETIMEOUT = 3 * ONEMINUTE + '';
 export const DEFAULTDATASOURCEPOLLINGTIMENUM = '10';
-// export const DEFAULTFETCHTIMEOUT = 10 * ONESECOND;
 export const DEFAULTFETCHTIMEOUT = 1 * ONEMINUTE;
-// export const WALLETASSETSPOLLINGTIME = 5 * ONEMINUTE;
 export const WALLETASSETSPOLLINGTIME = 10 * ONESECOND;
 export const MSGSHOWTIME1 = 6 * ONESECOND;
 export const MSGSHOWTIME2 = 3 * ONESECOND;
@@ -180,16 +177,10 @@ export const DATASOURCEMAP: DataSourceMapType = {
     type: 'Social',
     icon: iconDataSourceDiscord,
   },
-  /*youtube: {
-    name: 'Youtube',
-    type: 'Social',
-    icon: iconDataSourceYoutube,
-  },*/
   zan: {
     name: 'ZAN',
     type: 'Identity',
     icon: iconDataSourceZan,
-    // desc: 'by Antchain',
     disabled: true,
   },
 };
@@ -213,12 +204,6 @@ export const WALLETLIST: WALLETITEMTYPE[] = [
     name: 'TokenPocket',
     disabled: true,
   },
-
-  // {
-  //   icon: iconWalletTrustWallet,
-  //   name: 'TrustWallet',
-  //   disabled: true,
-  // },
 ];
 
 export const CHAINNETWORKLIST = [
@@ -297,7 +282,5 @@ export const SCROLLEVENTNAME = 'SCROLL_LAUNCH_CAMPAIGN';
 export const BASEVENTNAME = 'BAS_EVENT_PROOF_OF_HUMANITY';
 export const ETHSIGNEVENTNAME = 'SIGNX_X_PROGRAM';
 export const LINEAEVENTNAME = 'LINEA_DEFI_VOYAGE';
-// schemauid: 0x07656ef97ae97711b79c9e79b3e0409712a8bb9bf26f3495ad15f48cdd49cfac
-// schemaType: BAS_EVENT_PROOF_OF_HUMANITY
 export const GOOGLEWEBPROOFID = '100';
 export const FUNDLINK = 'https://pay.primuslabs.xyz/';

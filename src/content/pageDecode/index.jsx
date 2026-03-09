@@ -112,7 +112,6 @@ function PadoCard() {
       },
     };
     await chrome.runtime.sendMessage(msgObj);
-    // removeStorageValuesFn();
   }, [activeRequest?.tabId]);
   const handleConfirm = useCallback(async () => {
     var eventInfo = {

@@ -8,8 +8,6 @@ import iconNetworkScroll from '@/assets/img/credit/iconNetworkScroll.svg';
 type ENVTYPE = 'development' | 'test' | 'production';
 
 export const CURENV = process.env.NODE_ENV as ENVTYPE;
-// export const CURENV = 'development';
-// export const CURENV = 'production';
 console.log('222CURENV', CURENV, process.env);
 const PADOURLMAP = {
   development: 'wss://api-dev.padolabs.org/algorithm',
@@ -272,62 +270,6 @@ const EASINFOMAP = {
       bucketDetailUrl:
         'https://testnet-scan.sign.global/attestation/onchain_evm_5611_',
     },
-    // Arbitrum: {
-    //   showName: 'Arbitrum',
-    //   icon: iconArbitrum,
-    //   title: 'Arbitrum',
-    //   disabled: true,
-    //   rpcUrl: 'https://arb1.arbitrum.io/rpc',
-    //   erc721Contract: '',
-    //   easContact: '0xbD75f629A22Dc1ceD33dDA0b68c546A1c035c458',
-    //   easProxyContrac: '0x616bDF7E9041c6F76b0ff6dE9aF5DA2c88A9Ac98',
-    //   schemas: {
-    //     'EAS-Ethereum': {
-    //       schemaUid:
-    //         '0xcc1f2c6308ffbb7ac5b915641cbc74b6d6404bcdedaf304f9637e5ef7ecc593d',
-    //       schemaUidTokenHoldings:
-    //         '0xe4c12be3c85cada725c600c1f2cde81d7cc15f957537e5756742acc3f5859084',
-    //       schemaUidIdentification:
-    //         '0x871cb30613666b4349fe45b1e4af222e7da3c3f3b6487ef99b813a897470cb28',
-    //     },
-    //     PolygonID: {
-    //       schemaUid:
-    //         '0x518b6ddf38db93ae2bab1164038c6fa0606ce4b5080406749ea65f9415bb0503',
-    //       schemaUidTokenHoldings:
-    //         '0x112d140be471e0fac2dc2ee596c55d5f0c679b8fa9a71c15ec5516b87d6d1278',
-    //       schemaUidIdentification:
-    //         '0xe08e249cc244e018cc56cb05938665fd16e373e77acc23d625e84cd4fe07cc48',
-    //     },
-    //   },
-    //   chainId: '0xa4b1', // numToHex
-    //   chainName: 'ArbitrumOne',
-    //   rpcUrls: ['https://arb1.arbitrum.io/rpc'],
-    //   blockExplorerUrls: ['https://arbiscan.io'],
-    // },
-    // Polygon: {
-    //   showName: 'Polygon',
-    //   icon: iconPolygon,
-    //   title: 'Polygon',
-    //   disabled: true,
-    //   rpcUrl: 'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
-    //   easContact: '0xC2679fBD37d54388Ce493F1DB75320D236e1815e',
-    //   easProxyContrac: '0x2884e43b48c2cc623a19c0c3d260dd8f398fd5f3',
-    //   schemaUid:
-    //     '0x518b6ddf38db93ae2bab1164038c6fa0606ce4b5080406749ea65f9415bb0503',
-    //   schemaUidTokenHoldings:
-    //     '0x112d140be471e0fac2dc2ee596c55d5f0c679b8fa9a71c15ec5516b87d6d1278',
-    //   chainId: '0xaa36a7', // numToHex
-    //   chainName: 'Sepolia',
-    //   rpcUrls: [
-    //     'https://sepolia.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
-    //   ],
-    //   blockExplorerUrls: ['https://sepolia.etherscan.io'],
-    //   nativeCurrency: {
-    //     name: 'MATIC',
-    //     symbol: 'MATIC',
-    //     decimals: 18,
-    //   },
-    // },
   },
   test: {
     Sepolia: {
@@ -647,44 +589,27 @@ const EASINFOMAP = {
       bucketDetailUrl: 'https://dcellar.io/buckets',
     },
 
-    // Ethereum: {
-    //   showName: 'Ethereum',
-    //   icon: iconUpChainEthereum,
-    //   title: 'Ethereum',
-    //   disabled: true,
-    //   rpcUrl: 'https://mainnet.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
-    //   easContact: '0xA1207F3BBa224E2c9c3c6D5aF63D0eb1582Ce587',
-    //   easProxyContrac: '',
-    //   schemaUid: '',
-    //   schemaUidTokenHoldings: '',
-    //   chainId: '0x1', // numToHex
-    //   chainName: 'Ethereum',
-    //   rpcUrls: [
-    //     'https://mainnet.infura.io/v3/b6bf7d3508c941499b10025c0776eaf8',
-    //   ],
-    //   blockExplorerUrls: ['https://etherscan.io/'],
-    // },
-    // Polygon: {
-    //   showName: 'Polygon',
-    //   icon: iconPolygon,
-    //   title: 'Polygon',
-    //   disabled: true,
-    //   rpcUrl: '',
-    //   erc721Contract: '0x616bDF7E9041c6F76b0ff6dE9aF5DA2c88A9Ac98',
-    //   easContact: '',
-    //   easProxyContrac: '',
-    //   schemaUid: '',
-    //   schemaUidTokenHoldings: '',
-    //   chainId: '0x89', // numToHex
-    //   chainName: 'Polygon Mainnet',
-    //   rpcUrls: ['https://polygon-rpc.com'],
-    //   blockExplorerUrls: ['https://polygonscan.com/'],
-    //   nativeCurrency: {
-    //     name: 'MATIC',
-    //     symbol: 'MATIC',
-    //     decimals: 18,
-    //   },
-    // },
+    Polygon: {
+      showName: 'Polygon',
+      icon: iconPolygon,
+      title: 'Polygon',
+      disabled: true,
+      rpcUrl: 'https://polygon-rpc.com',
+      erc721Contract: '0x616bDF7E9041c6F76b0ff6dE9aF5DA2c88A9Ac98',
+      easContact: '',
+      easProxyContrac: '',
+      schemaUid: '',
+      schemaUidTokenHoldings: '',
+      chainId: '0x89',
+      chainName: 'Polygon Mainnet',
+      rpcUrls: ['https://polygon-rpc.com'],
+      blockExplorerUrls: ['https://polygonscan.com/'],
+      nativeCurrency: {
+        name: 'MATIC',
+        symbol: 'MATIC',
+        decimals: 18,
+      },
+    },
   },
 };
 export const EASInfo = EASINFOMAP[CURENV];
@@ -706,22 +631,6 @@ export const updateAlgoUrl = async () => {
   }
 
   const res = await getAlgoUrl();
-
-  /*const res = {
-    "rc": 0,
-    "mc": "SUCCESS",
-    "msg": "",
-    "result": [
-        {
-            "algorithmDomain": "api1.padolabs.org",
-            "algoProxyDomain": "api1.padolabs.org"
-        },
-        {
-          "algorithmDomain": "api-dev.padolabs.org",
-          "algoProxyDomain": "api-dev.padolabs.org"
-        }
-    ]
-  };*/
 
   console.log('updateAlgoUrl res=', res);
   if (res?.rc === 0) {

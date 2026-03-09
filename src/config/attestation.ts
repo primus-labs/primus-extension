@@ -28,10 +28,6 @@ export const ASSETSVERIFICATIONCONTENTTYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
 };
 
 export const ASSETSVERIFICATIONVALUETYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
-  // '0.01': {
-  //   value: '0.01',
-  //   label: '> $0.01',
-  // }, //delete TEST-assetsbalance
   '10': {
     value: '10',
     label: '> $10',
@@ -53,10 +49,6 @@ export const ASSETSVERIFICATIONVALUETYPELIST: ASSETSVERIFICATIONCONTENTTYPEITEM[
   Object.values(ASSETSVERIFICATIONVALUETYPEEMAP);
 
 export const ASSETSVOLVERIFICATIONVALUETYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
-  // '0': {
-  //   value: '0',
-  //   label: '> $0',
-  // }, // TEST-spot30dVol
   '10': {
     value: '10',
     label: '> $10',
@@ -126,24 +118,12 @@ export const HUMANITYVERIFICATIONVALUETYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
     value: 'Basic Verification',
     label: 'Basic Verification',
   },
-  // 'Advanced Verification': {
-  //   value: 'Advanced Verification',
-  //   label: 'Advanced Verification',
-  // },
 };
 export const HUMANITYVERIFICATIONVALUETYPELIST: ASSETSVERIFICATIONCONTENTTYPEITEM[] =
   Object.values(HUMANITYVERIFICATIONVALUETYPEEMAP);
 
 // On-chain Transactions content/value options
 export const ONCHAINVERIFICATIONCONTENTTYPEEMAP: ATTESTATIONTYPEITEMTYPEMAP = {
-  // '1': {
-  //   value: '1',
-  //   label: 'Largest ETH/USDC Uniswap transaction',
-  // },
-  // '2': {
-  //   value: '2',
-  //   label: 'Sum of WETH/USDC Uniswap Volume',
-  // },
   '3': {
     value: '3',
     label: 'Has transactions on BNB Chain',
@@ -229,45 +209,3 @@ export const ATTESTATIONTYPELIST: ATTESTATIONTYPEITEMTYPE[] =
   Object.values(ATTESTATIONTYPEMAP);
 
 export const CredVersion = '1.0.5';
-// const attestationTypeMap = {
-//   1: {
-//     title: 'On-chain Transactions Proof',
-//     desc: 'Largest ETH/USDC Uniswap transaction',
-//     type: 'Powered by Brevis',
-//     icon: iconAttestationOnChain,
-//     id: '1',
-//     webTemplateId: '2',
-//   },
-//   2: {
-//     title: 'Assets Verification Proof',
-//     desc: 'Owns the specified token',
-//     icon: iconAttestationAssets,
-//     type: 'Web Data',
-//     id: '2',
-//     webTemplateId: '2323',
-//   },
-//   3: {
-//     title: 'Assets Verification Proof',
-//     desc: 'Asset balance ≥ specified amount',
-//     icon: iconAttestationAssets,
-//     id: '3',
-//     webTemplateId: '2323',
-//     type: 'Web Data',
-//   },
-//   4: {
-//     title: 'Humanity Verification Proof',
-//     desc: 'Owns the account',
-//     icon: iconAttestationHumanity,
-//     type: 'Web Data',
-//     id: '4',
-//     webTemplateId: '2323',
-//   },
-//   5: {
-//     title: 'Humanity Verification Proof',
-//     desc: 'Completed KYC Verification',
-//     icon: iconAttestationHumanity,
-//     type: 'Web Data',
-//     id: '5',
-//     webTemplateId: '2323',
-//   },
-// };

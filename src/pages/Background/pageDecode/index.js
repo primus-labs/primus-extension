@@ -66,11 +66,6 @@ const sendMsgToDataSourcePage = async (msg) => {
 };
 
 const removeRequestsMap = async (url) => {
-  // console.log('requestsMap-remove', url);
-  // await chrome.storage.local.remove([
-  //   'https://www.tiktok.com/passport/web/account/info/',
-  //   'https://api.x.com/1.1/account/settings.json',
-  // ]);
   delete requestsMap[url];
 };
 const storeRequestsMap = (url, urlInfo) => {
@@ -217,22 +212,6 @@ const handleDataSourcePageDialogTimeout = async (processAlgorithmReq) => {
         !reportRequestIds.includes(parsedActiveRequestAttestation.requestid)
       ) {
         reportRequestIds.push(parsedActiveRequestAttestation.requestid);
-        // TODO-event
-        // rawData = {
-        //   source: parsedActiveRequestAttestation.dataSourceId,
-        //   schemaType: parsedActiveRequestAttestation.schemaType,
-        //   sigFormat: parsedActiveRequestAttestation.sigFormat,
-        //   attestOrigin: parsedActiveRequestAttestation.attestOrigin,
-        //   event: parsedActiveRequestAttestation.attestOrigin,
-        //   templateId: parsedActiveRequestAttestation.attTemplateID,
-        //   address: userAddress,
-        //   ...baseRawData,
-        // };
-        // if (parsedActiveRequestAttestation.event) {
-        //   rawData.event = parsedActiveRequestAttestation.event;
-        // }
-        // rawData = await addSDKParamsToReportParamsFn(rawData);
-        // eventReportFn(rawData);
 
         const { 
           dataSourceId,
@@ -263,17 +242,6 @@ const handleDataSourcePageDialogTimeout = async (processAlgorithmReq) => {
         !reportRequestIds.includes(parsedActiveRequestAttestation.requestid)
       ) {
         reportRequestIds.push(parsedActiveRequestAttestation.requestid);
-        // rawData = {
-        //   source: parsedActiveRequestAttestation.source,
-        //   schemaType: parsedActiveRequestAttestation.schemaType,
-        //   sigFormat: parsedActiveRequestAttestation.sigFormat,
-        //   address: parsedActiveRequestAttestation?.address,
-        //   ...baseRawData,
-        // };
-        // if (parsedActiveRequestAttestation.event) {
-        //   rawData.event = parsedActiveRequestAttestation.event;
-        // }
-        
 
         const {source,schemaType,sigFormat,user,event} = parsedActiveRequestAttestation
         Object.assign(eventInfo.rawData, {
@@ -451,13 +419,11 @@ export const pageDecodeMsgListener = async (
                   queryParams: r.queryParams,
                 });
                 return checkRes;
-                // return matchReg(r.url, rInfo.url);
               }
             );
             if (activeRequestInfo) {
               let targetRequestId = activeRequestInfo.requestId;
               const sRrequestObj = requestsMap[targetRequestId] || {};
-              // console.log('sRrequestObj', storageObj, url, sRrequestObj, r);
               chatgptHasLogin = !!sRrequestObj?.headers?.Authorization;
               const headersFlag =
                 !r.headers || (!!r.headers && !!sRrequestObj.headers);
@@ -488,18 +454,6 @@ export const pageDecodeMsgListener = async (
               return !!curFlag;
             });
 
-            // const allRequestUrlFoundFlag = Object.values(requestsMap).some(
-            //   (sInfo) => {
-            //     if (
-            //       sInfo.templateRequestUrl.includes('get_creator_channels') &&
-            //       sInfo.headers &&
-            //       sInfo.body
-            //     ) {
-            //       sInfo.isTarget = 1;
-            //       return true;
-            //     }
-            //   }
-            // );
             fl = f && !!allRequestUrlFoundFlag;
           } else {
             fl = f;
@@ -562,7 +516,6 @@ export const pageDecodeMsgListener = async (
         form.event = event;
       }
       // "X Followers" required update baseValue
-      // console.log('activeTemplate', activeTemplate, dataSource);
       if (activeTemplate.id === '15') {
         form.baseValue =
           activeTemplate.datasourceTemplate.responses[1].conditions.subconditions[1].value;
@@ -593,7 +546,6 @@ export const pageDecodeMsgListener = async (
         }
 
         let { headers, cookies, body } = r;
-        // let formatUrlKey = url;
         let targetRequestId = '';
         if (sdkVersion) {
           targetRequestId =
@@ -610,7 +562,6 @@ export const pageDecodeMsgListener = async (
               queryParams: r.queryParams,
             });
             return checkRes;
-            // return matchReg(url, rInfo.url);
           })?.requestId;
           console.log(
             'formatAlgorithmParamsFn-after',
@@ -684,12 +635,6 @@ export const pageDecodeMsgListener = async (
         }
         formatRequests.push({ ...r, url: r.name === 'first' ? r.url : url });
       }
-      // const activeInfo = formatRequests.find((i) => i.headers);
-      // const activeHeader = Object.assign({}, activeInfo?.headers);
-      // const authInfoName = dataSource + '-auth';
-      // await chrome.storage.local.set({
-      //   [authInfoName]: JSON.stringify(activeHeader),
-      // });
       let formatResponse = JSON.parse(JSON.stringify(responses));
       if (dataSource === 'chatgpt') {
         const { chatGPTExpression } = activeTemplate;
@@ -868,11 +813,8 @@ export const pageDecodeMsgListener = async (
       const interceptorUrlArr = requests
         .filter((r) => r.name !== 'first')
         .map((i) => i.url);
-      // const aaa = await chrome.storage.local.get(interceptorUrlArr);
       await chrome.storage.local.remove(interceptorUrlArr);
       console.log('lastStorage-remove', interceptorUrlArr);
-      // const bbb = await chrome.storage.local.get(interceptorUrlArr);
-      // console.log('555-newattestations', capturedUrlKeyArr, aaa, bbb);
 
       chrome.webRequest.onBeforeSendHeaders.removeListener(
         onBeforeSendHeadersFn
@@ -965,13 +907,6 @@ export const pageDecodeMsgListener = async (
 
           return checkRes;
         });
-        // console.log(
-        //   'captured:',
-        //   currRequestUrl,
-        //   'isTarget:',
-        //   isTarget,
-        //   details
-        // );
         if (isTarget) {
           console.log('monad-details', details);
           let newCapturedInfo = {
@@ -1055,10 +990,6 @@ export const pageDecodeMsgListener = async (
             if (rawBody && rawBody.bytes) {
               const byteArray = new Uint8Array(rawBody.bytes);
               const bodyText = new TextDecoder().decode(byteArray);
-              // console.log(
-              //   `targeturl:${subDetails.url}, method:${subDetails.method} Request Body: ${bodyText}`
-              // );
-
               storeRequestsMap(requestId, {
                 body: JSON.parse(bodyText),
               });
@@ -1088,7 +1019,6 @@ export const pageDecodeMsgListener = async (
         if (dataSource === 'chatgpt') {
           console.log('onCompletedFn', dataSource, details);
           // chatgpt has only one requestUrl
-          // await extraRequestFn();// For simplified version comments
           console.log('setUIStep-toVerify');
           sendMsgToDataSourcePage({
             type: 'pageDecode',
@@ -1155,7 +1085,6 @@ export const pageDecodeMsgListener = async (
         if (tabId === dataSourcePageTabId) {
           chrome.runtime.sendMessage({
             type: 'pageDecode',
-            // name: 'abortAttest',
             name: 'stop',
           });
           dataSourcePageTabId = null;
@@ -1219,18 +1148,6 @@ export const pageDecodeMsgListener = async (
         method: 'getAttestation',
         params: JSON.parse(JSON.stringify(aligorithmParams)),
       });
-      // if (!activeTemplate.sdkVersion) {
-      //   const { constructorF } = DATASOURCEMAP[dataSource];
-      //   if (constructorF) {
-      //     const ex = new constructorF();
-      //     // const storageRes = await chrome.storage.local.get([dataSource]);
-      //     // const hadConnectedCurrDataSource = !!storageRes[dataSource];
-      //     await storeDataSource(dataSource, ex, port, {
-      //       withoutMsg: true,
-      //       attestationRequestid: aligorithmParams.requestid,
-      //     });
-      //   }
-      // }
     }
 
     if (name === 'close' || name === 'cancel') {

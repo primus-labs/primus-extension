@@ -13,12 +13,10 @@ const sendMsgToDevconsole = async (msg) => {
   }
 };
 const removeRequestsMap = async (url) => {
-  // console.log('requestsMap-remove', url);
   delete requestsMap[url];
 };
 const storeRequestsMap = async (url, urlInfo) => {
   const lastStoreRequestObj = requestsMap[url] || {};
-  // console.log('requestsMap-store', url, lastStoreRequestObj, urlInfo);
   const urlInfoHeaders = urlInfo?.headers;
   if (
     urlInfoHeaders &&
