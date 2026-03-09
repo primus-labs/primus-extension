@@ -1,8 +1,7 @@
 import { eventReport } from '@/services/api/usertracker';
 import { pageDecodeMsgListener } from './pageDecode/index.js';
-import { postMsg, strToHexSha256 } from '@/utils/utils';
+import { postMsg } from '@/utils/utils';
 import { regenerateAttest } from './padoZKAttestationJSSDK/utils';
-import { padoExtensionVersion } from '@/config/constants';
 import { addSDKParamsToReportParamsFn } from './utils/reportEvent.js';
 import { getErrorMsgTitleFn } from './utils/handleError.js';
 import { sendInitAttestationRes } from './utils/msgTransfer.js';
@@ -162,7 +161,7 @@ export const algorithmMsgListener = async (
       if (!message.res) {
         return;
       }
-      const { retcode, content, retdesc, details, isUserClick } = JSON.parse(
+      const { retcode, content, details, isUserClick } = JSON.parse(
         message.res
       );
       if (isUserClick === 'true') {
@@ -425,10 +424,9 @@ export const algorithmMsgListener = async (
           }
         } else if (retcode === '2') {
           const {
-            errlog: { code, desc },
+            errlog: { code },
           } = details;
           processAlgorithmReq({ reqMethodName: 'stop' });
-          var eventInfoMsg = 'Something went wrong';
           let title = errorMsgTitle;
           let msgObj = {
             type: 'warn',

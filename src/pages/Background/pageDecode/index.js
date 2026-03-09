@@ -5,13 +5,11 @@ import {
 import { PADOSERVERURL } from '@/config/envConstants';
 import { padoExtensionVersion } from '@/config/constants';
 import { eventReport } from '@/services/api/usertracker';
-import customFetch from '../utils/request';
 import {
   isObject,
   parseCookie,
   isUrlWithQueryFn,
   checkIsRequiredUrl,
-  getErrorMsgFn,
   sendMsgToTab,
 } from '../utils/utils';
 import { addSDKParamsToReportParamsFn } from '../utils/reportEvent.js';
@@ -110,7 +108,6 @@ const resetVarsFn = () => {
 const handlerForSdk = async (processAlgorithmReq, operation) => {
   const {
     padoZKAttestationJSSDKBeginAttest,
-    padoZKAttestationJSSDKDappTabId: dappTabId,
   } = await chrome.storage.local.get([
     'padoZKAttestationJSSDKBeginAttest',
     'padoZKAttestationJSSDKDappTabId',
@@ -151,55 +148,6 @@ const handlerForSdk = async (processAlgorithmReq, operation) => {
   }
 };
 
-const extraRequestFn = async () => {
-  // { currentWindow: true }
-  const tabs = await chrome.tabs.query({});
-  const dataSourcePageTabObj = tabs.find((i) => i.id === dataSourcePageTabId);
-  const pathname = new URL(dataSourcePageTabObj.url).pathname;
-  const arr = pathname.split('/');
-  const chatgptQuestionSessionId = arr[arr.length - 1];
-  const requestUrl = 'https://chatgpt.com/backend-api/conversation';
-  const fullRequestUrl = `${requestUrl}/${chatgptQuestionSessionId}`;
-
-  // const storageRes = await chrome.storage.local.get(requestUrl);
-  const storageRes = requestsMap;
-  const activeInfo = Object.values(storageRes).find(
-    (i) => i.url === requestUrl
-  );
-  try {
-    const requestRes = await customFetch(fullRequestUrl, {
-      method: 'GET',
-      // headers: JSON.parse(storageRes[requestUrl]).headers,
-      headers: activeInfo.headers,
-    });
-
-    const messageIds = [];
-    Object.keys(requestRes.mapping).forEach((mK) => {
-      const parts = requestRes.mapping[mK]?.message?.content?.parts;
-      if (parts && parts[0]) {
-        messageIds.push(mK);
-      }
-    });
-    const obj = {
-      request: {
-        url: fullRequestUrl,
-        method: 'GET',
-        headers: {
-          host: 'chatgpt.com',
-        },
-      },
-      response: {
-        messageIds,
-      },
-    };
-    chrome.storage.local.set({
-      [`${requestUrl}-extra`]: JSON.stringify(obj),
-    });
-    RequestsHasCompleted = true;
-  } catch (e) {
-    console.log('fetch chatgpt conversation error', e);
-  }
-};
 const eventReportGenerateFn = async (rawData) => {
   var eventInfo = {
     eventType: 'ATTESTATION_GENERATE',
@@ -269,11 +217,6 @@ const handleDataSourcePageDialogTimeout = async (processAlgorithmReq) => {
         !reportRequestIds.includes(parsedActiveRequestAttestation.requestid)
       ) {
         reportRequestIds.push(parsedActiveRequestAttestation.requestid);
-        const userAddress = parsedActiveRequestAttestation?.ext
-          ?.appSignParameters
-          ? JSON.parse(parsedActiveRequestAttestation.ext.appSignParameters)
-              .userAddress
-          : '';
         // TODO-event
         // rawData = {
         //   source: parsedActiveRequestAttestation.dataSourceId,
@@ -370,7 +313,7 @@ export const pageDecodeMsgListener = async (
   hasGetTwitterScreenName,
   processAlgorithmReq
 ) => {
-  const { name, params, operation } = request;
+  const { name, params } = request;
   console.log('pageDecodeMsgListener');
   if (name === 'init') {
     activeTemplate = {};
@@ -379,7 +322,6 @@ export const pageDecodeMsgListener = async (
   }
   if (activeTemplate.dataSource) {
     let {
-      dataSource,
       jumpTo,
       datasourceTemplate: { requests },
     } = activeTemplate;
@@ -387,12 +329,7 @@ export const pageDecodeMsgListener = async (
     const checkSDKTargetRequestFn = async (requestId, templateRequestUrl) => {
       const {
         datasourceTemplate: { requests, responses },
-        additionParamsObj,
-        extendedParams,
       } = activeTemplate;
-      const extendedParamsObj = extendedParams
-        ? JSON.parse(extendedParams)
-        : {};
 
       const thisRequestUrlIdx = requests.findIndex(
         (r) => r.url === templateRequestUrl
@@ -489,7 +426,7 @@ export const pageDecodeMsgListener = async (
       const checkReadyStatusFn = async () => {
         let {
           dataSource,
-          datasourceTemplate: { requests, responses },
+          datasourceTemplate: { requests },
           sdkVersion,
         } = activeTemplate;
 
@@ -655,7 +592,7 @@ export const pageDecodeMsgListener = async (
           continue;
         }
 
-        let { headers, cookies, body, urlType } = r;
+        let { headers, cookies, body } = r;
         // let formatUrlKey = url;
         let targetRequestId = '';
         if (sdkVersion) {
@@ -839,7 +776,7 @@ export const pageDecodeMsgListener = async (
       });
       preAlgorithmFlag = true;
     };
-    listenerFn = async (message, sender, sendResponse) => {
+    listenerFn = async (message, _sender, _sendResponse) => {
       const { padoZKAttestationJSSDKBeginAttest } =
         await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
       if (padoZKAttestationJSSDKBeginAttest) {
@@ -874,7 +811,7 @@ export const pageDecodeMsgListener = async (
                 }
               }
               if (resMethodName === 'getAttestationResult') {
-                const { retcode, content, retdesc, details, isUserClick } =
+                const { retcode, details } =
                   JSON.parse(message.res);
 
                 if (retcode === '1') {
@@ -962,7 +899,6 @@ export const pageDecodeMsgListener = async (
           jumpTo,
           datasourceTemplate: { requests },
           sdkVersion,
-          attTemplateID,
         } = activeTemplate;
 
         const {
@@ -1100,7 +1036,6 @@ export const pageDecodeMsgListener = async (
         const { url: currRequestUrl, requestBody, requestId } = subDetails;
 
         removeRequestsMap(requestId);
-        let formatUrlKey = currRequestUrl;
         const isTarget = requests.some((r) => {
           if (r.name === 'first') {
             return false;
@@ -1206,7 +1141,7 @@ export const pageDecodeMsgListener = async (
       };
 
       checkWebRequestIsReadyFn();
-      chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+      chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, _tab) => {
         if (
           tabId === dataSourcePageTabId &&
           (changeInfo.url || changeInfo.title)
@@ -1216,7 +1151,7 @@ export const pageDecodeMsgListener = async (
         }
       });
 
-      chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
+      chrome.tabs.onRemoved.addListener(async (tabId, _removeInfo) => {
         if (tabId === dataSourcePageTabId) {
           chrome.runtime.sendMessage({
             type: 'pageDecode',

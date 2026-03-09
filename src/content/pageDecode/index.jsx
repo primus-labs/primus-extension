@@ -19,16 +19,10 @@ console.log(
   sessionStorage.getItem('padoAttestRequestStatus')
 );
 let activeRequest;
-let operationType;
 let PADOSERVERURL;
 let padoExtensionVersion;
 let activeRequestid;
-function removeStorageValuesFn() {
-  sessionStorage.removeItem('padoAttestRequestStatus');
-  sessionStorage.removeItem('padoAttestRequestReady');
-  activeRequest = null;
-  operationType = null;
-}
+let operationType;
 
 function PadoCard() {
   const [UIStep, setUIStep] = useState('loading');
@@ -69,10 +63,10 @@ function PadoCard() {
     }
   }, []);
   useEffect(() => {
-    const listenerFn = (request, sender, sendResponse) => {
+    const listenerFn = (request, _sender, _sendResponse) => {
       var {
         name,
-        params: { result, failReason, isReady, step },
+        params: { result, failReason, step },
       } = request;
       if (name === 'setUIStep') {
         console.log('content receive:setUIStep');
@@ -192,9 +186,9 @@ function PadoCard() {
             'padoAttestRequestErrorTxt',
             JSON.stringify(errorObj)
           );
-          setStatus((s) => 'result');
-          setResultStatus((s) => 'warn');
-          setErrorTxt((s) => errorObj);
+          setStatus(() => 'result');
+          setResultStatus(() => 'warn');
+          setErrorTxt(() => errorObj);
 
           var msgObj = {
             type: 'pageDecode',
@@ -294,7 +288,7 @@ chrome.runtime.sendMessage(
     type: 'pageDecode',
     name: 'initCompleted', // diff
   },
-  (response, a, b) => {
+  (response, _a, _b) => {
     if (response.name === 'append') {
       console.log('content_scripts-content-decode receive:append');
       // hide in login page

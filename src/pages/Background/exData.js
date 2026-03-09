@@ -104,7 +104,7 @@ const getExchange = async (message, USERPASSWORD, port) => {
 const processNetworkReq = async (message, port, USERPASSWORD) => {
   var {
     type,
-    params: { apiKey, secretKey, passphase, name, exData, label, withoutMsg },
+    params: { apiKey, label, withoutMsg },
   } = message;
   const exchangeName = type.split('-')[1];
   if (type.startsWith('set-')) {
@@ -204,7 +204,6 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     hasFirstReq: 'true', // default  false
   };
   let calculationType;
-  const sourceUpperCaseName = source.toUpperCase();
   if (type === 'ASSETS_PROOF') {
     params.baseValue = baseValue;
     calculationType = `SUM_OF_ALL`;

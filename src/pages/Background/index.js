@@ -12,10 +12,7 @@ import { getCurrentDate, postMsg, sub } from '@/utils/utils';
 import { addSDKParamsToReportParamsFn } from './utils/reportEvent.js';
 import { sendInitAttestationRes } from './utils/msgTransfer.js';
 
-import {
-  SocailStoreVersion,
-  padoExtensionVersion,
-} from '@/config/constants';
+import { SocailStoreVersion } from '@/config/constants';
 import {
   default as processExReq,
   clear,
@@ -83,7 +80,7 @@ const creatUserInfo = async () => {
     }
   }
 };
-chrome.runtime.onInstalled.addListener(async ({ reason, version }) => {
+chrome.runtime.onInstalled.addListener(async ({ reason, version: _version }) => {
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
     // showIndex();
     creatUserInfo();
@@ -202,8 +199,6 @@ const processAlgorithmReq = async (message, port) => {
         USERPASSWORD,
         port
       );
-      const { padoZKAttestationJSSDKBeginAttest } =
-        await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
       const f = { ...attestationParams };
       await chrome.storage.local.set({
         activeRequestAttestation: JSON.stringify(f),
@@ -303,7 +298,7 @@ const processpadoServiceReq = async (message, port) => {
         break;
       case 'checkIsLogin':
         if (rc === 0) {
-          const { dataInfo, userInfo } = result;
+          const { dataInfo } = result;
           const lowerCaseSourceName = params.source.toLowerCase();
           let storageRes = await chrome.storage.local.get(lowerCaseSourceName);
           const lastData = storageRes[lowerCaseSourceName];
@@ -363,7 +358,7 @@ const processpadoServiceReq = async (message, port) => {
       case 'refreshAuthData':
         if (rc === 0) {
           const lowerCaseSourceName = params.source.toLowerCase();
-          const { dataInfo, userInfo } = result;
+          const { dataInfo } = result;
 
           let storageRes = await chrome.storage.local.get(lowerCaseSourceName);
           const lastData = storageRes[lowerCaseSourceName];
@@ -429,7 +424,6 @@ const processWalletReq = async (message, port) => {
     reqMethodName,
     params: { password },
   } = message;
-  let transferMsg;
   const { keyStore } = await chrome.storage.local.get(['keyStore']);
   switch (reqMethodName) {
     case 'decrypt':

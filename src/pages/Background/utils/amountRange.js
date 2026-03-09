@@ -69,7 +69,7 @@ export function getLevelObj(num, rulesArr) {
 
   // Iterate through configuration to find matching level
   for (const rule of rulesArr) {
-    const { min, max, startIntervalType, endIntervalType, level } = rule;
+    const { min, max, startIntervalType, endIntervalType } = rule;
     if (
       min === undefined ||
       startIntervalType === undefined ||

@@ -2,7 +2,7 @@ import { BNBGREENFIELDURL } from '@/config/envConstants';
 let tabCreatedByPado;
 let currExtentionId;
 
-export const PadoWebsiteMsgListener = async (request, sender, sendResponse) => {
+export const PadoWebsiteMsgListener = async (request, sender, _sendResponse) => {
   const { name, params } = request;
   const { operation } = params;
   if (name === 'upperChain') {
@@ -16,7 +16,7 @@ export const PadoWebsiteMsgListener = async (request, sender, sendResponse) => {
       chrome.tabs.sendMessage(
         tabCreatedByPado.id,
         request,
-        function (response) {}
+        function (_response) {}
       );
     } else if (operation === 'completeUpperChain') {
       setTimeout(async () => {

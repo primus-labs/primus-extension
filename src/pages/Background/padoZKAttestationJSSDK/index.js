@@ -20,7 +20,7 @@ const fetchAttestationTemplateList = async () => {
     const fetchRes = await getProofTypes({
       type: 'web_cred',
     });
-    const { rc, mc, result } = fetchRes;
+    const { rc, result } = fetchRes;
     if (rc === 0) {
       await chrome.storage.local.set({
         webProofTypes: JSON.stringify(result),
@@ -286,16 +286,9 @@ export const padoZKAttestationJSSDKMsgListener = async (
               const { responseTemplate } = curr;
               const subconditions = responseTemplate.reduce((prevS, currS) => {
                 const {
-                  resolver: { type, expression },
-                  valueType,
-                  fieldType,
+                  resolver: { expression },
                   feilds: [{ key }],
                 } = currS;
-                const opMap = {
-                  string: 'REVEAL_STRING',
-                  number: 'REVEAL_STRING',
-                  boolean: 'REVEAL_STRING',
-                };
                 let subconditionItem = {
                   field: expression,
                   // op: opMap[feilds[0].DataType] || 'REVEAL_STRING', // TODO ">"
@@ -510,10 +503,9 @@ export const padoZKAttestationJSSDKMsgListener = async (
     if (sdkParams.attestationTypeID === '101') {
       return;
     }
-    const { configMap, padoZKAttestationJSSDKAttestationPresetParams } =
+    const { configMap } =
       await chrome.storage.local.get([
         'configMap',
-        'padoZKAttestationJSSDKAttestationPresetParams',
       ]);
     let attestTipMap = {};
     if (
@@ -524,9 +516,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
       attestTipMap = JSON.parse(JSON.parse(configMap).ATTESTATION_PROCESS_NOTE);
     }
 
-    const activeAttestationParams = JSON.parse(
-      padoZKAttestationJSSDKAttestationPresetParams
-    );
     const errorMsgTitle = await getErrorMsgTitleFn();
 
     const code = '00002';
@@ -713,7 +702,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
   }
 };
 
-chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
+chrome.tabs.onRemoved.addListener(async (tabId, _removeInfo) => {
   const {
     padoZKAttestationJSSDKBeginAttest,
     padoZKAttestationJSSDKDappTabId: dappTabId,

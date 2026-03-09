@@ -112,7 +112,7 @@ export const checkResIsMatchConditionFn = (
       if (jpItem?.op === 'MATCH_ONE') {
         const {
           field: fatherJsonPath,
-          subconditions: [{ type, op, field: sonJsonpath, value }],
+          subconditions: [{ op, field: sonJsonpath }],
         } = jpItem;
         const firstJsonPath = fatherJsonPath?.split('[*]+')?.[0];
         const lastJsonpath = sonJsonpath.split('+')[1];

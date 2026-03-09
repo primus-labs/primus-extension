@@ -63,7 +63,6 @@ export const regenerateAttest = async (orginAttestation, chainName) => {
     type,
     dataToBeSigned,
     source,
-    rawParam,
     extendedData,
   } = orginAttestation;
   const requestParams = {

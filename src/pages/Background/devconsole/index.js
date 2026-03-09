@@ -35,6 +35,7 @@ const storeRequestsMap = async (url, urlInfo) => {
 };
 const extraRequestFn = async (params) => {
   try {
+    // eslint-disable-next-line no-unused-vars -- omit from requestParams
     const { locationPageUrl, requestId, ...requestParams } = params;
     const requestRes = await customFetch2(requestParams);
     if (typeof requestRes === 'object' && requestRes !== null) {
@@ -55,9 +56,9 @@ const extraRequestFn = async (params) => {
 export const devconsoleMsgListener = async (
   request,
   sender,
-  sendResponse,
-  password,
-  port
+  _sendResponse,
+  _password,
+  _port
 ) => {
   const { name, params } = request;
 
@@ -88,7 +89,6 @@ export const devconsoleMsgListener = async (
       }
       if (['xmlhttprequest', 'fetch'].includes(type) && method !== 'OPTIONS') {
         // console.log('444-onBeforeSendHeadersFn-details', details);
-        let formatUrlKey = currRequestUrl;
         let locationPageUrl = '';
         let formatHeader = requestHeaders.reduce((prev, curr) => {
           const { name, value } = curr;
@@ -126,7 +126,6 @@ export const devconsoleMsgListener = async (
     };
     onBeforeRequestFn = async (subDetails) => {
       const {
-        url: currRequestUrl,
         requestBody,
         type,
         tabId,
@@ -142,7 +141,6 @@ export const devconsoleMsgListener = async (
         return;
       }
       if (['xmlhttprequest', 'fetch'].includes(type) && method !== 'OPTIONS') {
-        let formatUrlKey = currRequestUrl;
         if (requestBody && requestBody.raw) {
           const rawBody = requestBody.raw[0];
           if (rawBody && rawBody.bytes) {
@@ -189,7 +187,7 @@ export const devconsoleMsgListener = async (
         params: checkDataSourcePageTabUrls,
       });
     }
-    chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
+    chrome.tabs.onRemoved.addListener((tabId, _removeInfo) => {
       if (tabId === checkDataSourcePageTabId) {
         console.log('devconsole-user close data source page');
         chrome.runtime.sendMessage({

@@ -19,7 +19,7 @@ window.addEventListener('message', (e) => {
   }
 });
 
-chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async (message, _sender, _sendResponse) => {
   const { type, name, params } = message;
   if (type === 'devconsole') {
     console.log('devconsole-content-listen-chrome-message', name, message);

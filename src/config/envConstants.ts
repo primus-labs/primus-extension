@@ -728,7 +728,7 @@ export const updateAlgoUrl = async () => {
     let isInited = false;
     res.result.forEach((item: any) => {
       let ws = new WebSocket(`wss://${item.algoProxyDomain}/algoproxy`);
-      ws.onopen = async function (e) {
+      ws.onopen = async function (_e) {
         console.log('updateAlgoUrl onopen url=', item.algoProxyDomain);
         if (!isInited) {
           console.log('updateAlgoUrl onopen update url new');
