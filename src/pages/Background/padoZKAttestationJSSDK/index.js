@@ -2,16 +2,13 @@ import { v4 as uuidv4 } from 'uuid';
 import { getSysConfig, getProofTypes } from '@/services/api/config';
 import { eventReport } from '@/services/api/usertracker';
 import { queryTemplateById } from '@/services/api/devconsole';
-import { ALLVERIFICATIONCONTENTTYPEEMAP } from '@/config/attestation';
 import { updateAlgoUrl } from '@/config/envConstants';
 import { pageDecodeMsgListener } from '../pageDecode/index.js';
-import { attestBrevisFn } from './brevis';
 import { schemaNameFn, getAlgoApi } from './utils';
 
 import { CURENV, ONCHAINLIST, EASINFOMAP } from '@/config/chain';
 import { STARTOFFLINETIMEOUT } from '@/config/constants';
 import { getErrorMsgTitleFn } from '../utils/handleError.js';
-import { addSDKParamsToReportParamsFn } from '../utils/reportEvent.js';
 
 let hasGetTwitterScreenName = false;
 let sdkParams = {};
@@ -464,167 +461,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
           name: 'getAttestationRes',
           params: resParams,
         });
-      }
-    } else {
-      walletAddress = params.walletAddress;
-      sdkParams = params;
-      const {
-        attestationTypeID,
-        dappSymbol,
-        attestationParameters,
-        algorithmType,
-      } = params;
-      chainName = params.chainName;
-
-      const { webProofTypes } = await chrome.storage.local.get([
-        'webProofTypes',
-      ]);
-      let webProofTypesList = [];
-      if (webProofTypes) {
-        webProofTypesList = JSON.parse(webProofTypes);
-      } else {
-        await fetchAttestationTemplateList();
-        const { webProofTypes } = await chrome.storage.local.get([
-          'webProofTypes',
-        ]);
-        webProofTypesList = JSON.parse(webProofTypes);
-      }
-
-      activeWebProofTemplate = webProofTypesList.find(
-        (i) => i.id === attestationTypeID
-      );
-      let verificationContent = '';
-      let verificationValue;
-
-      let acc = '';
-
-      if (attestationTypeID === '101') {
-        verificationContent = '3';
-        verificationValue = 'since 2024 July';
-        acc = walletAddress;
-        activeAttestationParams = {
-          dataSourceId: 'web3 wallet',
-          verificationContent,
-          verificationValue,
-          fetchType: 'Web',
-          attestOrigin: dappSymbol,
-          account: walletAddress,
-          attestationType: 'On-chain Transactions',
-          fetchType: 'API',
-          requestid,
-          signature: attestationParameters[0],
-          timestamp: attestationParameters[1],
-          chainName,
-        };
-        attestBrevisFn(activeAttestationParams, dappTabId);
-      } else {
-        verificationContent = Object.keys(ALLVERIFICATIONCONTENTTYPEEMAP).find(
-          (k) => {
-            const obj = ALLVERIFICATIONCONTENTTYPEEMAP[k];
-            const { name } = activeWebProofTemplate;
-            if (
-              [
-                'Assets Proof',
-                'Token Holding',
-                'X Followers',
-                'Spot 30-Day Trade Vol',
-              ].includes(name)
-            ) {
-              return name === obj.value;
-            }
-            return name === obj.label || name === obj.templateName;
-          }
-        );
-
-        if (verificationContent === 'KYC Status') {
-          verificationValue = 'Basic Verification';
-        } else if (verificationContent === 'Account ownership') {
-          verificationValue = 'Account owner';
-        } else if (verificationContent === 'Assets Proof') {
-          verificationValue = attestationParameters[0];
-        } else if (verificationContent === 'Token Holding') {
-          verificationValue = attestationParameters[0];
-        } else if (verificationContent === 'X Followers') {
-          verificationValue = attestationParameters[0];
-          await chrome.storage.local.set({
-            padoZKAttestationJSSDKXFollowerCount: verificationValue,
-          });
-        } else if (verificationContent === 'Spot 30-Day Trade Vol') {
-          verificationValue = attestationParameters[0];
-        } else if (attestationTypeID === '19') {
-          verificationValue = 'Defined input';
-        }
-
-        activeAttestationParams = {
-          dataSourceId: activeWebProofTemplate.dataSource,
-          verificationContent,
-          verificationValue,
-          fetchType: 'Web',
-          attestOrigin: dappSymbol,
-          algorithmType,
-        };
-
-        // acc = await getDataSourceAccount(activeAttestationParams.dataSourceId);
-        acc = '';
-        activeAttestationParams.account = acc;
-
-        if (
-          ['Assets Proof', 'Token Holding', 'Spot 30-Day Trade Vol'].includes(
-            verificationContent
-          )
-        ) {
-          activeAttestationParams.attestationType = 'Assets Verification';
-          const responses = activeWebProofTemplate.datasourceTemplate.responses;
-          const lastResponse = responses[responses.length - 1];
-          const lastResponseConditions = lastResponse.conditions;
-          const lastResponseConditionsSubconditions =
-            lastResponseConditions.subconditions;
-
-          if (
-            ['Assets Proof', 'Spot 30-Day Trade Vol'].includes(
-              activeAttestationParams.verificationContent
-            )
-          ) {
-            // change verification value
-            lastResponseConditions.value =
-              activeAttestationParams.verificationValue;
-            // for okx
-            if (lastResponseConditionsSubconditions) {
-              const lastSubCondition =
-                lastResponseConditionsSubconditions[
-                  lastResponseConditionsSubconditions.length - 1
-                ];
-              lastSubCondition.value =
-                activeAttestationParams.verificationValue;
-            }
-          } else if (
-            activeAttestationParams.verificationContent === 'Token Holding'
-          ) {
-            if (lastResponseConditionsSubconditions) {
-              const firstSubCondition = lastResponseConditionsSubconditions[0];
-              firstSubCondition.value =
-                activeAttestationParams.verificationValue;
-              firstSubCondition.subconditions[0].value =
-                activeAttestationParams.verificationValue;
-            }
-          }
-        } else if (
-          ['KYC Status', 'Account ownership'].includes(verificationContent)
-        ) {
-          activeAttestationParams.attestationType = 'Humanity Verification';
-        } else if (['X Followers'].includes(verificationContent)) {
-          activeAttestationParams.attestationType = 'Social Connections';
-          activeWebProofTemplate.datasourceTemplate.responses[1].conditions.subconditions[1].value =
-            attestationParameters[0];
-        } else if (attestationTypeID === '19') {
-          activeAttestationParams.attestationType = 'Humanity Verification';
-          if (attestationParameters && attestationParameters[0]) {
-            activeAttestationParams.chatGPTExpression = {
-              expression: attestationParameters[1] || 'EQUALS', //CONTAINS OR EQUALS
-              value: attestationParameters[0],
-            };
-          }
-        }
       }
     }
 
