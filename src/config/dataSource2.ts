@@ -1,23 +1,3 @@
-import iconDataSourceBinance from '@/assets/img/iconDataSourceBinance.svg';
-import iconDataSourceTwitter from '@/assets/img/iconDataSourceX.svg';
-import iconDataSourceOKX from '@/assets/img/iconDataSourceOKX.svg';
-import iconDataSourceKucoin from '@/assets/img/iconDataSourceKucoin.svg';
-import iconDataSourceCoinbase from '@/assets/img/iconDataSourceCoinbase.png';
-import iconDataSourceHuobi from '@/assets/img/iconDataSourceHuobi.svg';
-import iconDataSourceHuobiWithCircle from '@/assets/img/iconDataSourceHuobiWithCircle.svg';
-import iconDataSourceGate from '@/assets/img/iconDataSourceGate.svg';
-import iconDataSourceBitget from '@/assets/img/iconDataSourceBitget.svg';
-import iconDataSourceBybit from '@/assets/img/iconDataSourceBybit.svg';
-import iconDataSourceMEXC from '@/assets/img/iconDataSourceMEXC.png';
-import iconDataSourceGithub from '@/assets/img/iconDataSourceGithub.svg';
-import iconDataSourceDiscord from '@/assets/img/iconDataSourceDiscord.png';
-import iconDataSourceYoutube from '@/assets/img/iconDataSourceYoutube.svg';
-import iconDataSourceZan from '@/assets/img/iconDataSourceZan.svg';
-import iconDataSourceOnChainAssets from '@/assets/img/iconDataSourceOnChainAssets.svg';
-import iconDataSourceGoogle from '@/assets/img/iconGoogle.svg';
-import iconDataSourceTikTok from '@/assets/img/iconDataSourceTikTok.png';
-import iconDataSourceChatgpt from '@/assets/img/iconDataSourceChatgpt.svg';
-
 // import Binance from '@/services/webdata/webexchange/webbinance';
 
 // import OKX from '@/services/webdata/webexchange/webokx';
@@ -45,7 +25,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     id: 'web3 wallet',
     name: 'Web3 Wallet',
     type: 'Assets',
-    icon: iconDataSourceOnChainAssets,
+    icon: undefined,
     desc: 'Support fetching token & NFT assets data for management and attestation creation.',
     unConnectTip:
       'You can fetch token & NFT assets data from your Web3 Wallet to manage your assets or create attestations.',
@@ -55,7 +35,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     id: 'x',
     name: 'X',
     type: 'Social',
-    icon: iconDataSourceTwitter,
+    icon: undefined,
     desc: 'Support fetching tweet & followers data for management and attestation creation.',
     // provider: 'Alex',
     unConnectTip:
@@ -67,7 +47,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     id: 'discord',
     name: 'Discord',
     type: 'Social',
-    icon: iconDataSourceDiscord,
+    icon: undefined,
     desc: 'Support fetching account name & status data for management and attestation creation.',
     unConnectTip:
       'You can fetch user account name & status data from your Discord account to manage your data or create attestations.',
@@ -78,7 +58,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     id: 'tiktok',
     name: 'TikTok',
     type: 'Social',
-    icon: iconDataSourceTikTok,
+    icon: undefined,
     desc: 'Support fetching account name & status data for management and attestation creation.',
     unConnectTip:
       'You can fetch account name & status data from your TikTok account to manage your data or create attestations.',
@@ -90,7 +70,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     id: 'binance',
     name: 'Binance',
     type: 'Assets',
-    icon: iconDataSourceBinance,
+    icon: undefined,
     desc: 'Support fetching spot & flexible account assets data for management and attestation creation.',
     unConnectTip:
       'You can fetch spot & flexible account assets data from your Binance account to manage your assets or create attestations.',
@@ -105,7 +85,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     id: 'okx',
     name: 'OKX',
     type: 'Assets',
-    icon: iconDataSourceOKX,
+    icon: undefined,
     desc: 'Support fetching trading account assets data for management and attestation creation.',
     unConnectTip:
       'You can fetch trading account assets data from your OKX account to manage your data or create attestations.',
@@ -120,7 +100,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     id: 'coinbase',
     name: 'Coinbase',
     type: 'Assets',
-    icon: iconDataSourceCoinbase,
+    icon: undefined,
     desc: 'Support fetching spot account assets data for management and attestation creation.',
     unConnectTip:
       'You can fetch spot account assets data from your Coinbase account to manage your data or create attestations.',
@@ -136,7 +116,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     id: 'google',
     name: 'Google Account',
     type: 'Social',
-    icon: iconDataSourceGoogle,
+    icon: undefined,
     desc: 'Support fetching account name & email address data for management and attestation creation.',
     unConnectTip:
       'You can fetch account name & email address data from your Google account to manage your data or create attestations.',
@@ -148,7 +128,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     id: 'github',
     name: 'Github',
     type: 'Social',
-    icon: iconDataSourceGithub,
+    icon: undefined,
     desc: 'Support fetching user profile data for management and attestation creation.',
     unConnectTip:
       'You can fetch user profile data from your Github account to manage your data or create attestations.',
@@ -173,11 +153,11 @@ export const DATASOURCEMAP: DataSourceMapType = {
     id: 'huobi',
     name: 'Huobi',
     type: 'Assets',
-    icon: iconDataSourceHuobi,
+    icon: undefined,
     desc: 'Support fetching spot account assets data for management and attestation creation.',
     unConnectTip:
       'You can fetch spot account data from your Huobi account to manage your data or create attestations.',
-    iconWithCircle: iconDataSourceHuobiWithCircle,
+    iconWithCircle: undefined,
     requirePassphase: false,
     // constructorF: Huobi,
     baseName: 'api.huobi.pro',
@@ -188,7 +168,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     id: 'bybit',
     name: 'Bybit',
     type: 'Assets',
-    icon: iconDataSourceBybit,
+    icon: undefined,
     desc: 'Support fetching spot account assets data for management and attestation creation.',
     unConnectTip:
       'You can fetch spot account data from your Bybit account to manage your data or create attestations.',
@@ -203,7 +183,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     id: 'kucoin',
     name: 'KuCoin',
     type: 'Assets',
-    icon: iconDataSourceKucoin,
+    icon: undefined,
     desc: 'Support fetching spot account assets data for management and attestation creation.',
     unConnectTip:
       'You can fetch spot account data from your KuCoin account to manage your data or create attestations.',
@@ -218,7 +198,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     id: 'gate',
     name: 'Gate',
     type: 'Assets',
-    icon: iconDataSourceGate,
+    icon: undefined,
     desc: 'Support fetching spot account assets data for management and attestation creation.',
     unConnectTip:
       'You can fetch spot account data from your Gate account to manage your data or create attestations.',
@@ -232,7 +212,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     id: 'mexc',
     name: 'MEXC',
     type: 'Assets',
-    icon: iconDataSourceMEXC,
+    icon: undefined,
     desc: 'Support fetching spot account assets data for management and attestation creation.',
     unConnectTip:
       'You can fetch spot account data from your MEXC account to manage your data or create attestations.',
@@ -246,7 +226,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     id: 'zan',
     name: 'ZAN',
     type: 'Identity',
-    icon: iconDataSourceZan,
+    icon: undefined,
     desc: 'Support fetching basic identity and KYC verification status data for management and attestation creation.',
     unConnectTip:
       'You can fetch basic identity and KYC verification status data from ZAN’s service to manage your data or create attestations.',
@@ -260,7 +240,7 @@ export const DATASOURCEMAP: DataSourceMapType = {
     id: 'chatgpt',
     name: 'ChatGPT',
     type: 'Social',
-    icon: iconDataSourceChatgpt,
+    icon: undefined,
     desc: '',
     unConnectTip: '',
     connectType: 'Web',

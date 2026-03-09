@@ -1,18 +1,3 @@
-import iconAttestationTypeAssets from '@/assets/newImg/zkAttestation/iconAttestationTypeAssets.svg';
-import iconAttestationTypeSocial from '@/assets/newImg/zkAttestation/iconAttestationTypeSocial.svg';
-import iconAttestationTypeIdentity from '@/assets/newImg/zkAttestation/iconAttestationTypeIdentity.svg';
-import iconAttestationTypeOnChain from '@/assets/newImg/zkAttestation/iconAttestationTypeOnChain.svg';
-import iconAttestationTypeQualification from '@/assets/newImg/zkAttestation/iconAttestationTypeQualification.svg';
-import iconAttestationTypeGame from '@/assets/newImg/zkAttestation/iconAttestationTypeGame.svg';
-import iconAttestationTypeAIGC from '@/assets/newImg/zkAttestation/iconAttestationTypeAIGC.svg';
-import iconAttestationTypeAssetsForDark from '@/assets/newImg/zkAttestation/iconAttestationTypeAssetsForDark.svg';
-import iconAttestationTypeSocialForDark from '@/assets/newImg/zkAttestation/iconAttestationTypeSocialForDark.svg';
-import iconAttestationTypeIdentityForDark from '@/assets/newImg/zkAttestation/iconAttestationTypeIdentityForDark.svg';
-import iconAttestationTypeOnChainForDark from '@/assets/newImg/zkAttestation/iconAttestationTypeOnChainForDark.svg';
-import iconAttestationTypeQualificationForDark from '@/assets/newImg/zkAttestation/iconAttestationTypeQualificationForDark.svg';
-import iconAttestationTypeGameForDark from '@/assets/newImg/zkAttestation/iconAttestationTypeGameForDark.svg';
-import iconAttestationTypeAIGCForDark from '@/assets/newImg/zkAttestation/iconAttestationTypeAIGCForDark.svg';
-
 import type {
   ATTESTATIONTYPEITEMTYPE,
   ASSETSVERIFICATIONCONTENTTYPEITEM,
@@ -179,10 +164,7 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
   'Assets Verification': {
     id: 'Assets Verification',
     name: 'Assets Verification',
-    icon: {
-      dark: iconAttestationTypeAssetsForDark,
-      light: iconAttestationTypeAssets,
-    },
+    icon: undefined,
     color: 'yellow',
     childMap: ASSETSVERIFICATIONCONTENTTYPEEMAP,
     chartBarColor: '#FFB700',
@@ -193,10 +175,7 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
   'Humanity Verification': {
     id: 'Humanity Verification',
     name: 'Humanity Verification',
-    icon: {
-      dark: iconAttestationTypeIdentityForDark,
-      light: iconAttestationTypeIdentity,
-    },
+    icon: undefined,
     color: 'gray',
     childMap: HUMANITYVERIFICATIONCONTENTTYPEMAP,
     chartBarColor: '#7B889B',
@@ -206,10 +185,7 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
   'Social Connections': {
     id: 'Social Connections',
     name: 'Social Connections',
-    icon: {
-      dark: iconAttestationTypeSocialForDark,
-      light: iconAttestationTypeSocial,
-    },
+    icon: undefined,
     color: 'teal',
     childMap: SOCIALVERIFICATIONCONTENTTYPEEMAP,
     chartBarColor: '#08BDBA',
@@ -219,10 +195,7 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
   'On-chain Transactions': {
     id: 'On-chain Transactions',
     name: 'On-chain Transactions',
-    icon: {
-      dark: iconAttestationTypeOnChainForDark,
-      light: iconAttestationTypeOnChain,
-    },
+    icon: undefined,
     color: 'blue',
     childMap: ONCHAINVERIFICATIONCONTENTTYPEEMAP,
     chartBarColor: '#1192E8',
@@ -233,30 +206,21 @@ export const ATTESTATIONTYPEMAP: ATTESTATIONTYPEMAPTYPE = {
   'Qualification Certificate': {
     id: 'Qualification Certificate',
     name: 'Qualification Certificate',
-    icon: {
-      dark: iconAttestationTypeQualificationForDark,
-      light: iconAttestationTypeQualification,
-    },
+    icon: undefined,
     disabled: true,
     shortName: 'qualification',
   },
   'Game Achievements': {
     id: 'Game Achievements',
     name: 'Game Achievements',
-    icon: {
-      dark: iconAttestationTypeGameForDark,
-      light: iconAttestationTypeGame,
-    },
+    icon: undefined,
     disabled: true,
     shortName: 'game',
   },
   'AIGC Proof': {
     id: 'AIGC Proof',
     name: 'AIGC Proof',
-    icon: {
-      dark: iconAttestationTypeAIGCForDark,
-      light: iconAttestationTypeAIGC,
-    },
+    icon: undefined,
     disabled: true,
     shortName: 'AIGC',
   },
