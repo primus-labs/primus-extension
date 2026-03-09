@@ -57,13 +57,6 @@ window.addEventListener('message', (e) => {
     //     name: 'stopOffscreen',
     //   });
     // }
-    if (name === 'sendToChainRes') {
-      chrome.runtime.sendMessage({
-        type: 'padoZKAttestationJSSDK',
-        name: 'sendToChainRes',
-        params,
-      });
-    }
     if (name === 'removeActiveAttestation') {
       chrome.storage.local.remove([
         'padoZKAttestationJSSDKBeginAttest',
@@ -122,14 +115,6 @@ chrome.runtime.onMessage.addListener(async (message, _sender, _sendResponse) => 
       });
     }
 
-    if (name === 'sendToChainRes') {
-      window.postMessage({
-        target: 'padoZKAttestationJSSDK',
-        origin: 'padoExtension',
-        name: 'sendToChainRes',
-        params,
-      });
-    }
     if (name === 'followX') {
       window.postMessage({
         target: 'padoZKAttestationJSSDK',

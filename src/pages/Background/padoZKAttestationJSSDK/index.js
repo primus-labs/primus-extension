@@ -1,12 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
 import { getSysConfig, getProofTypes } from '@/services/api/config';
-import { eventReport } from '@/services/api/usertracker';
 import { queryTemplateById } from '@/services/api/devconsole';
 import { updateAlgoUrl } from '@/config/envConstants';
 import { pageDecodeMsgListener } from '../pageDecode/index.js';
-import { schemaNameFn, getAlgoApi } from './utils';
+import { getAlgoApi } from './utils';
 
-import { CURENV, ONCHAINLIST, EASINFOMAP } from '@/config/chain';
 import { STARTOFFLINETIMEOUT } from '@/config/constants';
 import { getErrorMsgTitleFn } from '../utils/handleError.js';
 
@@ -51,12 +49,6 @@ const storeDappTabId = async (id) => {
     padoZKAttestationJSSDKDappTabId: id,
   });
   return id;
-};
-
-const getAttestation = async (attetstationRequestId) => {
-  const { credentials } = await chrome.storage.local.get(['credentials']);
-  const curCredential = JSON.parse(credentials)[attetstationRequestId];
-  return curCredential;
 };
 
 export const padoZKAttestationJSSDKMsgListener = async (
@@ -576,130 +568,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
     });
   }
 
-  if (name === 'sendToChainRes') {
-    const { attestationRequestId, chainName, onChainRes: upChainRes } = params;
-    const curCredential = await getAttestation(attestationRequestId);
-    console.log(
-      'sdk-bg-sdk-receive-sendToChainRes',
-      curCredential,
-      attestationRequestId,
-      chainName
-    );
-    const testNetNameMap = {
-      'Scroll Sepolia': 'Scroll Sepolia',
-      Sepolia: 'Sepolia',
-      BSCTestnet: 'BSC',
-      opBNBTestnet: 'opBNB',
-    };
-    const isTestNet = Object.keys(testNetNameMap).includes(chainName);
-    const upperChainEventType =
-      CURENV === 'production' && isTestNet
-        ? 'UPPER_CHAIN_TESTNET'
-        : 'UPPER_CHAIN';
-    if (curCredential) {
-      const { address, schemaType, source } = curCredential;
-      try {
-        const rawDataType = `${schemaType}-${schemaNameFn(chainName)}`;
-        let upchainNetwork = isTestNet ? testNetNameMap[chainName] : chainName;
-        if (CURENV === 'production' && chainName === 'Linea Goerli') {
-          upchainNetwork = 'Linea Mainnet';
-        }
-        var eventInfo = {
-          eventType: upperChainEventType,
-          rawData: {
-            network: upchainNetwork,
-            type: rawDataType,
-            source: source,
-            // attestationId: uniqueId,
-            address,
-          },
-        };
-        eventInfo.rawData.attestOrigin = curCredential.attestOrigin;
-        eventInfo.rawData.templateId = curCredential.attTemplateID;
-
-        if (upChainRes) {
-          if (upChainRes.error) {
-            // if (upChainRes.error === 1) {
-            //   sendToChainResult = false;
-            //   sendToChainMsg = 'Your balance is insufficient';
-            // } else if (upChainRes.error === 2) {
-            //   sendToChainResult = false;
-            //   sendToChainMsg = 'Please try again later.';
-            // }
-            eventInfo.rawData = Object.assign(eventInfo.rawData, {
-              status: 'FAILED',
-              reason: upChainRes.message,
-            });
-            eventReport(eventInfo);
-            return;
-          }
-          const newProvided = curCredential.provided ?? [];
-          if (
-            (CURENV === 'production' && !isTestNet) ||
-            (CURENV === 'development' && !!isTestNet)
-          ) {
-            const curEnvChainList = isTestNet
-              ? Object.values(EASINFOMAP['development'])
-              : ONCHAINLIST;
-            const currentChainObj = curEnvChainList.find((i) => {
-              if (CURENV === 'production' && chainName === 'Linea Mainnet') {
-                return 'Linea Goerli' === i.title;
-              } else {
-                return upchainNetwork === i.title;
-              }
-            });
-            currentChainObj.attestationUID = upChainRes;
-            currentChainObj.submitAddress = address;
-            newProvided.push(currentChainObj);
-            const { credentials } = await chrome.storage.local.get([
-              'credentials',
-            ]);
-            const cObj = { ...JSON.parse(credentials) };
-
-            cObj[attestationRequestId] = Object.assign(curCredential, {
-              provided: newProvided,
-            });
-            await chrome.storage.local.set({
-              credentials: JSON.stringify(cObj),
-            });
-          }
-
-          if (curCredential.reqType === 'web') {
-            try {
-              if (newProvided.length && newProvided.length > 0) {
-                const flag = newProvided.some(
-                  (i) => i.chainName.indexOf('Linea') > -1
-                );
-                if (flag) {
-                  await chrome.storage.local.set({
-                    mysteryBoxRewards: '1',
-                  });
-                }
-              }
-            } catch {}
-          }
-          // sendToChainResult = true;
-          // sendToChainMsg = 'Your attestation is recorded on-chain!';
-          eventInfo.rawData = Object.assign(eventInfo.rawData, {
-            status: 'SUCCESS',
-            reason: '',
-            txHash: upChainRes,
-          });
-          eventReport(eventInfo);
-        } else {
-          // sendToChainResult = true;
-          // sendToChainMsg = 'Please try again later.';
-          eventInfo.rawData = Object.assign(eventInfo.rawData, {
-            status: 'FAILED',
-            reason: 'attestByDelegationProxyFee error',
-          });
-          eventReport(eventInfo);
-        }
-      } catch (e) {
-        console.log('sdk-bg-sdk-receive-sendToChainRes-catch', e);
-      }
-    }
-  }
 };
 
 chrome.tabs.onRemoved.addListener(async (tabId, _removeInfo) => {
