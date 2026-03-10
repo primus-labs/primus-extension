@@ -12,7 +12,8 @@
     "build:test": "node utils/buildtest.js",
     "start": "node utils/webserver.js",
     "dev": "node utils/webserver.js",
-    "prettier": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
+    "prettier": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
+    "playwright:click": "node scripts/playwright-click.js"
   },
   "dependencies": {
     "@ethereum-attestation-service/eas-sdk": "^0.29.0",
@@ -83,6 +84,8 @@
     "@types/react-dom": "^18.2.23",
     "@types/react-router-dom": "^5.3.3",
     "@types/redux": "^3.6.0",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
     "assert": "^2.0.0",
     "autoprefixer": "^10.4.20",
     "babel-eslint": "^10.1.0",
@@ -92,8 +95,6 @@
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.3",
     "eslint": "^8.56.0",
-    "@typescript-eslint/eslint-plugin": "^5.62.0",
-    "@typescript-eslint/parser": "^5.62.0",
     "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-flowtype": "^8.0.3",
     "eslint-plugin-import": "^2.27.4",
@@ -107,6 +108,7 @@
     "html-webpack-plugin": "^5.5.0",
     "https-browserify": "^1.0.0",
     "os-browserify": "^0.3.0",
+    "playwright": "^1.58.2",
     "postcss": "^8.4.47",
     "postcss-loader": "^8.1.1",
     "postcss-pxtorem": "^6.1.0",

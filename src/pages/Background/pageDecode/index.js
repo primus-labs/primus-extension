@@ -4,7 +4,6 @@ import { padoExtensionVersion } from '@/config/constants';
 import { eventReport } from '@/services/api/usertracker';
 import {
   isObject,
-  parseCookie,
   isUrlWithQueryFn,
   checkIsRequiredUrl,
   sendMsgToTab,
@@ -377,7 +376,6 @@ export const pageDecodeMsgListener = async (
       const checkReadyStatusFn = async () => {
         let {
           datasourceTemplate: { requests },
-          sdkVersion,
         } = activeTemplate;
 
         const interceptorRequests = requests.filter((r) => r.name !== 'first');
@@ -426,19 +424,15 @@ export const pageDecodeMsgListener = async (
           f = captureNum === interceptorRequests.length;
 
           let fl = false;
-          if (sdkVersion) {
-            const allRequestUrlFoundFlag = interceptorUrlArr.every((url) => {
-              const curFlag = Object.values(requestsMap).find(
-                (sInfo) =>
-                  sInfo.templateRequestUrl === url && sInfo.isTarget === 1
-              );
-              return !!curFlag;
-            });
+          const allRequestUrlFoundFlag = interceptorUrlArr.every((url) => {
+            const curFlag = Object.values(requestsMap).find(
+              (sInfo) =>
+                sInfo.templateRequestUrl === url && sInfo.isTarget === 1
+            );
+            return !!curFlag;
+          });
 
-            fl = f && !!allRequestUrlFoundFlag;
-          } else {
-            fl = f;
-          }
+          fl = f && !!allRequestUrlFoundFlag;
 
           if (fl && !formatAlgorithmParams) {
             await formatAlgorithmParamsFn();
@@ -472,7 +466,6 @@ export const pageDecodeMsgListener = async (
         category,
         requestid,
         algorithmType,
-        sdkVersion,
       } = activeTemplate;
       const form = {
         source: dataSource,
@@ -494,19 +487,16 @@ export const pageDecodeMsgListener = async (
       if (activeTemplate.requestid) {
         form.requestid = activeTemplate.requestid;
       }
-      let aligorithmParams = {};
-      if (sdkVersion) {
-        aligorithmParams = await assembleAlgorithmParamsForSDK(
-          {
-            dataSource: activeTemplate.dataSource,
-            algorithmType: activeTemplate.algorithmType,
-            requestid: activeTemplate.requestid,
-            sslCipherSuite: activeTemplate.sslCipherSuite,
-            allJsonResponseFlag: activeTemplate.allJsonResponseFlag,
-          },
-          activeTemplate.ext
-        );
-      }
+      let aligorithmParams = await assembleAlgorithmParamsForSDK(
+        {
+          dataSource: activeTemplate.dataSource,
+          algorithmType: activeTemplate.algorithmType,
+          requestid: activeTemplate.requestid,
+          sslCipherSuite: activeTemplate.sslCipherSuite,
+          allJsonResponseFlag: activeTemplate.allJsonResponseFlag,
+        },
+        activeTemplate.ext
+      );
 
       let formatRequests = [];
       for (const r of JSON.parse(JSON.stringify(requests))) {
@@ -514,30 +504,11 @@ export const pageDecodeMsgListener = async (
           continue;
         }
 
-        let { headers, cookies, body } = r;
-        let targetRequestId = '';
-        if (sdkVersion) {
-          targetRequestId =
-            Object.values(requestsMap).find(
-              (sInfo) =>
-                sInfo.templateRequestUrl === r.url && sInfo.isTarget === 1
-            )?.requestId || '';
-        } else {
-          targetRequestId = Object.values(requestsMap).find((rInfo) => {
-            const checkRes = checkIsRequiredUrl({
-              requestUrl: rInfo.url,
-              requiredUrl: r.url,
-              urlType: r.urlType,
-              queryParams: r.queryParams,
-            });
-            return checkRes;
-          })?.requestId;
-          console.log(
-            'formatAlgorithmParamsFn-after',
-            requestsMap,
-            targetRequestId
-          );
-        }
+        let targetRequestId =
+          Object.values(requestsMap).find(
+            (sInfo) =>
+              sInfo.templateRequestUrl === r.url && sInfo.isTarget === 1
+          )?.requestId || '';
 
         const currRequestInfoObj = requestsMap[targetRequestId] || {};
         const {
@@ -547,61 +518,13 @@ export const pageDecodeMsgListener = async (
           url,
         } = currRequestInfoObj;
 
-        const cookiesObj = curRequestHeader
-          ? parseCookie(curRequestHeader.Cookie)
-          : {};
-        let formateHeader = {},
-          formateCookie = {},
-          formateBody = {};
-
-        if (sdkVersion) {
-          Object.assign(r, {
-            headers: { ...curRequestHeader },
-            body: isObject(curRequestBody)
-              ? { ...curRequestBody }
-              : curRequestBody,
-            url: queryString ? r.url + '?' + queryString : r.url,
-          });
-        } else {
-          if (headers && headers.length > 0) {
-            headers.forEach((hk) => {
-              if (curRequestHeader) {
-                const inDataSourceHeaderKey = Object.keys(
-                  curRequestHeader
-                ).find((h) => h.toLowerCase() === hk.toLowerCase());
-                formateHeader[hk] = curRequestHeader[inDataSourceHeaderKey];
-              }
-            });
-            Object.assign(r, {
-              headers: formateHeader,
-            });
-          }
-
-          if (cookies && cookies.length > 0) {
-            cookies.forEach((ck) => {
-              formateCookie[ck] = cookiesObj[ck];
-            });
-            Object.assign(r, {
-              cookies: formateCookie,
-            });
-          }
-          if (body && body.length > 0) {
-            body.forEach((hk) => {
-              formateBody[hk] = curRequestBody[hk];
-            });
-            Object.assign(r, {
-              body: formateBody,
-            });
-          }
-          if (queryString) {
-            Object.assign(r, {
-              url: r.url + '?' + queryString,
-            });
-          }
-          if ('queryParams' in r) {
-            delete r.queryParams;
-          }
-        }
+        Object.assign(r, {
+          headers: { ...curRequestHeader },
+          body: isObject(curRequestBody)
+            ? { ...curRequestBody }
+            : curRequestBody,
+          url: queryString ? r.url + '?' + queryString : r.url,
+        });
         formatRequests.push({ ...r, url: r.name === 'first' ? r.url : url });
       }
       const formatResponse = JSON.parse(JSON.stringify(responses));
@@ -681,7 +604,6 @@ export const pageDecodeMsgListener = async (
         let {
           jumpTo,
           datasourceTemplate: { requests },
-          sdkVersion,
         } = activeTemplate;
 
         const {
@@ -770,9 +692,7 @@ export const pageDecodeMsgListener = async (
               url: jumpTo + result.screen_name,
             });
           }
-          if (sdkVersion) {
-            await checkSDKTargetRequestFn(requestId, templateRequestUrl);
-          }
+          await checkSDKTargetRequestFn(requestId, templateRequestUrl);
           checkWebRequestIsReadyFn();
         }
       };
