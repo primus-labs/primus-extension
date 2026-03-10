@@ -103,7 +103,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       }
     }
     await chrome.storage.local.set({
-      padoZKAttestationJSSDKBeginAttest: sdkVersion || '1',
+      padoZKAttestationJSSDKBeginAttest: sdkVersion,
     });
     processAlgorithmReq({
       reqMethodName: 'start',
@@ -126,7 +126,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
       JSON.stringify(params)
     );
     await chrome.storage.local.set({
-      padoZKAttestationJSSDKBeginAttest: sdkVersion || '1',
+      padoZKAttestationJSSDKBeginAttest: sdkVersion,
     });
     processAlgorithmReq({
       reqMethodName: 'start',

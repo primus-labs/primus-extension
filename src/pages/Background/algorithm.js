@@ -1,7 +1,6 @@
 import { eventReport } from '@/services/api/usertracker';
 import { pageDecodeMsgListener } from './pageDecode/index.js';
 import { postMsg } from '@/utils/utils';
-import { regenerateAttest } from './padoZKAttestationJSSDK/utils';
 import { addSDKParamsToReportParamsFn } from './utils/reportEvent.js';
 import { getErrorMsgTitleFn } from './utils/handleError.js';
 import { sendInitAttestationRes } from './utils/msgTransfer.js';
@@ -245,27 +244,11 @@ export const algorithmMsgListener = async (
               });
             }
 
-            if (padoZKAttestationJSSDKBeginAttest === '1') {
-              const { rc, result } = await regenerateAttest(
-                fullAttestation,
-                activeAttestationParams.chainName
-              );
-              if (rc === 0) {
-                const { eip712MessageRawDataWithSignature } = result;
-                const resData = {
-                  attestationRequestId: activeRequestId,
-                  eip712MessageRawDataWithSignature,
-                };
-                await sucFn(resData);
-              }
-            } else {
-              // await sucFn(JSON.parse(content.encodedData));
-              const passRes = JSON.parse(content.encodedData);
-              passRes.extendedData = content.extendedData;
-              passRes.allJsonResponse = content.allJsonResponse;
-              await sucFn(passRes);
-            }
-
+            // await sucFn(JSON.parse(content.encodedData));
+            const passRes = JSON.parse(content.encodedData);
+            passRes.extendedData = content.extendedData;
+            passRes.allJsonResponse = content.allJsonResponse;
+            await sucFn(passRes);
           } else if (
             !content.signature ||
             content.balanceGreaterThanBaseValue === 'false'

@@ -80,31 +80,6 @@ export const validateAttestationForAnt = (data: object, config: any) => {
   });
 };
 
-export const regenerateAttestation = (data: any, config?: any) => {
-  if (data && data.rawParam) {
-    if (['Spot 30-Day Trade Vol','Assets Proof'].includes(data.rawParam.verificationContent)) {
-      data.rawParam.ext = {};
-      data.rawParam.ext.extRequests = {};
-      data.rawParam.ext.extRequests['asset-proof'] = {};
-      data.rawParam.ext.extRequests['asset-proof'].parseSchema = JSON.stringify(
-        data.rawParam.responses[2]
-      );
-    } else if (data.rawParam.verificationContent === 'Token Holding') {
-      data.rawParam.ext = {};
-      data.rawParam.ext.extRequests = {};
-      data.rawParam.ext.extRequests['token-holding'] = {};
-      data.rawParam.ext.extRequests['token-holding'].parseSchema =
-        JSON.stringify(data.rawParam.responses[2]);
-    }
-  }
-  return request({
-    method: 'post',
-    url: `/credential/re-generate?newSigFormat=${data?.newSigFormat}`,
-    data,
-    config,
-  });
-};
-
 type GETAUTHATTESTATIONParams = {
   state: string;
   source: string;

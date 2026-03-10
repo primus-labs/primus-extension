@@ -1,34 +1,5 @@
-import { regenerateAttestation } from '@/services/api/cred';
 import { getPadoUrl, getProxyUrl, getZkPadoUrl } from '@/config/envConstants';
 
-
-export const regenerateAttest = async (orginAttestation, chainName) => {
-  const {
-    signature,
-    sourceUseridHash,
-    type,
-    dataToBeSigned,
-    source,
-  } = orginAttestation;
-  const requestParams = {
-    rawParam:
-      type === 'BREVIS_TRANSACTION_PROOF#1' ||
-      ['google', 'discord'].includes(source)
-        ? orginAttestation.rawParam
-        : Object.assign(orginAttestation, {
-            ext: null,
-          }),
-    greaterThanBaseValue: true,
-    signature,
-    newSigFormat: 'EAS',
-    sourceUseridHash: sourceUseridHash,
-  };
-  if (type === 'BREVIS_TRANSACTION_PROOF#1') {
-    requestParams.dataToBeSigned = dataToBeSigned;
-  }
-  const regenerateAttestRes = await regenerateAttestation(requestParams);
-  return regenerateAttestRes;
-};
 
 export const getDynamicAlgoApi = (algoApiType, algoApis) => {
   const jsonobj = {
