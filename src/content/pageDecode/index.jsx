@@ -9,7 +9,7 @@ import RightEl from './RightEl';
 import FooterEl from './FooterEl';
 import HeaderEl from './HeaderEl';
 import { injectFont, createDomElement, eventReport } from './utils';
-import { logicForMonad } from './logicForSdk';
+
 const ATTESTATIONPOLLINGTIMEOUT = 2 * 60 * 1000;
 
 import './index.scss';
@@ -280,12 +280,7 @@ chrome.runtime.sendMessage(
       // render
       activeRequest = { ...response.params };
       console.log('activeRequest', activeRequest);
-      // TODO - templateId
-      if (
-        activeRequest.attTemplateID === 'be2268c1-56b2-438a-80cb-eddf2e850b63'
-      ) {
-        logicForMonad();
-      }
+      
       delete activeRequest.PADOSERVERURL;
       delete activeRequest.padoExtensionVersion;
       PADOSERVERURL = response.params.PADOSERVERURL;
