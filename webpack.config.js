@@ -262,11 +262,6 @@ var options = {
           force: true,
         },
         {
-          from: 'src/services/algorithms/ccxt.browser.min.js',
-          to: path.join(__dirname, 'build'),
-          force: true,
-        },
-        {
           from: 'src/services/algorithms/client_plugin.data',
           to: path.join(__dirname, 'build'),
           force: true,

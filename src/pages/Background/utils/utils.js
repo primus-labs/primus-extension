@@ -25,19 +25,6 @@ export function matchReg(regStr, str) {
 }
 
 // just for pageDecode.js
-export const parseCookie = (str) => {
-  str = str || '';
-  return str
-    .split(';')
-    .map((v) => v.split('='))
-    .reduce((acc, v) => {
-      if (v[0] && v[1]) {
-        acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
-      }
-
-      return acc;
-    }, {});
-};
 export const isUrlWithQueryFn = (url, queryKeyArr) => {
   const urlStrArr = url.split('?');
   const queryStr = urlStrArr[1];
@@ -76,72 +63,6 @@ export function checkIsRequiredUrl({
   }
 }
 
-export const getErrorMsgFn = async (attestationType, errorCode) => {
-  let errorMsgTitle = ['Assets Verification', 'Humanity Verification'].includes(
-    attestationType
-  )
-    ? `${attestationType} failed!`
-    : `${attestationType} proof failed!`;
-  const { configMap } = await chrome.storage.local.get(['configMap']);
-  let attestTipMap = {};
-  if (
-    configMap &&
-    JSON.parse(configMap) &&
-    JSON.parse(configMap).ATTESTATION_PROCESS_NOTE
-  ) {
-    attestTipMap = JSON.parse(JSON.parse(configMap).ATTESTATION_PROCESS_NOTE);
-  }
-  let msgObj = {
-    title: errorMsgTitle,
-    type: attestTipMap[errorCode].type,
-    desc: attestTipMap[errorCode].desc,
-    sourcePageTip: attestTipMap[errorCode].title,
-  };
-  const msg = {
-    name: 'end',
-    params: {
-      result: 'warn',
-      failReason: { ...msgObj },
-    },
-  };
-  return msg;
-};
-
 export const sendMsgToTab = async (tabId, msg) => {
   await chrome.tabs.sendMessage(tabId, msg);
 };
-
-
-export function updateUrlParams(url, paramsObj) {
-  const urlObj = new URL(url);
-  const searchParams = urlObj.searchParams;
-
-  Object.entries(paramsObj).forEach(([key, value]) => {
-    if (searchParams.has(key)) {
-      searchParams.set(key, value);
-    } else {
-      searchParams.append(key, value);
-    }
-  });
-
-  urlObj.search = searchParams.toString();
-  return urlObj.toString();
-}
-
-export function parseUrlQuery(url) {
-  const urlObj = new URL(url);
-
-  const searchParams = urlObj.searchParams;
-
-  const queryObj = {};
-
-  searchParams.forEach((value, key) => {
-    if (!isNaN(value) && value !== '') {
-      queryObj[key] = Number(value);
-    } else {
-      queryObj[key] = value;
-    }
-  });
-
-  return queryObj;
-}
