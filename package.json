@@ -13,7 +13,8 @@
     "start": "node utils/webserver.js",
     "dev": "node utils/webserver.js",
     "prettier": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
-    "playwright:click": "node scripts/playwright-click.js"
+    "playwright:click": "node scripts/playwright-click.js",
+    "playwright:install": "playwright install chromium"
   },
   "dependencies": {
     "@ethereum-attestation-service/eas-sdk": "^0.29.0",

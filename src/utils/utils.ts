@@ -2,7 +2,6 @@ import BigNumber from 'bignumber.js';
 import numeral from 'numeral';
 import { PADOSERVERURL } from '@/config/envConstants';
 import { BIGZERO } from '@/config/constants';
-import type { AssetsMap } from '@/types/dataSource';
 
 var ethereumjsUtil = require('ethereumjs-util');
 
@@ -463,16 +462,6 @@ export function compareVersions(v1: string, v2: string) {
   return 0;
 }
 
-export const getTotalBalFromAssetsMap = (targetMap: AssetsMap) => {
-  const totalAccBal = Object.keys(targetMap).reduce((prev, curr) => {
-    const obj = targetMap[curr as keyof typeof targetMap];
-    const curValue = obj.value;
-    prev = add(Number(prev), Number(curValue));
-    return prev;
-  }, BIGZERO);
-  const totalBalance = totalAccBal.toFixed();
-  return totalBalance;
-};
 export const getTotalBalFromNumObjAPriceObj = (numObj, priceObj) => {
   const totalAccBal = Object.keys(numObj).reduce((prev, curr) => {
     const num = numObj[curr as keyof typeof numObj];

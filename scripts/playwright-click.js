@@ -1,15 +1,19 @@
 /**
  * Playwright 自动化脚本：打开指定页面并点击指定按钮
  *
+ * 首次使用前请安装浏览器（只需执行一次）：
+ *   npm run playwright:install
+ * 或：npx playwright install chromium
+ *
  * 使用方式：
- *   node scripts/playwright-click.js
- *   node scripts/playwright-click.js --url=https://example.com --selector="button#submit"
- *   node scripts/playwright-click.js --url=https://example.com --text="提交"
+ *   npm run playwright:click -- --url=https://你的页面 --text="按钮文字"
+ *   npm run playwright:click -- --url=https://你的页面 --selector="button#submit"
+ *   node scripts/playwright-click.js --url=https://example.com --text="More information"
  *
  * 参数说明：
  *   --url=...        要打开的页面 URL（默认：https://example.com）
  *   --selector=...   要点击元素的 CSS 选择器（如 button#submit, .btn-primary）
- *   --text=...       要点击的按钮文本（与 selector 二选一）
+ *   --text=...       要点击的按钮/链接文本（与 selector 二选一）
  *   --headless       无头模式运行（不显示浏览器窗口）
  */
 
