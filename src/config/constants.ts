@@ -1,5 +1,5 @@
 const packageJson = require('../../package.json');
-export const ExchangeStoreVersion = '1.0.1';
+
 export const SocailStoreVersion = '1.0.1';
 export const padoExtensionVersion = packageJson.version;
 

@@ -542,10 +542,6 @@ export const pageDecodeMsgListener = async (
         PADOSERVERURL,
         padoExtensionVersion,
       });
-      if (schemaType?.startsWith('OKX_TOKEN_HOLDING')) {
-        aligorithmParams.requests[2].url =
-          aligorithmParams.requests[2].url.replace('limit=5', 'limit=100');
-      }
 
       formatAlgorithmParams = aligorithmParams;
       console.log(

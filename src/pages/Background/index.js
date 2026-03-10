@@ -8,10 +8,9 @@ import {
 import { getSysConfig, getProofTypes } from '@/services/api/config';
 import { requestSignTypedData } from '@/services/wallets/utils';
 
-import { getCurrentDate, postMsg, sub } from '@/utils/utils';
+import { postMsg } from '@/utils/utils';
 import { sendInitAttestationRes } from './utils/msgTransfer.js';
 
-import { SocailStoreVersion } from '@/config/constants';
 import { eventReport } from '@/services/api/usertracker';
 import './pageDecode/index.js';
 import { pageDecodeMsgListener } from './pageDecode/index.js';
@@ -262,43 +261,6 @@ const processpadoServiceReq = async (message, port) => {
           postMsg(port, { resMethodName: reqMethodName, res: false });
         }
         break;
-      case 'checkIsLogin':
-        if (rc === 0) {
-          const { dataInfo } = result;
-          const lowerCaseSourceName = params.source.toLowerCase();
-          let storageRes = await chrome.storage.local.get(lowerCaseSourceName);
-          const lastData = storageRes[lowerCaseSourceName];
-          let pnl = null;
-          if (lastData) {
-            const lastTotalBal = JSON.parse(lastData).followers;
-            pnl = sub(dataInfo.followers, lastTotalBal).toFixed();
-          }
-          if (pnl !== null && pnl !== undefined) {
-            dataInfo.pnl = pnl;
-          }
-
-          const socialSourceData = {
-            ...dataInfo,
-            date: getCurrentDate(),
-            timestamp: +new Date(),
-            version: SocailStoreVersion,
-          };
-          socialSourceData.userInfo = {};
-          socialSourceData.userInfo.userName = socialSourceData.userName;
-          await chrome.storage.local.set({
-            [lowerCaseSourceName]: JSON.stringify(socialSourceData),
-          });
-          postMsg(port, {
-            resMethodName: reqMethodName,
-            res: true,
-            params: {
-              source: params.source,
-            },
-          });
-        } else {
-          postMsg(port, { resMethodName: reqMethodName, res: false });
-        }
-        break;
       case 'bindUserAddress':
         try {
           const msg = {
@@ -317,53 +279,6 @@ const processpadoServiceReq = async (message, port) => {
       case 'getSysConfig':
         if (rc === 0) {
           postMsg(port, { resMethodName: reqMethodName, res: result });
-        } else {
-          postMsg(port, { resMethodName: reqMethodName, res: false });
-        }
-        break;
-      case 'refreshAuthData':
-        if (rc === 0) {
-          const lowerCaseSourceName = params.source.toLowerCase();
-          const { dataInfo } = result;
-
-          let storageRes = await chrome.storage.local.get(lowerCaseSourceName);
-          const lastData = storageRes[lowerCaseSourceName];
-          let pnl = null;
-          if (lastData) {
-            const lastTotalBal = JSON.parse(lastData).followers;
-            pnl = sub(dataInfo.followers, lastTotalBal).toFixed();
-          }
-          if (pnl !== null && pnl !== undefined) {
-            dataInfo.pnl = pnl;
-          }
-
-          const socialSourceData = {
-            ...dataInfo,
-            date: getCurrentDate(),
-            timestamp: +new Date(),
-            version: SocailStoreVersion,
-          };
-          await chrome.storage.local.set({
-            [lowerCaseSourceName]: JSON.stringify(socialSourceData),
-          });
-          postMsg(port, {
-            resMethodName: reqMethodName,
-            res: true,
-            params: {
-              mc,
-              source: params.source,
-            },
-          });
-        } else if (rc === 1 && mc === 'UNAUTHORIZED_401') {
-          //Token expiration
-          postMsg(port, {
-            resMethodName: reqMethodName,
-            res: false,
-            params: {
-              mc,
-              source: params.source,
-            },
-          });
         } else {
           postMsg(port, { resMethodName: reqMethodName, res: false });
         }
