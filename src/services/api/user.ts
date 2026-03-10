@@ -53,15 +53,6 @@ export const checkIsLogin = (params: CheckIsLoginParams) => {
   });
 };
 
-// Bind user and wallet address
-export const bindUserAddress = (data:BindUserAddressParams, config:any) => {
-  return request({
-    method: 'post',
-    url: `/oauth/wallet`,
-    data,
-    config
-  });
-};
 
 // refresh social data (x,google)
 export const refreshAuthData = (data:RefreshAuthDataParams) => {

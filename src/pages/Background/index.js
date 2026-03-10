@@ -1,11 +1,6 @@
 import {
-  getAllOAuthSources,
-  checkIsLogin,
-  bindUserAddress,
-  refreshAuthData,
   getUserIdentity,
 } from '@/services/api/user';
-import { getSysConfig, getProofTypes } from '@/services/api/config';
 import { requestSignTypedData } from '@/services/wallets/utils';
 
 import { postMsg } from '@/utils/utils';
@@ -21,14 +16,7 @@ const Web3EthAccounts = require('web3-eth-accounts');
 console.log('Background initialization');
 let fullscreenPort = null;
 let web3EthAccount = new Web3EthAccounts();
-const padoServices = {
-  getAllOAuthSources,
-  checkIsLogin,
-  bindUserAddress,
-  getSysConfig,
-  refreshAuthData,
-  getProofTypes,
-};
+
 // const compareRes = compareVersions('0.3.14', padoExtensionVersion);
 // console.log('padoExtensionVersion', padoExtensionVersion, compareRes);
 let USERPASSWORD = '';
@@ -99,12 +87,6 @@ chrome.runtime.onConnect.addListener((port) => {
 
 const processFullscreenReq = (message, port) => {
   switch (message.fullScreenType) {
-    case 'padoService':
-      processpadoServiceReq(message, port);
-      break;
-    case 'wallet':
-      processWalletReq(message, port);
-      break;
     case 'algorithm':
       processAlgorithmReq(message, port);
       break;
@@ -233,69 +215,6 @@ const processAlgorithmReq = async (message, _port) => {
       break;
     default:
       break;
-  }
-};
-
-const processpadoServiceReq = async (message, port) => {
-  const { reqMethodName, params = {}, config = {} } = message;
-  const formatParams = { ...params };
-  delete formatParams.password;
-  try {
-    let rc, result, mc;
-    if (reqMethodName !== 'bindUserAddress') {
-      const fetchRes = await padoServices[reqMethodName](
-        { ...formatParams },
-        {
-          ...config,
-        }
-      );
-      rc = fetchRes.rc;
-      result = fetchRes.result;
-      mc = fetchRes.mc;
-    }
-    switch (reqMethodName) {
-      case 'getAllOAuthSources':
-        if (rc === 0) {
-          postMsg(port, { resMethodName: reqMethodName, res: result });
-        } else {
-          postMsg(port, { resMethodName: reqMethodName, res: false });
-        }
-        break;
-      case 'bindUserAddress':
-        try {
-          const msg = {
-            fullScreenType: 'wallet',
-            reqMethodName: 'encrypt',
-            params: {
-              password: params.password,
-            },
-          };
-          await processWalletReq(msg, port);
-          postMsg(port, { resMethodName: reqMethodName, res: true });
-        } catch {
-          postMsg(port, { resMethodName: reqMethodName, res: false });
-        }
-        break;
-      case 'getSysConfig':
-        if (rc === 0) {
-          postMsg(port, { resMethodName: reqMethodName, res: result });
-        } else {
-          postMsg(port, { resMethodName: reqMethodName, res: false });
-        }
-        break;
-      case 'getProofTypes':
-        if (rc === 0) {
-          postMsg(port, { resMethodName: reqMethodName, res: result });
-        } else {
-          postMsg(port, { resMethodName: reqMethodName, res: false });
-        }
-        break;
-      default:
-        break;
-    }
-  } catch (e) {
-    console.log('processpadoServiceReq error:', reqMethodName);
-    throw new Error(e);
   }
 };
 

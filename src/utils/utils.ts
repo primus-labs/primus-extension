@@ -5,20 +5,6 @@ export function sub(a: number, b: number) {
   return new BigNumber(a).minus(new BigNumber(b));
 }
 
-// "Jun 15, 2023"
-// transform date from timestamp to string such as 12 Mar, 2023
-export function formatDate(timestamp: number, separator = ',') {
-  var date = new Date(timestamp),
-    Y = date.getFullYear(),
-    M = date.toLocaleString('en', { month: 'short' }),
-    D = (date.getDate() + '').padStart(2, '0');
-  return `${M} ${D}${separator} ${Y}`;
-}
-
-export function getCurrentDate(timestamp?: any, separator = ',') {
-  const time = timestamp ? +new Date(timestamp) : +new Date();
-  return formatDate(time, separator);
-}
 
 export function postMsg(port: chrome.runtime.Port, msg: any) {
   try {
