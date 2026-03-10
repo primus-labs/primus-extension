@@ -13,12 +13,6 @@ import { addSDKParamsToReportParamsFn } from './utils/reportEvent.js';
 import { sendInitAttestationRes } from './utils/msgTransfer.js';
 
 import { SocailStoreVersion } from '@/config/constants';
-import {
-  clear,
-  assembleAlgorithmParams,
-  resetExchangesCipher,
-  EXCHANGEINFO,
-} from './exData';
 import { eventReport } from '@/services/api/usertracker';
 import './pageDecode/index.js';
 import { pageDecodeMsgListener } from './pageDecode/index.js';
@@ -136,7 +130,7 @@ async function hasOffscreenDocument(path) {
   return false;
 }
 
-const processAlgorithmReq = async (message, port) => {
+const processAlgorithmReq = async (message, _port) => {
   const matchedClients = await clients.matchAll();
   console.log('matchedClients', matchedClients);
   let { reqMethodName, params = {} } = message;
@@ -189,28 +183,6 @@ const processAlgorithmReq = async (message, port) => {
       });
       break;
     case 'getAttestation':
-      const attestationParams = await assembleAlgorithmParams(
-        params,
-        USERPASSWORD,
-        port
-      );
-      const f = { ...attestationParams };
-      await chrome.storage.local.set({
-        activeRequestAttestation: JSON.stringify(f),
-      });
-      if (
-        attestationParams.source === 'binance' &&
-        process.env.NODE_ENV === 'production'
-      ) {
-        attestationParams.proxyUrl = 'wss://api.padolabs.org/algoproxy';
-      }
-      console.log('attestationParams=', attestationParams);
-      chrome.runtime.sendMessage({
-        type: 'algorithm',
-        method: 'getAttestation',
-        params: attestationParams,
-        exInfo: EXCHANGEINFO,
-      });
       break;
     case 'getAttestationResult':
       chrome.runtime.sendMessage({
@@ -457,7 +429,6 @@ const processWalletReq = async (message, port) => {
       break;
     case 'clearUserPassword':
       USERPASSWORD = '';
-      clear();
       web3EthAccount = null;
       break;
     case 'queryUserPassword':
@@ -483,36 +454,6 @@ const processWalletReq = async (message, port) => {
       } catch {
         postMsg(port, { resMethodName: reqMethodName, res: '' });
       }
-      break;
-    case 'resetPassword':
-      // decrypt by old password
-      if (USERPASSWORD) {
-        try {
-          if (keyStore) {
-            web3EthAccount = new Web3EthAccounts();
-            const { privateKey } = web3EthAccount.decrypt(
-              keyStore,
-              USERPASSWORD
-            );
-            if (privateKey) {
-              // encrypt by new password
-              const orignAccount =
-                web3EthAccount.privateKeyToAccount(privateKey);
-              const encryptAccount = orignAccount.encrypt(password);
-
-              await chrome.storage.local.set({
-                keyStore: JSON.stringify(encryptAccount),
-              });
-            }
-          }
-          await resetExchangesCipher(USERPASSWORD, password);
-          USERPASSWORD = password;
-          postMsg(port, { resMethodName: reqMethodName, res: true });
-        } catch {
-          postMsg(port, { resMethodName: reqMethodName, res: false });
-        }
-      }
-      // refresh exchange cipher
       break;
     default:
       break;
