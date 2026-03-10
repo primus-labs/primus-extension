@@ -10,7 +10,6 @@ export const algorithmMsgListener = async (
   message,
   sender,
   sendResponse,
-  USERPASSWORD,
   fullscreenPort,
   processAlgorithmReq
 ) => {
@@ -100,7 +99,6 @@ export const algorithmMsgListener = async (
             },
             sender,
             sendResponse,
-            USERPASSWORD,
             fullscreenPort,
             hasGetTwitterScreenName,
             processAlgorithmReq
@@ -184,7 +182,6 @@ export const algorithmMsgListener = async (
               },
               sender,
               sendResponse,
-              USERPASSWORD,
               fullscreenPort,
               hasGetTwitterScreenName,
               processAlgorithmReq
@@ -392,7 +389,6 @@ export const algorithmMsgListener = async (
               },
               sender,
               sendResponse,
-              USERPASSWORD,
               fullscreenPort,
               hasGetTwitterScreenName,
               processAlgorithmReq
@@ -461,7 +457,6 @@ export const algorithmMsgListener = async (
             },
             sender,
             sendResponse,
-            USERPASSWORD,
             fullscreenPort,
             hasGetTwitterScreenName,
             processAlgorithmReq

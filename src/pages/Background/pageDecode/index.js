@@ -1,7 +1,4 @@
-import {
-  assembleAlgorithmParams,
-  assembleAlgorithmParamsForSDK,
-} from '../exData';
+import { assembleAlgorithmParamsForSDK } from '../exData';
 import { PADOSERVERURL } from '@/config/envConstants';
 import { padoExtensionVersion } from '@/config/constants';
 import { eventReport } from '@/services/api/usertracker';
@@ -263,7 +260,6 @@ export const pageDecodeMsgListener = async (
   request,
   sender,
   sendResponse,
-  password,
   port,
   hasGetTwitterScreenName,
   processAlgorithmReq
@@ -510,8 +506,6 @@ export const pageDecodeMsgListener = async (
           },
           activeTemplate.ext
         );
-      } else {
-        aligorithmParams = await assembleAlgorithmParams(form, password);
       }
 
       let formatRequests = [];

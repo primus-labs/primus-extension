@@ -55,7 +55,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
   request,
   sender,
   sendResponse,
-  USERPASSWORD,
   fullscreenPort,
   processAlgorithmReq
 ) => {
@@ -477,7 +476,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
       },
       sender,
       sendResponse,
-      USERPASSWORD,
       fullscreenPort,
       hasGetTwitterScreenName,
       processAlgorithmReq
@@ -537,7 +535,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
       },
       sender,
       sendResponse,
-      USERPASSWORD,
       fullscreenPort,
       hasGetTwitterScreenName,
       processAlgorithmReq

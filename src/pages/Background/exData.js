@@ -4,7 +4,6 @@ import { SCROLLEVENTNAME, BASEVENTNAME } from '@/config/events';
 import { CredVersion } from '@/config/attestation';
 import { getPadoUrl, getProxyUrl, getZkPadoUrl } from '@/config/envConstants';
 import { postMsg, strToHex } from '@/utils/utils';
-import { storeDataSource } from './dataSourceUtils';
 
 export let EXCHANGEINFO = {
   binance: {
@@ -99,54 +98,6 @@ const getExchange = async (message, USERPASSWORD, port) => {
   }
   return { ex: ex, exParams: exParams };
 };
-
-const processNetworkReq = async (message, port, USERPASSWORD) => {
-  var {
-    type,
-    params: { apiKey, label, withoutMsg },
-  } = message;
-  const exchangeName = type.split('-')[1];
-  if (type.startsWith('set-')) {
-    console.log('exData type:', type);
-    try {
-      const exchange = await getExchange(message, USERPASSWORD, port);
-      const ex = exchange.ex;
-      const exParams = exchange.exParams;
-      await storeDataSource(exchangeName, ex, port, {
-        apiKey: exParams?.apiKey,
-        withoutMsg: withoutMsg,
-      });
-      if (apiKey) {
-        const { apiKey, secretKey, passphase } = exParams;
-        const exCipherData = {
-          apiKey,
-          secretKey,
-          passphase,
-          label,
-        };
-        const encryptedKey = encrypt(
-          JSON.stringify(exCipherData),
-          USERPASSWORD
-        );
-        // get storage from store first,then store new info of new apikey
-        await chrome.storage.local.set({
-          [exchangeName + 'cipher']: JSON.stringify(encryptedKey),
-        });
-        EXCHANGEINFO[exchangeName] = exParams;
-      } else {
-        EXCHANGEINFO[exchangeName] = exParams;
-      }
-    } catch (error) {
-      console.log(
-        'exData-',
-        error,
-        error.message,
-        error.message.indexOf('AuthenticationError')
-      );
-    }
-  }
-};
-export default processNetworkReq;
 
 // port is unnecesary when you assemble algorithm params for page decode
 export async function assembleAlgorithmParams(form, USERPASSWORD, port) {

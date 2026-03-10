@@ -14,7 +14,6 @@ import { sendInitAttestationRes } from './utils/msgTransfer.js';
 
 import { SocailStoreVersion } from '@/config/constants';
 import {
-  default as processExReq,
   clear,
   assembleAlgorithmParams,
   resetExchangesCipher,
@@ -110,9 +109,6 @@ const processFullscreenReq = (message, port) => {
   switch (message.fullScreenType) {
     case 'padoService':
       processpadoServiceReq(message, port);
-      break;
-    case 'networkreq':
-      processExReq(message, port, USERPASSWORD);
       break;
     case 'wallet':
       processWalletReq(message, port);
@@ -538,7 +534,6 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       message,
       sender,
       sendResponse,
-      USERPASSWORD,
       fullscreenPort,
       processAlgorithmReq
     );
@@ -561,7 +556,6 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       message,
       sender,
       sendResponse,
-      USERPASSWORD,
       fullscreenPort,
       hasGetTwitterScreenName,
       processAlgorithmReq
@@ -578,7 +572,6 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       message,
       sender,
       sendResponse,
-      USERPASSWORD,
       fullscreenPort,
       processAlgorithmReq
     );
