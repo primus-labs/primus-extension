@@ -47,7 +47,6 @@ const FooterEl = ({ status, resultStatus, errorTxt, activeRequest }) => {
         break;
       case 'verifying':
         const { verificationContent: vC } = getContentWithValue({
-          attestationType,
           verificationContent,
           verificationValue,
         });

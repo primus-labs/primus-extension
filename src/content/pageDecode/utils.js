@@ -119,7 +119,6 @@ export const eventReport = async (data, baseUrl, padoExtensionVersion) => {
 };
 
 export const getContentWithValue = ({
-  attestationType,
   verificationContent,
   verificationValue,
 }) => {

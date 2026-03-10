@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { getSysConfig, getProofTypes } from '@/services/api/config';
+import { getSysConfig } from '@/services/api/config';
 import { queryTemplateById } from '@/services/api/devconsole';
 import { updateAlgoUrl } from '@/config/envConstants';
 import { pageDecodeMsgListener } from '../pageDecode/index.js';
@@ -13,21 +13,7 @@ let sdkParams = {};
 let sdkVersion = '';
 let sdkName = '';
 let isNetworkSdk = false;
-const fetchAttestationTemplateList = async () => {
-  try {
-    const fetchRes = await getProofTypes({
-      type: 'web_cred',
-    });
-    const { rc, result } = fetchRes;
-    if (rc === 0) {
-      await chrome.storage.local.set({
-        webProofTypes: JSON.stringify(result),
-      });
-    } else {
-      // alert('getProofTypes network error');
-    }
-  } catch {}
-};
+
 const fetchConfigure = async () => {
   try {
     const { rc, result } = await getSysConfig();
@@ -67,41 +53,14 @@ export const padoZKAttestationJSSDKMsgListener = async (
       'dapptabTabId:',
       sender.tab.id
     );
-    await fetchAttestationTemplateList();
     await fetchConfigure();
     sdkVersion = params?.sdkVersion;
     sdkName = params?.sdkName;
     isNetworkSdk = sdkName && sdkName.indexOf('network') > -1;
 
-    const { configMap } = await chrome.storage.local.get(['configMap']);
-    let sdkSupportHosts = [];
-    if (
-      configMap &&
-      JSON.parse(configMap) &&
-      JSON.parse(configMap).SDK_SUPPORT_HOST
-    ) {
-      sdkSupportHosts = JSON.parse(JSON.parse(configMap).SDK_SUPPORT_HOST);
-    }
     const dappTabId = await storeDappTabId(sender.tab.id);
 
-    if (!sdkVersion) {
-      if (params.hostname === 'localhost') {
-      } else if (!sdkSupportHosts.includes(params.hostname)) {
-        chrome.tabs.sendMessage(dappTabId, {
-          type: 'padoZKAttestationJSSDK',
-          name: 'initAttestationRes',
-          params: {
-            result: false,
-            errorData: {
-              title: '',
-              desc: 'Your dapp is not authorized',
-              code: '00009',
-            },
-          },
-        });
-        return;
-      }
-    }
+   
     await chrome.storage.local.set({
       padoZKAttestationJSSDKBeginAttest: sdkVersion,
     });
