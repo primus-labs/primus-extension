@@ -1,6 +1,5 @@
 const packageJson = require('../../package.json');
 
-export const SocailStoreVersion = '1.0.1';
 export const padoExtensionVersion = packageJson.version;
 
 export const ONESECOND = 1000;

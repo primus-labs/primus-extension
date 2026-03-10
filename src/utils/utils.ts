@@ -1,10 +1,4 @@
-import BigNumber from 'bignumber.js';
 var ethereumjsUtil = require('ethereumjs-util');
-
-export function sub(a: number, b: number) {
-  return new BigNumber(a).minus(new BigNumber(b));
-}
-
 
 export function postMsg(port: chrome.runtime.Port, msg: any) {
   try {

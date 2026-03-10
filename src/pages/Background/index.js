@@ -15,7 +15,6 @@ import { devconsoleMsgListener } from './devconsole/index.js';
 const Web3EthAccounts = require('web3-eth-accounts');
 console.log('Background initialization');
 let fullscreenPort = null;
-let web3EthAccount = new Web3EthAccounts();
 
 // const compareRes = compareVersions('0.3.14', padoExtensionVersion);
 // console.log('padoExtensionVersion', padoExtensionVersion, compareRes);
@@ -212,81 +211,6 @@ const processAlgorithmReq = async (message, _port) => {
           resMethodName: 'lineaEventStartOffline',
           res: {},
         });
-      break;
-    default:
-      break;
-  }
-};
-
-const processWalletReq = async (message, port) => {
-  console.log('processWalletReq message', message);
-  const {
-    reqMethodName,
-    params: { password },
-  } = message;
-  const { keyStore } = await chrome.storage.local.get(['keyStore']);
-  switch (reqMethodName) {
-    case 'decrypt':
-      if (keyStore) {
-        try {
-          web3EthAccount = new Web3EthAccounts();
-          const pwd = password || USERPASSWORD;
-          const plaintextKeyStore = web3EthAccount.decrypt(keyStore, pwd);
-          USERPASSWORD = pwd;
-          postMsg(port, {
-            resMethodName: reqMethodName,
-            res: plaintextKeyStore,
-          });
-        } catch {
-          postMsg(port, { resMethodName: reqMethodName, res: false });
-        }
-      } else {
-        postMsg(port, { resMethodName: reqMethodName, res: false });
-      }
-      break;
-    case 'encrypt':
-      const pKRes = await chrome.storage.local.get(['privateKey']);
-      let privateKey = pKRes.privateKey;
-      web3EthAccount = web3EthAccount || new Web3EthAccounts();
-      const orignAccount = web3EthAccount.privateKeyToAccount(privateKey);
-      const encryptAccount = orignAccount.encrypt(password);
-      USERPASSWORD = password;
-      await chrome.storage.local.set({
-        keyStore: JSON.stringify(encryptAccount),
-      });
-
-      await chrome.storage.local.remove([
-        'privateKey',
-        'padoCreatedWalletAddress',
-      ]);
-      break;
-    case 'clearUserPassword':
-      USERPASSWORD = '';
-      web3EthAccount = null;
-      break;
-    case 'queryUserPassword':
-      // console.log('background receive queryUserPassword');
-      postMsg(port, { resMethodName: reqMethodName, res: USERPASSWORD });
-      break;
-    case 'resetUserPassword':
-      console.log('background receive resetUserPassword');
-      USERPASSWORD = password;
-      break;
-    case 'create':
-      try {
-        const pKRes = await chrome.storage.local.get(['privateKey']);
-        let privateKey = pKRes.privateKey;
-        let acc;
-        if (privateKey) {
-          acc = web3EthAccount.privateKeyToAccount(privateKey);
-        } else {
-          acc = web3EthAccount.create();
-          await chrome.storage.local.set({ privateKey: acc.privateKey });
-        }
-        postMsg(port, { resMethodName: reqMethodName, res: acc.address });
-      } catch {
-        postMsg(port, { resMethodName: reqMethodName, res: '' });
-      }
       break;
     default:
       break;
