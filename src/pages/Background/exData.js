@@ -63,8 +63,7 @@ export async function assembleAlgorithmParamsForSDK(form, ext) {
   return params;
 }
 
-async function assembleUserInfoParams(form, isFromSDK) {
-  const { event } = form;
+async function assembleUserInfoParams(_form, isFromSDK) {
   const {
     connectedWalletAddress,
     userInfo,

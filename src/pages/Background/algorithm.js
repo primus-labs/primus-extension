@@ -209,40 +209,6 @@ export const algorithmMsgListener = async (
             if (activeRequestId !== content?.requestid) {
               return;
             }
-            let fullAttestation = {};
-            if (
-              !padoZKAttestationJSSDKBeginAttest ||
-              padoZKAttestationJSSDKBeginAttest === '1'
-            ) {
-              fullAttestation = {
-                ...content,
-                ...parsedActiveRequestAttestation,
-                ...activeAttestationParams,
-                // account: acc,
-                account: '',
-              };
-              if (fullAttestation.verificationContent === 'X Followers') {
-                let count = 0;
-                if (padoZKAttestationJSSDKBeginAttest) {
-                  const { padoZKAttestationJSSDKXFollowerCount } =
-                    await chrome.storage.local.get([
-                      'padoZKAttestationJSSDKXFollowerCount',
-                    ]);
-                  count = padoZKAttestationJSSDKXFollowerCount;
-                }
-                fullAttestation.xFollowerCount = count;
-              }
-              const { credentials } = await chrome.storage.local.get([
-                'credentials',
-              ]);
-              const credentialsObj = credentials
-                ? { ...JSON.parse(credentials) }
-                : {};
-              credentialsObj[activeRequestId] = fullAttestation;
-              await chrome.storage.local.set({
-                credentials: JSON.stringify(credentialsObj),
-              });
-            }
 
             // await sucFn(JSON.parse(content.encodedData));
             const passRes = JSON.parse(content.encodedData);

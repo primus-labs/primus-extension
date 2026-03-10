@@ -9,7 +9,6 @@ import { getSysConfig, getProofTypes } from '@/services/api/config';
 import { requestSignTypedData } from '@/services/wallets/utils';
 
 import { getCurrentDate, postMsg, sub } from '@/utils/utils';
-import { addSDKParamsToReportParamsFn } from './utils/reportEvent.js';
 import { sendInitAttestationRes } from './utils/msgTransfer.js';
 
 import { SocailStoreVersion } from '@/config/constants';
@@ -469,7 +468,7 @@ const onDisconnectFullScreen = (port) => {
 
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   console.log('background onMessage message', message, fullscreenPort);
-  const { resType, type, name, params } = message;
+  const { resType, type } = message;
   if (resType === 'algorithm') {
     algorithmMsgListener(
       message,

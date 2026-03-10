@@ -1,5 +1,9 @@
 {
-  "ignorePatterns": ["**/*.min.js"],
+  "ignorePatterns": [
+    "**/*.min.js",
+    "src/services/algorithms/client_plugin.js",
+    "src/services/algorithms/client_plugin.worker.js"
+  ],
   "extends": ["eslint:recommended", "plugin:react/recommended"],
   "parserOptions": {
     "ecmaVersion": 2021,

@@ -137,24 +137,6 @@ chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
 
     const res = getAttestation(message.params);
 
-    /*const test = {
-            "method": "getSign",
-            "params": {
-                "source": "binance",
-                "schemaType": "Assets Proof"
-            }
-        };
-        test.params.source = message.params.source;
-        test.params.schemaType = message.params.schemaType;
-        if (test.params.schemaType === 'Token Holdings') {
-            test.params.holdingToken = message.params.holdingToken;
-        }
-        call(JSON.stringify(test));*/
-    // var eventInfo = {
-    //   eventType: 'ATTESTATION_START_OFFSCREEN_SUC',
-    //   rawData: { ...rawData, order: '5' },
-    // };
-    // eventReport(eventInfo);
     chrome.runtime.sendMessage({
       resType: 'algorithm',
       resMethodName: 'getAttestation',

@@ -128,8 +128,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
     let algorithmType;
     if (sdkVersion) {
       algorithmType = params.attRequest?.attMode?.algorithmType || 'proxytls';
-    } else {
-      algorithmType = params.algorithmType;
     }
 
     const algoApisParam = isNetworkSdk ? params.attRequest?.algoApis : undefined;
@@ -449,9 +447,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
   }
 
   if (name === 'getAttestationResultTimeout') {
-    if (sdkParams.attestationTypeID === '101') {
-      return;
-    }
     const { configMap } =
       await chrome.storage.local.get([
         'configMap',
