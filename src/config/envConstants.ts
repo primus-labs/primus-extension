@@ -156,29 +156,3 @@ const OPBNBSCHEMANAMEMAP = {
   production: 'Ethsign-opBNB-Mainnet',
 };
 export let OPBNBSCHEMANAME = OPBNBSCHEMANAMEMAP[CURENV];
-const BNBGREENFIELDURLMAP = {
-  development: 'http://api-dev.padolabs.org:9095/',
-  test: 'http://api-dev.padolabs.org:9095/',
-  production: 'https://events.padolabs.org/',
-};
-export let BNBGREENFIELDURL = BNBGREENFIELDURLMAP[CURENV];
-const FIRSTVERSIONSUPPORTEDNETWORKNAMEMAP = {
-  development: 'Sepolia',
-  test: 'Sepolia',
-  production: 'ArbitrumOne',
-};
-export let FIRSTVERSIONSUPPORTEDNETWORKNAME =
-  FIRSTVERSIONSUPPORTEDNETWORKNAMEMAP[CURENV];
-const CLAIMNFTNETWORKNAMEMAP = {
-  development: 'Sepolia',
-  test: 'Sepolia',
-  production: 'Polygon',
-};
-export let CLAIMNFTNETWORKNAME = CLAIMNFTNETWORKNAMEMAP[CURENV];
-
-const OPENSEALINKMAP = {
-  development:
-    'https://testnets.opensea.io/assets/sepolia/0xe71e7b07158963095a5ea841addbd6f20e599292',
-  production: `https://opensea.io/assets/matic/0x616bdf7e9041c6f76b0ff6de9af5da2c88a9ac98`,
-};
-export let OPENSEALINK = OPENSEALINKMAP[CURENV];

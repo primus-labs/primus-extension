@@ -198,17 +198,6 @@ export const DATASOURCEMAP: DataSourceMapType = {
     connectType: 'API',
     hidden: true,
   },
-
-  chatgpt: {
-    id: 'chatgpt',
-    name: 'ChatGPT',
-    type: 'Social',
-    icon: undefined,
-    desc: '',
-    unConnectTip: '',
-    connectType: 'Web',
-    hidden: true,
-  },
 };
 export const DATASOURCEMAPVALUES: DataSourceItemType[] =
   Object.values(DATASOURCEMAP);

@@ -367,11 +367,6 @@ var options = {
           force: true,
         },
         {
-          from: 'src/assets/img/iconDataSourceChatgpt.svg',
-          to: path.join(__dirname, 'build'),
-          force: true,
-        },
-        {
           from: 'src/assets/img/content/iconSuc.svg',
           to: path.join(__dirname, 'build'),
           force: true,

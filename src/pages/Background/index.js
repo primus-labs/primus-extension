@@ -23,7 +23,6 @@ import {
 import { eventReport } from '@/services/api/usertracker';
 import './pageDecode/index.js';
 import { pageDecodeMsgListener } from './pageDecode/index.js';
-import { PadoWebsiteMsgListener } from './pageWebsite.js';
 import { padoZKAttestationJSSDKMsgListener } from './padoZKAttestationJSSDK/index.js';
 import { algorithmMsgListener } from './algorithm.js';
 import { devconsoleMsgListener } from './devconsole/index.js';
@@ -567,9 +566,6 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       hasGetTwitterScreenName,
       processAlgorithmReq
     );
-  }
-  if (type === 'padoWebsite') {
-    PadoWebsiteMsgListener(message, sender, sendResponse);
   }
   if (type === 'googleAuth') {
     const { name } = message;

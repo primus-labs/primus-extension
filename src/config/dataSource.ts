@@ -250,16 +250,6 @@ export const DATASOURCEMAP: DataSourceMapType = {
     type: 'Social',
     icon: iconDataSourceYoutube,
   },*/
-  chatgpt: {
-    id: 'chatgpt',
-    name: 'ChatGPT',
-    type: 'Social',
-    icon: undefined,
-    desc: '',
-    unConnectTip: '',
-    connectType: 'Web',
-    hidden: true,
-  },
 };
 export const DATASOURCEMAPVALUES: DataSourceItemType[] =
   Object.values(DATASOURCEMAP);

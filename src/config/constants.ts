@@ -233,38 +233,6 @@ export const CHAINNETWORKLIST = [
   },
 ];
 
-export const SUPPORRTEDQUERYCHAINMAP = {
-  'Arbitrum One': {
-    name: 'Arbitrum One',
-    chainId: 42161,
-    icon: iconArbitrum,
-  },
-  BSC: {
-    name: 'BSC',
-    chainId: 56,
-    icon: iconBinance,
-  },
-  Ethereum: {
-    name: 'Ethereum',
-    chainId: 1,
-    icon: iconChainEthereum,
-  },
-  Polygon: {
-    name: 'Polygon',
-    chainId: 137,
-    icon: iconPolygon,
-  },
-  Avalanche: {
-    name: 'Avalanche',
-    chainId: 43114,
-    icon: iconNetwork6,
-  },
-  Optimism: {
-    name: 'Optimism',
-    chainId: 10,
-    icon: iconOptimism,
-  },
-};
 export const schemaTypeMap = {
   ASSETS_PROOF: 'Assets Proof',
   TOKEN_HOLDINGS: 'Token Holdings',

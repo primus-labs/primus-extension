@@ -39,16 +39,9 @@ let currExtentionId;
 
 let isReadyRequest = false;
 let operationType = null;
-let RequestsHasCompleted = false;
 let formatAlgorithmParams = null;
-let preAlgorithmStatus = '';
-let preAlgorithmTimer = null;
-let preAlgorithmFlag = false;
-let chatgptHasLogin = false;
-let listenerFn = () => {};
 let onBeforeSendHeadersFn = () => {};
 let onBeforeRequestFn = () => {};
-let onCompletedFn = () => {};
 let requestsMap = {};
 let reportRequestIds = [];
 
@@ -90,15 +83,9 @@ const storeRequestsMap = (url, urlInfo) => {
 const resetVarsFn = () => {
   isReadyRequest = false;
   operationType = null;
-  RequestsHasCompleted = false;
   formatAlgorithmParams = null;
-  preAlgorithmStatus = '';
-  preAlgorithmTimer = null;
-  preAlgorithmFlag = false;
-  chatgptHasLogin = false;
   requestsMap = {};
   reportRequestIds = [];
-  chrome.runtime.onMessage.removeListener(listenerFn);
 };
 const handlerForSdk = async (processAlgorithmReq, operation) => {
   const {
@@ -393,7 +380,6 @@ export const pageDecodeMsgListener = async (
     const checkWebRequestIsReadyFn = async () => {
       const checkReadyStatusFn = async () => {
         let {
-          dataSource,
           datasourceTemplate: { requests },
           sdkVersion,
         } = activeTemplate;
@@ -422,9 +408,8 @@ export const pageDecodeMsgListener = async (
               }
             );
             if (activeRequestInfo) {
-              let targetRequestId = activeRequestInfo.requestId;
-              const sRrequestObj = requestsMap[targetRequestId] || {};
-              chatgptHasLogin = !!sRrequestObj?.headers?.Authorization;
+              const sRrequestObj =
+                requestsMap[activeRequestInfo.requestId] || {};
               const headersFlag =
                 !r.headers || (!!r.headers && !!sRrequestObj.headers);
               const bodyFlag = !r.body || (!!r.body && !!sRrequestObj.body);
@@ -459,18 +444,8 @@ export const pageDecodeMsgListener = async (
             fl = f;
           }
 
-          if (fl) {
-            if (dataSource === 'chatgpt') {
-              fl =
-                !!f &&
-                chatgptHasLogin &&
-                RequestsHasCompleted &&
-                preAlgorithmStatus === '1';
-            } else {
-              if (!formatAlgorithmParams) {
-                await formatAlgorithmParamsFn();
-              }
-            }
+          if (fl && !formatAlgorithmParams) {
+            await formatAlgorithmParamsFn();
           }
           return fl;
         } else {
@@ -635,48 +610,12 @@ export const pageDecodeMsgListener = async (
         }
         formatRequests.push({ ...r, url: r.name === 'first' ? r.url : url });
       }
-      let formatResponse = JSON.parse(JSON.stringify(responses));
-      if (dataSource === 'chatgpt') {
-        const { chatGPTExpression } = activeTemplate;
-        if (chatGPTExpression) {
-          aligorithmParams.chatGPTExpression = chatGPTExpression;
+      const formatResponse = JSON.parse(JSON.stringify(responses));
+      for (const fr of formatRequests) {
+        if (fr.headers) {
+          fr.headers['Accept-Encoding'] = 'identity';
         }
-        const extraRequestSK = `https://chatgpt.com/backend-api/conversation-extra`;
-        const extraSObj = await chrome.storage.local.get([extraRequestSK]);
-        const extraRequestInfo = extraSObj[extraRequestSK]
-          ? JSON.parse(extraSObj[extraRequestSK])
-          : {};
-        const {
-          request: {
-            url,
-            method,
-            headers: { host },
-          },
-          response: { messageIds },
-        } = extraRequestInfo;
-
-        formatRequests[1].url = url;
-        formatRequests[1].method = method;
-        formatRequests[1].headers.host = host;
-        let originSubConditionItem =
-          formatResponse[1].conditions.subconditions[0];
-        formatResponse[1].conditions.subconditions = [];
-        messageIds.forEach((mK) => {
-          const fieldArr = originSubConditionItem.field.split('.');
-          fieldArr[2] = mK;
-          formatResponse[1].conditions.subconditions.push({
-            ...originSubConditionItem,
-            reveal_id: mK,
-            field: fieldArr.join('.'),
-          });
-        });
-      } else {
-        for (const fr of formatRequests) {
-          if (fr.headers) {
-            fr.headers['Accept-Encoding'] = 'identity';
-          }
-          fr.url = fr.url.split('#')[0];
-        }
+        fr.url = fr.url.split('#')[0];
       }
       Object.assign(aligorithmParams, {
         reqType: 'web',
@@ -704,96 +643,6 @@ export const pageDecodeMsgListener = async (
       );
     };
 
-    const preAlgorithmFn = async () => {
-      console.log('preAlgorithmFn');
-      if (preAlgorithmFlag) {
-        return;
-      }
-
-      let aligorithmParams = Object.assign(
-        { isUserClick: 'false' },
-        formatAlgorithmParams
-      );
-      chrome.runtime.sendMessage({
-        type: 'algorithm',
-        method: 'getAttestation',
-        params: JSON.parse(JSON.stringify(aligorithmParams)),
-      });
-      preAlgorithmFlag = true;
-    };
-    listenerFn = async (message, _sender, _sendResponse) => {
-      const { padoZKAttestationJSSDKBeginAttest } =
-        await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
-      if (padoZKAttestationJSSDKBeginAttest) {
-        const { resType, resMethodName } = message;
-
-        if (
-          resType === 'algorithm' &&
-          ['getAttestation', 'getAttestationResult'].includes(resMethodName)
-        ) {
-          if (message.res) {
-            const { retcode, isUserClick } = JSON.parse(message.res);
-            if (isUserClick === 'false') {
-              console.log('preAlgorithm message', message);
-              if (resMethodName === 'getAttestation') {
-                if (retcode === '0') {
-                  if (!preAlgorithmTimer) {
-                    preAlgorithmTimer = setInterval(() => {
-                      chrome.runtime.sendMessage({
-                        type: 'algorithm',
-                        method: 'getAttestationResult',
-                        params: {},
-                      });
-                    }, 1000);
-                    console.log('preAlgorithmTimer-set', preAlgorithmTimer);
-                  }
-                } else {
-                  errorFn({
-                    title: 'Launch failed: unstable connection.',
-                    desc: 'Launch failed: unstable connection.',
-                    code: '00011',
-                  });
-                }
-              }
-              if (resMethodName === 'getAttestationResult') {
-                const { retcode, details } =
-                  JSON.parse(message.res);
-
-                if (retcode === '1') {
-                  if (details.online.statusDescription === 'RUNNING_PAUSE') {
-                    console.log(
-                      'preAlgorithmTimer-clear',
-                      preAlgorithmTimer,
-                      'preAlgorithmStatus',
-                      retcode
-                    );
-                    clearInterval(preAlgorithmTimer);
-                    preAlgorithmStatus = retcode;
-                    checkWebRequestIsReadyFn();
-                  }
-                } else if (retcode === '2') {
-                  console.log(
-                    'preAlgorithmTimer-clear',
-                    preAlgorithmTimer,
-                    'preAlgorithmStatus',
-                    retcode
-                  );
-                  clearInterval(preAlgorithmTimer);
-                  preAlgorithmStatus = retcode;
-                  errorFn({
-                    title: 'Launch failed: unstable connection.',
-                    desc: 'Launch failed: unstable connection.',
-                    code: '00011',
-                  });
-                }
-              }
-            }
-          }
-        }
-      }
-    };
-    chrome.runtime.onMessage.addListener(listenerFn);
-
     if (name === 'init') {
       const { configMap } = await chrome.storage.local.get(['configMap']);
       if (configMap) {
@@ -820,7 +669,6 @@ export const pageDecodeMsgListener = async (
         onBeforeSendHeadersFn
       );
       chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
-      chrome.webRequest.onCompleted.removeListener(onCompletedFn);
       onBeforeSendHeadersFn = async (details) => {
         if (
           details?.initiator?.startsWith(
@@ -837,7 +685,6 @@ export const pageDecodeMsgListener = async (
           return;
         }
         let {
-          dataSource,
           jumpTo,
           datasourceTemplate: { requests },
           sdkVersion,
@@ -858,22 +705,6 @@ export const pageDecodeMsgListener = async (
           prev[name] = value;
           return prev;
         }, {});
-        if (
-          currRequestUrl === 'https://chatgpt.com/public-api/conversation_limit'
-        ) {
-          chatgptHasLogin = !!formatHeader.Authorization;
-          if (dataSource === 'chatgpt') {
-            const tipStr = chatgptHasLogin ? 'toMessage' : 'toLogin';
-            console.log('setUIStep-', tipStr);
-            sendMsgToDataSourcePage({
-              type: 'pageDecode',
-              name: 'setUIStep',
-              params: {
-                step: tipStr,
-              },
-            });
-          }
-        }
         let templateRequestUrl = '';
 
         const isTarget = requests.some((r) => {
@@ -1003,37 +834,6 @@ export const pageDecodeMsgListener = async (
           }
         }
       };
-      onCompletedFn = async (details) => {
-        if (
-          details?.initiator?.startsWith(
-            `chrome-extension://${chrome.runtime.id}`
-          )
-        ) {
-          return;
-        }
-        if (![-1, dataSourcePageTabId].includes(details.tabId)) {
-          return;
-        }
-        let { dataSource } = activeTemplate;
-
-        if (dataSource === 'chatgpt') {
-          console.log('onCompletedFn', dataSource, details);
-          // chatgpt has only one requestUrl
-          console.log('setUIStep-toVerify');
-          sendMsgToDataSourcePage({
-            type: 'pageDecode',
-            name: 'setUIStep',
-            params: {
-              step: 'toVerify',
-            },
-          });
-
-          await formatAlgorithmParamsFn();
-          console.log('RequestsHasCompleted=', RequestsHasCompleted);
-          preAlgorithmFn();
-          checkWebRequestIsReadyFn();
-        }
-      };
 
       chrome.webRequest.onBeforeSendHeaders.addListener(
         onBeforeSendHeadersFn,
@@ -1044,12 +844,6 @@ export const pageDecodeMsgListener = async (
         onBeforeRequestFn,
         { urls: ['<all_urls>'], types: ['xmlhttprequest', 'main_frame'] },
         ['requestBody']
-      );
-
-      chrome.webRequest.onCompleted.addListener(
-        onCompletedFn,
-        { urls: interceptorUrlArr, types: ['xmlhttprequest', 'main_frame'] },
-        ['responseHeaders', 'extraHeaders']
       );
 
       const tabCreatedByPado = await chrome.tabs.create({
@@ -1093,7 +887,6 @@ export const pageDecodeMsgListener = async (
             onBeforeSendHeadersFn
           );
           chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
-          chrome.webRequest.onCompleted.removeListener(onCompletedFn);
         }
       });
       await injectFn();
@@ -1196,7 +989,6 @@ const handleEnd = (request) => {
     sendMsgToDataSourcePage(request);
     chrome.webRequest.onBeforeSendHeaders.removeListener(onBeforeSendHeadersFn);
     chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestFn);
-    chrome.webRequest.onCompleted.removeListener(onCompletedFn);
     resetVarsFn();
   }
 };

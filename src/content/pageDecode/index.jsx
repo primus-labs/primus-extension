@@ -8,7 +8,6 @@ import { createRoot } from 'react-dom/client';
 import RightEl from './RightEl';
 import FooterEl from './FooterEl';
 import HeaderEl from './HeaderEl';
-import FriendlyTip from './FriendlyTip';
 import { injectFont, createDomElement, eventReport } from './utils';
 import { logicForMonad } from './logicForSdk';
 const ATTESTATIONPOLLINGTIMEOUT = 2 * 60 * 1000;
@@ -24,14 +23,11 @@ let padoExtensionVersion;
 let activeRequestid;
 
 function PadoCard() {
-  const [UIStep, setUIStep] = useState('loading');
   const [status, setStatus] = useState('uninitialized');
   const statusRef = useRef(status);
   const [isReadyFetch, setIsReadyFetch] = useState(false);
   const [resultStatus, setResultStatus] = useState('');
   const [errorTxt, setErrorTxt] = useState();
-
-  var iconPado = chrome.runtime.getURL(`iconPado.svg`);
 
   useEffect(() => {
     const lastStatus = sessionStorage.getItem('padoAttestRequestStatus');
@@ -40,7 +36,6 @@ function PadoCard() {
     );
     const lastErrorTxt = sessionStorage.getItem('padoAttestRequestErrorTxt');
     const lastIsReadyFetch = sessionStorage.getItem('padoAttestRequestReady');
-    const lastPrimusUIStep = sessionStorage.getItem('primusUIStep');
 
     if (lastStatus) {
       setStatus(lastStatus);
@@ -57,21 +52,13 @@ function PadoCard() {
     if (lastIsReadyFetch) {
       setIsReadyFetch(!!lastIsReadyFetch);
     }
-    if (lastPrimusUIStep) {
-      setUIStep(lastPrimusUIStep);
-    }
   }, []);
   useEffect(() => {
     const listenerFn = (request, _sender, _sendResponse) => {
       var {
         name,
-        params: { result, failReason, step },
+        params: { result, failReason },
       } = request;
-      if (name === 'setUIStep') {
-        console.log('content receive:setUIStep');
-        setUIStep(step);
-        sessionStorage.setItem('primusUIStep', step);
-      }
       if (name === 'webRequestIsReady') {
         console.log('content receive:webRequestIsReady');
         setIsReadyFetch(true);
@@ -243,33 +230,18 @@ function PadoCard() {
 
   return (
     <>
-      {(activeRequest.dataSourceId === 'chatgpt' && isReadyFetch) ||
-      activeRequest.dataSourceId !== 'chatgpt' ? (
-        <div className={`pado-extension-card  ${status}`}>
-          <div className="pado-extension-left">
-            <HeaderEl />
-            <FooterEl
-              status={status}
-              resultStatus={resultStatus}
-              errorTxt={errorTxt}
-              activeRequest={activeRequest}
-            />
-          </div>
-          <RightEl status={status} onBack={handleBack} />
+      <div className={`pado-extension-card  ${status}`}>
+        <div className="pado-extension-left">
+          <HeaderEl />
+          <FooterEl
+            status={status}
+            resultStatus={resultStatus}
+            errorTxt={errorTxt}
+            activeRequest={activeRequest}
+          />
         </div>
-      ) : (
-        <div className="padoWrapper">
-          {['toLogin', 'toMessage', 'toVerify'].includes(UIStep) && (
-            <FriendlyTip tipKey={UIStep}></FriendlyTip>
-          )}
-          {!isReadyFetch && (
-            <div className="loadingStep">
-              <img src={iconPado} className="iconPado" />
-              <div className="loading-spinner loader"></div>
-            </div>
-          )}
-        </div>
-      )}
+        <RightEl status={status} onBack={handleBack} />
+      </div>
     </>
   );
 }

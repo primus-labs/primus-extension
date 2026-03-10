@@ -288,7 +288,7 @@ export const algorithmMsgListener = async (
 
             const { extraData } = content;
             const tipMapForSdk = {
-              '-1200010': 'Invalid message.', // chatgpt input error
+              '-1200010': 'Invalid message.',
               '-1002001': 'Invalid App ID.',
               '-1002002': 'Invalid App Secret.',
             };

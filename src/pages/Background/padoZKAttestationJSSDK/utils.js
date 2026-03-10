@@ -63,7 +63,6 @@ export const regenerateAttest = async (orginAttestation, chainName) => {
     type,
     dataToBeSigned,
     source,
-    extendedData,
   } = orginAttestation;
   const requestParams = {
     rawParam:
@@ -80,9 +79,6 @@ export const regenerateAttest = async (orginAttestation, chainName) => {
   };
   if (type === 'BREVIS_TRANSACTION_PROOF#1') {
     requestParams.dataToBeSigned = dataToBeSigned;
-  }
-  if (source === 'chatgpt') {
-    requestParams.extendedData = extendedData;
   }
   const regenerateAttestRes = await regenerateAttestation(requestParams);
   return regenerateAttestRes;
