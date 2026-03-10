@@ -105,14 +105,3 @@ export const storeDataSource = async (dataSourceId, ex, port, otherParams) => {
   }
 };
 
-export const getDataSourceAccount = async (dataSourceId) => {
-  let storages = await chrome.storage.local.get([dataSourceId]);
-  let acc = '';
-  if (storages[dataSourceId]) {
-    acc = getAccount(
-      DATASOURCEMAP[dataSourceId],
-      JSON.parse(storages[dataSourceId])
-    );
-  }
-  return acc;
-};

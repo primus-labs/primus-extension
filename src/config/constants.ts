@@ -19,8 +19,3 @@ export const STARTOFFLINETIMEOUT = 3 * ONEMINUTE + '';
 export const DEFAULTFETCHTIMEOUT = 1 * ONEMINUTE;
 export const BIGZERO = new BigNumber(0);
 
-export const schemaTypeMap = {
-  ASSETS_PROOF: 'Assets Proof',
-  TOKEN_HOLDINGS: 'Token Holdings',
-  IDENTIFICATION_PROOF: 'IDENTIFICATION_PROOF',
-};

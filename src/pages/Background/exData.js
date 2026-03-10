@@ -1,7 +1,6 @@
 import { encrypt, decrypt } from '@/utils/crypto';
 import { DATASOURCEMAP } from '@/config/dataSource';
 import { SCROLLEVENTNAME, BASEVENTNAME } from '@/config/events';
-import { schemaTypeMap } from '@/config/constants';
 import { CredVersion } from '@/config/attestation';
 import { getPadoUrl, getProxyUrl, getZkPadoUrl } from '@/config/envConstants';
 import { postMsg, strToHex } from '@/utils/utils';
@@ -172,7 +171,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
   const authUseridHash = strToHex(authUserId);
 
   const timeStampStr = (+new Date()).toString();
-  let schemaType = schemaTypeMap[type];
+  
   const padoUrl = await getPadoUrl();
   const proxyUrl = await getProxyUrl();
   const zkPadoUrl = await getZkPadoUrl();
@@ -195,7 +194,7 @@ export async function assembleAlgorithmParams(form, USERPASSWORD, port) {
     credVersion: CredVersion,
 
     sigFormat: 'EAS-Ethereum',
-    schemaType,
+    schemaType : undefined,
     user,
     // holdingToken
     authUseridHash,
