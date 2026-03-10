@@ -199,28 +199,3 @@ export const DATASOURCEMAP: DataSourceMapType = {
     hidden: true,
   },
 };
-export const DATASOURCEMAPVALUES: DataSourceItemType[] =
-  Object.values(DATASOURCEMAP);
-
-export const guideMap = {
-  binance:
-    'https://docs.padolabs.org/Exchanges-API-Setup/Binance-API-Key-Setup',
-  coinbase:
-    'https://docs.padolabs.org/Exchanges-API-Setup/Coinbase-API-Key-Setup',
-  kucoin: 'https://docs.padolabs.org/Exchanges-API-Setup/Kucoin-API-Key-Setup',
-  bybit: 'https://docs.padolabs.org/Exchanges-API-Setup/Bybit-API-Key-Setup',
-  okx: 'https://docs.padolabs.org/Exchanges-API-Setup/OKX-API-Key-Setup',
-  gate: 'https://docs.padolabs.org/Exchanges-API-Setup/Gate-API-Key-Setup',
-  huobi: 'https://docs.padolabs.org/Exchanges-API-Setup/Huobi-API-Key-Setup',
-  bitget: 'https://docs.padolabs.org/Exchanges-API-Setup/Bitget-API-Key-Setup',
-  mexc: 'https://docs.padolabs.org/Exchanges-API-Setup/MEXC-API-Key-Setup',
-};
-
-export const SUPPORTATTESTDATASOURCES = [
-  'binance',
-  'okx',
-  'x',
-  'tiktok',
-  'google',
-  'coinbase',
-];
