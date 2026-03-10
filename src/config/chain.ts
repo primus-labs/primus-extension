@@ -381,8 +381,6 @@ export const EASINFOMAP = {
 };
 export const EASInfo = EASINFOMAP[CURENV];
 
-export const ONCHAINLIST = Object.values(EASInfo);
-
 const LINEASCHEMANAMEMAP = {
   development: 'Verax-Linea-Goerli',
   production: 'Verax-Linea-Mainnet',

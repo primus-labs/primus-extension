@@ -22,7 +22,6 @@ let activeRequest;
 let PADOSERVERURL;
 let padoExtensionVersion;
 let activeRequestid;
-let operationType;
 
 function PadoCard() {
   const [UIStep, setUIStep] = useState('loading');
@@ -320,7 +319,6 @@ chrome.runtime.sendMessage(
       PADOSERVERURL = response.params.PADOSERVERURL;
       padoExtensionVersion = response.params.padoExtensionVersion;
       activeRequestid = response.params.requestid;
-      operationType = response.operation;
       const container = document.getElementById('pado-extension-content');
       const root = createRoot(container);
       root.render(<PadoCard />);
