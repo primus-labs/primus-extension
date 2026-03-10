@@ -287,82 +287,12 @@ var options = {
           force: true,
         },
         {
-          from: 'src/assets/img/content/iconExtension.svg',
-          to: path.join(__dirname, 'build'),
-          force: true,
-        },
-        {
           from: 'src/assets/img/content/iconPado.svg',
           to: path.join(__dirname, 'build'),
           force: true,
         },
         {
           from: 'src/assets/img/content/iconPrimusSquare.svg',
-          to: path.join(__dirname, 'build'),
-          force: true,
-        },
-        {
-          from: 'src/assets/img/content/iconSucc.svg',
-          to: path.join(__dirname, 'build'),
-          force: true,
-        },
-        {
-          from: 'src/assets/img/content/iconFail.svg',
-          to: path.join(__dirname, 'build'),
-          force: true,
-        },
-        {
-          from: 'src/assets/img/content/iconLink.svg',
-          to: path.join(__dirname, 'build'),
-          force: true,
-        },
-        {
-          from: 'src/assets/img/iconDataSourceBinance.svg',
-          to: path.join(__dirname, 'build'),
-          force: true,
-        },
-        {
-          from: 'src/assets/img/iconDataSourceCoinbase.png',
-          to: path.join(__dirname, 'build'),
-          force: true,
-        },
-        {
-          from: 'src/assets/img/iconDataSourceOKX.svg',
-          to: path.join(__dirname, 'build'),
-          force: true,
-        },
-        {
-          from: 'src/assets/img/iconDataSourceX.svg',
-          to: path.join(__dirname, 'build'),
-          force: true,
-        },
-        {
-          from: 'src/assets/img/iconDataSourceTikTok.svg',
-          to: path.join(__dirname, 'build'),
-          force: true,
-        },
-        {
-          from: 'src/assets/img/iconDataSourceBitget.svg',
-          to: path.join(__dirname, 'build'),
-          force: true,
-        },
-        {
-          from: 'src/assets/img/iconDataSourceMEXC.png',
-          to: path.join(__dirname, 'build'),
-          force: true,
-        },
-        {
-          from: 'src/assets/img/iconDataSourceHuobi.svg',
-          to: path.join(__dirname, 'build'),
-          force: true,
-        },
-        {
-          from: 'src/assets/img/iconDataSourceGate.svg',
-          to: path.join(__dirname, 'build'),
-          force: true,
-        },
-        {
-          from: 'src/assets/img/content/iconSuc.svg',
           to: path.join(__dirname, 'build'),
           force: true,
         },

@@ -479,18 +479,6 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       processAlgorithmReq
     );
   }
-  if (resType === 'report') {
-    if (name === `offscreenReceiveGetAttestation`) {
-      var eventInfo = {
-        eventType: 'ATTESTATION_START_OFFSCREEN',
-        rawData: {
-          ...params,
-        },
-      };
-      eventInfo.rawData = await addSDKParamsToReportParamsFn(eventInfo.rawData);
-      eventReport(eventInfo);
-    }
-  }
   let hasGetTwitterScreenName = false;
   if (type === 'pageDecode') {
     pageDecodeMsgListener(
@@ -501,12 +489,6 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       hasGetTwitterScreenName,
       processAlgorithmReq
     );
-  }
-  if (type === 'googleAuth') {
-    const { name } = message;
-    if (name === 'cancelAttest') {
-      chrome.runtime.sendMessage(message);
-    }
   }
   if (type === 'padoZKAttestationJSSDK') {
     padoZKAttestationJSSDKMsgListener(

@@ -41,22 +41,7 @@ window.addEventListener('message', (e) => {
         params: true,
       });
     }
-
-    // if (name === 'beforeunload') {
-    //   console.log('sdk-content-padoZKAttestationJSSDK-beforeunload')
-    //   var msgObj = {
-    //     type: 'pageDecode',
-    //     name: 'cancel',
-    //   };
-    //   chrome.runtime.sendMessage(msgObj);
-    // }
-    // if (name === 'stopOffscreen') {
-    //   window.postMessage({
-    //     target: 'padoZKAttestationJSSDK',
-    //     origin: 'padoExtension',
-    //     name: 'stopOffscreen',
-    //   });
-    // }
+    
     if (name === 'removeActiveAttestation') {
       chrome.storage.local.remove([
         'padoZKAttestationJSSDKBeginAttest',

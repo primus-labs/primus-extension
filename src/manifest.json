@@ -23,21 +23,7 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "iconExtension.svg",
-        "iconSuc.svg",
         "iconPado.svg",
-        "iconSucc.svg",
-        "iconFail.svg",
-        "iconLink.svg",
-        "iconDataSourceBinance.svg",
-        "iconDataSourceCoinbase.png",
-        "iconDataSourceOKX.svg",
-        "iconDataSourceX.svg",
-        "iconDataSourceTikTok.svg",
-        "iconDataSourceBitget.svg",
-        "iconDataSourceGate.svg",
-        "iconDataSourceMEXC.png",
-        "iconDataSourceHuobi.svg",
         "iconPrimusSquare.svg"
       ],
       "matches": ["<all_urls>"]

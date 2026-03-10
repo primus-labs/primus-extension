@@ -1,5 +1,4 @@
 import jp from 'jsonpath';
-import dayjs from 'dayjs';
 const { select } = require('xpath');
 const { DOMParser } = require('xmldom');
 const cheerio = require('cheerio');
@@ -188,17 +187,6 @@ export const checkResHtmlIsMatchConditionFn = (jsonPathArr, html) => {
     }
   });
   return isMatch;
-};
-export const getNMonthsBeforeTime = (timestamp, n) => {
-  const nowTime = dayjs(timestamp);
-  let targetTime2 = nowTime.subtract(n, 'month');
-  targetTime2 = targetTime2.subtract(1, 'day').add(1, 'second').valueOf();
-  return targetTime2;
-};
-export const getUTCDayLastSecondTime = (timestamp) => {
-  const nowTime = dayjs(timestamp);
-  const targetTime = nowTime.endOf('day').valueOf();
-  return targetTime;
 };
 // Replace existing parameters in the URL and add new parameters
 
