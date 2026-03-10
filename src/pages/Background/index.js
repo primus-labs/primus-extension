@@ -194,23 +194,7 @@ const processAlgorithmReq = async (message, _port) => {
           }
         }
       };
-      if (params?.from === 'beforeunload') {
-        const { padoZKAttestationJSSDKBeginAttest } =
-          await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
-        if (!padoZKAttestationJSSDKBeginAttest) {
-          await stopFn();
-        }
-      } else {
-        await stopFn();
-      }
-      break;
-    case 'lineaEventStartOffline':
-      fullscreenPort &&
-        postMsg(fullscreenPort, {
-          resType: 'algorithm',
-          resMethodName: 'lineaEventStartOffline',
-          res: {},
-        });
+      await stopFn();
       break;
     default:
       break;

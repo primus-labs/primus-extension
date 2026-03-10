@@ -19,7 +19,6 @@ const FooterEl = ({ status, resultStatus, errorTxt, activeRequest }) => {
     const {
       PRE_ATTEST_PROMOT_V2,
       verificationContent,
-      attestationType,
       verificationValue,
     } = activeRequest;
 

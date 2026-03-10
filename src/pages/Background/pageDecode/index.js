@@ -663,27 +663,6 @@ export const pageDecodeMsgListener = async (
             requestId,
             newCapturedInfo
           );
-          if (
-            needQueryDetail &&
-            formatUrlKey.startsWith(
-              'https://api.x.com/1.1/account/settings.json'
-            ) &&
-            !hasGetTwitterScreenName
-          ) {
-            const options = {
-              headers: newCurrRequestObj.headers,
-            };
-            hasGetTwitterScreenName = true;
-            const res = await fetch(
-              formatUrlKey + '?' + newCurrRequestObj.queryString,
-              options
-            );
-            const result = await res.json();
-            //need to go profile page
-            await chrome.tabs.update(dataSourcePageTabId, {
-              url: jumpTo + result.screen_name,
-            });
-          }
           await checkSDKTargetRequestFn(requestId, templateRequestUrl);
           checkWebRequestIsReadyFn();
         }
