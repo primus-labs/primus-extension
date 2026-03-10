@@ -3,11 +3,10 @@ import {
   Delegated,
   ATTEST_TYPE,
   SchemaEncoder,
-  SchemaRegistry,
   ZERO_BYTES32,
 } from '@ethereum-attestation-service/eas-sdk';
 import { EIP712Proxy } from '@ethereum-attestation-service/eas-sdk/dist/eip712-proxy';
-import { ethers, utils, BigNumber as BN } from 'ethers';
+import { ethers, utils } from 'ethers';
 import { proxyabi } from './proxyabi';
 import { lineaportalabi } from './lineaportalabi';
 

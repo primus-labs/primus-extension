@@ -1,7 +1,7 @@
 import WebExchange from './webexchange';
 import BigNumber from 'bignumber.js';
 
-import { USDT, BTC, STABLETOKENLIST, BUSD, TUSD } from '@/config/constants';
+import { USDT, BTC, STABLETOKENLIST } from '@/config/constants';
 
 const ONE = 1;
 const ZERO = 0;

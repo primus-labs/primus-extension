@@ -3,7 +3,6 @@ import { add, mul, gt } from '@/utils/utils';
 import { USDT, BTC, STABLETOKENLIST } from '@/config/constants';
 import WebExchange from './webexchange';
 const BIGZERO = new BigNumber(0);
-const BIGONE = new BigNumber(1);
 const ONE = 1;
 const ZERO = 0;
 class WebOKX extends WebExchange {

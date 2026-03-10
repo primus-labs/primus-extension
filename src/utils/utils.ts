@@ -31,18 +31,12 @@ export function div(a: number, b: number) {
   return new BigNumber(a).div(new BigNumber(b));
 }
 
-type FormatAddressType = (
+export const formatAddress = function (
   str: string,
-  startNum?: number,
-  endNum?: number,
-  sepStr?: string
-) => string;
-export const formatAddress: FormatAddressType = function (
-  str,
   startNum = 7,
   endNum = 5,
   sepStr = '...'
-) {
+): string {
   const endIdx = -1 * endNum;
   const startS = str.substr(0, startNum);
   const endS = str.substr(endIdx);
@@ -247,10 +241,10 @@ export const getStatisticalData = (res: any) => {
   const { nativeToken, erc20Token } = res;
   const tokenMap: any = {};
   let totalBalance: any = 0;
-  const chainsAssetsMapReduceF: (
+  const chainsAssetsMapReduceF = (
     prevChainsAssetMap: any,
     curChainName: string
-  ) => any = (prevChainsAssetMap, curChainName) => {
+  ): any => {
     const curChainAssetArr =
       erc20Token[curChainName as keyof typeof erc20Token] ?? [];
 
@@ -365,10 +359,10 @@ export const getStatisticalData = (res: any) => {
     chainsAssetsMapReduceF,
     {}
   );
-  const chainsAssetsMapReduceF2: (
+  const chainsAssetsMapReduceF2 = (
     prevChainsAssetMap: any,
-    curChain: any
-  ) => any = (prevChainsAssetMap, curChainNativeToken) => {
+    curChainNativeToken: any
+  ): any => {
     // native token
     const {
       balance,

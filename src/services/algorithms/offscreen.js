@@ -1,6 +1,4 @@
 //import ccxt from 'ccxt';
-let PADOSERVERURL;
-let padoExtensionVersion;
 
 // const request = async (fetchParams) => {
 //   let { method, url, data = {}, config } = fetchParams;
@@ -207,7 +205,7 @@ function startOffline(params) {
   return res;
 }
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
   console.log('offscreen onMessage message', message);
   if (message.type === 'algorithm' && message.method === 'init') {
     const res = init(message.params);
@@ -239,13 +237,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       },
     });
 
-    const activeParams = { ...message.params };
-    delete activeParams.PADOSERVERURL;
-    delete activeParams.padoExtensionVersion;
-    PADOSERVERURL = message.params.PADOSERVERURL;
-    padoExtensionVersion = message.params.padoExtensionVersion;
     const res = getAttestation(message.params);
-    EXCHANGEINFO = message.exInfo;
 
     /*const test = {
             "method": "getSign",
@@ -294,8 +286,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
-let EXCHANGEINFO = {};
-
 /*
 params str:
 {
@@ -330,73 +320,3 @@ okx:
     }
 }
 */
-function call(str) {
-  console.log('offscreen call str=', str);
-  const jsonParams = JSON.parse(str);
-  if (jsonParams.method === 'getSign') {
-    console.log(
-      'offscreen call source info=',
-      EXCHANGEINFO[jsonParams.params.source]
-    );
-    const source = jsonParams.params.source;
-    const apiKey = EXCHANGEINFO[source].apiKey;
-    const secretKey = EXCHANGEINFO[source].secretKey;
-    const passphase = EXCHANGEINFO[source].passphase;
-    const exchange = new ccxt[source]({
-      apiKey: apiKey,
-      secret: secretKey,
-      password: passphase,
-    });
-    console.log('offscreen call exchange=', exchange);
-    let res;
-    let signParams;
-    let path;
-    switch (source) {
-      case 'binance':
-        signParams = { recvWindow: 60 * 1000 };
-        if (
-          jsonParams.params.url.startsWith(
-            'https://api.binance.com/api/v3/account'
-          )
-        ) {
-          res = exchange.sign('account', 'private', 'GET', signParams);
-          console.log('offscreen call binance uid res=', res);
-          return JSON.stringify(res);
-        }
-        if (jsonParams.params.schemaType === 'Token Holdings') {
-          signParams.asset = jsonParams.params.holdingToken;
-        }
-        res = exchange.sign('asset/getUserAsset', 'sapiV3', 'POST', signParams);
-        console.log('offscreen call binance res=', res);
-        return JSON.stringify(res);
-      case 'okx':
-        signParams = {};
-        if (
-          jsonParams.params.url.startsWith(
-            'https://www.okx.com/api/v5/account/config'
-          )
-        ) {
-          res = exchange.sign('account/config', 'private', 'GET', signParams);
-          console.log('offscreen call okx uid res=', res);
-          return JSON.stringify(res);
-        }
-        if (jsonParams.params.schemaType === 'Token Holdings') {
-          signParams.ccy = jsonParams.params.holdingToken;
-        }
-        res = exchange.sign('account/balance', 'private', 'GET', signParams);
-        console.log('offscreen call okx res=', res);
-        return JSON.stringify(res);
-      case 'coinbase':
-        path = 'accounts';
-        signParams = { limit: 100 };
-        if (jsonParams.params.schemaType === 'Token Holdings') {
-          path = 'accounts/{account_id}';
-          signParams = { account_id: jsonParams.params.holdingToken };
-        }
-        res = exchange.sign(path, ['v2', 'private'], 'GET', signParams);
-        console.log('offscreen call coinbase res=', res);
-        return JSON.stringify(res);
-    }
-  }
-  return '{}';
-}

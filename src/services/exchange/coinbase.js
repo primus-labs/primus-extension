@@ -11,7 +11,7 @@ class CoinBase extends Exchange {
   async getTradingAccountTokenAmountMap() {
     const res = await this.exchange.fetchBalance();
     // console.log('res', res);
-    res.info.data.forEach(({ currency, balance }) => {
+    res.info.data.forEach(({ balance }) => {
       // Tip: funding account balance = free + locked + freeze
       const amt = new BigNumber(balance.amount);
       gt(amt, BIGZERO) &&

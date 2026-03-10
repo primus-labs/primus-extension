@@ -33,8 +33,9 @@ const storeRequestsMap = async (url, urlInfo) => {
 };
 const extraRequestFn = async (params) => {
   try {
-    // eslint-disable-next-line no-unused-vars -- omit from requestParams
-    const { locationPageUrl, requestId, ...requestParams } = params;
+    const requestParams = { ...params };
+    delete requestParams.locationPageUrl;
+    delete requestParams.requestId;
     const requestRes = await customFetch2(requestParams);
     if (typeof requestRes === 'object' && requestRes !== null) {
       sendMsgToDevconsole({
