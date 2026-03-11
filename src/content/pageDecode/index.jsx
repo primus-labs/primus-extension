@@ -8,7 +8,7 @@ import { createRoot } from 'react-dom/client';
 import RightEl from './RightEl';
 import FooterEl from './FooterEl';
 import HeaderEl from './HeaderEl';
-import { injectFont, createDomElement, eventReport } from './utils';
+import { injectFont, createDomElement } from './utils';
 
 const ATTESTATIONPOLLINGTIMEOUT = 2 * 60 * 1000;
 
@@ -100,22 +100,6 @@ function PadoCard() {
     await chrome.runtime.sendMessage(msgObj);
   }, [activeRequest?.tabId]);
   const handleConfirm = useCallback(async () => {
-    var eventInfo = {
-      eventType: 'ATTESTATION_START',
-      rawData: {
-        source: activeRequest.dataSourceId,
-        event: activeRequest.event,
-        order: '2',
-        requestid: activeRequestid,
-      },
-    };
-    const { padoZKAttestationJSSDKBeginAttest } =
-      await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
-    if (padoZKAttestationJSSDKBeginAttest) {
-      eventInfo.rawData.origin = 'padoAttestationJSSDK';
-    }
-    eventReport(eventInfo, PADOSERVERURL, padoExtensionVersion);
-
     var msgObj = {
       type: 'pageDecode',
       name: 'start',

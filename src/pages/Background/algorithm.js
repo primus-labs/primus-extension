@@ -1,6 +1,4 @@
-import { eventReport } from '@/services/api/usertracker';
 import { pageDecodeMsgListener } from './pageDecode/index.js';
-import { addSDKParamsToReportParamsFn } from './utils/reportEvent.js';
 import { getErrorMsgTitleFn } from './utils/handleError.js';
 import { sendInitAttestationRes } from './utils/msgTransfer.js';
 
@@ -35,23 +33,6 @@ export const algorithmMsgListener = async (
     processAlgorithmReq({
       reqMethodName: 'init',
     });
-  } else if (resMethodName === `init`) {
-    var eventInfo = {
-      eventType: 'ATTESTATION_INIT_4',
-      rawData: {},
-    };
-    eventReport(eventInfo);
-  } else if (resMethodName === `getAttestation`) {
-    var eventInfo = {
-      eventType: 'ATTESTATION_START_BACKGROUND',
-      rawData: {
-        res: !!message.res,
-        requestid: message.requestid,
-        order: '6',
-      },
-    };
-    eventInfo.rawData = await addSDKParamsToReportParamsFn(eventInfo.rawData);
-    eventReport(eventInfo);
   }
 
   if (padoZKAttestationJSSDKBeginAttest) {

@@ -8,7 +8,6 @@ import {
   checkIsRequiredUrl,
   sendMsgToTab,
 } from '../utils/utils';
-import { addSDKParamsToReportParamsFn } from '../utils/reportEvent.js';
 import {
   extraRequestFn2,
   extraRequestHtmlFn,
@@ -805,21 +804,6 @@ export const pageDecodeMsgListener = async (
       });
       console.log('pageDecode-algorithmParams', aligorithmParams);
 
-      var eventInfo = {
-        eventType: 'ATTESTATION_START_PAGEDECODE',
-        rawData: {
-          source: aligorithmParams.source,
-          schemaType: aligorithmParams.schemaType,
-          sigFormat: aligorithmParams.sigFormat,
-          attestationId: aligorithmParams.requestid,
-          event: aligorithmParams.event,
-          address: aligorithmParams?.user?.address,
-          requestid: aligorithmParams.requestid,
-          order: '3',
-        },
-      };
-      eventInfo.rawData = await addSDKParamsToReportParamsFn(eventInfo.rawData);
-      eventReport(eventInfo);
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'getAttestation',
