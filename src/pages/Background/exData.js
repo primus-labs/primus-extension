@@ -65,29 +65,19 @@ export async function assembleAlgorithmParamsForSDK(form, ext) {
 
 async function assembleUserInfoParams(_form, isFromSDK) {
   const {
-    connectedWalletAddress,
     userInfo,
     padoZKAttestationJSSDKWalletAddress,
   } = await chrome.storage.local.get([
-    'connectedWalletAddress',
     'userInfo',
     'padoZKAttestationJSSDKWalletAddress',
   ]);
   let formatAddress;
-  if (connectedWalletAddress) {
-    formatAddress = JSON.parse(connectedWalletAddress).address;
-  }
-  console.log(
-    'debuge-zktls-startAttestation3',
-    padoZKAttestationJSSDKWalletAddress
-  );
   if (isFromSDK && padoZKAttestationJSSDKWalletAddress) {
     formatAddress = padoZKAttestationJSSDKWalletAddress;
     console.log('algorithmParams-userAddress-isFromSDK', formatAddress);
   }
   console.log(
     'algorithmParams-userAddress',
-    connectedWalletAddress,
     padoZKAttestationJSSDKWalletAddress
   );
 

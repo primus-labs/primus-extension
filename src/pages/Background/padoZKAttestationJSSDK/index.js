@@ -472,7 +472,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
       'padoZKAttestationJSSDKBeginAttest',
       'padoZKAttestationJSSDKWalletAddress',
       'padoZKAttestationJSSDKAttestationPresetParams',
-      'padoZKAttestationJSSDKXFollowerCount',
       'activeRequestAttestation',
     ]);
     pageDecodeMsgListener(

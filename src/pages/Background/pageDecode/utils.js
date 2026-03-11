@@ -90,7 +90,6 @@ export const errorFn = async (errorData, dataSourcePageTabId, options = {}) => {
     'padoZKAttestationJSSDKBeginAttest',
     'padoZKAttestationJSSDKWalletAddress',
     'padoZKAttestationJSSDKAttestationPresetParams',
-    'padoZKAttestationJSSDKXFollowerCount',
   ];
   if (!options.skipRemoveActiveRequestAttestation) {
     keysToRemove.push('activeRequestAttestation');

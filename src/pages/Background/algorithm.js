@@ -83,7 +83,6 @@ export const algorithmMsgListener = async (
             'padoZKAttestationJSSDKBeginAttest',
             'padoZKAttestationJSSDKWalletAddress',
             'padoZKAttestationJSSDKAttestationPresetParams',
-            'padoZKAttestationJSSDKXFollowerCount',
             'activeRequestAttestation',
           ]);
           processAlgorithmReq({ reqMethodName: 'stop' });
@@ -165,7 +164,6 @@ export const algorithmMsgListener = async (
               'padoZKAttestationJSSDKBeginAttest',
               'padoZKAttestationJSSDKWalletAddress',
               'padoZKAttestationJSSDKAttestationPresetParams',
-              'padoZKAttestationJSSDKXFollowerCount',
               'activeRequestAttestation',
             ]);
             chrome.tabs.sendMessage(dappTabId, {
@@ -321,7 +319,6 @@ export const algorithmMsgListener = async (
               'padoZKAttestationJSSDKBeginAttest',
               'padoZKAttestationJSSDKWalletAddress',
               'padoZKAttestationJSSDKAttestationPresetParams',
-              'padoZKAttestationJSSDKXFollowerCount',
               'activeRequestAttestation',
             ]);
             let resParams = { result: false };
@@ -388,7 +385,6 @@ export const algorithmMsgListener = async (
             'padoZKAttestationJSSDKBeginAttest',
             'padoZKAttestationJSSDKWalletAddress',
             'padoZKAttestationJSSDKAttestationPresetParams',
-            'padoZKAttestationJSSDKXFollowerCount',
             'activeRequestAttestation',
           ]);
           let resParams = { result: false };

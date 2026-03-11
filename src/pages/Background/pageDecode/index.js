@@ -100,7 +100,6 @@ const handlerForSdk = async (processAlgorithmReq, operation) => {
     await chrome.storage.local.remove([
       'padoZKAttestationJSSDKBeginAttest',
       'padoZKAttestationJSSDKAttestationPresetParams',
-      'padoZKAttestationJSSDKXFollowerCount',
       'activeRequestAttestation',
     ]);
     let desc = `The user ${operation} the attestation`;
@@ -566,11 +565,6 @@ export const pageDecodeMsgListener = async (
         currentWindow: true,
       });
       currExtentionId = currentWindowTabs[0]?.id;
-      const interceptorUrlArr = requests
-        .filter((r) => r.name !== 'first')
-        .map((i) => i.url);
-      await chrome.storage.local.remove(interceptorUrlArr);
-      console.log('lastStorage-remove', interceptorUrlArr);
 
       chrome.webRequest.onBeforeSendHeaders.removeListener(
         onBeforeSendHeadersFn

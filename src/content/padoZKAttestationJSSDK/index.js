@@ -47,7 +47,6 @@ window.addEventListener('message', (e) => {
         'padoZKAttestationJSSDKBeginAttest',
         'padoZKAttestationJSSDKWalletAddress',
         'padoZKAttestationJSSDKAttestationPresetParams',
-        'padoZKAttestationJSSDKXFollowerCount',
         'activeRequestAttestation',
       ]);
     }

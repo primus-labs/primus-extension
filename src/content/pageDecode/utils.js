@@ -98,11 +98,6 @@ export const request = async (fetchParams, baseUrl, padoExtensionVersion) => {
 export const eventReport = async (data, baseUrl, padoExtensionVersion) => {
   let storedata = {};
   storedata.eventType = data.eventType;
-  const { keyStore } = await chrome.storage.local.get(['keyStore']);
-  if (keyStore) {
-    const { address } = JSON.parse(keyStore);
-    storedata.walletAddressOnChainId = '0x' + address;
-  }
   if (data.rawData) {
     storedata.rawData = JSON.stringify(data.rawData);
   }

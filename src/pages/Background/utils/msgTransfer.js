@@ -3,21 +3,12 @@ import { padoExtensionVersion } from '@/config/constants';
 /* global chrome, console, URL */
 /**
  * Send initAttestationRes message to the dapp tab (used by algorithm and index).
- * Builds attestationTypeIdList from webProofTypes, gets domain from tab URL, then sends message.
- *
+ * Gets domain from tab URL, then sends message.
  */
 export async function sendInitAttestationRes() {
-  const { padoZKAttestationJSSDKDappTabId: dappTabId, webProofTypes } =
-        await chrome.storage.local.get([
-          'padoZKAttestationJSSDKDappTabId',
-          'webProofTypes',
-        ]);
-  const attestationTypeIdList = (
-    webProofTypes ? JSON.parse(webProofTypes) : []
-  ).map((i) => ({
-    text: i.description,
-    value: i.id,
-  }));
+  const { padoZKAttestationJSSDKDappTabId: dappTabId } =
+        await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
+  const attestationTypeIdList = [];
 
   let domain = '';
   try {
