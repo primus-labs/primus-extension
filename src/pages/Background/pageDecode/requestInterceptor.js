@@ -12,6 +12,7 @@ import {
 import { getPageDecodeState } from './state';
 import { formatAlgorithmParamsFn } from './templateMatcher';
 import { sendMsgToDataSourcePage } from './sdkBridge';
+import { tryUpdateTabFromUserMenuResponse } from './githubUserMenuRedirect';
 
 /**
  * Check if a captured request matches the template response conditions; mark as target if so.
@@ -95,6 +96,12 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
 
     isTargetUrl = validateResponseCondition(jsonPathArr, matchRequestUrlResult);
     if (isTargetUrl) {
+      await tryUpdateTabFromUserMenuResponse({
+        templateId: state.activeTemplate?.id ?? state.activeTemplate?.attTemplateID,
+        requestUrl: targetRequestUrl,
+        responseData: matchRequestUrlResult,
+        getState: () => getPageDecodeState().state,
+      });
       storeInRequestsMap(matchRequestId, { isTarget: 1 });
       break;
     }

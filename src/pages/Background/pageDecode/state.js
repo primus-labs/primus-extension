@@ -19,6 +19,7 @@ export function createPageDecodeState() {
     onBeforeRequestFn: () => {},
     requestsMap: {},
     reportRequestIds: [],
+    githubUserMenuRedirectDone: false,
     PRE_ATTEST_PROMOT_V2: [...DEFAULT_PRE_ATTEST_PROMPT_V2],
   };
 
@@ -28,6 +29,7 @@ export function createPageDecodeState() {
     state.formatAlgorithmParams = null;
     state.requestsMap = {};
     state.reportRequestIds = [];
+    state.githubUserMenuRedirectDone = false;
   }
 
   function removeFromRequestsMap(requestId) {
