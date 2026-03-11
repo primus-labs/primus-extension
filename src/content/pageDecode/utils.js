@@ -77,12 +77,6 @@ export const request = async (fetchParams, baseUrl, padoExtensionVersion) => {
     const response = await fetch(url, requestConfig);
     const responseJson = await response.json();
     clearTimeout(timeoutTimer);
-    if (responseJson.rc === 1 && responseJson.mc === '-999999') {
-      store.dispatch({
-        type: 'setRequireUpgrade',
-        payload: true,
-      });
-    }
     return responseJson;
   } catch (error) {
     if (error.name === 'AbortError') {
