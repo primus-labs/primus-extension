@@ -12,7 +12,7 @@ import {
 import { getPageDecodeState } from './state';
 import { formatAlgorithmParamsFn } from './templateMatcher';
 import { sendMsgToDataSourcePage } from './sdkBridge';
-import { tryUpdateTabFromUserMenuResponse } from './githubUserMenuRedirect';
+import { tryUpdateTabFromUserMenuResponse } from './specialTemplateGithubUserMenuRedirect';
 
 /**
  * Check if a captured request matches the template response conditions; mark as target if so.
@@ -97,7 +97,6 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
     isTargetUrl = validateResponseCondition(jsonPathArr, matchRequestUrlResult);
     if (isTargetUrl) {
       await tryUpdateTabFromUserMenuResponse({
-        templateId: state.activeTemplate?.id ?? state.activeTemplate?.attTemplateID,
         requestUrl: targetRequestUrl,
         responseData: matchRequestUrlResult,
         getState: () => getPageDecodeState().state,
@@ -228,6 +227,7 @@ export function setupWebRequestListener() {
     });
 
     if (isTarget) {
+      console.log('captured request', currRequestUrl,details.type);
       const newCapturedInfo = {
         headers: formatHeader,
         method,

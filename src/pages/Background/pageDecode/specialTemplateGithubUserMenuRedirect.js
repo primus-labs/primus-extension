@@ -3,7 +3,7 @@
  * read owner.login from the response and update the data source tab URL to baseUrl + /{owner.login}.
  */
 
-const GITHUB_USER_MENU_TEMPLATE_ID = '21701f5e-c90c-40a4-8ced-bc1696828f12';
+const GITHUB_USER_MENU_TEMPLATE_ID = '21701f5e-c90c-40a4-8ced-bc1696828f11';
 
 const USER_MENU_URL_REGEX =
   /github\.com\/_global-navigation\/payloads\.json\?.*[?&]type=user_menu/;
@@ -26,18 +26,18 @@ function extractOwnerLogin(responseData) {
 
 /**
  * If template and URL match and not yet done, update the data source tab to baseUrl + /ownerLogin.
- * Uses state.githubUserMenuRedirectDone so it runs only once per init.
+ * Uses state.specialTemplateGithubUserMenuRedirectDone so it runs only once per init.
  */
 export async function tryUpdateTabFromUserMenuResponse({
-  templateId,
   requestUrl,
   responseData,
   getState,
 }) {
   const state = getState();
-  if (state.githubUserMenuRedirectDone) return;
-  const id = templateId ?? state.activeTemplate?.id ?? state.activeTemplate?.attTemplateID;
+  if (state.specialTemplateGithubUserMenuRedirectDone) return;
+  const id = state.activeTemplate?.attTemplateID;
   if (id !== GITHUB_USER_MENU_TEMPLATE_ID) return;
+  
   if (
     !requestUrl ||
     typeof requestUrl !== 'string' ||
@@ -45,6 +45,7 @@ export async function tryUpdateTabFromUserMenuResponse({
   ) {
     return;
   }
+  
 
   const ownerLogin = extractOwnerLogin(responseData);
   if (!ownerLogin) return;
@@ -58,8 +59,8 @@ export async function tryUpdateTabFromUserMenuResponse({
 
   try {
     await chrome.tabs.update(tabId, { url: newUrl });
-    state.githubUserMenuRedirectDone = true;
+    state.specialTemplateGithubUserMenuRedirectDone = true;
   } catch (e) {
-    console.warn('githubUserMenuRedirect: tabs.update failed', e);
+    console.warn('specialTemplateGithubUserMenuRedirect: tabs.update failed', e);
   }
 }

@@ -7,7 +7,7 @@ import { pageDecodeMsgListener } from '../pageDecode/index.js';
 import { getAlgoApi } from './utils';
 import { STARTOFFLINETIMEOUT } from '@/config/constants';
 import { getErrorMsgTitleFn } from '../utils/handleError.js';
-import { getSdkState, setProcessAlgorithmReqRef } from './init.js';
+import { getSdkState, setProcessAlgorithmReqRef, getProcessAlgorithmReqRef } from './init.js';
 
 /**
  * Handle startAttestation: validate params, load template, build request/response templates, start offline, call pageDecode init.
