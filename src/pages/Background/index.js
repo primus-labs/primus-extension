@@ -2,22 +2,24 @@ import {
   getUserIdentity,
 } from '@/services/api/user';
 import { requestSignTypedData } from '@/services/wallets/utils';
-
 import { sendInitAttestationRes } from './utils/msgTransfer.js';
-
 import { eventReport } from '@/services/api/usertracker';
+import {
+  createOffscreenDoc,
+  closeOffscreenDoc,
+  hasOffscreenDocument,
+} from './offscreenManager.js';
 import './pageDecode/index.js';
 import { pageDecodeMsgListener } from './pageDecode/index.js';
 import { padoZKAttestationJSSDKMsgListener } from './padoZKAttestationJSSDK/index.js';
-import { algorithmMsgListener } from './algorithm.js';
+import { algorithmMsgListener } from './algorithm/index.js';
 import { devconsoleMsgListener } from './devconsole/index.js';
+
 const Web3EthAccounts = require('web3-eth-accounts');
+
 console.log('Background initialization');
 
-// const compareRes = compareVersions('0.3.14', padoExtensionVersion);
-// console.log('padoExtensionVersion', padoExtensionVersion, compareRes);
-let USERPASSWORD = '';
-const creatUserInfo = async () => {
+const createUserInfo = async () => {
   const { userInfo } = await chrome.storage.local.get(['userInfo']);
   if (!userInfo) {
     let web3EthAccount = new Web3EthAccounts();
@@ -58,7 +60,7 @@ const creatUserInfo = async () => {
 chrome.runtime.onInstalled.addListener(async ({ reason, version: _version }) => {
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
     // showIndex();
-    creatUserInfo();
+    createUserInfo();
     const eventInfo = {
       eventType: 'EXTENSION_INSTALL',
       rawData: '',
@@ -72,47 +74,22 @@ chrome.runtime.onInstalled.addListener(async ({ reason, version: _version }) => 
   }
 });
 
-async function hasOffscreenDocument(path) {
-  // Check all windows controlled by the service worker to see if one
-  // of them is the offscreen document with the given path
-  const offscreenUrl = chrome.runtime.getURL(path);
-  console.log(offscreenUrl);
-  const matchedClients = await clients.matchAll();
-  console.log('matchedClients', matchedClients);
-  for (const client of matchedClients) {
-    if (client.url === offscreenUrl) {
-      return true;
-    }
-  }
-  return false;
-}
-
 const processAlgorithmReq = async (message) => {
-  const matchedClients = await clients.matchAll();
-  console.log('matchedClients', matchedClients);
-  let { reqMethodName, params = {} } = message;
+  const { reqMethodName, params = {} } = message;
   console.log(
     `${new Date().toLocaleString()} processAlgorithmReq reqMethodName ${reqMethodName}`
   );
+
   const startFn = async () => {
-    const offscreenDocumentPath = 'offscreen.html';
-    if (!(await hasOffscreenDocument(offscreenDocumentPath))) {
+    if (!(await hasOffscreenDocument())) {
       console.log(
         `${new Date().toLocaleString()} create offscreen document...........`
       );
-      await chrome.offscreen.createDocument({
-        url: chrome.runtime.getURL(offscreenDocumentPath),
-        reasons: ['IFRAME_SCRIPTING'],
-        justification: 'WORKERS for needing the document',
-      });
+      await createOffscreenDoc();
       console.log(`${new Date().toLocaleString()} offscreen document created`);
     } else {
-      const {
-        padoZKAttestationJSSDKBeginAttest
-      } = await chrome.storage.local.get([
-        'padoZKAttestationJSSDKBeginAttest'
-      ]);
-
+      const { padoZKAttestationJSSDKBeginAttest } =
+        await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
       if (padoZKAttestationJSSDKBeginAttest) {
         await sendInitAttestationRes();
       }
@@ -121,22 +98,16 @@ const processAlgorithmReq = async (message) => {
       );
     }
   };
+
   switch (reqMethodName) {
     case 'start':
-      startFn();
+      await startFn();
       break;
     case 'init':
-      // var eventInfo = {
-      //   eventType: 'ATTESTATION_INIT_3',
-      //   rawData: {},
-      // };
-      // eventReport(eventInfo);
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'init',
-        params: {
-          errLogUrl: 'wss://api.padolabs.org/logs',
-        },
+        params: { errLogUrl: 'wss://api.padolabs.org/logs' },
       });
       break;
     case 'getAttestation':
@@ -145,26 +116,24 @@ const processAlgorithmReq = async (message) => {
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'getAttestationResult',
-        params: params,
+        params,
       });
       break;
     case 'startOffline':
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'startOffline',
-        params: params,
+        params,
       });
       break;
-    case 'stop':
-      const stopFn = async () => {
-        await chrome.offscreen.closeDocument();
-        await chrome.storage.local.remove(['activeRequestAttestation']);
-        if (!params?.noRestart) {
-          await startFn();
-        }
-      };
-      await stopFn();
+    case 'stop': {
+      await closeOffscreenDoc();
+      await chrome.storage.local.remove(['activeRequestAttestation']);
+      if (!params?.noRestart) {
+        await startFn();
+      }
       break;
+    }
     default:
       break;
   }
@@ -176,7 +145,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   if (resType === 'algorithm') {
     algorithmMsgListener(message, sender, sendResponse, processAlgorithmReq);
   }
-  let hasGetTwitterScreenName = false;
+  const hasGetTwitterScreenName = false;
   if (type === 'pageDecode') {
     pageDecodeMsgListener(
       message,

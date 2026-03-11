@@ -4,7 +4,8 @@ const { DOMParser } = require('xmldom');
 const cheerio = require('cheerio');
 
 import { customFetch2 } from '../utils/request';
-export const extraRequestFn2 = async (params) => {
+/** Fetch request data (JSON/object) for template matching. Re-sends captured request. */
+export const fetchRequestData = async (params) => {
   try {
     const { ...requestParams } = params;
     const requestRes = await customFetch2(requestParams);
@@ -16,7 +17,8 @@ export const extraRequestFn2 = async (params) => {
   }
 };
 
-export const extraRequestHtmlFn = async (params) => {
+/** Fetch HTML content for main_frame requests. Used for XPath/HTML condition checks. */
+export const fetchHtmlContent = async (params) => {
   const { url, method, headers, body: requestBody } = params;
 
   let body = null;
@@ -71,7 +73,8 @@ export const extraRequestHtmlFn = async (params) => {
   });
 };
 
-export const errorFn = async (errorData, dataSourcePageTabId, options = {}) => {
+/** Send attestation error to dapp tab and optionally remove storage / close data source tab. */
+export const handleAttestationError = async (errorData, dataSourcePageTabId, options = {}) => {
   let resParams = {
     result: false,
     errorData,
@@ -100,7 +103,8 @@ export const errorFn = async (errorData, dataSourcePageTabId, options = {}) => {
   }
 };
 
-export const checkResIsMatchConditionFn = (
+/** Check if JSON response matches template conditions (JSONPath). */
+export const validateResponseCondition = (
   jsonPathArr,
   matchRequestUrlResult
 ) => {
@@ -176,7 +180,8 @@ export const validateXPathWithLibs = (html, xpath) => {
     return [];
   }
 };
-export const checkResHtmlIsMatchConditionFn = (jsonPathArr, html) => {
+/** Check if HTML response matches template conditions (XPath). */
+export const validateHtmlResponseCondition = (jsonPathArr, html) => {
   const isMatch = jsonPathArr.every((jpItem) => {
     try {
       const itemMatch = validateXPathWithLibs(html, jpItem);

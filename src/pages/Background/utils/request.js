@@ -1,3 +1,8 @@
+/**
+ * Lightweight fetch wrapper for background scripts (page decode, devconsole).
+ * Use for arbitrary URLs without auth. For extension API calls with auth/version headers,
+ * use @/utils/request (src/utils/request.ts) instead.
+ */
 import { isJSONString, encodeFormData } from './utils';
 
 export async function customFetch2({ url, method, body, header, isFormData }) {

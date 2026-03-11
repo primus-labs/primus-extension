@@ -1,5 +1,5 @@
 
-import { CredVersion } from '@/config/attestation';
+import { CredVersion } from '@/config/constants';
 import { getPadoUrl, getProxyUrl, getZkPadoUrl } from '@/config/envConstants';
 import { strToHex } from '@/utils/utils';
 export async function assembleAlgorithmParamsForSDK(form, ext) {

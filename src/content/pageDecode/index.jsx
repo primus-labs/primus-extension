@@ -1,278 +1,52 @@
-import React, {
-  useCallback,
-  useEffect,
-  useState,
-  useRef,
-} from 'react';
+/**
+ * Page decode content script entry: inject container, send initCompleted, render PadoCard on append.
+ */
+import React from 'react';
 import { createRoot } from 'react-dom/client';
-import RightEl from './RightEl';
-import FooterEl from './FooterEl';
-import HeaderEl from './HeaderEl';
-import { injectFont, createDomElement } from './utils';
-
-const ATTESTATIONPOLLINGTIMEOUT = 2 * 60 * 1000;
+import { createDomElement } from './utils';
+import PadoCard from './App';
+import { injectFont } from './utils';
 
 import './index.scss';
-console.log(
-  '222padoAttestRequestStatus',
-  sessionStorage.getItem('padoAttestRequestStatus')
-);
-let activeRequest;
-let PADOSERVERURL;
-let padoExtensionVersion;
-let activeRequestid;
 
-function PadoCard() {
-  const [status, setStatus] = useState('uninitialized');
-  const statusRef = useRef(status);
-  const [isReadyFetch, setIsReadyFetch] = useState(false);
-  const [resultStatus, setResultStatus] = useState('');
-  const [errorTxt, setErrorTxt] = useState();
+const CONTAINER_ID = 'pado-extension-content';
+const DISABLED_PATH_LIST = ['login', 'register', 'signin', 'signup'];
 
-  useEffect(() => {
-    const lastStatus = sessionStorage.getItem('padoAttestRequestStatus');
-    const lastResultStatus = sessionStorage.getItem(
-      'padoAttestRequestResultStatus'
-    );
-    const lastErrorTxt = sessionStorage.getItem('padoAttestRequestErrorTxt');
-    const lastIsReadyFetch = sessionStorage.getItem('padoAttestRequestReady');
+let activeRequest = null;
 
-    if (lastStatus) {
-      setStatus(lastStatus);
-      if (lastResultStatus === 'success') {
-        setResultStatus('success');
-      }
-      if (lastErrorTxt && lastErrorTxt !== 'undefined') {
-        console.log('lastErrorTxt', lastErrorTxt);
-        setErrorTxt(JSON.parse(lastErrorTxt));
-      }
-    } else {
-      setStatus('uninitialized');
-    }
-    if (lastIsReadyFetch) {
-      setIsReadyFetch(!!lastIsReadyFetch);
-    }
-  }, []);
-  useEffect(() => {
-    const listenerFn = (request, _sender, _sendResponse) => {
-      var {
-        name,
-        params: { result, failReason },
-      } = request;
-      if (name === 'webRequestIsReady') {
-        console.log('content receive:webRequestIsReady');
-        setIsReadyFetch(true);
-        sessionStorage.setItem('padoAttestRequestReady', '1');
-      }
-      if (name === 'end') {
-        console.log('content receive:end', request, failReason);
-        setStatus('result');
-        sessionStorage.setItem('padoAttestRequestStatus', 'result');
-        if (failReason) {
-          sessionStorage.setItem(
-            'padoAttestRequestErrorTxt',
-            JSON.stringify(failReason)
-          );
-        }
-        if (result === 'success') {
-          sessionStorage.setItem('padoAttestRequestResultStatus', 'success');
-        }
-        setResultStatus(result);
-        setErrorTxt(failReason);
-      }
-    };
-    chrome.runtime.onMessage.addListener(listenerFn);
-    return () => {
-      chrome.runtime.onMessage.removeListener(listenerFn);
-    };
-  }, []);
-
-  const handleBack = useCallback(async () => {
-    console.log('handleBack-tabId', activeRequest?.tabId);
-    var msgObj = {
-      type: 'pageDecode',
-      name: 'close',
-      params: {
-        tabId: activeRequest?.tabId,
-        extensionVersion: '0.3.27',
-      },
-    };
-    await chrome.runtime.sendMessage(msgObj);
-  }, [activeRequest?.tabId]);
-  const handleConfirm = useCallback(async () => {
-    var msgObj = {
-      type: 'pageDecode',
-      name: 'start',
-    };
-    await chrome.runtime.sendMessage(msgObj);
-  }, []);
-  useEffect(() => {
-    if (isReadyFetch) {
-      const lastStatus = sessionStorage.getItem('padoAttestRequestStatus');
-      if (!['result'].includes(lastStatus)) {
-        setStatus('verifying');
-        sessionStorage.setItem('padoAttestRequestStatus', 'verifying');
-        if (lastStatus !== 'verifying') {
-          handleConfirm();
-        }
-      }
-    }
-  }, [isReadyFetch]);
-
-  useEffect(() => {
-    const { PRE_ATTEST_PROMOT_V2 } = activeRequest;
-    const uninitializedShowTime = PRE_ATTEST_PROMOT_V2?.[0]?.showTime;
-    let timer = setTimeout(() => {
-      const lastStatus = sessionStorage.getItem('padoAttestRequestStatus');
-      if (!['verifying', 'result'].includes(lastStatus)) {
-        setStatus('initialized');
-        sessionStorage.setItem('padoAttestRequestStatus', 'initialized');
-      }
-    }, uninitializedShowTime); // uninitializedShowTime
-
-    return () => {
-      if (timer) {
-        clearTimeout(timer);
-      }
-    };
-  }, []);
-  useEffect(() => {
-    const { PRE_ATTEST_PROMOT_V2 } = activeRequest;
-    const initializedShowTime = PRE_ATTEST_PROMOT_V2?.[1]?.showTime;
-    let timer2;
-    if (status === 'initialized') {
-      timer2 = setTimeout(() => {
-        const lastStatus2 = sessionStorage.getItem('padoAttestRequestStatus');
-        console.log('timer2', lastStatus2, statusRef.current);
-        if (!['verifying', 'result'].includes(statusRef.current)) {
-          // It prompts that the requests for the template cannot be intercepted.
-          sessionStorage.setItem('padoAttestRequestStatus', 'result');
-          const errorObj = {
-            code: '00013',
-            sourcePageTip: 'Target data missing',
-          };
-          sessionStorage.setItem(
-            'padoAttestRequestErrorTxt',
-            JSON.stringify(errorObj)
-          );
-          setStatus(() => 'result');
-          setResultStatus(() => 'warn');
-          setErrorTxt(() => errorObj);
-
-          var msgObj = {
-            type: 'pageDecode',
-            name: 'interceptionFail',
-          };
-          chrome.runtime.sendMessage(msgObj);
-        }
-      }, initializedShowTime); // initializedShowTime
-    }
-    let timer3;
-
-    if (status === 'verifying') {
-      timer3 = setTimeout(() => {
-        const lastStatus3 = sessionStorage.getItem('padoAttestRequestStatus');
-        console.log('timer3', lastStatus3, statusRef.current);
-        if (timer2) {
-          clearTimeout(timer2);
-        }
-        if (!['result'].includes(statusRef.current)) {
-          // It automatically shows as a timeout.
-          setStatus('result');
-          sessionStorage.setItem('padoAttestRequestStatus', 'result');
-          const errorObj = {
-            code: '00002',
-            sourcePageTip: 'Request Timed Out',
-          };
-          sessionStorage.setItem(
-            'padoAttestRequestErrorTxt',
-            JSON.stringify(errorObj)
-          );
-          setResultStatus('warn');
-          setErrorTxt(errorObj);
-          var msgObj = {
-            type: 'pageDecode',
-            name: 'dataSourcePageDialogTimeout',
-          };
-          chrome.runtime.sendMessage(msgObj);
-        }
-      }, ATTESTATIONPOLLINGTIMEOUT);
-    }
-
-    return () => {
-      if (timer2) {
-        clearTimeout(timer2);
-      }
-      if (timer3) {
-        clearTimeout(timer3);
-      }
-    };
-  }, [status]);
-  useEffect(() => {
-    statusRef.current = status;
-  }, [status]);
-
-  return (
-    <>
-      <div className={`pado-extension-card  ${status}`}>
-        <div className="pado-extension-left">
-          <HeaderEl />
-          <FooterEl
-            status={status}
-            resultStatus={resultStatus}
-            errorTxt={errorTxt}
-            activeRequest={activeRequest}
-          />
-        </div>
-        <RightEl status={status} onBack={handleBack} />
-      </div>
-    </>
-  );
+function isDisabledPath() {
+  const href = window.location.href.toLowerCase();
+  return DISABLED_PATH_LIST.some((p) => href.indexOf(p) > -1);
 }
 
-var padoStr = `<div id="pado-extension-content"></div>`;
-var injectEl = createDomElement(padoStr);
+const injectEl = createDomElement(`<div id="${CONTAINER_ID}"></div>`);
 document.body.appendChild(injectEl);
-console.log(
-  'content_scripts-content-decode inject',
-  new Date().toLocaleString()
-);
+
 chrome.runtime.sendMessage(
   {
     type: 'pageDecode',
-    name: 'initCompleted', // diff
+    name: 'initCompleted',
   },
-  (response, _a, _b) => {
-    if (response.name === 'append') {
-      console.log('content_scripts-content-decode receive:append');
-      // hide in login page
-      var disabledPathList = ['login', 'register', 'signin', 'signup'];
-      var isDisabled = disabledPathList.some(
-        (i) => window.location.href.toLowerCase().indexOf(i) > -1
-      );
-      if (isDisabled) {
-        return;
-      }
-      // avoid re-render
-      if (activeRequest) {
-        if (response.isReady) {
-          sessionStorage.setItem('padoAttestRequestReady', '1');
-        }
-        return;
-      }
+  (response) => {
+    if (!response || response.name !== 'append') return;
+    if (isDisabledPath()) return;
 
-      // render
-      activeRequest = { ...response.params };
-      console.log('activeRequest', activeRequest);
-      
-      delete activeRequest.PADOSERVERURL;
-      delete activeRequest.padoExtensionVersion;
-      PADOSERVERURL = response.params.PADOSERVERURL;
-      padoExtensionVersion = response.params.padoExtensionVersion;
-      activeRequestid = response.params.requestid;
-      const container = document.getElementById('pado-extension-content');
+    if (activeRequest) {
+      if (response.isReady) {
+        sessionStorage.setItem('padoAttestRequestReady', '1');
+      }
+      return;
+    }
+
+    const params = response.params || {};
+    activeRequest = { ...params };
+    delete activeRequest.PADOSERVERURL;
+    delete activeRequest.padoExtensionVersion;
+
+    const container = document.getElementById(CONTAINER_ID);
+    if (container) {
       const root = createRoot(container);
-      root.render(<PadoCard />);
+      root.render(<PadoCard activeRequest={activeRequest} />);
     }
   }
 );

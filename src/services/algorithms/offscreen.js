@@ -1,4 +1,10 @@
-Module = {};
+/**
+ * Offscreen document script: wraps WASM algorithm (Module.callAlgorithm) and handles algorithm messages.
+ * Module is global, provided by the Emscripten/WASM loader (e.g. client_plugin.js).
+ */
+/* global Module */
+
+Module = typeof Module !== 'undefined' ? Module : {};
 Module.onRuntimeInitialized = async () => {
   console.log('off screen Module Initialized OK');
   chrome.runtime.sendMessage({
@@ -8,114 +14,88 @@ Module.onRuntimeInitialized = async () => {
   });
 };
 
-var AlgorithmInited = false;
-var ClientVersion = '1.1.1';
+const CLIENT_VERSION = '1.1.1';
 
-function init(params) {
-  console.log('init algorithms AlgorithmInited=', AlgorithmInited);
-  if (AlgorithmInited) {
-    return;
+/**
+ * Wraps WASM callAlgorithm for init, getAttestation, getAttestationResult, startOffline.
+ */
+class AlgorithmClient {
+  constructor() {
+    this.initialized = false;
   }
-  console.log('init...');
 
-  params.errLogUrl = "";
-  var req_obj = {
-    method: 'init',
-    version: ClientVersion,
-    params,
-  };
-  var json_str = JSON.stringify(req_obj);
-
-  const Module_init = Module.cwrap('callAlgorithm', 'string', ['string']);
-  const res = Module_init(json_str);
-
-  console.log('init typeof res', typeof res);
-  console.log('init res', res);
-  AlgorithmInited = true;
-  console.log('init AlgorithmInited=', AlgorithmInited);
-  return res;
-}
-function getAttestation(params) {
-  console.log('getAttestation AlgorithmInited=', AlgorithmInited);
-  if (!AlgorithmInited) {
-    const resobj = {
-      content: null,
-      retcode: '2',
-      retdesc: 'Algorithm not initialized',
+  _call(method, params = {}) {
+    const reqObj = {
+      method,
+      version: CLIENT_VERSION,
+      params,
     };
-    return JSON.stringify(resobj);
+    const jsonStr = JSON.stringify(reqObj);
+    const fn = Module.cwrap('callAlgorithm', 'string', ['string']);
+    return fn(jsonStr);
   }
-  var req_obj = {
-    method: 'getAttestation',
-    version: ClientVersion,
-    params: params,
-  };
-  var json_str = JSON.stringify(req_obj);
-  const Module_getAttestation = Module.cwrap('callAlgorithm', 'string', [
-    'string',
-  ]);
-  const res = Module_getAttestation(json_str);
-  console.log('getAttestation typeof res', typeof res);
-  console.log('getAttestation res', res);
-  return res;
-}
-function getAttestationResult() {
-  console.log('getAttestationResult');
-  var req_obj = {
-    method: 'getAttestationResult',
-    version: ClientVersion,
-    params: {
-      requestid: '1',
-    },
-  };
-  var json_str = JSON.stringify(req_obj);
-  const Module_getAttestationResult = Module.cwrap('callAlgorithm', 'string', [
-    'string',
-  ]);
-  const res = Module_getAttestationResult(json_str);
-  console.log('getAttestationResult typeof res', typeof res);
-  console.log('getAttestationResult res', res);
-  return res;
+
+  init(params) {
+    console.log('init algorithms AlgorithmInited=', this.initialized);
+    if (this.initialized) return;
+    console.log('init...');
+    const initParams = { ...params, errLogUrl: '' };
+    const res = this._call('init', initParams);
+    console.log('init typeof res', typeof res, 'res', res);
+    this.initialized = true;
+    return res;
+  }
+
+  getAttestation(params) {
+    console.log('getAttestation AlgorithmInited=', this.initialized);
+    if (!this.initialized) {
+      return JSON.stringify({
+        content: null,
+        retcode: '2',
+        retdesc: 'Algorithm not initialized',
+      });
+    }
+    const res = this._call('getAttestation', params);
+    console.log('getAttestation typeof res', typeof res, 'res', res);
+    return res;
+  }
+
+  getAttestationResult() {
+    console.log('getAttestationResult');
+    const res = this._call('getAttestationResult', { requestid: '1' });
+    console.log('getAttestationResult typeof res', typeof res, 'res', res);
+    return res;
+  }
+
+  startOffline(params) {
+    console.log('startOffline AlgorithmInited=', this.initialized);
+    if (!this.initialized) {
+      return JSON.stringify({
+        content: null,
+        retcode: '2',
+        retdesc: 'Algorithm not initialized',
+      });
+    }
+    const res = this._call('startOffline', params);
+    console.log('startOffline typeof res', typeof res, 'res', res);
+    return res;
+  }
 }
 
-function startOffline(params) {
-  console.log('startOffline AlgorithmInited=', AlgorithmInited);
-  if (!AlgorithmInited) {
-    const resobj = {
-      content: null,
-      retcode: '2',
-      retdesc: 'Algorithm not initialized',
-    };
-    return JSON.stringify(resobj);
-  }
-  var req_obj = {
-    method: 'startOffline',
-    version: ClientVersion,
-    params: params,
-  };
-  var json_str = JSON.stringify(req_obj);
-  const Module_startOffline = Module.cwrap('callAlgorithm', 'string', [
-    'string',
-  ]);
-  const res = Module_startOffline(json_str);
-  console.log('startOffline typeof res', typeof res);
-  console.log('startOffline res:', res);
-  return res;
-}
+const algorithmClient = new AlgorithmClient();
 
-chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
+chrome.runtime.onMessage.addListener((message) => {
   console.log('offscreen onMessage message', message);
-  if (message.type === 'algorithm' && message.method === 'init') {
-    const res = init(message.params);
+  if (message.type !== 'algorithm') return;
+
+  if (message.method === 'init') {
+    const res = algorithmClient.init(message.params);
     chrome.runtime.sendMessage({
       resType: 'algorithm',
       resMethodName: 'init',
-      res: res,
+      res,
     });
-  } else if (
-    message.type === 'algorithm' &&
-    message.method === 'getAttestation'
-  ) {
+  } else if (message.method === 'getAttestation') {
     const rawData = {
       source: message.params.source,
       schemaType: message.params.schemaType,
@@ -123,80 +103,35 @@ chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
       attestationId: message.params.requestid,
       event: message.params.event,
       address:
-        message.params && message.params?.user && message.params?.user?.address,
+        message.params?.user?.address,
       requestid: message.params.requestid,
       order: '4',
     };
     chrome.runtime.sendMessage({
       resType: 'report',
       name: 'offscreenReceiveGetAttestation',
-      params: {
-        ...rawData,
-      },
+      params: { ...rawData },
     });
-
-    const res = getAttestation(message.params);
-
+    const res = algorithmClient.getAttestation(message.params);
     chrome.runtime.sendMessage({
       resType: 'algorithm',
       resMethodName: 'getAttestation',
-      res: res,
+      res,
       requestid: message.params.requestid,
     });
-  } else if (
-    message.type === 'algorithm' &&
-    message.method === 'getAttestationResult'
-  ) {
-    const res = getAttestationResult();
+  } else if (message.method === 'getAttestationResult') {
+    const res = algorithmClient.getAttestationResult();
     chrome.runtime.sendMessage({
       resType: 'algorithm',
       resMethodName: 'getAttestationResult',
-      res: res,
+      res,
     });
-  } else if (
-    message.type === 'algorithm' &&
-    message.method === 'startOffline'
-  ) {
-    const res = startOffline(message.params);
+  } else if (message.method === 'startOffline') {
+    const res = algorithmClient.startOffline(message.params);
     chrome.runtime.sendMessage({
       resType: 'algorithm',
       resMethodName: 'startOffline',
-      res: res,
+      res,
     });
   }
 });
-
-/*
-params str:
-{
-    "method": "getSign",
-    "params": {
-        "source": "binance",// or "okx"
-        "schemaType": "Assets Proof", // or "Token Holdings"
-        "holdingToken": "BTC" // Token Holdings must have the field 
-    }
-}
-
-return:
-binance:
-{
-    "url": "https://api.binance.com/sapi/v3/asset/getUserAsset",
-    "method": "POST",
-    "body": "timestamp=1688711841427&recvWindow=60000&signature=7da7ada2683d52532681cc5d420fd0ec678eb99935c5f6cd7168aa1313ba9ad3",
-    "headers": {
-        "X-MBX-APIKEY": "tPekpYpExdV5pzzc9ZyLApIXQkYMiLWiygjKBAQzUCiy3G2fVtNGxGTJ4NtfZq31",
-        "Content-Type": "application/x-www-form-urlencoded"
-    }
-}
-okx:
-{
-    "url": "https://www.okx.com/api/v5/account/balance?ccy=USDT",
-    "method": "GET",
-    "headers": {
-        "OK-ACCESS-KEY": "8a236275-eedc-46d9-a592-485fb38d1dfe",
-        "OK-ACCESS-PASSPHRASE": "Padopado@2022",
-        "OK-ACCESS-TIMESTAMP": "2023-07-07T06:52:21.505Z",
-        "OK-ACCESS-SIGN": "4yO+12YDmxSf1eRQTRiufQrGW39og0hvvFl/g83g7w4="
-    }
-}
-*/
