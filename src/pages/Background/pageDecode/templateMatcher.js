@@ -6,6 +6,7 @@ import { assembleAlgorithmParamsForSDK } from '../exData';
 import { PADOSERVERURL } from '@/config/envConstants';
 import { padoExtensionVersion } from '@/config/constants';
 import { getPageDecodeState } from './state';
+import { tryPatchAlgorithmParamsForSpecialTemplateBinanceAssetsHistory } from './specialTemplateBinanceAssetsHistory';
 
 export async function formatAlgorithmParamsFn() {
   const pageDecodeState = getPageDecodeState();
@@ -80,6 +81,8 @@ export async function formatAlgorithmParamsFn() {
     PADOSERVERURL,
     padoExtensionVersion,
   });
+
+  tryPatchAlgorithmParamsForSpecialTemplateBinanceAssetsHistory(aligorithmParams, activeTemplate);
 
   state.formatAlgorithmParams = aligorithmParams;
   console.log('formatAlgorithmParams', aligorithmParams, activeTemplate);
