@@ -259,7 +259,6 @@ export const pageDecodeMsgListener = async (
   request,
   sender,
   sendResponse,
-  port,
   hasGetTwitterScreenName,
   processAlgorithmReq
 ) => {

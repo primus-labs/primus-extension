@@ -55,9 +55,7 @@ const extraRequestFn = async (params) => {
 export const devconsoleMsgListener = async (
   request,
   sender,
-  _sendResponse,
-  _password,
-  _port
+  _sendResponse
 ) => {
   const { name, params } = request;
 

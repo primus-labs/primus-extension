@@ -3,7 +3,6 @@ import {
 } from '@/services/api/user';
 import { requestSignTypedData } from '@/services/wallets/utils';
 
-import { postMsg } from '@/utils/utils';
 import { sendInitAttestationRes } from './utils/msgTransfer.js';
 
 import { eventReport } from '@/services/api/usertracker';
@@ -14,7 +13,6 @@ import { algorithmMsgListener } from './algorithm.js';
 import { devconsoleMsgListener } from './devconsole/index.js';
 const Web3EthAccounts = require('web3-eth-accounts');
 console.log('Background initialization');
-let fullscreenPort = null;
 
 // const compareRes = compareVersions('0.3.14', padoExtensionVersion);
 // console.log('padoExtensionVersion', padoExtensionVersion, compareRes);
@@ -74,26 +72,6 @@ chrome.runtime.onInstalled.addListener(async ({ reason, version: _version }) => 
   }
 });
 
-// listen msg from extension tab page
-chrome.runtime.onConnect.addListener((port) => {
-  fullscreenPort = port;
-  if (port.name.startsWith('fullscreen')) {
-    console.log('fullscreen connectted port=', port);
-    port.onMessage.addListener(processFullscreenReq);
-    port.onDisconnect.addListener(onDisconnectFullScreen);
-  }
-});
-
-const processFullscreenReq = (message, port) => {
-  switch (message.fullScreenType) {
-    case 'algorithm':
-      processAlgorithmReq(message, port);
-      break;
-    default:
-      break;
-  }
-};
-
 async function hasOffscreenDocument(path) {
   // Check all windows controlled by the service worker to see if one
   // of them is the offscreen document with the given path
@@ -109,7 +87,7 @@ async function hasOffscreenDocument(path) {
   return false;
 }
 
-const processAlgorithmReq = async (message, _port) => {
+const processAlgorithmReq = async (message) => {
   const matchedClients = await clients.matchAll();
   console.log('matchedClients', matchedClients);
   let { reqMethodName, params = {} } = message;
@@ -181,17 +159,8 @@ const processAlgorithmReq = async (message, _port) => {
       const stopFn = async () => {
         await chrome.offscreen.closeDocument();
         await chrome.storage.local.remove(['activeRequestAttestation']);
-        if (fullscreenPort) {
-          postMsg(fullscreenPort, {
-            resType: 'algorithm',
-            resMethodName: 'stop',
-            res: { retcode: 0 },
-            params,
-          });
-        } else {
-          if (!params?.noRestart) {
-            await startFn();
-          }
+        if (!params?.noRestart) {
+          await startFn();
         }
       };
       await stopFn();
@@ -201,24 +170,11 @@ const processAlgorithmReq = async (message, _port) => {
   }
 };
 
-const onDisconnectFullScreen = (port) => {
-  console.log('onDisconnectFullScreen port', port);
-  port.onDisconnect.removeListener(onDisconnectFullScreen);
-  port.onMessage.removeListener(processFullscreenReq);
-  fullscreenPort = null;
-};
-
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-  console.log('background onMessage message', message, fullscreenPort);
+  console.log('background onMessage message', message);
   const { resType, type } = message;
   if (resType === 'algorithm') {
-    algorithmMsgListener(
-      message,
-      sender,
-      sendResponse,
-      fullscreenPort,
-      processAlgorithmReq
-    );
+    algorithmMsgListener(message, sender, sendResponse, processAlgorithmReq);
   }
   let hasGetTwitterScreenName = false;
   if (type === 'pageDecode') {
@@ -226,7 +182,6 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       message,
       sender,
       sendResponse,
-      fullscreenPort,
       hasGetTwitterScreenName,
       processAlgorithmReq
     );
@@ -236,17 +191,10 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       message,
       sender,
       sendResponse,
-      fullscreenPort,
       processAlgorithmReq
     );
   }
   if (type === 'devconsole') {
-    devconsoleMsgListener(
-      message,
-      sender,
-      sendResponse,
-      USERPASSWORD,
-      fullscreenPort
-    );
+    devconsoleMsgListener(message, sender, sendResponse);
   }
 });

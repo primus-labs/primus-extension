@@ -1,6 +1,5 @@
 import { eventReport } from '@/services/api/usertracker';
 import { pageDecodeMsgListener } from './pageDecode/index.js';
-import { postMsg } from '@/utils/utils';
 import { addSDKParamsToReportParamsFn } from './utils/reportEvent.js';
 import { getErrorMsgTitleFn } from './utils/handleError.js';
 import { sendInitAttestationRes } from './utils/msgTransfer.js';
@@ -9,7 +8,6 @@ export const algorithmMsgListener = async (
   message,
   sender,
   sendResponse,
-  fullscreenPort,
   processAlgorithmReq
 ) => {
   const { resMethodName } = message;
@@ -47,7 +45,6 @@ export const algorithmMsgListener = async (
     var eventInfo = {
       eventType: 'ATTESTATION_START_BACKGROUND',
       rawData: {
-        fullscreenPort: !!fullscreenPort,
         res: !!message.res,
         requestid: message.requestid,
         order: '6',
@@ -98,7 +95,6 @@ export const algorithmMsgListener = async (
             },
             sender,
             sendResponse,
-            fullscreenPort,
             hasGetTwitterScreenName,
             processAlgorithmReq
           );
@@ -181,7 +177,6 @@ export const algorithmMsgListener = async (
               },
               sender,
               sendResponse,
-              fullscreenPort,
               hasGetTwitterScreenName,
               processAlgorithmReq
             );
@@ -338,7 +333,6 @@ export const algorithmMsgListener = async (
               },
               sender,
               sendResponse,
-              fullscreenPort,
               hasGetTwitterScreenName,
               processAlgorithmReq
             );
@@ -406,7 +400,6 @@ export const algorithmMsgListener = async (
             },
             sender,
             sendResponse,
-            fullscreenPort,
             hasGetTwitterScreenName,
             processAlgorithmReq
           );
@@ -438,10 +431,6 @@ export const algorithmMsgListener = async (
           });
         }
       }
-    }
-  } else {
-    if (fullscreenPort) {
-      postMsg(fullscreenPort, message);
     }
   }
 };
