@@ -2,7 +2,12 @@
  * Web request interception for page decode: capture requests, match templates, signal when ready.
  */
 import { isObject } from '../utils/utils';
-import { checkIsRequiredUrl, isUrlWithQueryFn } from '../utils/utils';
+import {
+  checkIsRequiredUrl,
+  isUrlWithQueryFn,
+  mergeQueryParamsIntoUrl,
+  mergeBodyParams,
+} from '../utils/utils';
 import {
   fetchRequestData,
   fetchHtmlContent,
@@ -67,6 +72,25 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
     });
 
     const targetRequestUrl = requestsMap[matchRequestId].url;
+    const additionParamsObj = activeTemplate?.additionParamsObj || {};
+    const hasQueryParams =
+      typeof additionParamsObj.queryParams === 'object' &&
+      additionParamsObj.queryParams !== null &&
+      !Array.isArray(additionParamsObj.queryParams);
+    const hasBodyParams =
+      typeof additionParamsObj.bodyParams === 'object' &&
+      additionParamsObj.bodyParams !== null &&
+      !Array.isArray(additionParamsObj.bodyParams);
+    const mergedUrl = hasQueryParams
+      ? mergeQueryParamsIntoUrl(targetRequestUrl, additionParamsObj.queryParams)
+      : targetRequestUrl;
+    const mergedBody = hasBodyParams
+      ? mergeBodyParams(
+          requestsMap[matchRequestId].body,
+          additionParamsObj.bodyParams
+        )
+      : requestsMap[matchRequestId].body;
+
     let matchRequestUrlResult;
     let isTargetUrl = false;
 
@@ -74,7 +98,8 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
       matchRequestUrlResult = await fetchHtmlContent({
         ...requestsMap[matchRequestId],
         header: requestsMap[matchRequestId].headers,
-        url: targetRequestUrl,
+        url: mergedUrl,
+        body: mergedBody,
       });
       if (matchRequestUrlResult) {
         isTargetUrl = validateHtmlResponseCondition(
@@ -82,7 +107,11 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
           matchRequestUrlResult
         );
         if (isTargetUrl) {
-          storeInRequestsMap(matchRequestId, { isTarget: 1 });
+          storeInRequestsMap(matchRequestId, {
+            isTarget: 1,
+            url: mergedUrl,
+            body: mergedBody,
+          });
           break;
         }
       }
@@ -90,18 +119,23 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
       matchRequestUrlResult = await fetchRequestData({
         ...requestsMap[matchRequestId],
         header: requestsMap[matchRequestId].headers,
-        url: targetRequestUrl,
+        url: mergedUrl,
+        body: mergedBody,
       });
     }
 
     isTargetUrl = validateResponseCondition(jsonPathArr, matchRequestUrlResult);
     if (isTargetUrl) {
       await tryUpdateTabFromUserMenuResponse({
-        requestUrl: targetRequestUrl,
+        requestUrl: mergedUrl,
         responseData: matchRequestUrlResult,
         getState: () => getPageDecodeState().state,
       });
-      storeInRequestsMap(matchRequestId, { isTarget: 1 });
+      storeInRequestsMap(matchRequestId, {
+        isTarget: 1,
+        url: mergedUrl,
+        body: mergedBody,
+      });
       break;
     }
     storeInRequestsMap(matchRequestId, { isTarget: 2 });
@@ -119,7 +153,9 @@ export async function checkWebRequestIsReady() {
     datasourceTemplate: { requests },
   } = activeTemplate;
 
-  const interceptorRequests = requests.filter((r) => r.name !== 'first');
+  const interceptorRequests = requests.filter(
+    (r) => r.name !== 'first' && r.needCapture !== false
+  );
   const interceptorUrlArr = interceptorRequests.map((i) => i.url);
   const storageArr = Object.values(requestsMap);
 
@@ -208,6 +244,7 @@ export function setupWebRequestListener() {
     let templateRequestUrl = '';
     const isTarget = requests.some((r) => {
       if (r.name === 'first') return false;
+      if (r.needCapture === false) return false;
       if (r.queryParams?.[0]) {
         const urlStrArr = currRequestUrl.split('?');
         const hostUrl = urlStrArr[0];
@@ -260,6 +297,7 @@ export function setupWebRequestListener() {
     removeFromRequestsMap(requestId);
     const isTarget = requests.some((r) => {
       if (r.name === 'first') return false;
+      if (r.needCapture === false) return false;
       return checkIsRequiredUrl({
         requestUrl: currRequestUrl,
         requiredUrl: r.url,

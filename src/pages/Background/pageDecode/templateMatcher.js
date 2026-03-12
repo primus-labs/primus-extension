@@ -38,8 +38,37 @@ export async function formatAlgorithmParamsFn() {
   );
 
   const formatRequests = [];
+  const referenceRequestEntry = (() => {
+    const needCaptureRequest = requests.find(
+      (r) => r.name !== 'first' && r.needCapture !== false
+    );
+    if (!needCaptureRequest) return null;
+    return Object.values(requestsMap).find(
+      (sInfo) =>
+        sInfo.templateRequestUrl === needCaptureRequest.url &&
+        sInfo.isTarget === 1
+    ) || null;
+  })();
+  const referenceHeaders = referenceRequestEntry?.headers
+    ? { ...referenceRequestEntry.headers }
+    : {};
+
   for (const r of JSON.parse(JSON.stringify(requests))) {
     if (r.queryDetail) continue;
+
+    if (r.needCapture === false) {
+      const noCaptureItem = {
+        ...r,
+        headers: { ...referenceHeaders },
+        body: isObject(r.body) ? { ...r.body } : r.body || {},
+        url: r.name === 'first' ? r.url : r.url,
+      };
+      if (noCaptureItem.headers) {
+        noCaptureItem.headers['Accept-Encoding'] = 'identity';
+      }
+      formatRequests.push(noCaptureItem);
+      continue;
+    }
 
     const targetRequestId =
       Object.values(requestsMap).find(

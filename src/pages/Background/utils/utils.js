@@ -63,6 +63,47 @@ export function checkIsRequiredUrl({
   }
 }
 
+/**
+ * Merge queryParams (object) into URL: existing params are replaced, new keys are appended.
+ * Uses ? for first query string and correct concatenation.
+ */
+export function mergeQueryParamsIntoUrl(url, queryParams) {
+  if (
+    !url ||
+    typeof queryParams !== 'object' ||
+    queryParams === null ||
+    Array.isArray(queryParams)
+  ) {
+    return url;
+  }
+  const [base, search] = url.split('?');
+  const params = new URLSearchParams(search || '');
+  for (const [k, v] of Object.entries(queryParams)) {
+    if (v !== undefined && v !== null) {
+      params.set(k, String(v));
+    }
+  }
+  const newSearch = params.toString();
+  return newSearch ? `${base}?${newSearch}` : base;
+}
+
+/**
+ * Merge bodyParams (object) into body: existing keys are replaced, new keys are added.
+ */
+export function mergeBodyParams(body, bodyParams) {
+  if (
+    typeof bodyParams !== 'object' ||
+    bodyParams === null ||
+    Array.isArray(bodyParams)
+  ) {
+    return body;
+  }
+  if (isObject(body)) {
+    return { ...body, ...bodyParams };
+  }
+  return { ...bodyParams };
+}
+
 export const sendMsgToTab = async (tabId, msg) => {
   await chrome.tabs.sendMessage(tabId, msg);
 };

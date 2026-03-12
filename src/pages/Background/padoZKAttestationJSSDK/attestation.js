@@ -155,6 +155,7 @@ export async function handleStartAttestation(
               method,
               matchReqBodyKey,
               ignoreResponse,
+              needCapture,
             },
           } = curr;
           prev.push({
@@ -164,6 +165,7 @@ export async function handleStartAttestation(
             method,
             matchReqBodyKey,
             ignoreResponse,
+            needCapture,
           });
           return prev;
         }, []);
