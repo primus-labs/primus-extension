@@ -82,6 +82,26 @@ export async function formatAlgorithmParamsFn() {
     padoExtensionVersion,
   });
 
+  if (activeTemplate.allJsonResponseFlag === 'true' && Array.isArray(formatResponse)) {
+    for (const responseItem of formatResponse) {
+      const subconditions = responseItem?.conditions?.subconditions;
+      if (!Array.isArray(subconditions)) continue;
+      const plaintext_outputs = subconditions
+        .filter((itemB) => itemB?.reveal_id != null)
+        .map((itemB) => {
+          const fieldValue =
+            itemB?.field && typeof itemB.field === 'object' && 'field' in itemB.field
+              ? itemB.field.field
+              : itemB?.field;
+          return {
+            id: String(itemB.reveal_id) + '_plain',
+            field: fieldValue,
+          };
+        });
+      responseItem.plaintext_outputs = plaintext_outputs;
+    }
+  }
+
   tryPatchAlgorithmParamsForSpecialTemplateBinanceAssetsHistory(aligorithmParams, activeTemplate);
 
   state.formatAlgorithmParams = aligorithmParams;

@@ -217,6 +217,15 @@ export async function handleStartAttestation(
                   op: 'SHA256',
                   field: subconditionItem.field,
                 };
+              }  else if (['SHA256_WITH_SALT'].includes(op)) {
+                subconditionItem.type = 'FIELD_REVEAL';
+                subconditionItem.op = 'REVEAL_SALTTED_HASH';
+                subconditionItem.reveal_id = key;
+                subconditionItem.field = {
+                  type: 'FIELD_ARITHMETIC',
+                  op,
+                  field: subconditionItem.field,
+                };
               } else if (op === 'REVEAL_STRING') {
                 handleREVEALFn();
               } else if (op === 'MATCH_ONE') {

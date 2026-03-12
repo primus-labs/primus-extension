@@ -163,6 +163,7 @@ export async function handleGetAttestationResult(
       const passRes = JSON.parse(content.encodedData);
       passRes.extendedData = content.extendedData;
       passRes.allJsonResponse = content.allJsonResponse;
+      passRes.privateData = content.privateData;
       await sucFn(passRes);
     } else if (
       !content?.signature ||
