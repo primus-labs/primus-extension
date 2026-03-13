@@ -193,28 +193,32 @@ const processAlgorithmReq = async (message, port) => {
     case 'start':
       startFn();
       break;
-    case 'init':
-      // var eventInfo = {
-      //   eventType: 'ATTESTATION_INIT_3',
-      //   rawData: {},
-      // };
-      // eventReport(eventInfo);
+    case 'init': {
+      const { padoZKAttestationJSSDKClientType: clientType } =
+        await chrome.storage.local.get(['padoZKAttestationJSSDKClientType']);
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'init',
         params: {
           errLogUrl: 'wss://api.padolabs.org/logs',
+          clientType: clientType || '',
         },
       });
       break;
-    case 'getAttestation':
+    }
+    case 'getAttestation': {
       const attestationParams = await assembleAlgorithmParams(
         params,
         USERPASSWORD,
         port
       );
-      const { padoZKAttestationJSSDKBeginAttest } =
-        await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
+      const {
+        padoZKAttestationJSSDKBeginAttest,
+        padoZKAttestationJSSDKClientType: clientType,
+      } = await chrome.storage.local.get([
+        'padoZKAttestationJSSDKBeginAttest',
+        'padoZKAttestationJSSDKClientType',
+      ]);
       const f = { ...attestationParams };
       await chrome.storage.local.set({
         activeRequestAttestation: JSON.stringify(f),
@@ -225,6 +229,7 @@ const processAlgorithmReq = async (message, port) => {
       ) {
         attestationParams.proxyUrl = 'wss://api.padolabs.org/algoproxy';
       }
+      attestationParams.clientType = clientType || '';
       console.log('attestationParams=', attestationParams);
       chrome.runtime.sendMessage({
         type: 'algorithm',
@@ -233,24 +238,34 @@ const processAlgorithmReq = async (message, port) => {
         exInfo: EXCHANGEINFO,
       });
       break;
-    case 'getAttestationResult':
+    }
+    case 'getAttestationResult': {
+      const { padoZKAttestationJSSDKClientType: clientType } =
+        await chrome.storage.local.get(['padoZKAttestationJSSDKClientType']);
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'getAttestationResult',
-        params: params,
+        params: { ...params, clientType: clientType || '' },
       });
       break;
-    case 'startOffline':
+    }
+    case 'startOffline': {
+      const { padoZKAttestationJSSDKClientType: clientType } =
+        await chrome.storage.local.get(['padoZKAttestationJSSDKClientType']);
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'startOffline',
-        params: params,
+        params: { ...params, clientType: clientType || '' },
       });
       break;
+    }
     case 'stop':
       const stopFn = async () => {
         await chrome.offscreen.closeDocument();
-        await chrome.storage.local.remove(['activeRequestAttestation']);
+        await chrome.storage.local.remove([
+          'activeRequestAttestation',
+          'padoZKAttestationJSSDKClientType',
+        ]);
         if (fullscreenPort) {
           postMsg(fullscreenPort, {
             resType: 'algorithm',

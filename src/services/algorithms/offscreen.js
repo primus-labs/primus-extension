@@ -113,9 +113,14 @@ Module.onRuntimeInitialized = async () => {
 };
 
 var AlgorithmInited = false;
-var ClientVersion = '1.4.17';
+var ClientVersion = '1.4.15';
+var oldClientVersion = '1.1.1';
 
-function init(params) {
+function getEffectiveVersion(clientType) {
+  return (clientType || '').includes('network') ? oldClientVersion : ClientVersion;
+}
+
+function init(params, versionOverride) {
   console.log('init algorithms AlgorithmInited=', AlgorithmInited);
   if (AlgorithmInited) {
     return;
@@ -123,9 +128,10 @@ function init(params) {
   console.log('init...');
 
   params.errLogUrl = "";
+  var version = versionOverride != null ? versionOverride : ClientVersion;
   var req_obj = {
     method: 'init',
-    version: ClientVersion,
+    version: version,
     params,
   };
   var json_str = JSON.stringify(req_obj);
@@ -139,7 +145,7 @@ function init(params) {
   console.log('init AlgorithmInited=', AlgorithmInited);
   return res;
 }
-function getAttestation(params) {
+function getAttestation(params, versionOverride) {
   console.log('getAttestation AlgorithmInited=', AlgorithmInited);
   if (!AlgorithmInited) {
     const resobj = {
@@ -149,9 +155,10 @@ function getAttestation(params) {
     };
     return JSON.stringify(resobj);
   }
+  var version = versionOverride != null ? versionOverride : ClientVersion;
   var req_obj = {
     method: 'getAttestation',
-    version: ClientVersion,
+    version: version,
     params: params,
   };
   var json_str = JSON.stringify(req_obj);
@@ -163,11 +170,12 @@ function getAttestation(params) {
   console.log('getAttestation res', res);
   return res;
 }
-function getAttestationResult() {
+function getAttestationResult(versionOverride) {
   console.log('getAttestationResult');
+  var version = versionOverride != null ? versionOverride : ClientVersion;
   var req_obj = {
     method: 'getAttestationResult',
-    version: ClientVersion,
+    version: version,
     params: {
       requestid: '1',
     },
@@ -182,7 +190,7 @@ function getAttestationResult() {
   return res;
 }
 
-function startOffline(params) {
+function startOffline(params, versionOverride) {
   console.log('startOffline AlgorithmInited=', AlgorithmInited);
   if (!AlgorithmInited) {
     const resobj = {
@@ -192,9 +200,10 @@ function startOffline(params) {
     };
     return JSON.stringify(resobj);
   }
+  var version = versionOverride != null ? versionOverride : ClientVersion;
   var req_obj = {
     method: 'startOffline',
-    version: ClientVersion,
+    version: version,
     params: params,
   };
   var json_str = JSON.stringify(req_obj);
@@ -209,8 +218,9 @@ function startOffline(params) {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log('offscreen onMessage message', message);
+  var effectiveVersion = getEffectiveVersion(message.params?.clientType);
   if (message.type === 'algorithm' && message.method === 'init') {
-    const res = init(message.params);
+    const res = init(message.params, effectiveVersion);
     chrome.runtime.sendMessage({
       resType: 'algorithm',
       resMethodName: 'init',
@@ -244,7 +254,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     delete activeParams.padoExtensionVersion;
     PADOSERVERURL = message.params.PADOSERVERURL;
     padoExtensionVersion = message.params.padoExtensionVersion;
-    const res = getAttestation(message.params);
+    const res = getAttestation(message.params, effectiveVersion);
     EXCHANGEINFO = message.exInfo;
 
     /*const test = {
@@ -275,7 +285,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     message.type === 'algorithm' &&
     message.method === 'getAttestationResult'
   ) {
-    const res = getAttestationResult();
+    const res = getAttestationResult(effectiveVersion);
     chrome.runtime.sendMessage({
       resType: 'algorithm',
       resMethodName: 'getAttestationResult',
@@ -285,7 +295,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     message.type === 'algorithm' &&
     message.method === 'startOffline'
   ) {
-    const res = startOffline(message.params);
+    const res = startOffline(message.params, effectiveVersion);
     chrome.runtime.sendMessage({
       resType: 'algorithm',
       resMethodName: 'startOffline',
