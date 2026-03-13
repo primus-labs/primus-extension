@@ -74,23 +74,31 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
 
     const targetRequestUrl = requestsMap[matchRequestId].url;
     const additionParamsObj = activeTemplate?.additionParamsObj || {};
+    const needUpdateRequests = additionParamsObj.needUpdateRequests;
+    const hasNeedUpdateRequests =
+      Array.isArray(needUpdateRequests) && needUpdateRequests.length > 0;
+    const updateParams = hasNeedUpdateRequests
+      ? needUpdateRequests[thisRequestUrlIdx] ?? {}
+      : {};
     const hasQueryParams =
-      typeof additionParamsObj.queryParams === 'object' &&
-      additionParamsObj.queryParams !== null &&
-      !Array.isArray(additionParamsObj.queryParams);
+      typeof updateParams.queryParams === 'object' &&
+      updateParams.queryParams !== null &&
+      !Array.isArray(updateParams.queryParams);
     const hasBodyParams =
-      typeof additionParamsObj.bodyParams === 'object' &&
-      additionParamsObj.bodyParams !== null &&
-      !Array.isArray(additionParamsObj.bodyParams);
-    const mergedUrl = hasQueryParams
-      ? mergeQueryParamsIntoUrl(targetRequestUrl, additionParamsObj.queryParams)
-      : targetRequestUrl;
-    const mergedBody = hasBodyParams
-      ? mergeBodyParams(
-          requestsMap[matchRequestId].body,
-          additionParamsObj.bodyParams
-        )
-      : requestsMap[matchRequestId].body;
+      typeof updateParams.bodyParams === 'object' &&
+      updateParams.bodyParams !== null &&
+      !Array.isArray(updateParams.bodyParams);
+    const mergedUrl =
+      hasNeedUpdateRequests && hasQueryParams
+        ? mergeQueryParamsIntoUrl(targetRequestUrl, updateParams.queryParams)
+        : targetRequestUrl;
+    const mergedBody =
+      hasNeedUpdateRequests && hasBodyParams
+        ? mergeBodyParams(
+            requestsMap[matchRequestId].body,
+            updateParams.bodyParams
+          )
+        : requestsMap[matchRequestId].body;
 
     let matchRequestUrlResult;
     let isTargetUrl = false;
