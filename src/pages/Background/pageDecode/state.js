@@ -20,6 +20,9 @@ export function createPageDecodeState() {
     requestsMap: {},
     reportRequestIds: [],
     specialTemplateGithubUserMenuRedirectDone: false,
+    /** For template 9119207f: response of 2nd request sent by extension with 1st request headers/cookie */
+    specialSecondRequestResponse: null,
+    specialSecondRequestSent: false,
     PRE_ATTEST_PROMOT_V2: [...DEFAULT_PRE_ATTEST_PROMPT_V2],
   };
 
@@ -30,6 +33,8 @@ export function createPageDecodeState() {
     state.requestsMap = {};
     state.reportRequestIds = [];
     state.specialTemplateGithubUserMenuRedirectDone = false;
+    state.specialSecondRequestResponse = null;
+    state.specialSecondRequestSent = false;
   }
 
   function removeFromRequestsMap(requestId) {

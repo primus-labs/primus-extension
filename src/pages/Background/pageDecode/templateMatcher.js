@@ -40,7 +40,7 @@ export async function formatAlgorithmParamsFn() {
   const formatRequests = [];
   const referenceRequestEntry = (() => {
     const needCaptureRequest = requests.find(
-      (r) => r.name !== 'first' && r.needCapture !== false
+      (r) => r.needCapture !== false
     );
     if (!needCaptureRequest) return null;
     return Object.values(requestsMap).find(
@@ -61,7 +61,7 @@ export async function formatAlgorithmParamsFn() {
         ...r,
         headers: { ...referenceHeaders },
         body: isObject(r.body) ? { ...r.body } : r.body || {},
-        url: r.name === 'first' ? r.url : r.url,
+        url: r.url,
       };
       if (noCaptureItem.headers) {
         noCaptureItem.headers['Accept-Encoding'] = 'identity';
@@ -87,7 +87,7 @@ export async function formatAlgorithmParamsFn() {
       body: isObject(curRequestBody) ? { ...curRequestBody } : curRequestBody,
       url: queryString ? r.url + '?' + queryString : r.url,
     });
-    formatRequests.push({ ...r, url: r.name === 'first' ? r.url : url });
+    formatRequests.push({ ...r, url });
   }
 
   const formatResponse = JSON.parse(JSON.stringify(responses));

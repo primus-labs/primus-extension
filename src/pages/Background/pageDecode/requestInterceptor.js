@@ -18,6 +18,7 @@ import { getPageDecodeState } from './state';
 import { formatAlgorithmParamsFn } from './templateMatcher';
 import { sendMsgToDataSourcePage } from './sdkBridge';
 import { tryUpdateTabFromUserMenuResponse } from './specialTemplateGithubUserMenuRedirect';
+import { trySendSecondRequestWithFirstHeaders } from './specialTemplateSendSecondRequest';
 
 /**
  * Check if a captured request matches the template response conditions; mark as target if so.
@@ -154,7 +155,7 @@ export async function checkWebRequestIsReady() {
   } = activeTemplate;
 
   const interceptorRequests = requests.filter(
-    (r) => r.name !== 'first' && r.needCapture !== false
+    (r) => r.needCapture !== false
   );
   const interceptorUrlArr = interceptorRequests.map((i) => i.url);
   const storageArr = Object.values(requestsMap);
@@ -243,7 +244,6 @@ export function setupWebRequestListener() {
 
     let templateRequestUrl = '';
     const isTarget = requests.some((r) => {
-      if (r.name === 'first') return false;
       if (r.needCapture === false) return false;
       if (r.queryParams?.[0]) {
         const urlStrArr = currRequestUrl.split('?');
@@ -275,6 +275,7 @@ export function setupWebRequestListener() {
       };
       if (addQueryStr) newCapturedInfo.queryString = addQueryStr;
       storeInRequestsMap(requestId, newCapturedInfo);
+      await trySendSecondRequestWithFirstHeaders();
       await checkSDKTargetRequest(requestId, templateRequestUrl);
       await checkWebRequestIsReady();
     }
@@ -296,7 +297,6 @@ export function setupWebRequestListener() {
 
     removeFromRequestsMap(requestId);
     const isTarget = requests.some((r) => {
-      if (r.name === 'first') return false;
       if (r.needCapture === false) return false;
       return checkIsRequiredUrl({
         requestUrl: currRequestUrl,

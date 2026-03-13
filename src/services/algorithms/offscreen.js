@@ -39,7 +39,7 @@ class AlgorithmClient {
     console.log('init algorithms AlgorithmInited=', this.initialized);
     if (this.initialized) return;
     console.log('init...');
-    this._call('setLogLevel',{ logLevel: "debug" });
+    this._call('setLogLevel',{ logLevel: "debug" }); // TODO: set log level to info or hide it 
 
     const initParams = { ...params, errLogUrl: '' };
     
