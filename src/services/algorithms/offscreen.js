@@ -35,11 +35,14 @@ class AlgorithmClient {
     return fn(jsonStr);
   }
 
-  init(params) {
+  async init(params) {
     console.log('init algorithms AlgorithmInited=', this.initialized);
     if (this.initialized) return;
     console.log('init...');
+    this._call('setLogLevel',{ logLevel: "debug" });
+
     const initParams = { ...params, errLogUrl: '' };
+    
     const res = this._call('init', initParams);
     console.log('init typeof res', typeof res, 'res', res);
     this.initialized = true;
