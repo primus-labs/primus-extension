@@ -1,23 +1,38 @@
 /**
  * Custom hooks for page decode attestation UI: status, message listener, timeouts, auto-start.
  */
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { STATUS, SESSION_KEYS, TIMING, ERROR_CODES } from './constants';
 
-const ATTESTATION_POLLING_TIMEOUT_MS = 2 * 60 * 1000;
+/**
+ * Persist result state to sessionStorage and update React state (shared by message listener and timeouts).
+ */
+function persistAndSetResult(setters, resultStatus, errorTxt) {
+  sessionStorage.setItem(SESSION_KEYS.STATUS, STATUS.RESULT);
+  if (errorTxt != null) {
+    sessionStorage.setItem(SESSION_KEYS.ERROR_TXT, JSON.stringify(errorTxt));
+  }
+  if (resultStatus === 'success') {
+    sessionStorage.setItem(SESSION_KEYS.RESULT_STATUS, 'success');
+  }
+  setters.setStatus(STATUS.RESULT);
+  setters.setResultStatus(resultStatus ?? '');
+  setters.setErrorTxt(errorTxt);
+}
 
 /** Restore and sync attestation status with sessionStorage. */
 export function useAttestationStatus() {
-  const [status, setStatus] = useState('uninitialized');
+  const [status, setStatus] = useState(STATUS.UNINITIALIZED);
   const statusRef = useRef(status);
   const [isReadyFetch, setIsReadyFetch] = useState(false);
   const [resultStatus, setResultStatus] = useState('');
   const [errorTxt, setErrorTxt] = useState();
 
   useEffect(() => {
-    const lastStatus = sessionStorage.getItem('padoAttestRequestStatus');
-    const lastResultStatus = sessionStorage.getItem('padoAttestRequestResultStatus');
-    const lastErrorTxt = sessionStorage.getItem('padoAttestRequestErrorTxt');
-    const lastIsReadyFetch = sessionStorage.getItem('padoAttestRequestReady');
+    const lastStatus = sessionStorage.getItem(SESSION_KEYS.STATUS);
+    const lastResultStatus = sessionStorage.getItem(SESSION_KEYS.RESULT_STATUS);
+    const lastErrorTxt = sessionStorage.getItem(SESSION_KEYS.ERROR_TXT);
+    const lastIsReadyFetch = sessionStorage.getItem(SESSION_KEYS.READY);
 
     if (lastStatus) {
       setStatus(lastStatus);
@@ -25,10 +40,12 @@ export function useAttestationStatus() {
       if (lastErrorTxt && lastErrorTxt !== 'undefined') {
         try {
           setErrorTxt(JSON.parse(lastErrorTxt));
-        } catch (_e) {}
+        } catch (_e) {
+          // ignore invalid stored JSON
+        }
       }
     } else {
-      setStatus('uninitialized');
+      setStatus(STATUS.UNINITIALIZED);
     }
     if (lastIsReadyFetch) setIsReadyFetch(lastIsReadyFetch === '1');
   }, []);
@@ -50,132 +67,118 @@ export function useAttestationStatus() {
   };
 }
 
-/** Listen for webRequestIsReady and end messages from background. */
-export function useMessageListener(settors) {
-  const {
-    setIsReadyFetch,
-    setStatus,
-    setResultStatus,
-    setErrorTxt,
-  } = settors;
+/** Listen for webRequestIsReady and end messages from background. Uses ref for setters so listener is registered once. */
+export function useMessageListener(setters) {
+  const settersRef = useRef(setters);
+  settersRef.current = setters;
 
   useEffect(() => {
     const listenerFn = (request) => {
       const { name, params = {} } = request;
       const { result, failReason } = params;
+      const s = settersRef.current;
 
       if (name === 'webRequestIsReady') {
-        setIsReadyFetch(true);
-        sessionStorage.setItem('padoAttestRequestReady', '1');
+        s.setIsReadyFetch(true);
+        sessionStorage.setItem(SESSION_KEYS.READY, '1');
       }
       if (name === 'end') {
-        setStatus('result');
-        sessionStorage.setItem('padoAttestRequestStatus', 'result');
-        if (failReason) {
+        if (failReason != null) {
           sessionStorage.setItem(
-            'padoAttestRequestErrorTxt',
+            SESSION_KEYS.ERROR_TXT,
             JSON.stringify(failReason)
           );
         }
         if (result === 'success') {
-          sessionStorage.setItem('padoAttestRequestResultStatus', 'success');
+          sessionStorage.setItem(SESSION_KEYS.RESULT_STATUS, 'success');
         }
-        setResultStatus(result ?? '');
-        setErrorTxt(failReason);
+        persistAndSetResult(s, result ?? '', failReason);
       }
     };
     chrome.runtime.onMessage.addListener(listenerFn);
     return () => chrome.runtime.onMessage.removeListener(listenerFn);
-  }, [setIsReadyFetch, setStatus, setResultStatus, setErrorTxt]);
+  }, []);
 }
 
 /** Timeouts: show initialized, interception fail (00013), data source dialog timeout (2 min). */
-export function useTimeoutManager(activeRequest, status, statusRef, settors) {
-  const { setStatus, setResultStatus, setErrorTxt } = settors;
+export function useTimeoutManager(activeRequest, status, statusRef, setters) {
+  const { setStatus } = setters;
+  const PRE_ATTEST_PROMOT_V2 = activeRequest?.PRE_ATTEST_PROMOT_V2;
+  const uninitializedShowTime =
+    PRE_ATTEST_PROMOT_V2?.[0]?.showTime ?? TIMING.DEFAULT_UNINIT_MS;
+  const initializedShowTime =
+    PRE_ATTEST_PROMOT_V2?.[1]?.showTime ?? TIMING.DEFAULT_INIT_MS;
 
   useEffect(() => {
-    const PRE_ATTEST_PROMOT_V2 = activeRequest?.PRE_ATTEST_PROMOT_V2;
-    const uninitializedShowTime = PRE_ATTEST_PROMOT_V2?.[0]?.showTime;
     const timer = setTimeout(() => {
-      const lastStatus = sessionStorage.getItem('padoAttestRequestStatus');
-      if (!['verifying', 'result'].includes(lastStatus)) {
-        setStatus('initialized');
-        sessionStorage.setItem('padoAttestRequestStatus', 'initialized');
+      const lastStatus = sessionStorage.getItem(SESSION_KEYS.STATUS);
+      if (![STATUS.VERIFYING, STATUS.RESULT].includes(lastStatus)) {
+        setStatus(STATUS.INITIALIZED);
+        sessionStorage.setItem(SESSION_KEYS.STATUS, STATUS.INITIALIZED);
       }
-    }, uninitializedShowTime ?? 5000);
+    }, uninitializedShowTime);
     return () => clearTimeout(timer);
-  }, [setStatus]);
+  }, [setStatus, uninitializedShowTime]);
 
   useEffect(() => {
-    const PRE_ATTEST_PROMOT_V2 = activeRequest?.PRE_ATTEST_PROMOT_V2;
-    const initializedShowTime = PRE_ATTEST_PROMOT_V2?.[1]?.showTime;
     let timer2;
     let timer3;
 
-    if (status === 'initialized') {
+    if (status === STATUS.INITIALIZED) {
       timer2 = setTimeout(() => {
-        if (!['verifying', 'result'].includes(statusRef.current)) {
-          sessionStorage.setItem('padoAttestRequestStatus', 'result');
+        if (![STATUS.VERIFYING, STATUS.RESULT].includes(statusRef.current)) {
           const errorObj = {
-            code: '00013',
+            code: ERROR_CODES.TARGET_DATA_MISSING,
             sourcePageTip: 'Target data missing',
           };
-          sessionStorage.setItem(
-            'padoAttestRequestErrorTxt',
-            JSON.stringify(errorObj)
-          );
-          setStatus('result');
-          setResultStatus('warn');
-          setErrorTxt(errorObj);
+          persistAndSetResult(setters, 'warn', errorObj);
           chrome.runtime.sendMessage({
             type: 'pageDecode',
             name: 'interceptionFail',
           });
         }
-      }, initializedShowTime ?? 30000);
+      }, initializedShowTime);
     }
 
-    if (status === 'verifying') {
+    if (status === STATUS.VERIFYING) {
       timer3 = setTimeout(() => {
-        if (!['result'].includes(statusRef.current)) {
-          setStatus('result');
-          sessionStorage.setItem('padoAttestRequestStatus', 'result');
+        if (statusRef.current !== STATUS.RESULT) {
           const errorObj = {
-            code: '00002',
+            code: ERROR_CODES.REQUEST_TIMED_OUT,
             sourcePageTip: 'Request Timed Out',
           };
-          sessionStorage.setItem(
-            'padoAttestRequestErrorTxt',
-            JSON.stringify(errorObj)
-          );
-          setResultStatus('warn');
-          setErrorTxt(errorObj);
+          persistAndSetResult(setters, 'warn', errorObj);
           chrome.runtime.sendMessage({
             type: 'pageDecode',
             name: 'dataSourcePageDialogTimeout',
           });
         }
-      }, ATTESTATION_POLLING_TIMEOUT_MS);
+      }, TIMING.POLLING_TIMEOUT_MS);
     }
 
     return () => {
       if (timer2) clearTimeout(timer2);
       if (timer3) clearTimeout(timer3);
     };
-  }, [status, setStatus, setResultStatus, setErrorTxt]);
+  }, [
+    status,
+    initializedShowTime,
+    setters.setStatus,
+    setters.setResultStatus,
+    setters.setErrorTxt,
+  ]);
 }
 
 /** Auto-call handleConfirm when isReadyFetch becomes true and status is not result. */
-export function useAutoStartWhenReady(isReadyFetch, handleConfirm, settors) {
-  const { setStatus } = settors;
+export function useAutoStartWhenReady(isReadyFetch, handleConfirm, setters) {
   useEffect(() => {
     if (!isReadyFetch) return;
-    const lastStatus = sessionStorage.getItem('padoAttestRequestStatus');
-    if (['result'].includes(lastStatus)) return;
-    setStatus('verifying');
-    sessionStorage.setItem('padoAttestRequestStatus', 'verifying');
-    if (lastStatus !== 'verifying') {
+    const lastStatus = sessionStorage.getItem(SESSION_KEYS.STATUS);
+    if (lastStatus === STATUS.RESULT) return;
+    setters.setStatus(STATUS.VERIFYING);
+    sessionStorage.setItem(SESSION_KEYS.STATUS, STATUS.VERIFYING);
+    if (lastStatus !== STATUS.VERIFYING) {
       handleConfirm();
     }
-  }, [isReadyFetch, handleConfirm, setStatus]);
+  }, [isReadyFetch, handleConfirm, setters]);
 }

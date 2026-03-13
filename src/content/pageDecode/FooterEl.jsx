@@ -1,58 +1,50 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { getContentWithValue } from './utils';
+import { STATUS } from './constants';
+
 const FooterEl = ({ status, resultStatus, errorTxt, activeRequest }) => {
   const [errorTxtSelf, setErrorTxtSelf] = useState({
     sourcePageTip: 'Error Message.',
   });
+
   useEffect(() => {
-    console.log('timer2-2', status, resultStatus, errorTxt, errorTxtSelf);
-    if (status === 'result' && errorTxt?.sourcePageTip) {
-      console.log('timer2-7');
+    if (status === STATUS.RESULT && errorTxt?.sourcePageTip) {
       setErrorTxtSelf(errorTxt);
     }
-  }, [errorTxt?.sourcePageTip, status]);
-  useEffect(() => {
-    console.log('timer2-4', errorTxtSelf);
-  }, [errorTxtSelf]);
+  }, [status, errorTxt?.sourcePageTip, errorTxt]);
+
   const ElCon = useMemo(() => {
     let el = null;
-    const {
-      PRE_ATTEST_PROMOT_V2,
-      verificationContent,
-      verificationValue,
-    } = activeRequest;
+    const { PRE_ATTEST_PROMOT_V2, verificationContent, verificationValue } =
+      activeRequest || {};
 
     switch (status) {
-      case 'uninitialized':
-        const uninitializedTxt = PRE_ATTEST_PROMOT_V2?.[0]?.text[0];
+      case STATUS.UNINITIALIZED: {
+        const uninitializedTxt = PRE_ATTEST_PROMOT_V2?.[0]?.text?.[0];
         el = (
           <>
             <span>{uninitializedTxt}</span>
-            <p className="loading-text"></p>
+            <p className="loading-text" />
           </>
         );
         break;
-      case 'initialized':
+      }
+      case STATUS.INITIALIZED: {
         const initializedTxtArr = PRE_ATTEST_PROMOT_V2?.[1]?.text;
-        const initializedTxt1 = initializedTxtArr[0];
-        const initializedTxt2 = initializedTxtArr[1];
+        const initializedTxt1 = initializedTxtArr?.[0];
+        const initializedTxt2 = initializedTxtArr?.[1];
         el = (
           <>
             <span>{initializedTxt1}</span>
-            <p className="loading-text"></p>
+            <p className="loading-text" />
             <p className="anotherLine">{initializedTxt2}</p>
           </>
         );
         break;
-      case 'verifying':
-        const { verificationContent: vC } = getContentWithValue({
-          verificationContent,
-          verificationValue,
-        });
-        el = `Verifying ${vC}`;
-
+      }
+      case STATUS.VERIFYING:
+        el = `Verifying ${verificationContent ?? verificationValue ?? ''}`;
         break;
-      case 'result':
+      case STATUS.RESULT:
         if (resultStatus === 'success') {
           el = 'Successfully verified.';
         } else {
@@ -65,6 +57,8 @@ const FooterEl = ({ status, resultStatus, errorTxt, activeRequest }) => {
             </>
           );
         }
+        break;
+      default:
         break;
     }
     return el;

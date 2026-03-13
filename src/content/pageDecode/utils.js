@@ -1,16 +1,17 @@
+const INTER_FONT_URL =
+  'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap';
+
 export const injectFont = () => {
   const linkElement = document.createElement('link');
-  linkElement.href =
-    'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">';
   linkElement.rel = 'stylesheet';
-  const headElement = document.head;
-  if (headElement) {
-    headElement.appendChild(linkElement);
+  linkElement.href = INTER_FONT_URL;
+  if (document.head) {
+    document.head.appendChild(linkElement);
   }
 };
 
 export function createDomElement(html) {
-  var dom = new DOMParser().parseFromString(html, 'text/html');
+  const dom = new DOMParser().parseFromString(html, 'text/html');
   return dom.body.firstElementChild;
 }
 
@@ -90,28 +91,17 @@ export const request = async (fetchParams, baseUrl, padoExtensionVersion) => {
 };
 
 export const eventReport = async (data, baseUrl, padoExtensionVersion) => {
-  let storedata = {};
-  storedata.eventType = data.eventType;
-  if (data.rawData) {
-    storedata.rawData = JSON.stringify(data.rawData);
-  }
-
+  const storedata = {
+    eventType: data.eventType,
+    ...(data.rawData && { rawData: JSON.stringify(data.rawData) }),
+  };
   return request(
     {
       method: 'post',
-      url: `/public/event/report`,
+      url: '/public/event/report',
       data: storedata,
     },
     baseUrl,
     padoExtensionVersion
   );
-};
-
-export const getContentWithValue = ({
-  verificationContent,
-  verificationValue,
-}) => {
-  let vC = verificationContent,
-    vV = verificationValue;
-  return { verificationContent: vC, verificationValue: vV };
 };

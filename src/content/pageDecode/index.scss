@@ -90,97 +90,7 @@
   right: 35px;
 
   box-sizing: border-box;
-  .padoWrapper {
-    position: relative;
-    bottom: 60px;
-    right: 21px;
-    @include fcss;
-    gap: 6px;
-    align-items: flex-end;
-    .loadingStep,
-    .tipStep {
-      @include frcc;
-    }
-    .loadingStep {
-      padding: 4px 8px;
-      gap: 10px;
-      border-radius: 20px;
-      border: 0.5px solid var(--Layer-Tokens-layer-secondary, #c6c6c6);
-      background: var(--Layer-Tokens-layer-primary, #fff);
-      > img {
-        width: 24px;
-      }
-      /* HTML: <div class="loader"></div> */
-      .loader {
-        border-color: transparent;
-        width: 14px;
-        height: 14px;
-        aspect-ratio: 1;
-        display: grid;
-        border-radius: 50%;
-        background: linear-gradient(
-              0deg,
-              rgb(0 0 0/50%) 30%,
-              #0000 0 70%,
-              rgb(0 0 0/100%) 0
-            )
-            50%/8% 100%,
-          linear-gradient(
-              90deg,
-              rgb(0 0 0/25%) 30%,
-              #0000 0 70%,
-              rgb(0 0 0/75%) 0
-            )
-            50%/100% 8%;
-        background-repeat: no-repeat;
-        animation: l23 1s infinite steps(12);
-      }
-      .loader::before,
-      .loader::after {
-        content: '';
-        grid-area: 1/1;
-        border-radius: 50%;
-        background: inherit;
-        opacity: 0.915;
-        transform: rotate(30deg);
-      }
-      .loader::after {
-        opacity: 0.83;
-        transform: rotate(60deg);
-      }
-      @keyframes l23 {
-        100% {
-          transform: rotate(1turn);
-        }
-      }
-    }
-    .tipStep {
-      padding: 12px 40px 12px 12px;
-      gap: 12px;
-      border-radius: var(--Radius-radius-m, 8px);
-      border: 0.5px solid var(--Layer-Tokens-layer-02, #e0e0e0);
-      background: var(--Layer-Tokens-layer-primary, #fff);
-      box-shadow: 0px 4px 24px 0px rgba(0, 0, 0, 0.06);
 
-      color: var(--Text-Tokens-text-tertiary, #6f6f6f);
-      text-align: right;
-      font-feature-settings: 'ss08' on, 'liga' off, 'clig' off;
-      /* Body/Body 100 */
-      font-family: 'IBM Plex Sans';
-      font-size: 14px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: 18px; /* 128.571% */
-      letter-spacing: 0.16px;
-
-      animation: growFromBottom 1s forwards ease-out;
-      transform: translateY(-16px);
-
-      > img {
-        width: 20px;
-      }
-    }
-  }
   .pado-extension-card {
     @include frbc;
 
@@ -213,7 +123,7 @@
         .iconPado {
           width: var(--spacing-20, 20px);
         }
-        .pado-extenstion-center-title {
+        .pado-extension-center-title {
           font-family: Inter;
           font-size: 14px;
           font-style: normal;
@@ -225,13 +135,10 @@
       .pado-extension-footer {
         width: 100%;
         @include frsc;
-        // justify-content: flex-end;
-
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         display: inline-block;
-        color: var(--Foreground-muted, #71717a);
         color: var(--Foreground-muted, #71717a);
         font-family: Inter;
         font-size: 14px;
@@ -267,7 +174,7 @@
     .pado-extension-right {
       text-align: right;
       @include frss;
-      flex-direction: end;
+      justify-content: flex-end;
       .PButton {
         width: 45px;
         height: 28px;

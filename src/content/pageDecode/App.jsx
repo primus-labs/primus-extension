@@ -1,7 +1,7 @@
 /**
  * Page decode attestation card UI. Uses hooks for status, messages, and timeouts.
  */
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import RightEl from './RightEl';
 import FooterEl from './FooterEl';
 import HeaderEl from './HeaderEl';
@@ -11,6 +11,7 @@ import {
   useTimeoutManager,
   useAutoStartWhenReady,
 } from './hooks';
+import { EXTENSION_VERSION } from './constants';
 
 function PadoCard({ activeRequest }) {
   const {
@@ -25,15 +26,18 @@ function PadoCard({ activeRequest }) {
     setErrorTxt,
   } = useAttestationStatus();
 
-  const settors = {
-    setStatus,
-    setIsReadyFetch,
-    setResultStatus,
-    setErrorTxt,
-  };
+  const setters = useMemo(
+    () => ({
+      setStatus,
+      setIsReadyFetch,
+      setResultStatus,
+      setErrorTxt,
+    }),
+    [setStatus, setIsReadyFetch, setResultStatus, setErrorTxt]
+  );
 
-  useMessageListener(settors);
-  useTimeoutManager(activeRequest, status, statusRef, settors);
+  useMessageListener(setters);
+  useTimeoutManager(activeRequest, status, statusRef, setters);
 
   const handleBack = useCallback(async () => {
     await chrome.runtime.sendMessage({
@@ -41,7 +45,7 @@ function PadoCard({ activeRequest }) {
       name: 'close',
       params: {
         tabId: activeRequest?.tabId,
-        extensionVersion: '0.3.27',
+        extensionVersion: EXTENSION_VERSION,
       },
     });
   }, [activeRequest?.tabId]);
@@ -53,10 +57,10 @@ function PadoCard({ activeRequest }) {
     });
   }, []);
 
-  useAutoStartWhenReady(isReadyFetch, handleConfirm, settors);
+  useAutoStartWhenReady(isReadyFetch, handleConfirm, setters);
 
   return (
-    <div className={`pado-extension-card  ${status}`}>
+    <div className={`pado-extension-card ${status}`}>
       <div className="pado-extension-left">
         <HeaderEl />
         <FooterEl
