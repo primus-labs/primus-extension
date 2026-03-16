@@ -113,7 +113,7 @@ Module.onRuntimeInitialized = async () => {
 };
 
 var AlgorithmInited = false;
-var ClientVersion = '1.4.15';
+var ClientVersion = '1.4.17';
 
 function init(params) {
   console.log('init algorithms AlgorithmInited=', AlgorithmInited);
