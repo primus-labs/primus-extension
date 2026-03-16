@@ -113,11 +113,13 @@ Module.onRuntimeInitialized = async () => {
 };
 
 var AlgorithmInited = false;
+var lastInitVersion = null;
 var ClientVersion = '1.4.15';
 var oldClientVersion = '1.1.1';
 
 function getEffectiveVersion(clientType) {
-  return (clientType || '').includes('network') ? oldClientVersion : ClientVersion;
+  // console.log('getEffectiveVersion clientType=', clientType);
+  return (clientType?.toLowerCase() || '').includes('network') ? oldClientVersion : ClientVersion;
 }
 
 function init(params, versionOverride) {
@@ -142,6 +144,7 @@ function init(params, versionOverride) {
   console.log('init typeof res', typeof res);
   console.log('init res', res);
   AlgorithmInited = true;
+  lastInitVersion = version;
   console.log('init AlgorithmInited=', AlgorithmInited);
   return res;
 }
@@ -218,15 +221,28 @@ function startOffline(params, versionOverride) {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log('offscreen onMessage message', message);
-  var effectiveVersion = getEffectiveVersion(message.params?.clientType);
   if (message.type === 'algorithm' && message.method === 'init') {
-    const res = init(message.params, effectiveVersion);
-    chrome.runtime.sendMessage({
-      resType: 'algorithm',
-      resMethodName: 'init',
-      res: res,
-    });
-  } else if (
+    (async () => {
+      var clientType = message.params?.clientType;
+      if (!clientType) {
+        var st = await chrome.storage.local.get(['padoZKAttestationJSSDKClientType']);
+        clientType = st.padoZKAttestationJSSDKClientType || '';
+      }
+      var effectiveVersion = getEffectiveVersion(clientType);
+      if (AlgorithmInited && effectiveVersion !== lastInitVersion) {
+        AlgorithmInited = false;
+      }
+      const res = init(message.params, effectiveVersion);
+      chrome.runtime.sendMessage({
+        resType: 'algorithm',
+        resMethodName: 'init',
+        res: res,
+      });
+    })();
+    return;
+  }
+  var effectiveVersion = getEffectiveVersion(message.params?.clientType);
+  if (
     message.type === 'algorithm' &&
     message.method === 'getAttestation'
   ) {

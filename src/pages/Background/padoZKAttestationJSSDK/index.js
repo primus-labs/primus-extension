@@ -128,6 +128,9 @@ export const padoZKAttestationJSSDKMsgListener = async (
     processAlgorithmReq({
       reqMethodName: 'start',
     });
+    processAlgorithmReq({
+      reqMethodName: 'init',
+    });
     if (!isNetworkSdk) {
       updateAlgoUrl();
     }
@@ -153,6 +156,9 @@ export const padoZKAttestationJSSDKMsgListener = async (
     });
     processAlgorithmReq({
       reqMethodName: 'start',
+    });
+    processAlgorithmReq({
+      reqMethodName: 'init',
     });
     const {
       activeRequestAttestation: lastActiveRequestAttestationStr,
@@ -226,7 +232,12 @@ export const padoZKAttestationJSSDKMsgListener = async (
     chrome.runtime.sendMessage({
       type: 'algorithm',
       method: 'startOffline',
-      params: { offlineTimeout: STARTOFFLINETIMEOUT, padoUrl, proxyUrl },
+      params: {
+        offlineTimeout: STARTOFFLINETIMEOUT,
+        padoUrl,
+        proxyUrl,
+        clientType: clientType || '',
+      },
     });
 
     if (sdkVersion) {

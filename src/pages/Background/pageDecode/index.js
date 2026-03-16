@@ -1183,6 +1183,9 @@ export const pageDecodeMsgListener = async (
         { isUserClick: 'false' },
         formatAlgorithmParams
       );
+      const { padoZKAttestationJSSDKClientType: clientType } =
+        await chrome.storage.local.get(['padoZKAttestationJSSDKClientType']);
+      aligorithmParams.clientType = clientType || '';
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'getAttestation',
@@ -1208,9 +1211,8 @@ export const pageDecodeMsgListener = async (
                 if (retcode === '0') {
                   if (!preAlgorithmTimer) {
                     preAlgorithmTimer = setInterval(() => {
-                      chrome.runtime.sendMessage({
-                        type: 'algorithm',
-                        method: 'getAttestationResult',
+                      processAlgorithmReq({
+                        reqMethodName: 'getAttestationResult',
                         params: {},
                       });
                     }, 1000);
@@ -1651,6 +1653,9 @@ export const pageDecodeMsgListener = async (
       };
       eventInfo.rawData = await addSDKParamsToReportParamsFn(eventInfo.rawData);
       eventReport(eventInfo);
+      const { padoZKAttestationJSSDKClientType: clientType } =
+        await chrome.storage.local.get(['padoZKAttestationJSSDKClientType']);
+      aligorithmParams.clientType = clientType || '';
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'getAttestation',
