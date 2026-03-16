@@ -114,7 +114,7 @@ Module.onRuntimeInitialized = async () => {
 
 var AlgorithmInited = false;
 var lastInitVersion = null;
-var ClientVersion = '1.4.15';
+var ClientVersion = '1.4.17';
 var oldClientVersion = '1.1.1';
 
 function getEffectiveVersion(clientType) {
@@ -224,9 +224,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === 'algorithm' && message.method === 'init') {
     (async () => {
       var clientType = message.params?.clientType;
-      if (!clientType) {
-        var st = await chrome.storage.local.get(['padoZKAttestationJSSDKClientType']);
-        clientType = st.padoZKAttestationJSSDKClientType || '';
+      if (!clientType && typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+        try {
+          var st = await chrome.storage.local.get(['padoZKAttestationJSSDKClientType']);
+          clientType = st.padoZKAttestationJSSDKClientType || '';
+        } catch (e) {
+          clientType = '';
+        }
+      } else if (!clientType) {
+        clientType = '';
       }
       var effectiveVersion = getEffectiveVersion(clientType);
       if (AlgorithmInited && effectiveVersion !== lastInitVersion) {
