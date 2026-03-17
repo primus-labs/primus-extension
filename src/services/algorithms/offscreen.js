@@ -14,7 +14,7 @@ Module.onRuntimeInitialized = async () => {
   });
 };
 
-const CLIENT_VERSION = '1.4.17';
+const CLIENT_VERSION = '1.4.18';
 
 /**
  * Wraps WASM callAlgorithm for init, getAttestation, getAttestationResult, startOffline.
