@@ -7,6 +7,19 @@ import { addSDKParamsToReportParamsFn } from './utils/reportEvent.js';
 import { getErrorMsgTitleFn } from './utils/handleError.js';
 import { sendInitAttestationRes } from './utils/msgTransfer.js';
 
+const clearSdkAttestationState = async () => {
+  await chrome.storage.local.remove([
+    'beginAttest',
+    'getAttestationResultRes',
+    'padoZKAttestationJSSDKBeginAttest',
+    'padoZKAttestationJSSDKWalletAddress',
+    'padoZKAttestationJSSDKAttestationPresetParams',
+    'padoZKAttestationJSSDKXFollowerCount',
+    'activeRequestAttestation',
+    'padoZKAttestationJSSDKClientType',
+  ]);
+};
+
 export const algorithmMsgListener = async (
   message,
   sender,
@@ -162,13 +175,15 @@ export const algorithmMsgListener = async (
       if (!message.res) {
         return;
       }
+      if (padoZKAttestationJSSDKBeginAttest === '1') {
+        await chrome.storage.local.set({
+          getAttestationResultRes: message.res,
+        });
+      }
       const { retcode, content, retdesc, details, isUserClick } = JSON.parse(
         message.res
       );
       if (isUserClick === 'true') {
-        await chrome.storage.local.set({
-          getAttestationResultRes: message.res,
-        });
         const parsedActiveRequestAttestation = activeRequestAttestation
           ? JSON.parse(activeRequestAttestation)
           : {};
@@ -190,14 +205,7 @@ export const algorithmMsgListener = async (
               hasGetTwitterScreenName,
               processAlgorithmReq
             );
-            await chrome.storage.local.remove([
-              'padoZKAttestationJSSDKBeginAttest',
-              'padoZKAttestationJSSDKWalletAddress',
-              'padoZKAttestationJSSDKAttestationPresetParams',
-              'padoZKAttestationJSSDKXFollowerCount',
-              'activeRequestAttestation',
-              'padoZKAttestationJSSDKClientType',
-            ]);
+            await clearSdkAttestationState();
             chrome.tabs.sendMessage(dappTabId, {
               type: 'padoZKAttestationJSSDK',
               name: 'startAttestationRes',
@@ -402,14 +410,7 @@ export const algorithmMsgListener = async (
               hasGetTwitterScreenName,
               processAlgorithmReq
             );
-            await chrome.storage.local.remove([
-              'padoZKAttestationJSSDKBeginAttest',
-              'padoZKAttestationJSSDKWalletAddress',
-              'padoZKAttestationJSSDKAttestationPresetParams',
-              'padoZKAttestationJSSDKXFollowerCount',
-              'activeRequestAttestation',
-              'padoZKAttestationJSSDKClientType',
-            ]);
+            await clearSdkAttestationState();
             let resParams = { result: false };
             if (!resParams.result) {
               resParams.errorData = {
@@ -473,14 +474,7 @@ export const algorithmMsgListener = async (
             hasGetTwitterScreenName,
             processAlgorithmReq
           );
-          await chrome.storage.local.remove([
-            'padoZKAttestationJSSDKBeginAttest',
-            'padoZKAttestationJSSDKWalletAddress',
-            'padoZKAttestationJSSDKAttestationPresetParams',
-            'padoZKAttestationJSSDKXFollowerCount',
-            'activeRequestAttestation',
-            'padoZKAttestationJSSDKClientType',
-          ]);
+          await clearSdkAttestationState();
           let resParams = { result: false };
           if (!resParams.result) {
             resParams.errorData = {

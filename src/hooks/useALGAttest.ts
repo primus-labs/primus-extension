@@ -255,7 +255,6 @@ const useALGAttest = function useAttest() {
   );
   const getAttestationResultCallback = useCallback(
     async (res: any) => {
-      await chrome.storage.local.set({ getAttestationResultRes: res });
       const { retcode, content, retdesc, details, isUserClick } =
         JSON.parse(res);
       if (isUserClick === 'true') {
@@ -607,12 +606,7 @@ const useALGAttest = function useAttest() {
         msgObj: { ...msgObj, btnTxt: 'Try Again' },
       })
     );
-    const { beginAttest, getAttestationResultRes } =
-      await chrome.storage.local.get([
-        'beginAttest',
-        'getAttestationResultRes',
-      ]);
-
+    const { beginAttest } = await chrome.storage.local.get(['beginAttest']);
 
     if (beginAttest === '1') {
       const {source,schemaType,address,sigFormat} = parsedActiveRequestAttestation
@@ -627,7 +621,6 @@ const useALGAttest = function useAttest() {
             ext: {
               sigFormat: sigFormat,
               event: fromEvents,
-              getAttestationResultRes: getAttestationResultRes
             },
             detail: {
               code: '00002',

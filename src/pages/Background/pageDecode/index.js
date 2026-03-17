@@ -1644,6 +1644,7 @@ export const pageDecodeMsgListener = async (
     if (name === 'start') {
       await chrome.storage.local.set({
         beginAttest: '1',
+        getAttestationResultRes: '',
       });
       let aligorithmParams = Object.assign(
         { isUserClick: 'true' },
@@ -1695,7 +1696,7 @@ export const pageDecodeMsgListener = async (
       chandleClose(params, processAlgorithmReq);
     }
     if (name === 'end') {
-      handleEnd(request);
+      await handleEnd(request);
     }
     if (name === 'interceptionFail') {
       const { padoZKAttestationJSSDKBeginAttest } =
@@ -1726,12 +1727,13 @@ export const pageDecodeMsgListener = async (
       handleDataSourcePageDialogTimeout(processAlgorithmReq);
     }
     if (name === 'end') {
-      handleEnd(request);
+      await handleEnd(request);
     }
   }
 };
 
-const handleEnd = (request) => {
+const handleEnd = async (request) => {
+  await chrome.storage.local.remove(['getAttestationResultRes']);
   if (dataSourcePageTabId) {
     sendMsgToDataSourcePage(request);
     chrome.webRequest.onBeforeSendHeaders.removeListener(onBeforeSendHeadersFn);

@@ -454,6 +454,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
             additionParamsObj,
             allJsonResponseFlag: params.attRequest?.allJsonResponseFlag,
             clientType,
+            attestTimeout: params.attRequest?.timeout,
           };
         } else {
           const resParams = {
@@ -705,33 +706,47 @@ export const padoZKAttestationJSSDKMsgListener = async (
         'padoZKAttestationJSSDKAttestationPresetParams',
       ]);
     let attestTipMap = {};
-    if (
-      configMap &&
-      JSON.parse(configMap) &&
-      JSON.parse(configMap).ATTESTATION_PROCESS_NOTE
-    ) {
-      attestTipMap = JSON.parse(JSON.parse(configMap).ATTESTATION_PROCESS_NOTE);
+    if (configMap && typeof configMap === 'string') {
+      try {
+        const parsedConfig = JSON.parse(configMap);
+        const noteStr =
+          parsedConfig && typeof parsedConfig.ATTESTATION_PROCESS_NOTE === 'string'
+            ? parsedConfig.ATTESTATION_PROCESS_NOTE
+            : null;
+        if (noteStr) {
+          const note = JSON.parse(noteStr);
+          if (note && typeof note === 'object') attestTipMap = note;
+        }
+      } catch (_) {
+        // keep attestTipMap as {}
+      }
     }
 
-    const activeAttestationParams = JSON.parse(
-      padoZKAttestationJSSDKAttestationPresetParams
-    );
+    const activeAttestationParams =
+      padoZKAttestationJSSDKAttestationPresetParams &&
+      typeof padoZKAttestationJSSDKAttestationPresetParams === 'string'
+        ? JSON.parse(padoZKAttestationJSSDKAttestationPresetParams)
+        : {};
     const errorMsgTitle = await getErrorMsgTitleFn();
 
     const code = '00002';
+    const tip = attestTipMap[code];
     const msgObj = {
-      type: attestTipMap[code].type,
+      type: tip?.type ?? 'warn',
       title: errorMsgTitle,
-      desc: attestTipMap[code].desc,
-      sourcePageTip: attestTipMap[code].title,
+      desc: tip?.desc ?? '',
+      sourcePageTip: tip?.title ?? '',
     };
 
     await chrome.storage.local.remove([
+      'beginAttest',
+      'getAttestationResultRes',
       'padoZKAttestationJSSDKBeginAttest',
       'padoZKAttestationJSSDKWalletAddress',
       'padoZKAttestationJSSDKAttestationPresetParams',
       'padoZKAttestationJSSDKXFollowerCount',
       'activeRequestAttestation',
+      'padoZKAttestationJSSDKClientType',
     ]);
     pageDecodeMsgListener(
       {

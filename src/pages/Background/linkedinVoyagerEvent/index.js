@@ -25,16 +25,16 @@ export const buildLinkedInVoyagerSearchUrl = (start) => {
   return VOYAGER_BASE_URL.replace(/start:\d+/, `start:${start}`);
 };
 
-const UNIVERSAL = 'UNIVERSAL';
+
 
 /**
  * Count items in response.included where template === 'UNIVERSAL'
  * @param {Object} response - Voyager API response
  * @returns {number}
  */
-export const getUniversalIncludedCount = (response) => {
-  const included = response?.included || [];
-  return included.filter((item) => item?.template === UNIVERSAL).length;
+export const getConnectionsCount = (response) => {
+  const connections = response?.data.searchDashClustersByAll.elements[0].items.filter(i => i.item.entityResult) || [];
+  return connections.length;
 };
 
 /** Cache of pagination results for this session; avoids re-running the full request chain when formatAlgorithmParamsFn is triggered multiple times */
@@ -85,8 +85,8 @@ export const fetchLinkedInVoyagerRequests = async (requestMetaInfo) => {
       }
       if (response == null) break;
       pages.push({ url });
-      const count = getUniversalIncludedCount(response);
-      if (count !== PAGE_SIZE) break;
+      const count = getConnectionsCount(response);
+      if (count < PAGE_SIZE) break;
       start += PAGE_SIZE;
     }
 
@@ -134,15 +134,14 @@ export const formatRequestResponseFnForLinkedInPage = async (
     return { formatRequests: newFormatRequests, formatResponse };
   }
 
-  const newFormatResponse = pages.map(() => {
+  const newFormatResponse = pages.map((_, pageIndex) => {
     const cloned = JSON.parse(JSON.stringify(templateResponse));
     const subconditions = cloned?.conditions?.subconditions;
+    const revealId = `connectionsPage${pageIndex + 1}`;
     if (Array.isArray(subconditions)) {
       subconditions.forEach((sc) => {
-        // sc.field = '$.included';
-        sc.reveal_id = 'included'
+        sc.reveal_id = revealId;
         sc.field = '$.data.searchDashClustersByAll.elements[0].items[*].item.entityResult.title.text'
-        // sc.field = '$.data.searchDashClustersByAll.elements[0].items'
       });
     }
     return cloned;
