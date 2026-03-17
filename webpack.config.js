@@ -442,7 +442,7 @@ var options = {
       }
     }),
     new MiniCssExtractPlugin({
-      // 定义输出文件名和目录
+      // Define output filename and directory
       // filename: 'static/css/main.css',
       filename: 'static/css/[name].css',
     }),

@@ -66,6 +66,11 @@ import {
   formatRequestResponseFnForCoinstatsSpotSomeTokenBalance,
 } from '../coinstats/index.js';
 import {
+  templateIdForLinkedInPage,
+  formatRequestResponseFnForLinkedInPage,
+  resetVoyagerExtraRequestSentForSession,
+} from '../linkedinVoyagerEvent/index.js';
+import {
   isObject,
   parseCookie,
   isUrlWithQueryFn,
@@ -165,6 +170,7 @@ const resetVarsFn = () => {
   chatgptHasLogin = false;
   requestsMap = {};
   reportRequestIds = [];
+  resetVoyagerExtraRequestSentForSession();
   chrome.runtime.onMessage.removeListener(listenerFn);
 };
 const handlerForSdk = async (processAlgorithmReq, operation) => {
@@ -1133,6 +1139,16 @@ export const pageDecodeMsgListener = async (
         ) {
           const { formatRequests: req, formatResponse: res } =
             formatRequestResponseFnForCoinstatsSpotSomeTokenBalance(
+              formatRequests,
+              formatResponse
+            );
+          formatRequests = req;
+          formatResponse = res;
+        } else if (
+          activeTemplate.attTemplateID === templateIdForLinkedInPage
+        ) {
+          const { formatRequests: req, formatResponse: res } =
+            await formatRequestResponseFnForLinkedInPage(
               formatRequests,
               formatResponse
             );

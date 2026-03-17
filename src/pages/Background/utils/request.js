@@ -68,7 +68,7 @@ export async function customFetch2({ url, method, body, header, isFormData }) {
     }
     const contentType = response.headers.get('Content-Type') || '';
 
-    if (contentType.includes('application/json')) {
+    if (contentType.includes('application/json') || contentType.includes('+json')) {
       return await response.json();
     } else if (contentType.includes('text/')) {
       return await response.text();

@@ -917,16 +917,16 @@ export const getChainAssetsNFT = async ({
               //     'Arbitrum One': [
               //       {
               //         contractAddress:
-              //           '0xaf1cf02378db203ea9545d62588567c61b1ed7f8', //nft合约地址
+              //           '0xaf1cf02378db203ea9545d62588567c61b1ed7f8', // NFT contract address
               //         transactionHash:
               //           '0x98a7e58a68e687d1b598f0ce36000b7490a7799345362bfef6a2cb8fb0f3abd6', //transfer hash
               //         tokenId: '204', //tokeniD
               //         name: 'Vision Emissary A', //nft name
               //         collectionName: 'Uniswap V3 Positions NFT-V1', //collection name
               //         imageUri:
-              //           'https://s3.ap-northeast-1.amazonaws.com/quest3.xyz/quest/831879261192478866.gif', //nft 图片地址
-              //         ercType: 'erc721', //nft 类型
-              //         chain: 'Arbitrum One', //链
+              //           'https://s3.ap-northeast-1.amazonaws.com/quest3.xyz/quest/831879261192478866.gif', // NFT image URL
+              //         ercType: 'erc721', // NFT type
+              //         chain: 'Arbitrum One', // chain
               //         mintTime: '1698720422000', //mint time
               //       },
               //     ],
@@ -956,16 +956,16 @@ export const getChainAssetsNFT = async ({
               //     BSC: [
               //       {
               //         contractAddress:
-              //           '0xaf1cf02378db203ea9545d62588567c61b1ed7f8', //nft合约地址
+              //           '0xaf1cf02378db203ea9545d62588567c61b1ed7f8', // NFT contract address
               //         transactionHash:
               //           '0x98a7e58a68e687d1b598f0ce36000b7490a7799345362bfef6a2cb8fb0f3abd6', //transfer hash
               //         tokenId: '204', //tokeniD
               //         name: 'Vision Emissary A', //nft name
               //         collectionName: 'Uniswap V3 Positions NFT-V1', //collection name
               //         imageUri:
-              //           'https://s3.ap-northeast-1.amazonaws.com/quest3.xyz/quest/831879261192478866.gif', //nft 图片地址
-              //         ercType: 'erc721', //nft 类型
-              //         chain: 'Arbitrum One', //链
+              //           'https://s3.ap-northeast-1.amazonaws.com/quest3.xyz/quest/831879261192478866.gif', // NFT image URL
+              //         ercType: 'erc721', // NFT type
+              //         chain: 'Arbitrum One', // chain
               //         mintTime: '1698720422000', //mint time
               //       },
               //     ],
