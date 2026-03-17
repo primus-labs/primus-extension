@@ -114,7 +114,7 @@ Module.onRuntimeInitialized = async () => {
 
 var AlgorithmInited = false;
 var lastInitVersion = null;
-var ClientVersion = '1.4.17';
+var ClientVersion = '1.4.18';
 var oldClientVersion = '1.1.1';
 
 function getEffectiveVersion(clientType) {
