@@ -163,6 +163,12 @@ export async function pageDecodeMsgListener(
         { isUserClick: 'true' },
         state.formatAlgorithmParams
       );
+      const { padoZKAttestationJSSDKClientType: clientType } =
+        await safeStorageGet(['padoZKAttestationJSSDKClientType']);
+      const getAttestationParams = {
+        ...aligorithmParams,
+        clientType: clientType || '',
+      };
       await safeStorageSet({
         beginAttest: '1',
         activeRequestAttestation: JSON.stringify(aligorithmParams),
@@ -171,7 +177,7 @@ export async function pageDecodeMsgListener(
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'getAttestation',
-        params: JSON.parse(JSON.stringify(aligorithmParams)),
+        params: getAttestationParams,
       });
     }
 

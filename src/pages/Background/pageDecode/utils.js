@@ -96,6 +96,7 @@ export const handleAttestationError = async (errorData, dataSourcePageTabId, opt
     'padoZKAttestationJSSDKBeginAttest',
     'padoZKAttestationJSSDKWalletAddress',
     'padoZKAttestationJSSDKAttestationPresetParams',
+    'padoZKAttestationJSSDKClientType',
   ];
   if (!options.skipRemoveActiveRequestAttestation) {
     keysToRemove.push('activeRequestAttestation');

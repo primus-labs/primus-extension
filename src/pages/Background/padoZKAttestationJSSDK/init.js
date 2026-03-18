@@ -75,6 +75,7 @@ export async function handleInitAttestation(params, senderTabId, processAlgorith
 
   await safeStorageSet({
     padoZKAttestationJSSDKBeginAttest: sdkState.sdkVersion,
+    padoZKAttestationJSSDKClientType: params?.clientType || '',
   });
   processAlgorithmReq({ reqMethodName: 'start' });
 

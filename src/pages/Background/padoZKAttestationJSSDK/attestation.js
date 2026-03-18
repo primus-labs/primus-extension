@@ -39,6 +39,7 @@ export async function handleStartAttestation(
 
   await safeStorageSet({
     padoZKAttestationJSSDKBeginAttest: state.sdkVersion,
+    padoZKAttestationJSSDKClientType: params?.clientType || '',
   });
   processAlgorithmReq({ reqMethodName: 'start' });
 
@@ -104,10 +105,16 @@ export async function handleStartAttestation(
   const padoUrl = await getAlgoApi(padoUrlKey, algoApisParam);
   const proxyUrl = await getAlgoApi('proxyUrl', algoApisParam);
 
+  const clientType = params?.clientType || '';
   chrome.runtime.sendMessage({
     type: 'algorithm',
     method: 'startOffline',
-    params: { offlineTimeout: STARTOFFLINETIMEOUT, padoUrl, proxyUrl },
+    params: {
+      offlineTimeout: STARTOFFLINETIMEOUT,
+      padoUrl,
+      proxyUrl,
+      clientType,
+    },
   });
 
   if (state.sdkVersion) {
@@ -389,6 +396,7 @@ export async function handleGetAttestationResultTimeout(
     'padoZKAttestationJSSDKWalletAddress',
     'padoZKAttestationJSSDKAttestationPresetParams',
     'activeRequestAttestation',
+    'padoZKAttestationJSSDKClientType',
   ]);
 
   await pageDecodeMsgListener(

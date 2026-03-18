@@ -20,6 +20,7 @@ import {
   safeStorageRemove,
 } from '@/utils/safeStorage';
 import { setupKeepAliveListener } from './utils/keepAlive.js';
+import Web3EthAccounts from 'web3-eth-accounts';
 
 setupKeepAliveListener();
 
@@ -28,7 +29,6 @@ console.log('Background initialization');
 const createUserInfo = async () => {
   const { userInfo } = await safeStorageGet(['userInfo']);
   if (!userInfo) {
-    const Web3EthAccounts = (await import('web3-eth-accounts')).default;
     let web3EthAccount = new Web3EthAccounts();
     let { privateKey, address } = web3EthAccount.create();
     await safeStorageSet({
@@ -110,22 +110,31 @@ const processAlgorithmReq = async (message) => {
     case 'start':
       await startFn();
       break;
-    case 'init':
+    case 'init': {
+      const { padoZKAttestationJSSDKClientType: clientType } =
+        await safeStorageGet(['padoZKAttestationJSSDKClientType']);
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'init',
-        params: { errLogUrl: 'wss://api.padolabs.org/logs' },
+        params: {
+          errLogUrl: 'wss://api.padolabs.org/logs',
+          clientType: clientType || '',
+        },
       });
       break;
+    }
     case 'getAttestation':
       break;
-    case 'getAttestationResult':
+    case 'getAttestationResult': {
+      const { padoZKAttestationJSSDKClientType: clientType } =
+        await safeStorageGet(['padoZKAttestationJSSDKClientType']);
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'getAttestationResult',
-        params,
+        params: { ...params, clientType: clientType || '' },
       });
       break;
+    }
     case 'startOffline':
       chrome.runtime.sendMessage({
         type: 'algorithm',
@@ -135,7 +144,10 @@ const processAlgorithmReq = async (message) => {
       break;
     case 'stop': {
       await closeOffscreenDoc();
-      await safeStorageRemove(['activeRequestAttestation']);
+      await safeStorageRemove([
+        'activeRequestAttestation',
+        'padoZKAttestationJSSDKClientType',
+      ]);
       if (!params?.noRestart) {
         await startFn();
       }

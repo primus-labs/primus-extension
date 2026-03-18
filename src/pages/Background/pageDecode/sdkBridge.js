@@ -45,6 +45,7 @@ export async function handlerForSdk(processAlgorithmReq, operation) {
       'padoZKAttestationJSSDKBeginAttest',
       'padoZKAttestationJSSDKAttestationPresetParams',
       'activeRequestAttestation',
+      'padoZKAttestationJSSDKClientType',
     ]);
     const desc = `The user ${operation} the attestation`;
     const resParams = {

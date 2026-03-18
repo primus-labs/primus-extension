@@ -55,6 +55,7 @@ window.addEventListener('message', (e) => {
         'padoZKAttestationJSSDKWalletAddress',
         'padoZKAttestationJSSDKAttestationPresetParams',
         'activeRequestAttestation',
+        'padoZKAttestationJSSDKClientType',
       ];
       safeStorageRemove(keys).finally(() => {
         removeInFlight = false;

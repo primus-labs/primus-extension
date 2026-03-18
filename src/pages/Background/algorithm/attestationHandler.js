@@ -57,6 +57,7 @@ export async function handleGetAttestation(
       'padoZKAttestationJSSDKWalletAddress',
       'padoZKAttestationJSSDKAttestationPresetParams',
       'activeRequestAttestation',
+      'padoZKAttestationJSSDKClientType',
     ]);
     processAlgorithmReq({ reqMethodName: 'stop' });
   }
@@ -137,6 +138,7 @@ export async function handleGetAttestationResult(
       'padoZKAttestationJSSDKWalletAddress',
       'padoZKAttestationJSSDKAttestationPresetParams',
       'activeRequestAttestation',
+      'padoZKAttestationJSSDKClientType',
     ]);
     await sendMsgToTab(dappTabId, {
       type: 'padoZKAttestationJSSDK',
@@ -151,7 +153,17 @@ export async function handleGetAttestationResult(
       content?.signature
     ) {
       const activeRequestId = parsedActiveRequestAttestation.requestid;
-      if (activeRequestId !== content?.requestid) return;
+      if (activeRequestId !== content?.requestid) {
+        stopKeepAlive();
+        await safeStorageRemove([
+          'padoZKAttestationJSSDKBeginAttest',
+          'padoZKAttestationJSSDKWalletAddress',
+          'padoZKAttestationJSSDKAttestationPresetParams',
+          'activeRequestAttestation',
+          'padoZKAttestationJSSDKClientType',
+        ]);
+        return;
+      }
 
       const passRes = JSON.parse(content.encodedData);
       passRes.extendedData = content.extendedData;
@@ -236,6 +248,7 @@ export async function handleGetAttestationResult(
         'padoZKAttestationJSSDKWalletAddress',
         'padoZKAttestationJSSDKAttestationPresetParams',
         'activeRequestAttestation',
+        'padoZKAttestationJSSDKClientType',
       ]);
       const resParams = {
         result: false,
@@ -269,6 +282,7 @@ export async function handleGetAttestationResult(
       'padoZKAttestationJSSDKWalletAddress',
       'padoZKAttestationJSSDKAttestationPresetParams',
       'activeRequestAttestation',
+      'padoZKAttestationJSSDKClientType',
     ]);
     const resParams = {
       result: false,
@@ -289,5 +303,48 @@ export async function handleGetAttestationResult(
     await safeStorageSet({
       attestationLogInQuery: message.res,
     });
+    if (retcode !== '1') {
+      // retcode '1' = in progress (offline/online RUNNING), keep polling.
+      // Other retcodes = unknown final state, clean up to allow retry.
+      stopKeepAlive();
+      await safeStorageRemove([
+        'padoZKAttestationJSSDKBeginAttest',
+        'padoZKAttestationJSSDKWalletAddress',
+        'padoZKAttestationJSSDKAttestationPresetParams',
+        'activeRequestAttestation',
+        'padoZKAttestationJSSDKClientType',
+      ]);
+      const unknownRetcodeMsg = {
+        type: 'error',
+        title: errorMsgTitle,
+        desc: 'Attestation completed with unexpected result.',
+        sourcePageTip: '',
+      };
+      await pageDecodeMsgListener(
+        {
+          name: 'end',
+          params: { result: 'warn', failReason: { ...unknownRetcodeMsg } },
+        },
+        sender,
+        sendResponse,
+        HAS_GET_TWITTER_SCREEN_NAME,
+        processAlgorithmReq
+      );
+      await sendMsgToTab(dappTabId, {
+        type: 'padoZKAttestationJSSDK',
+        name: 'startAttestationRes',
+        params: {
+          result: false,
+          errorData: {
+            title: unknownRetcodeMsg.title,
+            desc: unknownRetcodeMsg.desc,
+            code: '00099',
+            data: message.res,
+          },
+          reStartFlag: true,
+        },
+      });
+      processAlgorithmReq({ reqMethodName: 'stop' });
+    }
   }
 }
