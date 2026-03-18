@@ -23,6 +23,9 @@ export function createPageDecodeState() {
     /** For template 9119207f: response of 2nd request sent by extension with 1st request headers/cookie */
     specialSecondRequestResponse: null,
     specialSecondRequestSent: false,
+    /** For template 99d6d02a (LinkedIn Connections): pagination cache and in-flight promise */
+    linkedinVoyagerPaginationCache: null,
+    linkedinVoyagerPaginationInFlight: null,
     PRE_ATTEST_PROMOT_V2: [...DEFAULT_PRE_ATTEST_PROMPT_V2],
   };
 
@@ -35,6 +38,8 @@ export function createPageDecodeState() {
     state.specialTemplateGithubUserMenuRedirectDone = false;
     state.specialSecondRequestResponse = null;
     state.specialSecondRequestSent = false;
+    state.linkedinVoyagerPaginationCache = null;
+    state.linkedinVoyagerPaginationInFlight = null;
   }
 
   function removeFromRequestsMap(requestId) {
