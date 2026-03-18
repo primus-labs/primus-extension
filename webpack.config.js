@@ -285,6 +285,10 @@ var options = {
           from: 'src/content/primus.js',
           to: path.join(__dirname, 'build'),
           force: true,
+          transform(content) {
+            const pkg = require('./package.json');
+            return content.toString().replace('__PRIMUS_VERSION__', pkg.version);
+          },
         },
         {
           from: 'src/assets/img/content/iconPado.svg',
