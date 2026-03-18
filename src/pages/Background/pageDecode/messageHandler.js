@@ -15,6 +15,9 @@ import {
   handleTargetDataMissing,
   handleDataSourcePageDialogTimeout,
 } from './sdkBridge';
+import { safeStorageGet, safeStorageSet } from '@/utils/safeStorage';
+import { safeJsonParse } from '@/utils/utils';
+import { startKeepAlive } from '../utils/keepAlive.js';
 
 function handleEnd(request) {
   const pageDecodeState = getPageDecodeState();
@@ -73,12 +76,13 @@ export async function pageDecodeMsgListener(
     const { jumpTo } = state.activeTemplate;
 
     if (name === 'init') {
-      const { configMap } = await chrome.storage.local.get(['configMap']);
+      const { configMap } = await safeStorageGet(['configMap']);
       if (configMap) {
-        const PRE_ATTEST_PROMOTStr =
-          JSON.parse(configMap)?.PRE_ATTEST_PROMOT_V2;
+        const configMapParsed = safeJsonParse(configMap);
+        const PRE_ATTEST_PROMOTStr = configMapParsed?.PRE_ATTEST_PROMOT_V2;
         if (PRE_ATTEST_PROMOTStr) {
-          state.PRE_ATTEST_PROMOT_V2 = JSON.parse(PRE_ATTEST_PROMOTStr);
+          const parsed = safeJsonParse(PRE_ATTEST_PROMOTStr);
+          if (parsed) state.PRE_ATTEST_PROMOT_V2 = parsed;
         }
       }
 
@@ -109,13 +113,17 @@ export async function pageDecodeMsgListener(
       };
 
       await checkWebRequestIsReady();
-      chrome.tabs.onUpdated.addListener(async (tabId, changeInfo) => {
+      let injectDebounceTimer = null;
+      chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
         if (
           tabId === state.dataSourcePageTabId &&
           (changeInfo.url || changeInfo.title)
         ) {
-          await injectFn();
-          await checkWebRequestIsReady();
+          clearTimeout(injectDebounceTimer);
+          injectDebounceTimer = setTimeout(async () => {
+            await injectFn();
+            await checkWebRequestIsReady();
+          }, 300);
         }
       });
 
@@ -150,12 +158,13 @@ export async function pageDecodeMsgListener(
     }
 
     if (name === 'start') {
-      await chrome.storage.local.set({ beginAttest: '1' });
+      startKeepAlive();
       const aligorithmParams = Object.assign(
         { isUserClick: 'true' },
         state.formatAlgorithmParams
       );
-      await chrome.storage.local.set({
+      await safeStorageSet({
+        beginAttest: '1',
         activeRequestAttestation: JSON.stringify(aligorithmParams),
       });
       console.log('pageDecode-algorithmParams', aligorithmParams);
@@ -174,7 +183,7 @@ export async function pageDecodeMsgListener(
     }
     if (name === 'interceptionFail') {
       const { padoZKAttestationJSSDKBeginAttest } =
-        await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
+        await safeStorageGet(['padoZKAttestationJSSDKBeginAttest']);
       await handleTargetDataMissing(
         padoZKAttestationJSSDKBeginAttest
           ? {}
@@ -190,7 +199,7 @@ export async function pageDecodeMsgListener(
     }
     if (name === 'interceptionFail') {
       const { padoZKAttestationJSSDKBeginAttest } =
-        await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
+        await safeStorageGet(['padoZKAttestationJSSDKBeginAttest']);
       await handleTargetDataMissing(
         padoZKAttestationJSSDKBeginAttest
           ? {}

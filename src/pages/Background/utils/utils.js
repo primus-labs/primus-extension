@@ -105,5 +105,9 @@ export function mergeBodyParams(body, bodyParams) {
 }
 
 export const sendMsgToTab = async (tabId, msg) => {
-  await chrome.tabs.sendMessage(tabId, msg);
+  try {
+    await chrome.tabs.sendMessage(tabId, msg);
+  } catch (err) {
+    console.warn(`[sendMsgToTab] tab ${tabId} unreachable:`, err.message);
+  }
 };

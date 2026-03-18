@@ -4,6 +4,9 @@ const { DOMParser } = require('xmldom');
 const cheerio = require('cheerio');
 
 import { customFetch2 } from '../utils/request';
+import { safeStorageGet, safeStorageRemove } from '@/utils/safeStorage';
+import { sendMsgToTab } from '../utils/utils.js';
+
 /** Fetch request data (JSON/object) for template matching. Re-sends captured request. */
 export const fetchRequestData = async (params) => {
   try {
@@ -80,15 +83,15 @@ export const handleAttestationError = async (errorData, dataSourcePageTabId, opt
     errorData,
   };
   const { padoZKAttestationJSSDKDappTabId: dappTabId } =
-    await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
-    if(dappTabId) {
-      chrome.tabs.sendMessage(dappTabId, {
-        type: 'padoZKAttestationJSSDK',
-        name: 'getAttestationRes',
-        params: resParams,
-      });
-    }
-  
+    await safeStorageGet(['padoZKAttestationJSSDKDappTabId']);
+  if (dappTabId) {
+    await sendMsgToTab(dappTabId, {
+      type: 'padoZKAttestationJSSDK',
+      name: 'getAttestationRes',
+      params: resParams,
+    });
+  }
+
   const keysToRemove = [
     'padoZKAttestationJSSDKBeginAttest',
     'padoZKAttestationJSSDKWalletAddress',
@@ -97,7 +100,7 @@ export const handleAttestationError = async (errorData, dataSourcePageTabId, opt
   if (!options.skipRemoveActiveRequestAttestation) {
     keysToRemove.push('activeRequestAttestation');
   }
-  await chrome.storage.local.remove(keysToRemove);
+  await safeStorageRemove(keysToRemove);
   if (dataSourcePageTabId) {
     await chrome.tabs.remove(dataSourcePageTabId);
   }

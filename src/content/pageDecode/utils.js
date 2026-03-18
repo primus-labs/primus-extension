@@ -1,3 +1,6 @@
+import { safeStorageGet } from '@/utils/safeStorage';
+import { safeJsonParse } from '@/utils/utils';
+
 const INTER_FONT_URL =
   'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap';
 
@@ -34,9 +37,9 @@ export const request = async (fetchParams, baseUrl, padoExtensionVersion) => {
     'client-type': 'WEB',
     'client-version': padoExtensionVersion,
   };
-  const { userInfo } = await chrome.storage.local.get(['userInfo']);
+  const { userInfo } = await safeStorageGet(['userInfo']);
   if (userInfo) {
-    const userInfoObj = JSON.parse(userInfo);
+    const userInfoObj = safeJsonParse(userInfo, { id: '', token: '' }) || { id: '', token: '' };
     const { id, token } = userInfoObj;
     if (
       !url.startsWith('https://storage.googleapis.com/primuslabs-online') &&

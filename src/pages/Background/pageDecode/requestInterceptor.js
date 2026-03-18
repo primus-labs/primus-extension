@@ -222,6 +222,15 @@ export async function checkWebRequestIsReady() {
   return fl;
 }
 
+let checkReadyDebounceTimer = null;
+
+function debouncedCheckWebRequestIsReady() {
+  clearTimeout(checkReadyDebounceTimer);
+  checkReadyDebounceTimer = setTimeout(() => {
+    checkWebRequestIsReady();
+  }, 200);
+}
+
 /**
  * Attach webRequest listeners for the data source tab. Mutates state with listener refs for removal.
  */
@@ -285,7 +294,7 @@ export function setupWebRequestListener() {
       storeInRequestsMap(requestId, newCapturedInfo);
       await trySendSecondRequestWithFirstHeaders();
       await checkSDKTargetRequest(requestId, templateRequestUrl);
-      await checkWebRequestIsReady();
+      debouncedCheckWebRequestIsReady();
     }
   };
 

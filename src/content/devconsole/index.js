@@ -1,20 +1,22 @@
+import { sendMessageWithRetry } from '@/utils/contentMessaging';
+
 window.addEventListener('message', (e) => {
   const { target, name, params } = e.data;
   if (target === 'primusExtension') {
     // console.log('devconsole-content-listen-message', e.data);
     if (name === 'checkDataSource') {
-      chrome.runtime.sendMessage({
+      sendMessageWithRetry({
         type: 'devconsole',
         name: 'init',
         params,
-      });
+      }).catch(() => {});
     } else if (name === 'closeDataSource') {
       console.log('debuge-zktls-closeDataSource-content');
-      chrome.runtime.sendMessage({
+      sendMessageWithRetry({
         type: 'devconsole',
         name: 'closeDataSource',
         params,
-      });
+      }).catch(() => {});
     }
   }
 });

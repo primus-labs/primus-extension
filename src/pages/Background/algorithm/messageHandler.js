@@ -3,6 +3,7 @@
  */
 import { sendInitAttestationRes } from '../utils/msgTransfer.js';
 import { handleGetAttestation, handleGetAttestationResult } from './attestationHandler.js';
+import { safeStorageGet } from '@/utils/safeStorage';
 
 export async function algorithmMsgListener(
   message,
@@ -12,7 +13,7 @@ export async function algorithmMsgListener(
 ) {
   const { resMethodName } = message;
 
-  const storage = await chrome.storage.local.get([
+  const storage = await safeStorageGet([
     'padoZKAttestationJSSDKBeginAttest',
     'padoZKAttestationJSSDKDappTabId',
     'configMap',

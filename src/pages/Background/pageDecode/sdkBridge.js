@@ -6,14 +6,17 @@ import { handleAttestationError } from './utils';
 import { eventReport } from '@/services/api/usertracker';
 import { ERROR_USER_CANCELLED } from '@/config/errorCodes';
 import { getPageDecodeState } from './state';
+import { safeStorageGet, safeStorageRemove } from '@/utils/safeStorage';
+import { safeJsonParse } from '@/utils/utils';
+import { stopKeepAlive } from '../utils/keepAlive.js';
 
 const CLIENTTYPE = '@primuslabs/extension';
 
 export async function sendMsgToSdk(msg) {
   const { padoZKAttestationJSSDKDappTabId: dappTabId } =
-    await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
+    await safeStorageGet(['padoZKAttestationJSSDKDappTabId']);
   if (dappTabId) {
-    sendMsgToTab(dappTabId, msg);
+    await sendMsgToTab(dappTabId, msg);
   }
 }
 
@@ -25,18 +28,20 @@ export async function sendMsgToDataSourcePage(msg) {
 }
 
 export async function handlerForSdk(processAlgorithmReq, operation) {
-  const { padoZKAttestationJSSDKBeginAttest } =
-    await chrome.storage.local.get([
-      'padoZKAttestationJSSDKBeginAttest',
-      'padoZKAttestationJSSDKDappTabId',
-    ]);
-  const { activeRequestAttestation: lastActiveRequestAttestationStr } =
-    await chrome.storage.local.get(['activeRequestAttestation']);
+  const {
+    padoZKAttestationJSSDKBeginAttest,
+    activeRequestAttestation: lastActiveRequestAttestationStr,
+  } = await safeStorageGet([
+    'padoZKAttestationJSSDKBeginAttest',
+    'padoZKAttestationJSSDKDappTabId',
+    'activeRequestAttestation',
+  ]);
   if (processAlgorithmReq && lastActiveRequestAttestationStr) {
     processAlgorithmReq({ reqMethodName: 'stop' });
   }
   if (padoZKAttestationJSSDKBeginAttest) {
-    await chrome.storage.local.remove([
+    stopKeepAlive();
+    await safeStorageRemove([
       'padoZKAttestationJSSDKBeginAttest',
       'padoZKAttestationJSSDKAttestationPresetParams',
       'activeRequestAttestation',
@@ -87,21 +92,24 @@ export async function handleDataSourcePageDialogTimeout(processAlgorithmReq) {
       detail: { code: '00014', desc: '' },
     },
   };
+  const storage = await safeStorageGet([
+    'padoZKAttestationJSSDKBeginAttest',
+    'padoZKAttestationJSSDKAttestationPresetParams',
+    'activeRequestAttestation',
+    'beginAttest',
+    'getAttestationResultRes',
+  ]);
   const {
     padoZKAttestationJSSDKBeginAttest,
     padoZKAttestationJSSDKAttestationPresetParams,
     activeRequestAttestation,
-  } = await chrome.storage.local.get([
-    'padoZKAttestationJSSDKBeginAttest',
-    'padoZKAttestationJSSDKAttestationPresetParams',
-    'activeRequestAttestation',
-  ]);
+    beginAttest,
+    getAttestationResultRes,
+  } = storage;
 
   const { state } = getPageDecodeState();
 
   const eventReportFn = async (rawData) => {
-    const { beginAttest, getAttestationResultRes } =
-      await chrome.storage.local.get(['beginAttest', 'getAttestationResultRes']);
     if (beginAttest === '1') {
       Object.assign(rawData, {
         ext: { ...rawData.ext, getAttestationResultRes },
@@ -112,8 +120,9 @@ export async function handleDataSourcePageDialogTimeout(processAlgorithmReq) {
     }
   };
 
+
   if (padoZKAttestationJSSDKBeginAttest && padoZKAttestationJSSDKAttestationPresetParams) {
-    const parsed = JSON.parse(padoZKAttestationJSSDKAttestationPresetParams);
+    const parsed = safeJsonParse(padoZKAttestationJSSDKAttestationPresetParams, {}) || {};
     if (!state.reportRequestIds.includes(parsed.requestid)) {
       state.reportRequestIds.push(parsed.requestid);
       const { dataSourceId, attTemplateID, ext: { appSignParameters }, clientType } = parsed;
@@ -122,13 +131,13 @@ export async function handleDataSourcePageDialogTimeout(processAlgorithmReq) {
         clientType,
         appId: '',
         templateId: attTemplateID,
-        address: JSON.parse(appSignParameters)?.userAddress,
+        address: safeJsonParse(appSignParameters)?.userAddress,
         ext: {},
       });
       await eventReportFn(eventInfo.rawData);
     }
   } else if (activeRequestAttestation) {
-    const parsed = JSON.parse(activeRequestAttestation);
+    const parsed = safeJsonParse(activeRequestAttestation, {}) || {};
     if (!state.reportRequestIds.includes(parsed.requestid)) {
       state.reportRequestIds.push(parsed.requestid);
       const { source, schemaType, sigFormat, user, event } = parsed;
@@ -141,10 +150,11 @@ export async function handleDataSourcePageDialogTimeout(processAlgorithmReq) {
         ext: { sigFormat, event },
       });
       await eventReportFn(eventInfo.rawData);
-      await chrome.storage.local.remove(['activeRequestAttestation']);
+      await safeStorageRemove(['activeRequestAttestation']);
     }
   }
 
+  stopKeepAlive();
   processAlgorithmReq({ reqMethodName: 'stop' });
   await handleAttestationError({
     title: 'Request Timed Out',

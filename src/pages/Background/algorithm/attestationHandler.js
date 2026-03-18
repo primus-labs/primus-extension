@@ -5,6 +5,10 @@ import { pageDecodeMsgListener } from '../pageDecode/index.js';
 import { getErrorMsgTitleFn } from '../utils/handleError.js';
 import { getErrorTipByExtraData, getAttestTipForCode } from './errorMap.js';
 import { TOTAL_TIP_MAP } from '@/config/errorCodes';
+import { safeStorageGet, safeStorageSet, safeStorageRemove } from '@/utils/safeStorage';
+import { sendMsgToTab } from '../utils/utils.js';
+import { safeJsonParse } from '@/utils/utils';
+import { stopKeepAlive } from '../utils/keepAlive.js';
 
 const HAS_GET_TWITTER_SCREEN_NAME = false;
 
@@ -47,7 +51,8 @@ export async function handleGetAttestation(
       HAS_GET_TWITTER_SCREEN_NAME,
       processAlgorithmReq
     );
-    await chrome.storage.local.remove([
+    stopKeepAlive();
+    await safeStorageRemove([
       'padoZKAttestationJSSDKBeginAttest',
       'padoZKAttestationJSSDKWalletAddress',
       'padoZKAttestationJSSDKAttestationPresetParams',
@@ -74,12 +79,7 @@ export async function handleGetAttestation(
     'resParams',
     JSON.stringify(resParams)
   );
-  try {
-    await chrome.tabs.get(dappTabId);
-  } catch (err) {
-    console.error('Failed to get tab info：', err);
-  }
-  chrome.tabs.sendMessage(dappTabId, {
+  await sendMsgToTab(dappTabId, {
     type: 'padoZKAttestationJSSDK',
     name: 'getAttestationRes',
     params: resParams,
@@ -104,14 +104,10 @@ export async function handleGetAttestationResult(
   } = storage;
 
   let attestTipMap = {};
-  if (
-    configMap &&
-    JSON.parse(configMap) &&
-    JSON.parse(configMap).ATTESTATION_PROCESS_NOTE
-  ) {
-    attestTipMap = JSON.parse(
-      JSON.parse(configMap).ATTESTATION_PROCESS_NOTE
-    );
+  const configMapParsed = safeJsonParse(configMap);
+  if (configMapParsed?.ATTESTATION_PROCESS_NOTE) {
+    const tipMap = safeJsonParse(configMapParsed.ATTESTATION_PROCESS_NOTE);
+    if (tipMap) attestTipMap = tipMap;
   }
 
   if (!message.res) return;
@@ -119,15 +115,11 @@ export async function handleGetAttestationResult(
   const { retcode, content, details, isUserClick } = JSON.parse(message.res);
   if (isUserClick !== 'true') return;
 
-  await chrome.storage.local.set({ getAttestationResultRes: message.res });
-  const parsedActiveRequestAttestation = activeRequestAttestation
-    ? JSON.parse(activeRequestAttestation)
-    : {};
-  const activeAttestationParams = padoZKAttestationJSSDKAttestationPresetParams
-    ? JSON.parse(padoZKAttestationJSSDKAttestationPresetParams)
-    : {};
+  await safeStorageSet({ getAttestationResultRes: message.res });
+  const parsedActiveRequestAttestation = safeJsonParse(activeRequestAttestation, {}) || {};
+  const activeAttestationParams = safeJsonParse(padoZKAttestationJSSDKAttestationPresetParams, {}) || {};
   const extendedParamsObj = activeAttestationParams?.extendedParams
-    ? JSON.parse(activeAttestationParams.extendedParams)
+    ? (safeJsonParse(activeAttestationParams.extendedParams, {}) || {})
     : {};
   const errorMsgTitle = await getErrorMsgTitleFn();
 
@@ -139,13 +131,14 @@ export async function handleGetAttestationResult(
       HAS_GET_TWITTER_SCREEN_NAME,
       processAlgorithmReq
     );
-    await chrome.storage.local.remove([
+    stopKeepAlive();
+    await safeStorageRemove([
       'padoZKAttestationJSSDKBeginAttest',
       'padoZKAttestationJSSDKWalletAddress',
       'padoZKAttestationJSSDKAttestationPresetParams',
       'activeRequestAttestation',
     ]);
-    chrome.tabs.sendMessage(dappTabId, {
+    await sendMsgToTab(dappTabId, {
       type: 'padoZKAttestationJSSDK',
       name: 'startAttestationRes',
       params: { result: true, data: resData },
@@ -237,7 +230,8 @@ export async function handleGetAttestationResult(
         HAS_GET_TWITTER_SCREEN_NAME,
         processAlgorithmReq
       );
-      await chrome.storage.local.remove([
+      stopKeepAlive();
+      await safeStorageRemove([
         'padoZKAttestationJSSDKBeginAttest',
         'padoZKAttestationJSSDKWalletAddress',
         'padoZKAttestationJSSDKAttestationPresetParams',
@@ -247,7 +241,7 @@ export async function handleGetAttestationResult(
         result: false,
         errorData: { title: msgObj.title, desc: msgObj.desc, code: errorCode },
       };
-      chrome.tabs.sendMessage(dappTabId, {
+      await sendMsgToTab(dappTabId, {
         type: 'padoZKAttestationJSSDK',
         name: 'startAttestationRes',
         params: resParams,
@@ -269,7 +263,8 @@ export async function handleGetAttestationResult(
       HAS_GET_TWITTER_SCREEN_NAME,
       processAlgorithmReq
     );
-    await chrome.storage.local.remove([
+    stopKeepAlive();
+    await safeStorageRemove([
       'padoZKAttestationJSSDKBeginAttest',
       'padoZKAttestationJSSDKWalletAddress',
       'padoZKAttestationJSSDKAttestationPresetParams',
@@ -285,13 +280,13 @@ export async function handleGetAttestationResult(
       },
       reStartFlag: true,
     };
-    chrome.tabs.sendMessage(dappTabId, {
+    await sendMsgToTab(dappTabId, {
       type: 'padoZKAttestationJSSDK',
       name: 'startAttestationRes',
       params: resParams,
     });
   } else {
-    await chrome.storage.local.set({
+    await safeStorageSet({
       attestationLogInQuery: message.res,
     });
   }

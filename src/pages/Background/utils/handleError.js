@@ -1,11 +1,12 @@
+import { safeStorageGet } from '@/utils/safeStorage';
+import { safeJsonParse } from '@/utils/utils';
+
 export const getErrorMsgTitleFn = async () => {
   const { padoZKAttestationJSSDKAttestationPresetParams } =
-    await chrome.storage.local.get([
+    await safeStorageGet([
       'padoZKAttestationJSSDKAttestationPresetParams',
     ]);
-  const activeAttestationParams = padoZKAttestationJSSDKAttestationPresetParams
-    ? JSON.parse(padoZKAttestationJSSDKAttestationPresetParams)
-    : {};
+  const activeAttestationParams = safeJsonParse(padoZKAttestationJSSDKAttestationPresetParams, {}) || {};
   let eT = ['Assets Verification', 'Humanity Verification'].includes(
     activeAttestationParams.attestationType
   )

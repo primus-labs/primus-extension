@@ -4,6 +4,7 @@ import {
   ZKPADOURL,
   PROXYURL,
 } from '@/config/envConstants';
+import { safeStorageGet, safeStorageSet } from '@/utils/safeStorage';
 
 const STORAGE_KEY = 'algorithmUrl';
 
@@ -13,11 +14,10 @@ const STORAGE_KEY = 'algorithmUrl';
  * its URLs to storage.
  */
 export async function updateAlgoUrl(): Promise<void> {
-  const { [STORAGE_KEY]: algorithmUrl } = await chrome.storage.local.get([
-    STORAGE_KEY,
-  ]);
+  const storage = await safeStorageGet<Record<string, string>>([STORAGE_KEY]);
+  const algorithmUrl = storage[STORAGE_KEY];
   if (!algorithmUrl) {
-    await chrome.storage.local.set({
+    await safeStorageSet({
       [STORAGE_KEY]: JSON.stringify({
         padoUrl: PADOURL,
         zkPadoUrl: ZKPADOURL,
@@ -40,7 +40,7 @@ export async function updateAlgoUrl(): Promise<void> {
             zkPadoUrl: `wss://${item.algorithmDomain}/algorithm-proxy`,
             proxyUrl: `wss://${item.algoProxyDomain}/algoproxy`,
           };
-          await chrome.storage.local.set({
+          await safeStorageSet({
             [STORAGE_KEY]: JSON.stringify(payload),
           });
           inited = true;

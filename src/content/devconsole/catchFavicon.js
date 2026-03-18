@@ -1,3 +1,5 @@
+import { sendMessageWithRetry } from '@/utils/contentMessaging';
+
 let shortcutIcon = null;
 let queryTimer = null;
 const queryFaviconFn = () => {
@@ -9,13 +11,13 @@ const queryFaviconFn = () => {
   if (shortcutIcon) {
     console.log('shortcutIcon', shortcutIcon);
     const faviconUrl = shortcutIcon.href;
-    chrome.runtime.sendMessage({
+    sendMessageWithRetry({
       type: 'devconsole',
       name: 'FAVICON_URL',
       params: {
         url: faviconUrl,
       },
-    });
+    }).catch(() => {});
     if (queryTimer) {
       clearInterval(queryTimer);
       queryTimer = null;

@@ -1,5 +1,7 @@
 import { PADOSERVERURL } from '@/config/envConstants';
 import { DEFAULTFETCHTIMEOUT, padoExtensionVersion } from '@/config/constants';
+import { safeStorageGet } from '@/utils/safeStorage';
+import { safeJsonParse } from '@/utils/utils';
 type FetchParams = {
   method: string;
   url: string;
@@ -27,9 +29,10 @@ const request = async (fetchParams: FetchParams) => {
     'client-type': 'WEB',
     'client-version': padoExtensionVersion,
   };
-  const { userInfo } = await chrome.storage.local.get(['userInfo']);
+  const storage = await safeStorageGet<{ userInfo?: string }>(['userInfo']);
+  const userInfo = storage.userInfo;
   if (userInfo) {
-    const userInfoObj = JSON.parse(userInfo);
+    const userInfoObj = safeJsonParse<{ id: string; token: string }>(userInfo, { id: '', token: '' }) || { id: '', token: '' };
     const { id, token } = userInfoObj;
     if (
       !url.startsWith('https://storage.googleapis.com/primuslabs-online') &&

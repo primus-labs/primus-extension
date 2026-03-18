@@ -2,6 +2,9 @@
 import { CredVersion } from '@/config/constants';
 import { getPadoUrl, getProxyUrl, getZkPadoUrl } from '@/config/envConstants';
 import { strToHex } from '@/utils/utils';
+import { safeStorageGet } from '@/utils/safeStorage';
+import { safeJsonParse } from '@/utils/utils';
+
 export async function assembleAlgorithmParamsForSDK(form, ext) {
   const {
     dataSource,
@@ -13,8 +16,8 @@ export async function assembleAlgorithmParamsForSDK(form, ext) {
   // const urlObj = new URL(dataPageTemplate.baseUrl);
   // const baseName = urlObj.host;
   const user = await assembleUserInfoParams({}, true);
-  const { userInfo } = await chrome.storage.local.get(['userInfo']);
-  const { id: authUserId } = JSON.parse(userInfo);
+  const { userInfo } = await safeStorageGet(['userInfo']);
+  const { id: authUserId } = safeJsonParse(userInfo, { id: '' }) || {};
   const authUseridHash = strToHex(authUserId);
 
   const timeStampStr = (+new Date()).toString();
@@ -67,7 +70,7 @@ async function assembleUserInfoParams(_form, isFromSDK) {
   const {
     userInfo,
     padoZKAttestationJSSDKWalletAddress,
-  } = await chrome.storage.local.get([
+  } = await safeStorageGet([
     'userInfo',
     'padoZKAttestationJSSDKWalletAddress',
   ]);
@@ -81,7 +84,7 @@ async function assembleUserInfoParams(_form, isFromSDK) {
     padoZKAttestationJSSDKWalletAddress
   );
 
-  const { id, token: loginToken } = JSON.parse(userInfo);
+  const { id, token: loginToken } = safeJsonParse(userInfo, { id: '', token: '' }) || {};
   const user = {
     userid: id,
     address: formatAddress,

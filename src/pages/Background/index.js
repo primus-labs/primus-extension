@@ -14,17 +14,24 @@ import { pageDecodeMsgListener } from './pageDecode/index.js';
 import { padoZKAttestationJSSDKMsgListener } from './padoZKAttestationJSSDK/index.js';
 import { algorithmMsgListener } from './algorithm/index.js';
 import { devconsoleMsgListener } from './devconsole/index.js';
+import {
+  safeStorageGet,
+  safeStorageSet,
+  safeStorageRemove,
+} from '@/utils/safeStorage';
+import { setupKeepAliveListener } from './utils/keepAlive.js';
 
-const Web3EthAccounts = require('web3-eth-accounts');
+setupKeepAliveListener();
 
 console.log('Background initialization');
 
 const createUserInfo = async () => {
-  const { userInfo } = await chrome.storage.local.get(['userInfo']);
+  const { userInfo } = await safeStorageGet(['userInfo']);
   if (!userInfo) {
+    const Web3EthAccounts = (await import('web3-eth-accounts')).default;
     let web3EthAccount = new Web3EthAccounts();
     let { privateKey, address } = web3EthAccount.create();
-    await chrome.storage.local.set({
+    await safeStorageSet({
       privateKey,
       padoCreatedWalletAddress: address,
     });
@@ -45,7 +52,7 @@ const createUserInfo = async () => {
       const { rc, result } = res;
       if (rc === 0) {
         const { bearerToken, identifier } = result;
-        await chrome.storage.local.set({
+        await safeStorageSet({
           userInfo: JSON.stringify({
             id: identifier,
             token: bearerToken,
@@ -70,7 +77,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason, version: _version }) => 
       reqMethodName: 'start',
     });
   } else if (reason === chrome.runtime.OnInstalledReason.UPDATE) {
-    await chrome.storage.local.remove(['activeRequestAttestation']);
+    await safeStorageRemove(['activeRequestAttestation']);
   }
 });
 
@@ -89,7 +96,7 @@ const processAlgorithmReq = async (message) => {
       console.log(`${new Date().toLocaleString()} offscreen document created`);
     } else {
       const { padoZKAttestationJSSDKBeginAttest } =
-        await chrome.storage.local.get(['padoZKAttestationJSSDKBeginAttest']);
+        await safeStorageGet(['padoZKAttestationJSSDKBeginAttest']);
       if (padoZKAttestationJSSDKBeginAttest) {
         await sendInitAttestationRes();
       }
@@ -128,7 +135,7 @@ const processAlgorithmReq = async (message) => {
       break;
     case 'stop': {
       await closeOffscreenDoc();
-      await chrome.storage.local.remove(['activeRequestAttestation']);
+      await safeStorageRemove(['activeRequestAttestation']);
       if (!params?.noRestart) {
         await startFn();
       }
@@ -139,31 +146,23 @@ const processAlgorithmReq = async (message) => {
   }
 };
 
-chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+const messageRoutes = {
+  algorithm: (msg, sender, res) =>
+    algorithmMsgListener(msg, sender, res, processAlgorithmReq),
+  pageDecode: (msg, sender, res) =>
+    pageDecodeMsgListener(msg, sender, res, false, processAlgorithmReq),
+  padoZKAttestationJSSDK: (msg, sender, res) =>
+    padoZKAttestationJSSDKMsgListener(msg, sender, res, processAlgorithmReq),
+  devconsole: (msg, sender, res) =>
+    devconsoleMsgListener(msg, sender, res),
+};
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log('background onMessage message', message);
-  const { resType, type } = message;
-  if (resType === 'algorithm') {
-    algorithmMsgListener(message, sender, sendResponse, processAlgorithmReq);
-  }
-  const hasGetTwitterScreenName = false;
-  if (type === 'pageDecode') {
-    pageDecodeMsgListener(
-      message,
-      sender,
-      sendResponse,
-      hasGetTwitterScreenName,
-      processAlgorithmReq
-    );
-  }
-  if (type === 'padoZKAttestationJSSDK') {
-    padoZKAttestationJSSDKMsgListener(
-      message,
-      sender,
-      sendResponse,
-      processAlgorithmReq
-    );
-  }
-  if (type === 'devconsole') {
-    devconsoleMsgListener(message, sender, sendResponse);
+  const routeKey = message.resType === 'algorithm' ? 'algorithm' : message.type;
+  const handler = messageRoutes[routeKey];
+  if (handler) {
+    handler(message, sender, sendResponse);
+    return true;
   }
 });

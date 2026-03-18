@@ -1,3 +1,5 @@
+import { safeStorageGet } from '@/utils/safeStorage';
+
 /** Environment-based URL constants and storage-backed algo URL getters */
 type ENVTYPE = 'development' | 'test' | 'production';
 
@@ -33,27 +35,24 @@ export const PADOSERVERURL = PADOSERVERURLMAP[CURENV];
 const STORAGE_KEY = 'algorithmUrl';
 
 export async function getPadoUrl(): Promise<string> {
-  const { [STORAGE_KEY]: algorithmUrl } = await chrome.storage.local.get([
-    STORAGE_KEY,
-  ]);
+  const storage = await safeStorageGet<Record<string, string>>([STORAGE_KEY]);
+  const algorithmUrl = storage[STORAGE_KEY];
   return algorithmUrl
     ? (JSON.parse(algorithmUrl) as { padoUrl?: string }).padoUrl ?? ''
     : '';
 }
 
 export async function getZkPadoUrl(): Promise<string> {
-  const { [STORAGE_KEY]: algorithmUrl } = await chrome.storage.local.get([
-    STORAGE_KEY,
-  ]);
+  const storage = await safeStorageGet<Record<string, string>>([STORAGE_KEY]);
+  const algorithmUrl = storage[STORAGE_KEY];
   return algorithmUrl
     ? (JSON.parse(algorithmUrl) as { zkPadoUrl?: string }).zkPadoUrl ?? ''
     : '';
 }
 
 export async function getProxyUrl(): Promise<string> {
-  const { [STORAGE_KEY]: algorithmUrl } = await chrome.storage.local.get([
-    STORAGE_KEY,
-  ]);
+  const storage = await safeStorageGet<Record<string, string>>([STORAGE_KEY]);
+  const algorithmUrl = storage[STORAGE_KEY];
   return algorithmUrl
     ? (JSON.parse(algorithmUrl) as { proxyUrl?: string }).proxyUrl ?? ''
     : '';

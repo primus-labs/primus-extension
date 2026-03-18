@@ -1,4 +1,6 @@
 import { padoExtensionVersion } from '@/config/constants';
+import { safeStorageGet } from '@/utils/safeStorage';
+import { sendMsgToTab } from './utils.js';
 
 /* global chrome, console, URL */
 /**
@@ -7,7 +9,7 @@ import { padoExtensionVersion } from '@/config/constants';
  */
 export async function sendInitAttestationRes() {
   const { padoZKAttestationJSSDKDappTabId: dappTabId } =
-        await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
+        await safeStorageGet(['padoZKAttestationJSSDKDappTabId']);
   const attestationTypeIdList = [];
 
   let domain = '';
@@ -20,7 +22,7 @@ export async function sendInitAttestationRes() {
     console.warn('get dapp tab domain failed', e);
   }
 
-  chrome.tabs.sendMessage(dappTabId, {
+  await sendMsgToTab(dappTabId, {
     type: 'padoZKAttestationJSSDK',
     name: 'initAttestationRes',
     params: {

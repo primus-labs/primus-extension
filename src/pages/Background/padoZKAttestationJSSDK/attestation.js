@@ -8,6 +8,10 @@ import { getAlgoApi } from './utils';
 import { STARTOFFLINETIMEOUT } from '@/config/constants';
 import { getErrorMsgTitleFn } from '../utils/handleError.js';
 import { getSdkState, setProcessAlgorithmReqRef, getProcessAlgorithmReqRef } from './init.js';
+import { safeStorageGet, safeStorageSet, safeStorageRemove } from '@/utils/safeStorage';
+import { sendMsgToTab } from '../utils/utils.js';
+import { safeJsonParse } from '@/utils/utils';
+import { stopKeepAlive } from '../utils/keepAlive.js';
 
 /**
  * Handle startAttestation: validate params, load template, build request/response templates, start offline, call pageDecode init.
@@ -33,7 +37,7 @@ export async function handleStartAttestation(
     JSON.stringify(params)
   );
 
-  await chrome.storage.local.set({
+  await safeStorageSet({
     padoZKAttestationJSSDKBeginAttest: state.sdkVersion,
   });
   processAlgorithmReq({ reqMethodName: 'start' });
@@ -41,13 +45,13 @@ export async function handleStartAttestation(
   const {
     activeRequestAttestation: lastActiveRequestAttestationStr,
     padoZKAttestationJSSDKDappTabId: dappTabId,
-  } = await chrome.storage.local.get([
+  } = await safeStorageGet([
     'activeRequestAttestation',
     'padoZKAttestationJSSDKDappTabId',
   ]);
 
   if (lastActiveRequestAttestationStr) {
-    await chrome.storage.local.remove(['padoZKAttestationJSSDKBeginAttest']);
+    await safeStorageRemove(['padoZKAttestationJSSDKBeginAttest']);
     const resParams = {
       result: false,
       errorData: {
@@ -57,7 +61,7 @@ export async function handleStartAttestation(
         code: '00003',
       },
     };
-    chrome.tabs.sendMessage(dappTabId, {
+    await sendMsgToTab(dappTabId, {
       type: 'padoZKAttestationJSSDK',
       name: 'startAttestationRes',
       params: resParams,
@@ -87,8 +91,8 @@ export async function handleStartAttestation(
       },
     };
     const { padoZKAttestationJSSDKDappTabId: dappTabIdErr } =
-      await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
-    chrome.tabs.sendMessage(dappTabIdErr, {
+      await safeStorageGet(['padoZKAttestationJSSDKDappTabId']);
+    await sendMsgToTab(dappTabIdErr, {
       type: 'padoZKAttestationJSSDK',
       name: 'getAttestationRes',
       params: resParams,
@@ -299,12 +303,12 @@ export async function handleStartAttestation(
     }
   }
 
-  await chrome.storage.local.set({
+  await safeStorageSet({
     padoZKAttestationJSSDKWalletAddress: walletAddress,
   });
   console.log('debuge-zktls-startAttestation2', walletAddress);
-  await chrome.storage.local.remove(['beginAttest', 'getAttestationResultRes']);
-  await chrome.storage.local.set({
+  await safeStorageRemove(['beginAttest', 'getAttestationResultRes']);
+  await safeStorageSet({
     padoZKAttestationJSSDKAttestationPresetParams: JSON.stringify(
       Object.assign({ chainName }, activeAttestationParams)
     ),
@@ -338,8 +342,8 @@ async function sendTemplateErrorToDapp(code) {
     },
   };
   const { padoZKAttestationJSSDKDappTabId: dappTabId } =
-    await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
-  chrome.tabs.sendMessage(dappTabId, {
+    await safeStorageGet(['padoZKAttestationJSSDKDappTabId']);
+  await sendMsgToTab(dappTabId, {
     type: 'padoZKAttestationJSSDK',
     name: 'getAttestationRes',
     params: resParams,
@@ -363,14 +367,12 @@ export async function handleGetAttestationResultTimeout(
   processAlgorithmReq
 ) {
   const state = getSdkState();
-  const { configMap } = await chrome.storage.local.get(['configMap']);
+  const { configMap } = await safeStorageGet(['configMap']);
   let attestTipMap = {};
-  if (
-    configMap &&
-    JSON.parse(configMap) &&
-    JSON.parse(configMap).ATTESTATION_PROCESS_NOTE
-  ) {
-    attestTipMap = JSON.parse(JSON.parse(configMap).ATTESTATION_PROCESS_NOTE);
+  const configMapParsed = safeJsonParse(configMap);
+  if (configMapParsed?.ATTESTATION_PROCESS_NOTE) {
+    const tipMap = safeJsonParse(configMapParsed.ATTESTATION_PROCESS_NOTE);
+    if (tipMap) attestTipMap = tipMap;
   }
   const errorMsgTitle = await getErrorMsgTitleFn();
   const code = '00002';
@@ -381,7 +383,8 @@ export async function handleGetAttestationResultTimeout(
     sourcePageTip: attestTipMap[code]?.title,
   };
 
-  await chrome.storage.local.remove([
+  stopKeepAlive();
+  await safeStorageRemove([
     'padoZKAttestationJSSDKBeginAttest',
     'padoZKAttestationJSSDKWalletAddress',
     'padoZKAttestationJSSDKAttestationPresetParams',
@@ -400,11 +403,8 @@ export async function handleGetAttestationResultTimeout(
   );
   processAlgorithmReq({ reqMethodName: 'stop' });
 
-  const { padoZKAttestationJSSDKDappTabId: dappTabId } =
-    await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
-  const { attestationLogInQuery } = await chrome.storage.local.get([
-    'attestationLogInQuery',
-  ]);
+  const { padoZKAttestationJSSDKDappTabId: dappTabId, attestationLogInQuery } =
+    await safeStorageGet(['padoZKAttestationJSSDKDappTabId', 'attestationLogInQuery']);
   const resParams = {
     result: false,
     errorData: {
@@ -415,7 +415,7 @@ export async function handleGetAttestationResultTimeout(
     },
     reStartFlag: true,
   };
-  chrome.tabs.sendMessage(dappTabId, {
+  await sendMsgToTab(dappTabId, {
     type: 'padoZKAttestationJSSDK',
     name: 'startAttestationRes',
     params: resParams,
@@ -428,7 +428,7 @@ export async function handleDappTabRemoved(tabId) {
   const {
     padoZKAttestationJSSDKBeginAttest,
     padoZKAttestationJSSDKDappTabId: dappTabId,
-  } = await chrome.storage.local.get([
+  } = await safeStorageGet([
     'padoZKAttestationJSSDKBeginAttest',
     'padoZKAttestationJSSDKDappTabId',
   ]);

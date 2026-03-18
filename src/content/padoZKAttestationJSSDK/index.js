@@ -1,37 +1,42 @@
+import { safeStorageRemove } from '@/utils/safeStorage';
+import { sendMessageWithRetry } from '@/utils/contentMessaging';
+
+let removeInFlight = false;
+
 window.addEventListener('message', (e) => {
   const { target, name, params } = e.data;
   if (target === 'padoExtension') {
     // console.log('333pado-content-sdk-listen-message', e.data);
     if (name === 'initAttestation') {
-      chrome.runtime.sendMessage({
+      sendMessageWithRetry({
         type: 'padoZKAttestationJSSDK',
         name: 'initAttestation',
         params: {
           hostname: window.location.hostname,
           ...params,
         },
-      });
+      }).catch(() => {});
     }
     if (name === 'startAttestation') {
-      chrome.runtime.sendMessage({
+      sendMessageWithRetry({
         type: 'padoZKAttestationJSSDK',
         name: 'startAttestation',
         params,
-      });
+      }).catch(() => {});
     }
     if (name === 'getAttestationResult') {
-      chrome.runtime.sendMessage({
+      sendMessageWithRetry({
         type: 'padoZKAttestationJSSDK',
         name: 'getAttestationResult',
         params,
-      });
+      }).catch(() => {});
     }
     if (name === 'getAttestationResultTimeout') {
-      chrome.runtime.sendMessage({
+      sendMessageWithRetry({
         type: 'padoZKAttestationJSSDK',
         name: 'getAttestationResultTimeout',
         params,
-      });
+      }).catch(() => {});
     }
     if (name === 'checkIsInstalled') {
       window.postMessage({
@@ -43,12 +48,17 @@ window.addEventListener('message', (e) => {
     }
     
     if (name === 'removeActiveAttestation') {
-      chrome.storage.local.remove([
+      if (removeInFlight) return;
+      removeInFlight = true;
+      const keys = [
         'padoZKAttestationJSSDKBeginAttest',
         'padoZKAttestationJSSDKWalletAddress',
         'padoZKAttestationJSSDKAttestationPresetParams',
         'activeRequestAttestation',
-      ]);
+      ];
+      safeStorageRemove(keys).finally(() => {
+        removeInFlight = false;
+      });
     }
   }
 });

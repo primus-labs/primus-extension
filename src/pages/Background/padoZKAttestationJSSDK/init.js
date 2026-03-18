@@ -4,6 +4,7 @@
 import { getSysConfig } from '@/services/api/config';
 import { updateAlgoUrl } from '@/services/api/algorithmUrlSync';
 import { getAlgoApi } from './utils';
+import { safeStorageSet } from '@/utils/safeStorage';
 
 const sdkState = {
   hasGetTwitterScreenName: false,
@@ -37,7 +38,7 @@ export async function fetchConfigure() {
         prev[configName] = configValue;
         return prev;
       }, {});
-      await chrome.storage.local.set({
+      await safeStorageSet({
         configMap: JSON.stringify(configMap),
       });
     }
@@ -47,7 +48,7 @@ export async function fetchConfigure() {
 }
 
 export async function storeDappTabId(id) {
-  await chrome.storage.local.set({
+  await safeStorageSet({
     padoZKAttestationJSSDKDappTabId: id,
   });
   return id;
@@ -72,7 +73,7 @@ export async function handleInitAttestation(params, senderTabId, processAlgorith
 
   const dappTabId = await storeDappTabId(senderTabId);
 
-  await chrome.storage.local.set({
+  await safeStorageSet({
     padoZKAttestationJSSDKBeginAttest: sdkState.sdkVersion,
   });
   processAlgorithmReq({ reqMethodName: 'start' });
