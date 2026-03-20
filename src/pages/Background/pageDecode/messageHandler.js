@@ -61,6 +61,19 @@ export async function pageDecodeMsgListener(
   hasGetTwitterScreenName,
   processAlgorithmReq
 ) {
+  let responded = false;
+  const respond = (payload) => {
+    if (responded) return;
+    responded = true;
+    try {
+      if (typeof sendResponse === 'function') {
+        sendResponse(payload);
+      }
+    } catch (_e) {
+      // Channel already closed or invalid
+    }
+  };
+
   const { name, params } = request;
   const pageDecodeState = getPageDecodeState();
   const { state } = pageDecodeState;
@@ -141,7 +154,7 @@ export async function pageDecodeMsgListener(
 
     if (name === 'initCompleted') {
       console.log('content_scripts-bg-decode receive:initCompleted');
-      sendResponse({
+      respond({
         name: 'append',
         params: {
           ...state.activeTemplate,
@@ -219,4 +232,6 @@ export async function pageDecodeMsgListener(
       handleEnd(request);
     }
   }
+
+  if (!responded) respond({ ok: true });
 }
