@@ -6,7 +6,6 @@ import { assembleAlgorithmParamsForSDK } from '../exData';
 import { PADOSERVERURL } from '@/config/envConstants';
 import { padoExtensionVersion } from '@/config/constants';
 import { getPageDecodeState } from './state';
-import { tryPatchAlgorithmParamsForSpecialTemplateBinanceAssetsHistory } from './specialTemplateBinanceAssetsHistory';
 import { tryPatchAlgorithmParamsForSpecialTemplateLinkedinConnections } from './specialTemplateLinkedinConnections';
 import { rewriteAmazonNoCaptureRequestUrlsForAlgorithmParams } from './specialTemplateAmazon';
 
@@ -138,7 +137,6 @@ export async function formatAlgorithmParamsFn() {
     }
   }
 
-  tryPatchAlgorithmParamsForSpecialTemplateBinanceAssetsHistory(aligorithmParams, activeTemplate);
   await tryPatchAlgorithmParamsForSpecialTemplateLinkedinConnections(aligorithmParams, activeTemplate);
 
   state.formatAlgorithmParams = aligorithmParams;
