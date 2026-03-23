@@ -38,6 +38,13 @@ window.addEventListener('message', (e) => {
         params,
       }).catch(() => {});
     }
+    if (name === 'closeDataSourceTab') {
+      sendMessageWithRetry({
+        type: 'padoZKAttestationJSSDK',
+        name: 'closeDataSourceTab',
+        params,
+      }).catch(() => {});
+    }
     if (name === 'checkIsInstalled') {
       window.postMessage({
         target: 'padoZKAttestationJSSDK',

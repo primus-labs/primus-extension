@@ -18,6 +18,7 @@ import {
 import { safeStorageGet, safeStorageSet } from '@/utils/safeStorage';
 import { safeJsonParse } from '@/utils/utils';
 import { startKeepAlive } from '../utils/keepAlive.js';
+import { applyAmazonSiteJumpToIfNeeded } from './specialTemplateAmazon';
 
 function handleEnd(request) {
   const pageDecodeState = getPageDecodeState();
@@ -83,11 +84,10 @@ export async function pageDecodeMsgListener(
   if (name === 'init') {
     state.activeTemplate = params || {};
     pageDecodeState.reset();
+    state.skipCancelOnNextDataSourceTabRemoved = false;
   }
 
   if (state.activeTemplate?.dataSource) {
-    const { jumpTo } = state.activeTemplate;
-
     if (name === 'init') {
       const { configMap } = await safeStorageGet(['configMap']);
       if (configMap) {
@@ -106,9 +106,16 @@ export async function pageDecodeMsgListener(
       });
       state.currExtentionId = currentWindowTabs[0]?.id;
 
+      await applyAmazonSiteJumpToIfNeeded(
+        state.activeTemplate,
+        state.currExtentionId
+      );
+
       removeWebRequestListener();
 
-      const tabCreatedByPado = await chrome.tabs.create({ url: jumpTo });
+      const tabCreatedByPado = await chrome.tabs.create({
+        url: state.activeTemplate.jumpTo,
+      });
       state.dataSourcePageTabId = tabCreatedByPado.id;
       console.log('pageDecode dataSourcePageTabId:', state.dataSourcePageTabId);
 
@@ -142,10 +149,14 @@ export async function pageDecodeMsgListener(
 
       chrome.tabs.onRemoved.addListener(async (tabId) => {
         if (tabId === state.dataSourcePageTabId) {
-          chrome.runtime.sendMessage({ type: 'pageDecode', name: 'stop' });
+          const skipCancel = state.skipCancelOnNextDataSourceTabRemoved;
+          state.skipCancelOnNextDataSourceTabRemoved = false;
           state.dataSourcePageTabId = null;
-          await handlerForSdk(processAlgorithmReq, 'cancel');
           removeWebRequestListener();
+          if (!skipCancel) {
+            chrome.runtime.sendMessage({ type: 'pageDecode', name: 'stop' });
+            await handlerForSdk(processAlgorithmReq, 'cancel');
+          }
         }
       });
 

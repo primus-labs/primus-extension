@@ -27,6 +27,14 @@ export function createPageDecodeState() {
     linkedinVoyagerPaginationCache: null,
     linkedinVoyagerPaginationInFlight: null,
     PRE_ATTEST_PROMOT_V2: [...DEFAULT_PRE_ATTEST_PROMPT_V2],
+    /**
+     * If true, the next data-source tab removal (e.g. chrome.tabs.remove) is treated as programmatic:
+     * onRemoved skips handlerForSdk('cancel') so the DApp is not sent cancel/failure after a successful attestation.
+     * Set by closeSdkDataSourceTabWithoutCancel before closing; cleared by the onRemoved listener after handling.
+     */
+    skipCancelOnNextDataSourceTabRemoved: false,
+    /** Set for Amazon account-manage template: storefront base URL for jumpTo + no-capture request URLs */
+    resolvedAmazonStorefrontBaseUrl: null,
   };
 
   function reset() {
@@ -40,6 +48,7 @@ export function createPageDecodeState() {
     state.specialSecondRequestSent = false;
     state.linkedinVoyagerPaginationCache = null;
     state.linkedinVoyagerPaginationInFlight = null;
+    state.resolvedAmazonStorefrontBaseUrl = null;
   }
 
   function removeFromRequestsMap(requestId) {

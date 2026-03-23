@@ -8,6 +8,7 @@ import { padoExtensionVersion } from '@/config/constants';
 import { getPageDecodeState } from './state';
 import { tryPatchAlgorithmParamsForSpecialTemplateBinanceAssetsHistory } from './specialTemplateBinanceAssetsHistory';
 import { tryPatchAlgorithmParamsForSpecialTemplateLinkedinConnections } from './specialTemplateLinkedinConnections';
+import { rewriteAmazonNoCaptureRequestUrlsForAlgorithmParams } from './specialTemplateAmazon';
 
 export async function formatAlgorithmParamsFn() {
   const pageDecodeState = getPageDecodeState();
@@ -90,6 +91,11 @@ export async function formatAlgorithmParamsFn() {
     });
     formatRequests.push({ ...r, url });
   }
+
+  rewriteAmazonNoCaptureRequestUrlsForAlgorithmParams(
+    formatRequests,
+    activeTemplate
+  );
 
   const formatResponse = JSON.parse(JSON.stringify(responses));
   for (const fr of formatRequests) {

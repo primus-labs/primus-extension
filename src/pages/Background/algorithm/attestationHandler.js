@@ -2,6 +2,7 @@
  * Algorithm message handlers: getAttestation (init/error) and getAttestationResult (success/warn/retcode 2).
  */
 import { pageDecodeMsgListener } from '../pageDecode/index.js';
+import { closeSdkDataSourceTabWithoutCancel } from '../pageDecode/closeDataSourceTab.js';
 import { getErrorMsgTitleFn } from '../utils/handleError.js';
 import { getErrorTipByExtraData, getAttestTipForCode } from './errorMap.js';
 import { TOTAL_TIP_MAP } from '@/config/errorCodes';
@@ -125,6 +126,9 @@ export async function handleGetAttestationResult(
   const errorMsgTitle = await getErrorMsgTitleFn();
 
   const sucFn = async (resData) => {
+    const closeDataSourceOnProofComplete =
+      activeAttestationParams.closeDataSourceOnProofComplete === true;
+
     await pageDecodeMsgListener(
       { name: 'end', params: { result: 'success' } },
       sender,
@@ -133,6 +137,9 @@ export async function handleGetAttestationResult(
       processAlgorithmReq
     );
     stopKeepAlive();
+    if (closeDataSourceOnProofComplete) {
+      await closeSdkDataSourceTabWithoutCancel();
+    }
     await safeStorageRemove([
       'padoZKAttestationJSSDKBeginAttest',
       'padoZKAttestationJSSDKWalletAddress',

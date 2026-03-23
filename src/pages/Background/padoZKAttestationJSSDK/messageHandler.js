@@ -9,6 +9,7 @@ import {
   handleDappTabRemoved,
 } from './attestation.js';
 import { setProcessAlgorithmReqRef } from './init.js';
+import { closeSdkDataSourceTabWithoutCancel } from '../pageDecode/closeDataSourceTab.js';
 
 export async function padoZKAttestationJSSDKMsgListener(
   request,
@@ -19,6 +20,19 @@ export async function padoZKAttestationJSSDKMsgListener(
   const { name, params } = request;
 
   setProcessAlgorithmReqRef(processAlgorithmReq);
+
+  if (name === 'closeDataSourceTab') {
+    try {
+      await closeSdkDataSourceTabWithoutCancel();
+    } catch (e) {
+      console.log('closeDataSourceTab', e);
+    } finally {
+      try {
+        sendResponse?.({});
+      } catch (_e) {}
+    }
+    return;
+  }
 
   if (name === 'initAttestation') {
     await handleInitAttestation(

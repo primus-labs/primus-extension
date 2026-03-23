@@ -298,6 +298,8 @@ export async function handleStartAttestation(
           additionParamsObj,
           allJsonResponseFlag: params.attRequest?.allJsonResponseFlag,
           clientType: state.sdkName,
+          closeDataSourceOnProofComplete:
+            params.attRequest?.closeDataSourceOnProofComplete === true,
         };
       } else {
         await sendTemplateErrorToDapp('00012');
