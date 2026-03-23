@@ -251,6 +251,26 @@ function isAmazonStorefrontUrl(url) {
  * @param {object[]} formatRequests Built request list (mutated in place).
  * @param {object} activeTemplate
  */
+/**
+ * For Amazon account-manage template, algorithm `host` must match the resolved storefront
+ * (e.g. www.amazon.sg), not the template default (e.g. www.amazon.co.jp).
+ * @param {object} activeTemplate
+ * @returns {string|null} Hostname without port, or null if N/A.
+ */
+export function getAmazonHostOverrideForAlgorithmParams(activeTemplate) {
+  const templateId =
+    activeTemplate?.attTemplateID ?? activeTemplate?.id;
+  if (templateId !== AMAZON_ACCOUNT_MANAGE_TEMPLATE_ID) return null;
+
+  const base = getPageDecodeState().state.resolvedAmazonStorefrontBaseUrl;
+  if (typeof base !== 'string' || !base.trim()) return null;
+  try {
+    return new URL(base).hostname;
+  } catch (_e) {
+    return null;
+  }
+}
+
 export function rewriteAmazonNoCaptureRequestUrlsForAlgorithmParams(
   formatRequests,
   activeTemplate

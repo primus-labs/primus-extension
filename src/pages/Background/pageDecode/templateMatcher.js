@@ -7,7 +7,10 @@ import { PADOSERVERURL } from '@/config/envConstants';
 import { padoExtensionVersion } from '@/config/constants';
 import { getPageDecodeState } from './state';
 import { tryPatchAlgorithmParamsForSpecialTemplateLinkedinConnections } from './specialTemplateLinkedinConnections';
-import { rewriteAmazonNoCaptureRequestUrlsForAlgorithmParams } from './specialTemplateAmazon';
+import {
+  getAmazonHostOverrideForAlgorithmParams,
+  rewriteAmazonNoCaptureRequestUrlsForAlgorithmParams,
+} from './specialTemplateAmazon';
 
 export async function formatAlgorithmParamsFn() {
   const pageDecodeState = getPageDecodeState();
@@ -104,9 +107,12 @@ export async function formatAlgorithmParamsFn() {
     fr.url = fr.url.split('#')[0];
   }
 
+  const algorithmHost =
+    getAmazonHostOverrideForAlgorithmParams(activeTemplate) || host;
+
   Object.assign(aligorithmParams, {
     reqType: 'web',
-    host,
+    host: algorithmHost,
     schemaType,
     requests: formatRequests,
     responses: formatResponse,
