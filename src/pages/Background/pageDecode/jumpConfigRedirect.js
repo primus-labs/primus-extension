@@ -197,7 +197,6 @@ function assembleJumpUrl(assemble, params, defaultJumpUrl, jumpToFallback) {
         seg
       );
     }
-    debugger
     return url;
   }
 
@@ -272,7 +271,6 @@ async function runJumpConfigStepIfMatched(requestUrl, responseData, method) {
     jc.defaultJumpUrl,
     jumpTo
   );
-  debugger
   if (!newUrl || !/^https?:\/\//i.test(newUrl)) {
     newUrl =
       jc.defaultJumpUrl ||
