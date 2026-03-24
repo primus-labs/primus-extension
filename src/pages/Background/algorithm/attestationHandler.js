@@ -60,7 +60,7 @@ export async function handleGetAttestation(
       'activeRequestAttestation',
       'padoZKAttestationJSSDKClientType',
     ]);
-    processAlgorithmReq({ reqMethodName: 'stop' });
+    // processAlgorithmReq({ reqMethodName: 'stop' });
   }
 
   const resParams = { result };
@@ -269,7 +269,7 @@ export async function handleGetAttestationResult(
     }
   } else if (retcode === '2') {
     const { errlog: { code } = {} } = details || {};
-    processAlgorithmReq({ reqMethodName: 'stop' });
+    // processAlgorithmReq({ reqMethodName: 'stop' });
     const msgObj = getAttestTipForCode(code, attestTipMap);
     msgObj.title = errorMsgTitle;
 
@@ -351,7 +351,7 @@ export async function handleGetAttestationResult(
           reStartFlag: true,
         },
       });
-      processAlgorithmReq({ reqMethodName: 'stop' });
+      // processAlgorithmReq({ reqMethodName: 'stop' });
     }
   }
 }

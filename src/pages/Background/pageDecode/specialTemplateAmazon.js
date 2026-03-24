@@ -180,28 +180,34 @@ export async function getAmazonSiteByIP(tabId) {
     US: 'https://www.amazon.com',
     CA: 'https://www.amazon.ca',
     MX: 'https://www.amazon.com.mx',
+
+    BR: 'https://www.amazon.com.br',
+
     GB: 'https://www.amazon.co.uk',
     DE: 'https://www.amazon.de',
     FR: 'https://www.amazon.fr',
     IT: 'https://www.amazon.it',
     ES: 'https://www.amazon.es',
     NL: 'https://www.amazon.nl',
+    BE: 'https://www.amazon.com.be',
     SE: 'https://www.amazon.se',
     PL: 'https://www.amazon.pl',
-    BE: 'https://www.amazon.com.be',
     TR: 'https://www.amazon.com.tr',
+    IE: 'https://www.amazon.ie',
+
     JP: 'https://www.amazon.co.jp',
-    AU: 'https://www.amazon.com.au',
     SG: 'https://www.amazon.sg',
+    AU: 'https://www.amazon.com.au',
     IN: 'https://www.amazon.in',
-    CN: 'https://www.amazon.cn',
-    TW: 'https://www.amazon.com.tw',
+
     AE: 'https://www.amazon.ae',
     SA: 'https://www.amazon.sa',
     EG: 'https://www.amazon.eg',
-    BR: 'https://www.amazon.com.br',
+
+    ZA: 'https://www.amazon.co.za',
+
     DEFAULT: 'https://www.amazon.com',
-  };
+  }
 
   try {
     const countryCode = await getCountryCodeByIP(tabId);
