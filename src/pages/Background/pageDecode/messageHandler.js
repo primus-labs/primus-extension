@@ -19,6 +19,7 @@ import { safeStorageGet, safeStorageSet } from '@/utils/safeStorage';
 import { safeJsonParse } from '@/utils/utils';
 import { startKeepAlive } from '../utils/keepAlive.js';
 import { applyAmazonSiteJumpToIfNeeded } from './specialTemplateAmazon';
+import { initJumpConfigState } from './jumpConfigRedirect';
 
 function handleEnd(request) {
   const pageDecodeState = getPageDecodeState();
@@ -110,6 +111,8 @@ export async function pageDecodeMsgListener(
         state.activeTemplate,
         state.currExtentionId
       );
+
+      initJumpConfigState(state.activeTemplate.jumpConfig ?? null);
 
       removeWebRequestListener();
 

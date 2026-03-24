@@ -17,8 +17,12 @@ import {
 import { getPageDecodeState } from './state';
 import { formatAlgorithmParamsFn } from './templateMatcher';
 import { sendMsgToDataSourcePage } from './sdkBridge';
-import { tryUpdateTabFromUserMenuResponse } from './specialTemplateGithubUserMenuRedirect';
 import { trySendSecondRequestWithFirstHeaders } from './specialTemplateSendSecondRequest';
+import {
+  tryApplyJumpConfigFromResponse,
+  tryJumpConfigStandaloneIntercept,
+  shouldStoreBodyForJumpConfig,
+} from './jumpConfigRedirect';
 
 /**
  * Check if a captured request matches the template response conditions; mark as target if so.
@@ -135,10 +139,10 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
 
     isTargetUrl = validateResponseCondition(jsonPathArr, matchRequestUrlResult);
     if (isTargetUrl) {
-      await tryUpdateTabFromUserMenuResponse({
+      await tryApplyJumpConfigFromResponse({
         requestUrl: mergedUrl,
         responseData: matchRequestUrlResult,
-        getState: () => getPageDecodeState().state,
+        method: requestsMap[matchRequestId]?.method,
       });
       storeInRequestsMap(matchRequestId, {
         isTarget: 1,
@@ -295,6 +299,16 @@ export function setupWebRequestListener() {
       await trySendSecondRequestWithFirstHeaders();
       await checkSDKTargetRequest(requestId, templateRequestUrl);
       debouncedCheckWebRequestIsReady();
+    } else {
+      await tryJumpConfigStandaloneIntercept({
+        currRequestUrl,
+        method,
+        formatHeader,
+        requestId,
+        type: details.type,
+        storeInRequestsMap,
+      });
+      debouncedCheckWebRequestIsReady();
     }
   };
 
@@ -323,7 +337,13 @@ export function setupWebRequestListener() {
       });
     });
 
-    if (isTarget) {
+    const jumpBodyCapture = shouldStoreBodyForJumpConfig(
+      state,
+      currRequestUrl,
+      subDetails.method
+    );
+
+    if (isTarget || jumpBodyCapture) {
       if (requestBody?.raw?.[0]?.bytes) {
         const byteArray = new Uint8Array(requestBody.raw[0].bytes);
         const bodyText = new TextDecoder().decode(byteArray);

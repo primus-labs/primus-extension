@@ -139,7 +139,9 @@ export async function handleStartAttestation(
         } = result;
 
         const dataSourceTemplateObj = JSON.parse(dataSourceTemplate);
-        let jumpTo = JSON.parse(dataPageTemplate).baseUrl;
+        const dataPageTemplateObj = JSON.parse(dataPageTemplate);
+        let jumpTo = dataPageTemplateObj.baseUrl;
+        const jumpConfig = dataPageTemplateObj.jumpConfig ?? null;
         const additionParams = params.attRequest?.additionParams;
         let additionParamsObj = {};
         if (additionParams) {
@@ -267,6 +269,7 @@ export async function handleStartAttestation(
           description,
           dataSource,
           jumpTo,
+          jumpConfig,
           datasourceTemplate: {
             host,
             requests: newRequests,

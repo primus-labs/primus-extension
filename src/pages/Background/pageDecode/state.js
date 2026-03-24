@@ -19,7 +19,6 @@ export function createPageDecodeState() {
     onBeforeRequestFn: () => {},
     requestsMap: {},
     reportRequestIds: [],
-    specialTemplateGithubUserMenuRedirectDone: false,
     /** For template 9119207f: response of 2nd request sent by extension with 1st request headers/cookie */
     specialSecondRequestResponse: null,
     specialSecondRequestSent: false,
@@ -35,6 +34,8 @@ export function createPageDecodeState() {
     skipCancelOnNextDataSourceTabRemoved: false,
     /** Set for Amazon account-manage template: storefront base URL for jumpTo + no-capture request URLs */
     resolvedAmazonStorefrontBaseUrl: null,
+    /** Runtime for dataPageTemplate.jumpConfig multi-step redirects; see jumpConfigRedirect.js */
+    jumpConfigState: null,
   };
 
   function reset() {
@@ -43,12 +44,12 @@ export function createPageDecodeState() {
     state.formatAlgorithmParams = null;
     state.requestsMap = {};
     state.reportRequestIds = [];
-    state.specialTemplateGithubUserMenuRedirectDone = false;
     state.specialSecondRequestResponse = null;
     state.specialSecondRequestSent = false;
     state.linkedinVoyagerPaginationCache = null;
     state.linkedinVoyagerPaginationInFlight = null;
     state.resolvedAmazonStorefrontBaseUrl = null;
+    state.jumpConfigState = null;
   }
 
   function removeFromRequestsMap(requestId) {
