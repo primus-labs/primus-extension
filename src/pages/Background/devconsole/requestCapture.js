@@ -42,10 +42,14 @@ async function extraRequestFn(params) {
     delete requestParams.requestId;
     const requestRes = await customFetch2(requestParams);
     if (typeof requestRes === 'object' && requestRes !== null) {
+      // Redact headers only for devconsole; keep original fields (e.g. requestId) — not from requestParams
+      const requestForDevconsole = { ...params };
+      delete requestForDevconsole.header;
+      delete requestForDevconsole.headers;
       sendMsgToDevconsole({
         type: 'devconsole',
         name: 'checkDataSourceRes',
-        params: { request: params, response: requestRes },
+        params: { request: requestForDevconsole, response: requestRes },
       });
     }
   } catch (e) {
