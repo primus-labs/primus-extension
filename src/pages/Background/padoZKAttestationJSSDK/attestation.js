@@ -216,7 +216,7 @@ export async function handleStartAttestation(
               const { op, value, field, type } = subItemCondition;
               subconditionItem.op = op;
               if (
-                ['>', '>=', '=', '!=', '<', '<=', 'STREQ', 'STRNEQ'].includes(op)
+                ['>', '>=', '=', '!=', '<', '<=', 'STREQ', 'STRNEQ','STRCASEEQ', 'STRCASENEQ'].includes(op)
               ) {
                 subconditionItem.type = 'FIELD_RANGE';
                 subconditionItem.value = value;

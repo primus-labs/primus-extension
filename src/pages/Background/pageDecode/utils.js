@@ -124,7 +124,7 @@ export const validateResponseCondition = (
         const lastJsonpath = sonJsonpath.split('+')[1];
         let jsonpathQueryStr = '';
 
-        if (['>', '>=', '=', '!=', '<', '<=', 'STREQ', 'STRNEQ'].includes(op)) {
+        if (['>', '>=', '=', '!=', '<', '<=', 'STREQ', 'STRNEQ', 'STRCASEEQ', 'STRCASENEQ'].includes(op)) {
           // let formatOp = op;
           // if (['=', 'STREQ'].includes(op)) {
           //   formatOp = '==';
