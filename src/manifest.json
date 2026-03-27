@@ -44,11 +44,7 @@
     },
     {
       "matches": [
-        "http://localhost/*",
-        "http://api-dev.padolabs.org:38082/*",
-        "http://api-dev.padolabs.org:38089/*",
-        "https://dev.primuslabs.xyz/*",
-        "http://35.200.124.249/*"
+        "https://dev.primuslabs.xyz/*"
       ],
       "js": ["devconsole.bundle.js"],
       "run_at": "document_start"
