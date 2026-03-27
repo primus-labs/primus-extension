@@ -12,6 +12,12 @@ var FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // const CircularDependencyPlugin = require('circular-dependency-plugin');
 const ASSET_PATH = process.env.ASSET_PATH || '/';
+const DEVCONSOLE_DEV_MATCHES = [
+  'http://localhost/*',
+  'http://api-dev.padolabs.org:38082/*',
+  'http://api-dev.padolabs.org:38089/*',
+  'http://35.200.124.249/*',
+];
 
 var alias = {
   '@': path.resolve(__dirname, './src'),
@@ -219,16 +225,29 @@ var options = {
           force: true,
           transform: function (content, path) {
             // generates the manifest file using the package.json informations
+            const manifest = JSON.parse(content.toString());
             if (process.env.NODE_ENV === 'production') {
               return Buffer.from(
                 JSON.stringify({
                   description: process.env.npm_package_description,
                   version: process.env.npm_package_version,
-                  ...JSON.parse(content.toString()),
+                  ...manifest,
                 })
               );
             } else {
-              let jsonobj = JSON.parse(content.toString());
+              let jsonobj = manifest;
+              const devconsoleScript = jsonobj.content_scripts.find(
+                (script) =>
+                  Array.isArray(script.js) &&
+                  script.js.includes('devconsole.bundle.js')
+              );
+              if (devconsoleScript) {
+                const existingMatches = new Set(devconsoleScript.matches || []);
+                DEVCONSOLE_DEV_MATCHES.forEach((match) =>
+                  existingMatches.add(match)
+                );
+                devconsoleScript.matches = Array.from(existingMatches);
+              }
               //jsonobj.content_scripts[0].matches.push("http://api-dev.padolabs.org:9094/*");
               jsonobj.content_scripts[0].matches.push(
                 'http://api-dev.padolabs.org:9095/*'
