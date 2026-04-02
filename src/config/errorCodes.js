@@ -60,11 +60,16 @@ export const SUBSCRIPTION_ERROR_TIPS = {
   '-1002005': 'Quota exhausted.',
 };
 
+export const BNBZKIDSDK_ERROR_TIPS = {
+  '-210001': 'Address has pending proof for identityPropertyId.'
+}
+
 /** Combined map for SDK + Primus Network + Subscription (for getErrorTipByRetcode) */
 export const TOTAL_TIP_MAP = {
   ...SDK_ERROR_TIPS,
   ...PRIMUS_NETWORK_ERROR_TIPS,
   ...SUBSCRIPTION_ERROR_TIPS,
+  ...BNBZKIDSDK_ERROR_TIPS,
 };
 
 /**
