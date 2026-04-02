@@ -25,3 +25,5 @@
 secrets.*.js
 
 /.cursor
+
+sync-client-plugin.sh
