@@ -30,6 +30,7 @@ export const TIMING = {
   DEFAULT_UNINIT_MS: 5000,
   DEFAULT_INIT_MS: 30000,
   POLLING_TIMEOUT_MS: 2 * 60 * 1000,
+  COUNTDOWN_SECONDS: 3,
 };
 
 /** Error codes used in timeout/result handling */

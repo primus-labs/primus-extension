@@ -1,38 +1,69 @@
-// @import '@/assets/css/global.css';
 @import '@/assets/newCss/global.css';
 @import '@/assets/newCss/flex.scss';
 @import '@/assets/newCss/font.scss';
 @import '@/assets/newCss/mixins.scss';
-@keyframes dots {
-  0% {
-    content: '.....';
-  }
-  16.66% {
-    content: '.';
-  }
-  33.33% {
-    content: '..';
-  }
-  50% {
-    content: '...';
-  }
-  66.66% {
-    content: '....';
-  }
-  83.33% {
-    content: '.....';
-  }
-  100% {
-    content: '.....';
+
+@keyframes spinRing {
+  to {
+    transform: rotate(360deg);
   }
 }
 
-@keyframes growFromBottom {
+/* Match StatusModal motion spring-ish: stiffness 300, damping 20 — scale only, no translate */
+@keyframes badgeSpring {
   0% {
-    transform: translateY(16px);
+    transform: scale(0);
+  }
+  55% {
+    transform: scale(1.12);
+  }
+  72% {
+    transform: scale(0.94);
   }
   100% {
-    transform: translateY(0px);
+    transform: scale(1);
+  }
+}
+
+@keyframes modalEnter {
+  0% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/*
+ * CelebrationStars: same motion shape as reference, longer hold (fully visible) before fade-out.
+ * Total 2s; opacity stays 1 from ~22% through ~78%.
+ */
+@keyframes starsBurst {
+  0% {
+    opacity: 0;
+    transform: translateY(60px) scale(0.7);
+  }
+  8% {
+    opacity: 0;
+    transform: translateY(48px) scale(0.74);
+  }
+  22% {
+    opacity: 1;
+    transform: translateY(20px) scale(0.88);
+  }
+  38% {
+    opacity: 1;
+    transform: translateY(-18px) scale(1);
+  }
+  78% {
+    opacity: 1;
+    transform: translateY(-68px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-80px) scale(1);
   }
 }
 
@@ -48,6 +79,8 @@
   --Foreground-Primary-default: #fafafa;
   --my-icon-accent: #18181b;
   --my-loading-color: #6f6f6f;
+  /* Light UI: dim page with black @ 20% */
+  --pado-modal-overlay: rgba(0, 0, 0, 0.2);
 }
 .dark,
 .black,
@@ -60,21 +93,18 @@
   --Foreground-Primary-default: #18181b;
   --my-icon-accent: #fafafa;
   --my-loading-color: #8d8d8d;
+  /* Dark UI: dim page with white @ 20% */
+  --pado-modal-overlay: rgba(255, 255, 255, 0.2);
 }
+
 #pado-extension-content {
-  --spacing-8: 8px;
-  --spacing-20: 20px;
-  --Radius-radius-m: 8px;
-  --Radius-radius-md: 8px;
-  --Layer-Tokens-layer-secondary: #c6c6c6;
-  --Layer-Tokens-layer-primary: #fff;
-  --Layer-Tokens-layer-02: #e0e0e0;
-  --Text-Tokens-text-tertiary: #6f6f6f;
   --text-tokens-text-correct: #24a148;
-  --text-tokens-text-error: #fa4d56;
-  --shadow-color: rgba(0, 0, 0, 0.06);
-  --border-tokens-border-primary: #e4e4e7;
-  --layer-tokens-layer-primary: #fff;
+  --text-tokens-text-error: #c62828;
+  --primus-orange: #fd4c00;
+  --ring-stroke: #fe985c;
+  --ring-bg: #fee2d5;
+  --badge-error: #dc2626;
+
   ul,
   li,
   p {
@@ -82,129 +112,220 @@
     padding: 0;
   }
 
-  @include frcc;
-  display: flex;
   position: fixed;
   z-index: 10000000;
-  bottom: 60px;
-  right: 35px;
-
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
   box-sizing: border-box;
 
-  .pado-extension-card {
-    @include frbc;
+  .pado-extension-shell {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
 
-    padding: 16.5px 15px;
-    width: 392px;
+  .pado-modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    border: 0;
     box-sizing: border-box;
-    border: 1px solid var(--Border-default, #e4e4e7);
-    border-radius: var(--Radius-radius-md, 8px);
-    border: 1px solid var(--Border-default, #3f3f46);
-    background: var(--Background-default, #09090b);
+    background: var(--pado-modal-overlay, rgba(0, 0, 0, 0.2));
+    pointer-events: auto;
+    z-index: 0;
+    cursor: default;
+  }
 
-    /* Shadows/shadow-lg */
-    box-shadow: 0px 10px 15px -3px rgba(0, 0, 0, 0.05),
-      0px 4px 6px -2px rgba(0, 0, 0, 0.05);
-    animation: growFromBottom 1s forwards ease-out;
-    transform: translateY(-16px);
-    &.initialized {
-      .pado-extension-left {
-        width: 100%;
-      }
-    }
-    .pado-extension-left {
-      @include fcss;
-      gap: 8px;
-      width: 299px;
-      .pado-extension-header {
-        width: 100%;
-        @include frsc;
-        gap: var(--spacing-8, 8px);
-        .iconPado {
-          width: var(--spacing-20, 20px);
-        }
-        .pado-extension-center-title {
-          font-family: Inter;
-          font-size: 14px;
-          font-style: normal;
-          font-weight: 500;
-          line-height: 120%;
-          color: var(--Foreground-default, #09090b);
-        }
-      }
-      .pado-extension-footer {
-        width: 100%;
-        @include frsc;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: inline-block;
-        color: var(--Foreground-muted, #71717a);
-        font-family: Inter;
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: 17px;
-        &.result {
-          &.suc {
-            color: var(--text-tokens-text-correct, #24a148);
-          }
-          &.fail {
-            color: var(--text-tokens-text-error, #fa4d56);
-          }
-        }
-        .loading-text {
-          display: inline-block;
-          &::after {
-            content: '';
-            display: inline-block;
-            width: 26px;
-            text-align: left;
-            animation: dots 1.5s steps(3, end) infinite;
-            color: var(--Foreground-muted, #71717a);
-          }
-        }
-        .anotherLine {
-          font-size: 12px;
-          line-height: 14px;
-          margin-top: 8px;
-        }
-      }
-    }
-    .pado-extension-right {
-      text-align: right;
-      @include frss;
-      justify-content: flex-end;
-      .PButton {
-        width: 45px;
-        height: 28px;
+  .pado-extension-root {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 1;
+    box-sizing: border-box;
+  }
 
-        .btnText {
-          font-size: 12px;
-        }
-      }
-      &.verifying {
-        padding: 12px;
-        .loader2 {
-          width: 18.5px;
-          padding: 1.5px;
-          aspect-ratio: 1;
+  .pado-modal-group {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .pado-modal-group--dragging {
+    position: absolute;
+    margin: 0;
+    align-items: center;
+  }
+
+  .celebration-stars {
+    position: absolute;
+    pointer-events: none;
+    width: 382.523px;
+    height: 236.547px;
+    z-index: 0;
+    animation: starsBurst 2s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  }
+
+  .pado-modal-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 294px;
+    padding: 16px 16px 48px;
+    border-radius: 16px;
+    background: var(--Background-default, #fff);
+    box-shadow: 0px 12px 24px 0px rgba(0, 0, 0, 0.25);
+    box-sizing: border-box;
+    cursor: move;
+    pointer-events: auto;
+    animation: modalEnter 0.3s ease-out forwards;
+    z-index: 10;
+    font-family: 'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+      'Inter', sans-serif;
+
+    .modal-drag-handle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+
+      .handle-dots {
+        display: flex;
+        gap: 4px;
+        opacity: 0.3;
+
+        .dot {
+          width: 4px;
+          height: 4px;
           border-radius: 50%;
-          background: var(--my-loading-color, #6f6f6f);
-          --_m: conic-gradient(#0000 10%, #000),
-            linear-gradient(#000 0 0) content-box;
-          -webkit-mask: var(--_m);
-          mask: var(--_m);
-          -webkit-mask-composite: source-out;
-          mask-composite: subtract;
-          animation: l3 1s infinite linear;
+          background: #9ca3af;
+        }
+      }
+    }
 
-          @keyframes l3 {
-            to {
-              transform: rotate(1turn);
-            }
+    .logo-ring-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+
+      .logo-ring {
+        position: relative;
+        width: 77px;
+        height: 77px;
+
+        .ring-bg {
+          position: absolute;
+          inset: 0;
+        }
+
+        .loading-ring {
+          position: absolute;
+          inset: 0;
+          /* Another +10% vs 2s/1.1 → 2 / 1.21 */
+          animation: spinRing calc(2s / 1.21) linear infinite;
+        }
+
+        .result-ring {
+          position: absolute;
+          inset: 0;
+        }
+
+        .logo-center {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          width: 52px;
+          height: 52px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 2;
+        }
+
+        /* Top-left anchor like StatusModal (no -50% centering) */
+        .result-badge {
+          position: absolute;
+          left: calc(50% + 24px);
+          top: calc(50% + 22px);
+          transform: scale(0);
+          transform-origin: center center;
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 3;
+          animation: badgeSpring 0.45s cubic-bezier(0.34, 1.2, 0.64, 1) 0.05s forwards;
+
+          &.success {
+            background: var(--primus-orange, #fd4c00);
+          }
+
+          &.error {
+            background: var(--badge-error, #dc2626);
           }
         }
+      }
+    }
+
+    .modal-text-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
+
+      .modal-title {
+        font-size: 18px;
+        font-weight: 400;
+        line-height: normal;
+        letter-spacing: 0.18px;
+        text-align: center;
+        color: var(--Foreground-default, #101010);
+        margin: 0;
+      }
+
+      .modal-subtitle {
+        font-size: 14px;
+        font-weight: 400;
+        line-height: normal;
+        letter-spacing: 0.14px;
+        text-align: center;
+        width: 100%;
+        color: var(--Foreground-muted, #878787);
+        margin: 0;
+      }
+
+      .modal-error-text {
+        font-size: 14px;
+        font-weight: 400;
+        line-height: normal;
+        letter-spacing: 0.14px;
+        text-align: center;
+        width: 100%;
+        color: var(--text-tokens-text-error, #c62828);
+        margin: 0;
       }
     }
   }

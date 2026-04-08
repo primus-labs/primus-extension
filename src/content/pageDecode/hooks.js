@@ -182,3 +182,35 @@ export function useAutoStartWhenReady(isReadyFetch, handleConfirm, setters) {
     }
   }, [isReadyFetch, handleConfirm, setters]);
 }
+
+/** Countdown from N seconds when status reaches RESULT, then call onComplete. */
+export function useCountdown(status, countdownSeconds, onComplete) {
+  const [countdown, setCountdown] = useState(countdownSeconds);
+  const onCompleteRef = useRef(onComplete);
+  const completeFiredRef = useRef(false);
+  onCompleteRef.current = onComplete;
+
+  useEffect(() => {
+    if (status !== STATUS.RESULT) {
+      completeFiredRef.current = false;
+      setCountdown(countdownSeconds);
+      return;
+    }
+
+    if (countdown <= 0) {
+      if (!completeFiredRef.current) {
+        completeFiredRef.current = true;
+        onCompleteRef.current?.();
+      }
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setCountdown((prev) => Math.max(prev - 1, 0));
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [status, countdown, countdownSeconds]);
+
+  return countdown;
+}

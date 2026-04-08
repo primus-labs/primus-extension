@@ -19,8 +19,36 @@ function isDisabledPath() {
   return DISABLED_PATH_LIST.some((p) => href.indexOf(p) > -1);
 }
 
-const containerEl = createDomElement(`<div id="${CONTAINER_ID}"></div>`);
-document.body.appendChild(containerEl);
+/**
+ * Host SPAs may replace body or remove injected nodes; React then crashes with
+ * insertBefore NotFoundError. Re-create the mount node and reset the root.
+ */
+function ensurePageDecodeContainer() {
+  let container = document.getElementById(CONTAINER_ID);
+  if (container && document.body.contains(container)) {
+    return container;
+  }
+  try {
+    if (rootRef) {
+      rootRef.unmount();
+    }
+  } catch (_e) {
+    /* ignore */
+  }
+  rootRef = null;
+  if (container && !document.body.contains(container)) {
+    try {
+      container.remove();
+    } catch (_e) {
+      /* ignore */
+    }
+  }
+  container = createDomElement(`<div id="${CONTAINER_ID}"></div>`);
+  document.body.appendChild(container);
+  return container;
+}
+
+ensurePageDecodeContainer();
 
 chrome.runtime.sendMessage(
   {
@@ -43,13 +71,11 @@ chrome.runtime.sendMessage(
     delete activeRequest.PADOSERVERURL;
     delete activeRequest.padoExtensionVersion;
 
-    const container = document.getElementById(CONTAINER_ID);
-    if (container) {
-      if (!rootRef) {
-        rootRef = createRoot(container);
-      }
-      rootRef.render(<PadoCard activeRequest={activeRequest} />);
+    const container = ensurePageDecodeContainer();
+    if (!rootRef) {
+      rootRef = createRoot(container);
     }
+    rootRef.render(<PadoCard activeRequest={activeRequest} />);
   }
 );
 
