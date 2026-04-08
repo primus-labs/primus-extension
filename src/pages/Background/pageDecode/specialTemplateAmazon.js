@@ -3,6 +3,7 @@
  */
 
 import { getPageDecodeState } from './state';
+import { rewriteUrlOrigin } from './urlOriginRewrite';
 
 export const AMAZON_ACCOUNT_MANAGE_TEMPLATE_ID =
   '9119207f-5884-403d-8bb3-1b6870d428fe';
@@ -224,22 +225,6 @@ export async function getAmazonSiteByIP(tabId) {
 }
 
 /**
- * Replace jumpTo origin with amazonBaseUrl; keep path, query, and hash.
- * @param {string} jumpTo
- * @param {string} amazonBaseUrl
- * @returns {string}
- */
-function rewriteAmazonJumpToOrigin(jumpTo, amazonBaseUrl) {
-  try {
-    const parsed = new URL(jumpTo);
-    const base = amazonBaseUrl.replace(/\/+$/, '');
-    return new URL(parsed.pathname + parsed.search + parsed.hash, base).href;
-  } catch (_e) {
-    return jumpTo;
-  }
-}
-
-/**
  * True if URL host looks like an Amazon storefront (www.amazon.xx / smile, etc.).
  * @param {string} url
  */
@@ -251,12 +236,6 @@ function isAmazonStorefrontUrl(url) {
   }
 }
 
-/**
- * For algorithm params: rewrite `needCapture: false` request URLs to the resolved storefront
- * (same origin swap as jumpTo). Uses {@link getPageDecodeState}.state.resolvedAmazonStorefrontBaseUrl.
- * @param {object[]} formatRequests Built request list (mutated in place).
- * @param {object} activeTemplate
- */
 /**
  * For Amazon account-manage template, algorithm `host` must match the resolved storefront
  * (e.g. www.amazon.sg), not the template default (e.g. www.amazon.co.jp).
@@ -293,7 +272,7 @@ export function rewriteAmazonNoCaptureRequestUrlsForAlgorithmParams(
     const rawUrl = fr.url;
     if (typeof rawUrl !== 'string' || !rawUrl.trim()) continue;
     if (!isAmazonStorefrontUrl(rawUrl)) continue;
-    fr.url = rewriteAmazonJumpToOrigin(rawUrl, base);
+    fr.url = rewriteUrlOrigin(rawUrl, base);
   }
 }
 
@@ -316,5 +295,5 @@ export async function applyAmazonSiteJumpToIfNeeded(
   const jumpTo = activeTemplate?.jumpTo;
   if (typeof jumpTo !== 'string' || !jumpTo.trim()) return;
 
-  activeTemplate.jumpTo = rewriteAmazonJumpToOrigin(jumpTo, amazonBase);
+  activeTemplate.jumpTo = rewriteUrlOrigin(jumpTo, amazonBase);
 }

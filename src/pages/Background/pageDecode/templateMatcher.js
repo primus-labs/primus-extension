@@ -11,6 +11,10 @@ import {
   getAmazonHostOverrideForAlgorithmParams,
   rewriteAmazonNoCaptureRequestUrlsForAlgorithmParams,
 } from './specialTemplateAmazon';
+import {
+  getJumpUrlHostOverrideForAlgorithmParams,
+  rewriteNoCaptureRequestUrlsForJumpUrl,
+} from './additionParamsJumpUrl';
 
 export async function formatAlgorithmParamsFn() {
   const pageDecodeState = getPageDecodeState();
@@ -99,6 +103,8 @@ export async function formatAlgorithmParamsFn() {
     activeTemplate
   );
 
+  rewriteNoCaptureRequestUrlsForJumpUrl(formatRequests, activeTemplate);
+
   const formatResponse = JSON.parse(JSON.stringify(responses));
   for (const fr of formatRequests) {
     if (fr.headers) {
@@ -108,7 +114,9 @@ export async function formatAlgorithmParamsFn() {
   }
 
   const algorithmHost =
-    getAmazonHostOverrideForAlgorithmParams(activeTemplate) || host;
+    getJumpUrlHostOverrideForAlgorithmParams(activeTemplate) ||
+    getAmazonHostOverrideForAlgorithmParams(activeTemplate) ||
+    host;
 
   Object.assign(aligorithmParams, {
     reqType: 'web',

@@ -34,6 +34,10 @@ export function createPageDecodeState() {
     skipCancelOnNextDataSourceTabRemoved: false,
     /** Set for Amazon account-manage template: storefront base URL for jumpTo + no-capture request URLs */
     resolvedAmazonStorefrontBaseUrl: null,
+    /**
+     * Hostname of jumpTo before additionParams.jumpToUrl origin rewrite; used to match no-capture request URLs.
+     */
+    jumpUrlRewriteSourceHostname: null,
     /** Runtime for dataPageTemplate.jumpConfig multi-step redirects; see jumpConfigRedirect.js */
     jumpConfigState: null,
   };
@@ -49,6 +53,7 @@ export function createPageDecodeState() {
     state.linkedinVoyagerPaginationCache = null;
     state.linkedinVoyagerPaginationInFlight = null;
     state.resolvedAmazonStorefrontBaseUrl = null;
+    state.jumpUrlRewriteSourceHostname = null;
     state.jumpConfigState = null;
   }
 
