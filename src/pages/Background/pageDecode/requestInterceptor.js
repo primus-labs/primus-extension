@@ -241,7 +241,6 @@ function debouncedCheckWebRequestIsReady() {
 export function setupWebRequestListener() {
   const pageDecodeState = getPageDecodeState();
   const { state, storeInRequestsMap, removeFromRequestsMap } = pageDecodeState;
-  const dataSourcePageTabId = state.dataSourcePageTabId;
 
   const onBeforeSendHeadersFn = async (details) => {
     if (
@@ -249,6 +248,7 @@ export function setupWebRequestListener() {
     ) {
       return;
     }
+    const dataSourcePageTabId = state.dataSourcePageTabId;
     if (![-1, dataSourcePageTabId].includes(details.tabId)) return;
     if (details.method === 'OPTIONS') return;
 
@@ -318,6 +318,7 @@ export function setupWebRequestListener() {
     ) {
       return;
     }
+    const dataSourcePageTabId = state.dataSourcePageTabId;
     if (![-1, dataSourcePageTabId].includes(subDetails.tabId)) return;
     if (subDetails.method === 'OPTIONS') return;
 

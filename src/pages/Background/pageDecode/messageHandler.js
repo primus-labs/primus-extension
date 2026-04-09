@@ -118,14 +118,14 @@ export async function pageDecodeMsgListener(
       initJumpConfigState(state.activeTemplate.jumpConfig ?? null);
 
       removeWebRequestListener();
+      state.dataSourcePageTabId = null;
+      setupWebRequestListener();
 
       const tabCreatedByPado = await chrome.tabs.create({
         url: state.activeTemplate.jumpTo,
       });
       state.dataSourcePageTabId = tabCreatedByPado.id;
       console.log('pageDecode dataSourcePageTabId:', state.dataSourcePageTabId);
-
-      setupWebRequestListener();
 
       const injectFn = async () => {
         await chrome.scripting.executeScript({
