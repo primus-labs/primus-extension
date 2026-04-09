@@ -43,9 +43,18 @@ const STAR_FILLS = [
 
 const PATH_KEYS = Object.keys(STAR_PATHS);
 
-/** Anchor and motion baseline from design; lifted ~20% for a higher start. */
-const STARS_TOP_PX = 44 * 0.8;
-const STARS_INITIAL_Y = 80 * 0.8;
+const STAR_BOX_HEIGHT = 236.547;
+
+/** Vertical settle after spring (negative = up); design -80, end state +20% higher. */
+const STARS_END_Y = -80 * 1.2;
+
+/**
+ * Success modal ~275px tall → vertical mid ~137px from `.pado-modal-group` top (card top).
+ * Hold phase uses settled `y: STARS_END_Y`; place layer so box bottom ≈ modal midline:
+ * top + STAR_BOX_HEIGHT + STARS_END_Y ≈ MODAL_CARD_MID_Y_EST
+ */
+const MODAL_CARD_MID_Y_EST = 137;
+const STARS_TOP_PX = MODAL_CARD_MID_Y_EST - STAR_BOX_HEIGHT - STARS_END_Y;
 
 /**
  * Parent `.pado-modal-group` moves with the card; offsets match modal center.
@@ -62,9 +71,9 @@ function CelebrationStars({ countdown }) {
         left: 147 - 191.26,
         top: STARS_TOP_PX,
       }}
-      initial={{ y: STARS_INITIAL_Y, opacity: 0, scale: 0.7 }}
+      initial={{ y: 80, opacity: 0, scale: 0.7 }}
       animate={{
-        y: -80,
+        y: STARS_END_Y,
         scale: 1,
         opacity: countdown <= 0 ? 0 : fadeOutLastSecond ? 0 : 1,
       }}
