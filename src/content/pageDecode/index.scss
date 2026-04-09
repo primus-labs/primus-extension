@@ -36,37 +36,6 @@
   }
 }
 
-/*
- * CelebrationStars: same motion shape as reference, longer hold (fully visible) before fade-out.
- * Total 2s; opacity stays 1 from ~22% through ~78%.
- */
-@keyframes starsBurst {
-  0% {
-    opacity: 0;
-    transform: translateY(60px) scale(0.7);
-  }
-  8% {
-    opacity: 0;
-    transform: translateY(48px) scale(0.74);
-  }
-  22% {
-    opacity: 1;
-    transform: translateY(20px) scale(0.88);
-  }
-  38% {
-    opacity: 1;
-    transform: translateY(-18px) scale(1);
-  }
-  78% {
-    opacity: 1;
-    transform: translateY(-68px) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-80px) scale(1);
-  }
-}
-
 .light,
 .white,
 #pado-extension-content,
@@ -85,7 +54,8 @@
 .dark,
 .black,
 .dark #pado-extension-content,
-.black #pado-extension-content {
+.black #pado-extension-content,
+#pado-extension-content.pado-page-decode-theme--black {
   --Foreground-default: #fafafa;
   --Foreground-muted: #a1a1aa;
   --Border-default: #3f3f46;
@@ -173,13 +143,13 @@
     align-items: center;
   }
 
+  /* Motion (motion/react): same spring + opacity keyframes as Design Popup StatusModal */
   .celebration-stars {
     position: absolute;
     pointer-events: none;
     width: 382.523px;
     height: 236.547px;
     z-index: 0;
-    animation: starsBurst 2s cubic-bezier(0.33, 1, 0.68, 1) forwards;
   }
 
   .pado-modal-card {
@@ -187,8 +157,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
-    width: 294px;
+    gap: 24px;
+    width: 312px;
     padding: 16px 16px 48px;
     border-radius: 16px;
     background: var(--Background-default, #fff);
@@ -293,13 +263,13 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
       width: 100%;
 
       .modal-title {
         font-size: 18px;
         font-weight: 400;
-        line-height: normal;
+        line-height: 15px;
         letter-spacing: 0.18px;
         text-align: center;
         color: var(--Foreground-default, #101010);
@@ -309,7 +279,7 @@
       .modal-subtitle {
         font-size: 14px;
         font-weight: 400;
-        line-height: normal;
+        line-height: 13px;
         letter-spacing: 0.14px;
         text-align: center;
         width: 100%;

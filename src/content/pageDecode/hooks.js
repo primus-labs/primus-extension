@@ -188,14 +188,27 @@ export function useCountdown(status, countdownSeconds, onComplete) {
   const [countdown, setCountdown] = useState(countdownSeconds);
   const onCompleteRef = useRef(onComplete);
   const completeFiredRef = useRef(false);
+  const resultSyncedRef = useRef(null);
   onCompleteRef.current = onComplete;
 
+  // Align duration when entering RESULT (success 3s vs error 5s). Kept separate from the tick
+  // effect so we never `return` early without a scheduled tick — if setCountdown equals current
+  // state, React skips re-render and the old single-effect version never started the timer.
   useEffect(() => {
     if (status !== STATUS.RESULT) {
+      resultSyncedRef.current = null;
       completeFiredRef.current = false;
       setCountdown(countdownSeconds);
       return;
     }
+    if (resultSyncedRef.current !== countdownSeconds) {
+      resultSyncedRef.current = countdownSeconds;
+      setCountdown(countdownSeconds);
+    }
+  }, [status, countdownSeconds]);
+
+  useEffect(() => {
+    if (status !== STATUS.RESULT) return;
 
     if (countdown <= 0) {
       if (!completeFiredRef.current) {
@@ -210,7 +223,7 @@ export function useCountdown(status, countdownSeconds, onComplete) {
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [status, countdown, countdownSeconds]);
+  }, [status, countdown]);
 
   return countdown;
 }

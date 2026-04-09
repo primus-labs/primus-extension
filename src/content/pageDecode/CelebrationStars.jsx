@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'motion/react';
 
 const STAR_PATHS = {
   p3f8cc180:
@@ -42,14 +43,40 @@ const STAR_FILLS = [
 
 const PATH_KEYS = Object.keys(STAR_PATHS);
 
-/** Parent `.pado-modal-group` moves with the card; offsets match modal center. */
-function CelebrationStars() {
+/** Anchor and motion baseline from design; lifted ~20% for a higher start. */
+const STARS_TOP_PX = 44 * 0.8;
+const STARS_INITIAL_Y = 80 * 0.8;
+
+/**
+ * Parent `.pado-modal-group` moves with the card; offsets match modal center.
+ * Opacity: brief fade-in on appear, hold until UI countdown shows 1s left, then fade out over that last second.
+ */
+// eslint-disable-next-line react/prop-types -- extension bundle has no prop-types dep
+function CelebrationStars({ countdown }) {
+  const fadeOutLastSecond = countdown <= 1;
+
   return (
-    <div
+    <motion.div
       className="celebration-stars"
       style={{
         left: 147 - 191.26,
-        top: 44,
+        top: STARS_TOP_PX,
+      }}
+      initial={{ y: STARS_INITIAL_Y, opacity: 0, scale: 0.7 }}
+      animate={{
+        y: -80,
+        scale: 1,
+        opacity: countdown <= 0 ? 0 : fadeOutLastSecond ? 0 : 1,
+      }}
+      transition={{
+        y: { type: 'spring', stiffness: 80, damping: 15 },
+        scale: { type: 'spring', stiffness: 80, damping: 15 },
+        opacity:
+          countdown <= 0
+            ? { duration: 0 }
+            : fadeOutLastSecond
+              ? { duration: 1, ease: 'easeInOut' }
+              : { delay: 0.05, duration: 0.4, ease: [0.4, 0, 0.2, 1] },
       }}
     >
       <svg
@@ -73,7 +100,7 @@ function CelebrationStars() {
           />
         ))}
       </svg>
-    </div>
+    </motion.div>
   );
 }
 

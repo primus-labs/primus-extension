@@ -6,6 +6,10 @@
 /** DOM id for the injected popup container */
 export const CONTAINER_ID = 'pado-extension-content';
 
+/** Data-source attestation template: force black (dark) modal chrome on the data source tab. */
+export const PAGE_DECODE_BLACK_MODAL_TEMPLATE_ID =
+  '2de562e4-d1b0-49c2-8cff-2fd229818392';
+
 /** URL path segments that disable popup injection (e.g. login pages) */
 export const DISABLED_PATH_LIST = ['login', 'register', 'signin', 'signup'];
 
@@ -30,7 +34,10 @@ export const TIMING = {
   DEFAULT_UNINIT_MS: 5000,
   DEFAULT_INIT_MS: 30000,
   POLLING_TIMEOUT_MS: 2 * 60 * 1000,
-  COUNTDOWN_SECONDS: 3,
+  /** Auto-close data source tab after success; SDK tab stays open. */
+  COUNTDOWN_SECONDS_SUCCESS: 3,
+  /** Auto-close data source tab after failure; SDK tab stays open. */
+  COUNTDOWN_SECONDS_ERROR: 5,
 };
 
 /** Error codes used in timeout/result handling */

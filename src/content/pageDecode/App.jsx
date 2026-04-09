@@ -1,4 +1,11 @@
-import React, { useCallback, useMemo, useState, useEffect, useRef } from 'react';
+import React, {
+  useCallback,
+  useMemo,
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+} from 'react';
 import CelebrationStars from './CelebrationStars';
 import {
   useAttestationStatus,
@@ -7,7 +14,13 @@ import {
   useAutoStartWhenReady,
   useCountdown,
 } from './hooks';
-import { EXTENSION_VERSION, STATUS, TIMING } from './constants';
+import {
+  CONTAINER_ID,
+  EXTENSION_VERSION,
+  PAGE_DECODE_BLACK_MODAL_TEMPLATE_ID,
+  STATUS,
+  TIMING,
+} from './constants';
 
 const MODAL_CARD_WIDTH = 294;
 
@@ -136,6 +149,19 @@ function SolidRing() {
 }
 
 function PadoCard({ activeRequest }) {
+  const pageDecodeTemplateId =
+    activeRequest?.attTemplateID ?? activeRequest?.id ?? null;
+
+  useLayoutEffect(() => {
+    const root = document.getElementById(CONTAINER_ID);
+    if (!root) return undefined;
+    const blackModal =
+      pageDecodeTemplateId === PAGE_DECODE_BLACK_MODAL_TEMPLATE_ID;
+    if (blackModal) root.classList.add('pado-page-decode-theme--black');
+    else root.classList.remove('pado-page-decode-theme--black');
+    return () => root.classList.remove('pado-page-decode-theme--black');
+  }, [pageDecodeTemplateId]);
+
   const {
     status,
     setStatus,
@@ -180,12 +206,6 @@ function PadoCard({ activeRequest }) {
   }, []);
 
   useAutoStartWhenReady(isReadyFetch, handleConfirm, setters);
-
-  const countdown = useCountdown(
-    status,
-    TIMING.COUNTDOWN_SECONDS,
-    handleBack
-  );
 
   // --- Drag logic ---
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -257,6 +277,15 @@ function PadoCard({ activeRequest }) {
   const isSuccess = isResult && resultStatus === 'success';
   const isError = isResult && !isSuccess;
 
+  const resultCountdownSeconds =
+    status !== STATUS.RESULT
+      ? TIMING.COUNTDOWN_SECONDS_SUCCESS
+      : isSuccess
+        ? TIMING.COUNTDOWN_SECONDS_SUCCESS
+        : TIMING.COUNTDOWN_SECONDS_ERROR;
+
+  const countdown = useCountdown(status, resultCountdownSeconds, handleBack);
+
   const targetItem =
     activeRequest?.verificationContent ??
     activeRequest?.verificationValue ??
@@ -297,7 +326,10 @@ function PadoCard({ activeRequest }) {
           style={groupStyle}
         >
           {isSuccess ? (
-            <CelebrationStars key="celebration-stars" />
+            <CelebrationStars
+              key="celebration-stars"
+              countdown={countdown}
+            />
           ) : null}
           <div
             ref={modalRef}
