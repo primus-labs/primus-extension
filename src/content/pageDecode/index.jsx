@@ -7,8 +7,13 @@ import { createRoot } from 'react-dom/client';
 import { createDomElement } from './utils';
 import PadoCard from './App';
 import { injectFont } from './utils';
-import { CONTAINER_ID, DISABLED_PATH_LIST, SESSION_KEYS } from './constants';
-
+import {
+  CONTAINER_ID,
+  DISABLED_PATH_SEGMENT_REGEX,
+  DISABLED_AMAZON_URL_REGEX,
+  DISABLED_STEAM_URL_REGEX,
+  SESSION_KEYS,
+} from './constants';
 import './index.scss';
 
 let activeRequest = null;
@@ -16,7 +21,11 @@ let rootRef = null;
 
 function isDisabledPath() {
   const href = window.location.href.toLowerCase();
-  return DISABLED_PATH_LIST.some((p) => href.indexOf(p) > -1);
+  return (
+    DISABLED_PATH_SEGMENT_REGEX.test(href) ||
+    DISABLED_AMAZON_URL_REGEX.test(href) ||
+    DISABLED_STEAM_URL_REGEX.test(href)
+  );
 }
 
 /**

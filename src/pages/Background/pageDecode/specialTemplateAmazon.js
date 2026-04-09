@@ -8,6 +8,22 @@ import { rewriteUrlOrigin } from './urlOriginRewrite';
 export const AMAZON_ACCOUNT_MANAGE_TEMPLATE_ID =
   '9119207f-5884-403d-8bb3-1b6870d428fe';
 
+/**
+ * When additionParams.jumpToUrl is set, origin comes from that field (see additionParamsJumpUrl.js);
+ * skip Amazon IP / storefront logic in this module.
+ * @param {object} activeTemplate
+ */
+function skipAmazonLogicForJumpToUrl(activeTemplate) {
+  const raw = activeTemplate?.additionParamsObj?.jumpToUrl;
+  if (typeof raw !== 'string' || !raw.trim()) return false;
+  try {
+    new URL(raw.trim());
+    return true;
+  } catch (_e) {
+    return false;
+  }
+}
+
 /** Same `loc=XX` format; try 1.1.1.1 first (minimal surface vs www). */
 const CLOUDFLARE_TRACE_URLS = [
   'https://1.1.1.1/cdn-cgi/trace',
@@ -246,6 +262,7 @@ export function getAmazonHostOverrideForAlgorithmParams(activeTemplate) {
   const templateId =
     activeTemplate?.attTemplateID ?? activeTemplate?.id;
   if (templateId !== AMAZON_ACCOUNT_MANAGE_TEMPLATE_ID) return null;
+  if (skipAmazonLogicForJumpToUrl(activeTemplate)) return null;
 
   const base = getPageDecodeState().state.resolvedAmazonStorefrontBaseUrl;
   if (typeof base !== 'string' || !base.trim()) return null;
@@ -263,6 +280,7 @@ export function rewriteAmazonNoCaptureRequestUrlsForAlgorithmParams(
   const templateId =
     activeTemplate?.attTemplateID ?? activeTemplate?.id;
   if (templateId !== AMAZON_ACCOUNT_MANAGE_TEMPLATE_ID) return;
+  if (skipAmazonLogicForJumpToUrl(activeTemplate)) return;
 
   const base = getPageDecodeState().state.resolvedAmazonStorefrontBaseUrl;
   if (typeof base !== 'string' || !base.trim()) return;
@@ -288,6 +306,7 @@ export async function applyAmazonSiteJumpToIfNeeded(
   const templateId =
     activeTemplate?.attTemplateID ?? activeTemplate?.id;
   if (templateId !== AMAZON_ACCOUNT_MANAGE_TEMPLATE_ID) return;
+  if (skipAmazonLogicForJumpToUrl(activeTemplate)) return;
 
   const amazonBase = await getAmazonSiteByIP(browserTabId);
   getPageDecodeState().state.resolvedAmazonStorefrontBaseUrl = amazonBase;

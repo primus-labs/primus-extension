@@ -10,8 +10,25 @@ export const CONTAINER_ID = 'pado-extension-content';
 export const PAGE_DECODE_BLACK_MODAL_TEMPLATE_ID =
   '2de562e4-d1b0-49c2-8cff-2fd229818392';
 
-/** URL path segments that disable popup injection (e.g. login pages) */
-export const DISABLED_PATH_LIST = ['login', 'register', 'signin', 'signup'];
+/**
+ * Generic: path/query/hash contains these tokens as segments (after /, ?, or #).
+ * Case-insensitive (href lowercased in index.jsx).
+ */
+export const DISABLED_PATH_SEGMENT_REGEX =
+  /(?:^|[/?#])(?:login|register|signin|signup|forgotpassword|password_reset)(?:[/=?#]|$)/i;
+
+/**
+ * Amazon-only: full URL prefixes www.amazon.{host}/… — claim + CVF + account recovery collect-new-password.
+ * Prefix match so query/hash after path still counts. Host suffix not hard-coded.
+ */
+export const DISABLED_AMAZON_URL_REGEX =
+  /^https:\/\/www\.amazon\.[^/]+\/(?:ax\/claim|ap\/cvf\/(?:transactionapproval|approval|verify|request|accountrecovery\/collectnewpassword))/i;
+
+/**
+ * Steam-only: login help wizard + store mobile path. Prefix match (query/hash OK). href lowercased in index.jsx.
+ */
+export const DISABLED_STEAM_URL_REGEX =
+  /^https:\/\/help\.steampowered\.com\/[^/]+\/wizard\/HelpWithLogin|^https:\/\/store\.steampowered\.com\/mobile/i;
 
 /** Attestation UI status values */
 export const STATUS = {
