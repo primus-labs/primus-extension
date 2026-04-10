@@ -25,10 +25,10 @@ export const DISABLED_AMAZON_URL_REGEX =
   /^https:\/\/www\.amazon\.[^/]+\/(?:ax\/claim|ap\/cvf\/(?:transactionapproval|approval|verify|request|accountrecovery\/collectnewpassword))/i;
 
 /**
- * Steam-only: login help wizard + store mobile path. Prefix match (query/hash OK). href lowercased in index.jsx.
+ * Steam-only: login help wizard + store mobile + store join. Prefix match (query/hash OK). href lowercased in index.jsx.
  */
 export const DISABLED_STEAM_URL_REGEX =
-  /^https:\/\/help\.steampowered\.com\/[^/]+\/wizard\/HelpWithLogin|^https:\/\/store\.steampowered\.com\/mobile/i;
+  /^https:\/\/help\.steampowered\.com\/[^/]+\/wizard\/HelpWithLogin|^https:\/\/store\.steampowered\.com\/(?:mobile|join)/i;
 
 /** Attestation UI status values */
 export const STATUS = {

@@ -87,7 +87,6 @@ export async function formatAlgorithmParamsFn() {
       headers: curRequestHeader,
       body: curRequestBody,
       queryString,
-      url,
     } = currRequestInfoObj;
 
     Object.assign(r, {
@@ -95,7 +94,8 @@ export async function formatAlgorithmParamsFn() {
       body: isObject(curRequestBody) ? { ...curRequestBody } : curRequestBody,
       url: queryString ? r.url + '?' + queryString : r.url,
     });
-    formatRequests.push({ ...r, url });
+    // Use r.url from Object.assign; destructured `url` from requestsMap is often undefined before capture.
+    formatRequests.push({ ...r });
   }
 
   rewriteAmazonNoCaptureRequestUrlsForAlgorithmParams(
@@ -110,7 +110,9 @@ export async function formatAlgorithmParamsFn() {
     if (fr.headers) {
       fr.headers['Accept-Encoding'] = 'identity';
     }
-    fr.url = fr.url.split('#')[0];
+    if (typeof fr.url === 'string') {
+      fr.url = fr.url.split('#')[0];
+    }
   }
 
   const algorithmHost =
