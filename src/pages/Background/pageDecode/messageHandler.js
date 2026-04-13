@@ -21,6 +21,7 @@ import { startKeepAlive } from '../utils/keepAlive.js';
 import { applyAmazonSiteJumpToIfNeeded } from './specialTemplateAmazon';
 import { applyAdditionParamsJumpUrlToJumpTo } from './additionParamsJumpUrl';
 import { initJumpConfigState } from './jumpConfigRedirect';
+import { resolveNoteV2MapFromConfigParsed } from '@/utils/attestationProcessNoteV2';
 
 function handleEnd(request) {
   const pageDecodeState = getPageDecodeState();
@@ -92,8 +93,10 @@ export async function pageDecodeMsgListener(
   if (state.activeTemplate?.dataSource) {
     if (name === 'init') {
       const { configMap } = await safeStorageGet(['configMap']);
-      if (configMap) {
-        const configMapParsed = safeJsonParse(configMap);
+      const configMapParsed = configMap ? safeJsonParse(configMap) : null;
+      state.ATTESTATION_PROCESS_NOTE_V2 =
+        resolveNoteV2MapFromConfigParsed(configMapParsed);
+      if (configMapParsed) {
         const PRE_ATTEST_PROMOTStr = configMapParsed?.PRE_ATTEST_PROMOT_V2;
         if (PRE_ATTEST_PROMOTStr) {
           const parsed = safeJsonParse(PRE_ATTEST_PROMOTStr);
@@ -178,6 +181,7 @@ export async function pageDecodeMsgListener(
           PADOSERVERURL,
           padoExtensionVersion,
           PRE_ATTEST_PROMOT_V2: state.PRE_ATTEST_PROMOT_V2,
+          ATTESTATION_PROCESS_NOTE_V2: state.ATTESTATION_PROCESS_NOTE_V2,
           tabId: state.dataSourcePageTabId,
         },
         dataSourcePageTabId: state.dataSourcePageTabId,

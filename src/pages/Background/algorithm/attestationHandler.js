@@ -10,6 +10,10 @@ import { safeStorageGet, safeStorageSet, safeStorageRemove } from '@/utils/safeS
 import { sendMsgToTab } from '../utils/utils.js';
 import { safeJsonParse } from '@/utils/utils';
 import { stopKeepAlive } from '../utils/keepAlive.js';
+import {
+  getNoteV2Extension,
+  resolveNoteV2MapFromConfigParsed,
+} from '@/utils/attestationProcessNoteV2';
 
 const HAS_GET_TWITTER_SCREEN_NAME = false;
 
@@ -26,6 +30,9 @@ export async function handleGetAttestation(
   const { retcode, isUserClick } = JSON.parse(message.res);
   if (isUserClick !== 'true') return;
 
+  const { configMap } = await safeStorageGet(['configMap']);
+  const noteV2Map = resolveNoteV2MapFromConfigParsed(safeJsonParse(configMap));
+
   let msgObj = {
     type: 'error',
     title: '',
@@ -40,7 +47,11 @@ export async function handleGetAttestation(
         ? 'Wrong parameters. '
         : 'Too many requests. Please try again later.';
     msgObj.title = errorMsgTitle;
-    msgObj.sourcePageTip = errorMsgTitle;
+    msgObj.sourcePageTip = getNoteV2Extension(
+      noteV2Map,
+      retcode === '2' ? '00001' : '00000',
+      errorMsgTitle
+    );
 
     await pageDecodeMsgListener(
       {
@@ -111,6 +122,7 @@ export async function handleGetAttestationResult(
     const tipMap = safeJsonParse(configMapParsed.ATTESTATION_PROCESS_NOTE);
     if (tipMap) attestTipMap = tipMap;
   }
+  const noteV2Map = resolveNoteV2MapFromConfigParsed(configMapParsed);
 
   if (!message.res) return;
 
@@ -239,6 +251,14 @@ export async function handleGetAttestationResult(
         }
       }
 
+      if (errorCode != null && errorCode !== '') {
+        msgObj.sourcePageTip = getNoteV2Extension(
+          noteV2Map,
+          errorCode,
+          msgObj.sourcePageTip
+        );
+      }
+
       await pageDecodeMsgListener(
         {
           name: 'end',
@@ -272,6 +292,12 @@ export async function handleGetAttestationResult(
     processAlgorithmReq({ reqMethodName: 'stop' });
     const msgObj = getAttestTipForCode(code, attestTipMap);
     msgObj.title = errorMsgTitle;
+    const codeStr = code != null ? String(code) : '';
+    msgObj.sourcePageTip = getNoteV2Extension(
+      noteV2Map,
+      codeStr,
+      msgObj.sourcePageTip
+    );
 
     await pageDecodeMsgListener(
       {
@@ -325,7 +351,11 @@ export async function handleGetAttestationResult(
         type: 'error',
         title: errorMsgTitle,
         desc: 'Attestation completed with unexpected result.',
-        sourcePageTip: '',
+        sourcePageTip: getNoteV2Extension(
+          noteV2Map,
+          '00099',
+          getNoteV2Extension(noteV2Map, '99999', '')
+        ),
       };
       await pageDecodeMsgListener(
         {

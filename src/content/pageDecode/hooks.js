@@ -3,6 +3,7 @@
  */
 import { useState, useEffect, useRef } from 'react';
 import { STATUS, SESSION_KEYS, TIMING, ERROR_CODES } from './constants';
+import { getNoteV2Extension } from '@/utils/attestationProcessNoteV2';
 
 /**
  * Persist result state to sessionStorage and update React state (shared by message listener and timeouts).
@@ -102,6 +103,7 @@ export function useMessageListener(setters) {
 
 /** Timeouts: show initialized, interception fail (00013), data source dialog timeout (2 min). */
 export function useTimeoutManager(activeRequest, status, statusRef, setters) {
+  const noteV2 = activeRequest?.ATTESTATION_PROCESS_NOTE_V2;
   const { setStatus } = setters;
   const PRE_ATTEST_PROMOT_V2 = activeRequest?.PRE_ATTEST_PROMOT_V2;
   const uninitializedShowTime =
@@ -129,7 +131,11 @@ export function useTimeoutManager(activeRequest, status, statusRef, setters) {
         if (![STATUS.VERIFYING, STATUS.RESULT].includes(statusRef.current)) {
           const errorObj = {
             code: ERROR_CODES.TARGET_DATA_MISSING,
-            sourcePageTip: 'Target data missing',
+            sourcePageTip: getNoteV2Extension(
+              noteV2,
+              ERROR_CODES.TARGET_DATA_MISSING,
+              'Target data missing'
+            ),
           };
           persistAndSetResult(setters, 'warn', errorObj);
           chrome.runtime.sendMessage({
@@ -145,7 +151,11 @@ export function useTimeoutManager(activeRequest, status, statusRef, setters) {
         if (statusRef.current !== STATUS.RESULT) {
           const errorObj = {
             code: ERROR_CODES.REQUEST_TIMED_OUT,
-            sourcePageTip: 'Request Timed Out',
+            sourcePageTip: getNoteV2Extension(
+              noteV2,
+              ERROR_CODES.REQUEST_TIMED_OUT,
+              'Request Timed Out'
+            ),
           };
           persistAndSetResult(setters, 'warn', errorObj);
           chrome.runtime.sendMessage({
@@ -163,6 +173,7 @@ export function useTimeoutManager(activeRequest, status, statusRef, setters) {
   }, [
     status,
     initializedShowTime,
+    noteV2,
     setters.setStatus,
     setters.setResultStatus,
     setters.setErrorTxt,

@@ -12,6 +12,10 @@ import { safeStorageGet, safeStorageSet, safeStorageRemove } from '@/utils/safeS
 import { sendMsgToTab } from '../utils/utils.js';
 import { safeJsonParse } from '@/utils/utils';
 import { stopKeepAlive } from '../utils/keepAlive.js';
+import {
+  getNoteV2Extension,
+  resolveNoteV2MapFromConfigParsed,
+} from '@/utils/attestationProcessNoteV2';
 
 /**
  * Handle startAttestation: validate params, load template, build request/response templates, start offline, call pageDecode init.
@@ -386,13 +390,18 @@ export async function handleGetAttestationResultTimeout(
     const tipMap = safeJsonParse(configMapParsed.ATTESTATION_PROCESS_NOTE);
     if (tipMap) attestTipMap = tipMap;
   }
+  const noteV2Map = resolveNoteV2MapFromConfigParsed(configMapParsed);
   const errorMsgTitle = await getErrorMsgTitleFn();
   const code = '00002';
   const msgObj = {
     type: attestTipMap[code]?.type,
     title: errorMsgTitle,
     desc: attestTipMap[code]?.desc,
-    sourcePageTip: attestTipMap[code]?.title,
+    sourcePageTip: getNoteV2Extension(
+      noteV2Map,
+      code,
+      attestTipMap[code]?.title ?? ''
+    ),
   };
 
   stopKeepAlive();

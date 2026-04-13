@@ -1,0 +1,242 @@
+{
+  "10001": {
+    "sdk": "Unstable Internet Connection",
+    "extension": "Unstable Internet Connection"
+  },
+  "10002": {
+    "sdk": "Connection broken",
+    "extension": "Connection broken"
+  },
+  "10003": {
+    "sdk": "Unable to proceed",
+    "extension": "Unable to proceed"
+  },
+  "10004": {
+    "sdk": "Unable to proceed",
+    "extension": "Unable to proceed"
+  },
+  "20001": {
+    "sdk": "Something went wrong",
+    "extension": "Something went wrong"
+  },
+  "20002": {
+    "sdk": "Something went wrong",
+    "extension": "Something went wrong"
+  },
+  "20003": {
+    "sdk": "Something went wrong",
+    "extension": "Something went wrong"
+  },
+  "20004": {
+    "sdk": "Something went wrong",
+    "extension": "Something went wrong"
+  },
+  "20005": {
+    "sdk": "Unable to proceed",
+    "extension": "Unable to proceed"
+  },
+  "30001": {
+    "sdk": "Something went wrong",
+    "extension": "Something went wrong"
+  },
+  "30002": {
+    "sdk": "Unable to proceed",
+    "extension": "Unable to proceed"
+  },
+  "30003": {
+    "sdk": "Unable to proceed",
+    "extension": "Unable to proceed"
+  },
+  "30004": {
+    "sdk": "Unable to proceed",
+    "extension": "Unable to proceed"
+  },
+  "40001": {
+    "sdk": "Something went wrong",
+    "extension": "Something went wrong"
+  },
+  "40002": {
+    "sdk": "Something went wrong",
+    "extension": "Something went wrong"
+  },
+  "50001": {
+    "sdk": "Something went wrong",
+    "extension": "Something went wrong"
+  },
+  "50002": {
+    "sdk": "Unable to proceed",
+    "extension": "Unable to proceed"
+  },
+  "50003": {
+    "sdk": "Unable to proceed",
+    "extension": "Unable to proceed"
+  },
+  "50004": {
+    "sdk": "Unable to proceed",
+    "extension": "Unable to proceed"
+  },
+  "50005": {
+    "sdk": "Unable to proceed",
+    "extension": "Unable to proceed"
+  },
+  "50006": {
+    "sdk": "Unable to proceed",
+    "extension": "Unable to proceed"
+  },
+  "50007": {
+    "sdk": "Unable to proceed",
+    "extension": "Unable to proceed"
+  },
+  "50008": {
+    "sdk": "Unable to proceed",
+    "extension": "Unable to proceed"
+  },
+  "50009": {
+    "sdk": "Request timed out",
+    "extension": "Request timed out"
+  },
+  "50010": {
+    "sdk": "Unable to proceed",
+    "extension": "Unable to proceed"
+  },
+  "50011": {
+    "sdk": "Unable to proceed",
+    "extension": "Unable to proceed"
+  },
+  "99999": {
+    "sdk": "Something went wrong",
+    "extension": "Something went wrong"
+  },
+  "00002": {
+    "sdk": "Request Timed Out",
+    "extension": "Request Timed Out"
+  },
+  "00101": {
+    "sdk": "Not met the requirements",
+    "extension": "Not met the requirements"
+  },
+  "00102": {
+    "sdk": "Not eligible",
+    "extension": "Not eligible"
+  },
+  "00103": {
+    "sdk": "Not met the requirements",
+    "extension": "Not met the requirements"
+  },
+  "00104": {
+    "sdk": "Not eligible",
+    "extension": "Not eligible"
+  },
+  "-1200010": {
+    "sdk": "Invalid message.",
+    "extension": "Invalid message."
+  },
+  "-1002001": {
+    "sdk": "Invalid App ID.",
+    "extension": "Invalid App ID."
+  },
+  "-1002002": {
+    "sdk": "Invalid App Secret.",
+    "extension": "Invalid App Secret."
+  },
+  "-500": {
+    "sdk": "Unexpected attester node program failure.",
+    "extension": "Unexpected attester node program failure."
+  },
+  "-10100": {
+    "sdk": "Task cannot be executed again due to unexpected failure.",
+    "extension": "Task cannot be executed again due to unexpected failure."
+  },
+  "-10101": {
+    "sdk": "This task has already been completed. No need to resubmit.",
+    "extension": "This task has already been completed. No need to resubmit."
+  },
+  "-10102": {
+    "sdk": "This task is still in progress. No need to resubmit.",
+    "extension": "This task is still in progress. No need to resubmit."
+  },
+  "-10103": {
+    "sdk": "Submission limit reached for this task. Initiate a new task to continue.",
+    "extension": "Submission limit reached for this task. Initiate a new task to continue."
+  },
+  "-10104": {
+    "sdk": "Failed to get task details. Please check the attester node condition or task ID.",
+    "extension": "Failed to get task details. Please check the attester node condition or task ID."
+  },
+  "-10105": {
+    "sdk": "Invalid attestation parameters. Please check the connection between the node and the template server.",
+    "extension": "Invalid attestation parameters. Please check the connection between the node and the template server."
+  },
+  "-10106": {
+    "sdk": "Attestation template ID mismatch between task and attester node.",
+    "extension": "Attestation template ID mismatch between task and attester node."
+  },
+  "-10107": {
+    "sdk": "The user wallet address provided during attestation mismatch with submission.",
+    "extension": "The user wallet address provided during attestation mismatch with submission."
+  },
+  "-10108": {
+    "sdk": "Invalid task ID. Please ensure the submitted ID matches the task.",
+    "extension": "Invalid task ID. Please ensure the submitted ID matches the task."
+  },
+  "-10109": {
+    "sdk": "Task cannot be executed again. Please check your task fees.",
+    "extension": "Task cannot be executed again. Please check your task fees."
+  },
+  "-10110": {
+    "sdk": "Attester node mismatch. Ensure the node matches the task specification and resubmit.",
+    "extension": "Attester node mismatch. Ensure the node matches the task specification and resubmit."
+  },
+  "-10111": {
+    "sdk": "Task submitted past the allowed time limit (15 minutes).",
+    "extension": "Task submitted past the allowed time limit (15 minutes)."
+  },
+  "-1002003": {
+    "sdk": "Trial quota exhausted.",
+    "extension": "Trial quota exhausted."
+  },
+  "-1002004": {
+    "sdk": "Subscription expired.",
+    "extension": "Subscription expired."
+  },
+  "-1002005": {
+    "sdk": "Quota exhausted.",
+    "extension": "Quota exhausted."
+  },
+  "-210001": {
+    "sdk": "Address has pending proof for identityPropertyId.",
+    "extension": "Address has pending proof for identityPropertyId."
+  },
+  "00000": {
+    "sdk": "Too many requests. Please try again later.",
+    "extension": "Too many requests. Please try again later."
+  },
+  "00001": {
+    "sdk": "Wrong parameters.",
+    "extension": "Wrong parameters."
+  },
+  "00003": {
+    "sdk": "A verification process is in progress. Please try again later.",
+    "extension": ""
+  },
+  "00004": {
+    "sdk": "The user closes or cancels the verification process.",
+    "extension": ""
+  },
+  "00012": {
+    "sdk": "Invalid Template ID.",
+    "extension": ""
+  },
+  "00013": {
+    "sdk": "Target data missing. Please check whether the data json path in the request URL’s response aligns with your template.",
+    "extension": "No verifiable data was detected."
+  },
+  "00014": {
+    "sdk": "The verification process timed out.",
+    "extension": "Request Timed Out"
+  },
+  "00015": {
+    "sdk": "Wrong parameters.",
+    "extension": "Wrong SDK parameters."
+  }
+}
