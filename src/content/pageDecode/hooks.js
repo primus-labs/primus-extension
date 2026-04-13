@@ -134,7 +134,7 @@ export function useTimeoutManager(activeRequest, status, statusRef, setters) {
             sourcePageTip: getNoteV2Extension(
               noteV2,
               ERROR_CODES.TARGET_DATA_MISSING,
-              'Target data missing'
+              'No verifiable data was detected.'
             ),
           };
           persistAndSetResult(setters, 'warn', errorObj);
