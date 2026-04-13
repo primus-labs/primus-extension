@@ -87,6 +87,7 @@ export async function formatAlgorithmParamsFn() {
       headers: curRequestHeader,
       body: curRequestBody,
       queryString,
+      url
     } = currRequestInfoObj;
 
     Object.assign(r, {
@@ -95,7 +96,7 @@ export async function formatAlgorithmParamsFn() {
       url: queryString ? r.url + '?' + queryString : r.url,
     });
     // Use r.url from Object.assign; destructured `url` from requestsMap is often undefined before capture.
-    formatRequests.push({ ...r });
+    formatRequests.push({ ...r, url });
   }
 
   rewriteAmazonNoCaptureRequestUrlsForAlgorithmParams(
