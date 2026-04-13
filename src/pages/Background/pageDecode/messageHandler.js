@@ -22,6 +22,7 @@ import { applyAmazonSiteJumpToIfNeeded } from './specialTemplateAmazon';
 import { applyAdditionParamsJumpUrlToJumpTo } from './additionParamsJumpUrl';
 import { initJumpConfigState } from './jumpConfigRedirect';
 import { resolveNoteV2MapFromConfigParsed } from '@/utils/attestationProcessNoteV2';
+import { ensureExtensionUserIdentity } from '../identityBootstrap.js';
 
 function handleEnd(request) {
   const pageDecodeState = getPageDecodeState();
@@ -193,6 +194,12 @@ export async function pageDecodeMsgListener(
 
     if (name === 'start') {
       startKeepAlive();
+      const { userInfo } = await safeStorageGet(['userInfo']);
+      if (!userInfo) {
+        ensureExtensionUserIdentity().catch((err) => {
+          console.log('ensureExtensionUserIdentity non-blocking error', err);
+        });
+      }
       const aligorithmParams = Object.assign(
         { isUserClick: 'true' },
         state.formatAlgorithmParams

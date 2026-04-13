@@ -1,7 +1,3 @@
-import {
-  getUserIdentity,
-} from '@/services/api/user';
-import { requestSignTypedData } from '@/services/wallets/utils';
 import { sendInitAttestationRes } from './utils/msgTransfer.js';
 import { eventReport } from '@/services/api/usertracker';
 import {
@@ -16,58 +12,18 @@ import { algorithmMsgListener } from './algorithm/index.js';
 import { devconsoleMsgListener } from './devconsole/index.js';
 import {
   safeStorageGet,
-  safeStorageSet,
   safeStorageRemove,
 } from '@/utils/safeStorage';
 import { setupKeepAliveListener } from './utils/keepAlive.js';
-import Web3EthAccounts from 'web3-eth-accounts';
+import { ensureExtensionUserIdentity } from './identityBootstrap.js';
 
 setupKeepAliveListener();
 
 console.log('Background initialization');
-
-const createUserInfo = async () => {
-  const { userInfo } = await safeStorageGet(['userInfo']);
-  if (!userInfo) {
-    let web3EthAccount = new Web3EthAccounts();
-    let { privateKey, address } = web3EthAccount.create();
-    await safeStorageSet({
-      privateKey,
-      padoCreatedWalletAddress: address,
-    });
-    const privateKeyStr = privateKey?.substr(2);
-    const timestamp = +new Date() + '';
-    try {
-      const signature = await requestSignTypedData(
-        privateKeyStr,
-        address,
-        timestamp
-      );
-      const res = await getUserIdentity({
-        signature,
-        timestamp,
-        address,
-      });
-      console.log('getUserIdentity', res);
-      const { rc, result } = res;
-      if (rc === 0) {
-        const { bearerToken, identifier } = result;
-        await safeStorageSet({
-          userInfo: JSON.stringify({
-            id: identifier,
-            token: bearerToken,
-          }),
-        });
-      }
-    } catch (e) {
-      console.log('getUserIdentity error', e);
-    }
-  }
-};
 chrome.runtime.onInstalled.addListener(async ({ reason, version: _version }) => {
   if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
     // showIndex();
-    createUserInfo();
+    ensureExtensionUserIdentity();
     const eventInfo = {
       eventType: 'EXTENSION_INSTALL',
       rawData: '',
@@ -78,6 +34,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason, version: _version }) => 
     });
   } else if (reason === chrome.runtime.OnInstalledReason.UPDATE) {
     await safeStorageRemove(['activeRequestAttestation']);
+    await ensureExtensionUserIdentity();
   }
 });
 

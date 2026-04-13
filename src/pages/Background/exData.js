@@ -16,9 +16,10 @@ export async function assembleAlgorithmParamsForSDK(form, ext) {
   // const urlObj = new URL(dataPageTemplate.baseUrl);
   // const baseName = urlObj.host;
   const user = await assembleUserInfoParams({}, true);
-  const { userInfo } = await safeStorageGet(['userInfo']);
-  const { id: authUserId } = safeJsonParse(userInfo, { id: '' }) || {};
-  const authUseridHash = strToHex(authUserId);
+  let authUseridHash;
+  if (user.userid != null && user.userid !== '') {
+    authUseridHash = strToHex(String(user.userid));
+  }
 
   const timeStampStr = (+new Date()).toString();
   const padoUrl = await getPadoUrl();
@@ -67,13 +68,14 @@ export async function assembleAlgorithmParamsForSDK(form, ext) {
 }
 
 async function assembleUserInfoParams(_form, isFromSDK) {
-  const {
-    userInfo,
-    padoZKAttestationJSSDKWalletAddress,
-  } = await safeStorageGet([
+  const storage = await safeStorageGet([
     'userInfo',
     'padoZKAttestationJSSDKWalletAddress',
   ]);
+  const userInfo = storage.userInfo;
+  const padoZKAttestationJSSDKWalletAddress =
+    storage.padoZKAttestationJSSDKWalletAddress;
+
   let formatAddress;
   if (isFromSDK && padoZKAttestationJSSDKWalletAddress) {
     formatAddress = padoZKAttestationJSSDKWalletAddress;
@@ -84,12 +86,20 @@ async function assembleUserInfoParams(_form, isFromSDK) {
     padoZKAttestationJSSDKWalletAddress
   );
 
-  const { id, token: loginToken } = safeJsonParse(userInfo, { id: '', token: '' }) || {};
-  const user = {
-    userid: id,
+  let userid;
+  let loginToken;
+  if (userInfo != null && typeof userInfo === 'string' && userInfo !== '') {
+    const parsed = safeJsonParse(userInfo, null);
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      if (parsed.id != null && parsed.id !== '') userid = parsed.id;
+      if (parsed.token != null && parsed.token !== '') loginToken = parsed.token;
+    }
+  }
+
+  return {
+    userid,
     address: formatAddress,
     token: loginToken,
   };
-  return user;
 }
 
