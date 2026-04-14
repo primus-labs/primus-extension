@@ -14,7 +14,7 @@ Module.onRuntimeInitialized = async () => {
   });
 };
 
-const CLIENT_VERSION = '1.4.19';
+const CLIENT_VERSION = '1.4.26';
 const LEGACY_NETWORK_VERSION = '1.1.1';
 
 /**
