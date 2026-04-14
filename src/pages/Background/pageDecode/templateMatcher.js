@@ -41,6 +41,7 @@ export async function formatAlgorithmParamsFn() {
       requestid: activeTemplate.requestid,
       sslCipherSuite: activeTemplate.sslCipherSuite,
       allJsonResponseFlag: activeTemplate.allJsonResponseFlag,
+      checkContext: activeTemplate.checkContext,
     },
     activeTemplate.ext
   );

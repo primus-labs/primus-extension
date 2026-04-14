@@ -140,6 +140,7 @@ export async function handleStartAttestation(
           dataPageTemplate,
           dataSourceTemplate,
           sslCipherSuite,
+          checkContext,
         } = result;
 
         const dataSourceTemplateObj = JSON.parse(dataSourceTemplate);
@@ -281,6 +282,7 @@ export async function handleStartAttestation(
             calculations: undefined,
           },
           sslCipherSuite,
+          checkContext,
         };
         activeAttestationParams = {
           dataSourceId: dataSource,

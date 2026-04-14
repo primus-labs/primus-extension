@@ -12,6 +12,7 @@ export async function assembleAlgorithmParamsForSDK(form, ext) {
     requestid: prevRequestid,
     sslCipherSuite,
     allJsonResponseFlag,
+    checkContext,
   } = form;
   // const urlObj = new URL(dataPageTemplate.baseUrl);
   // const baseName = urlObj.host;
@@ -58,6 +59,7 @@ export async function assembleAlgorithmParamsForSDK(form, ext) {
     },
     specialTask,
     getAllJsonResponse: allJsonResponseFlag === 'true' ? 'true' : 'false',
+    checkContext: checkContext ?? 'true',
   };
   if (ext.padoUrl && ext.proxyUrl) {
     params.padoUrl = ext.padoUrl;
