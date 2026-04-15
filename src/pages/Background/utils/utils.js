@@ -17,6 +17,20 @@ export function isObject(obj) {
   // return typeof obj === 'object' && obj !== null && !Array.isArray(obj);
 }
 
+export const parseCookie = (str) => {
+  str = str || '';
+  return str
+    .split(';')
+    .map((v) => v.split('='))
+    .reduce((acc, v) => {
+      if (v[0] && v[1]) {
+        acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
+      }
+
+      return acc;
+    }, {});
+};
+
 export function matchReg(regStr, str) {
   var regex = new RegExp(regStr, 'g');
   const isTarget = str.match(regex);

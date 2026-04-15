@@ -16,6 +16,8 @@ import {
 } from '@/utils/safeStorage';
 import { setupKeepAliveListener } from './utils/keepAlive.js';
 import { ensureExtensionUserIdentity } from './identityBootstrap.js';
+import { listener as lumaMonadEventMsgListener } from './pageDecode/specialTemplateLumaMonad.js';
+import { listener as xEventMsgListener } from './xEvent/index.js';
 
 setupKeepAliveListener();
 
@@ -128,6 +130,22 @@ const messageRoutes = {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log('background onMessage message', message);
+  if (message.type === 'lumaMonadEvent') {
+    lumaMonadEventMsgListener(message, sender);
+    return;
+  }
+  if (message.type === 'xFollow' && message.name === 'follow') {
+    lumaMonadEventMsgListener(message, sender);
+    return;
+  }
+  if (message.type === 'xEvent') {
+    xEventMsgListener(message, sender);
+    return;
+  }
+  if (message.type === 'xPage') {
+    xEventMsgListener(message, sender);
+    return;
+  }
   const routeKey = message.resType === 'algorithm' ? 'algorithm' : message.type;
   const handler = messageRoutes[routeKey];
   if (handler) {

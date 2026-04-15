@@ -40,6 +40,8 @@ export function createPageDecodeState() {
     jumpUrlRewriteSourceHostname: null,
     /** Runtime for dataPageTemplate.jumpConfig multi-step redirects; see jumpConfigRedirect.js */
     jumpConfigState: null,
+    /** Luma Monad template (be2268c1): fields filled during checkTargetRequestFnForMonad */
+    monadFields: {},
   };
 
   function reset() {
@@ -55,6 +57,9 @@ export function createPageDecodeState() {
     state.resolvedAmazonStorefrontBaseUrl = null;
     state.jumpUrlRewriteSourceHostname = null;
     state.jumpConfigState = null;
+    Object.keys(state.monadFields).forEach((k) => {
+      delete state.monadFields[k];
+    });
   }
 
   function removeFromRequestsMap(requestId) {

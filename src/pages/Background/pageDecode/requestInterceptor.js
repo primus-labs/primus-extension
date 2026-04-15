@@ -13,7 +13,13 @@ import {
   fetchHtmlContent,
   validateResponseCondition,
   validateHtmlResponseCondition,
+  handleAttestationError,
 } from './utils';
+import {
+  eventListUrlForMonad,
+  checkTargetRequestFnForMonad,
+  isLumaMonadTemplate,
+} from './specialTemplateLumaMonad';
 import { getPageDecodeState } from './state';
 import { formatAlgorithmParamsFn } from './templateMatcher';
 import { sendMsgToDataSourcePage } from './sdkBridge';
@@ -107,6 +113,12 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
     let matchRequestUrlResult;
     let isTargetUrl = false;
 
+    const urlForFetch =
+      requestsMap[matchRequestId].type !== 'main_frame' &&
+      isLumaMonadTemplate(activeTemplate)
+        ? eventListUrlForMonad(mergedUrl)
+        : mergedUrl;
+
     if (requestsMap[matchRequestId].type === 'main_frame') {
       matchRequestUrlResult = await fetchHtmlContent({
         ...requestsMap[matchRequestId],
@@ -132,24 +144,56 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
       matchRequestUrlResult = await fetchRequestData({
         ...requestsMap[matchRequestId],
         header: requestsMap[matchRequestId].headers,
-        url: mergedUrl,
+        url: urlForFetch,
         body: mergedBody,
       });
     }
 
-    isTargetUrl = validateResponseCondition(jsonPathArr, matchRequestUrlResult);
-    if (isTargetUrl) {
-      await tryApplyJumpConfigFromResponse({
-        requestUrl: mergedUrl,
-        responseData: matchRequestUrlResult,
-        method: requestsMap[matchRequestId]?.method,
-      });
-      storeInRequestsMap(matchRequestId, {
-        isTarget: 1,
-        url: mergedUrl,
-        body: mergedBody,
-      });
-      break;
+    if (requestsMap[matchRequestId].type !== 'main_frame') {
+      if (isLumaMonadTemplate(activeTemplate) && matchRequestUrlResult) {
+        const notMetHandler = async () => {
+          await handleAttestationError(
+            {
+              title: '',
+              desc: 'Monad event or profile check failed.',
+              code: '00104',
+            },
+            state.dataSourcePageTabId,
+            {}
+          );
+        };
+        const requestMonadMeta = {
+          ...requestsMap[matchRequestId],
+          headers: requestsMap[matchRequestId].headers,
+          url: requestsMap[matchRequestId].url,
+        };
+        isTargetUrl = await checkTargetRequestFnForMonad(
+          urlForFetch,
+          matchRequestUrlResult,
+          requestMonadMeta,
+          notMetHandler
+        );
+      } else {
+        isTargetUrl = validateResponseCondition(
+          jsonPathArr,
+          matchRequestUrlResult
+        );
+      }
+      if (isTargetUrl && !isLumaMonadTemplate(activeTemplate)) {
+        await tryApplyJumpConfigFromResponse({
+          requestUrl: mergedUrl,
+          responseData: matchRequestUrlResult,
+          method: requestsMap[matchRequestId]?.method,
+        });
+      }
+      if (isTargetUrl) {
+        storeInRequestsMap(matchRequestId, {
+          isTarget: 1,
+          url: mergedUrl,
+          body: mergedBody,
+        });
+        break;
+      }
     }
     storeInRequestsMap(matchRequestId, { isTarget: 2 });
   }
@@ -251,7 +295,7 @@ export function setupWebRequestListener() {
     const dataSourcePageTabId = state.dataSourcePageTabId;
     if (![-1, dataSourcePageTabId].includes(details.tabId)) return;
     if (details.method === 'OPTIONS') return;
-
+    
     const {
       datasourceTemplate: { requests },
     } = state.activeTemplate;

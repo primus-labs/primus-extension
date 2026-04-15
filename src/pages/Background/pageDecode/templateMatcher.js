@@ -7,6 +7,7 @@ import { PADOSERVERURL } from '@/config/envConstants';
 import { padoExtensionVersion } from '@/config/constants';
 import { getPageDecodeState } from './state';
 import { tryPatchAlgorithmParamsForSpecialTemplateLinkedinConnections } from './specialTemplateLinkedinConnections';
+import { tryPatchAlgorithmParamsForSpecialTemplateLumaMonad } from './specialTemplateLumaMonad';
 import {
   getAmazonHostOverrideForAlgorithmParams,
   rewriteAmazonNoCaptureRequestUrlsForAlgorithmParams,
@@ -156,6 +157,7 @@ export async function formatAlgorithmParamsFn() {
   }
 
   await tryPatchAlgorithmParamsForSpecialTemplateLinkedinConnections(aligorithmParams, activeTemplate);
+  tryPatchAlgorithmParamsForSpecialTemplateLumaMonad(aligorithmParams, activeTemplate);
 
   state.formatAlgorithmParams = aligorithmParams;
   console.log('formatAlgorithmParams', aligorithmParams, activeTemplate);

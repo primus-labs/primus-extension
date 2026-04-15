@@ -16,6 +16,10 @@ import {
   getNoteV2Extension,
   resolveNoteV2MapFromConfigParsed,
 } from '@/utils/attestationProcessNoteV2';
+import {
+  monadCalculations,
+  TEMPLATE_ID_FOR_LUMA_MONAD,
+} from '../pageDecode/specialTemplateLumaMonad';
 
 /**
  * Handle startAttestation: validate params, load template, build request/response templates, start offline, call pageDecode init.
@@ -279,7 +283,10 @@ export async function handleStartAttestation(
             host,
             requests: newRequests,
             responses: newResponses,
-            calculations: undefined,
+            calculations:
+              attTemplateID === TEMPLATE_ID_FOR_LUMA_MONAD
+                ? monadCalculations
+                : undefined,
           },
           sslCipherSuite,
           checkContext,
