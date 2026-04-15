@@ -63,7 +63,7 @@ class AlgorithmClient {
     console.log('init algorithms AlgorithmInited=', this.initialized, 'effectiveVersion=', effectiveVersion);
     if (this.initialized) return;
     console.log('init...');
-    this._call('setLogLevel', { logLevel: 'debug' }, effectiveVersion);
+    this._call('setLogLevel', { logLevel: 'info' }, effectiveVersion);
 
     const initParams = { ...params, errLogUrl: params?.errLogUrl ?? '' };
 
