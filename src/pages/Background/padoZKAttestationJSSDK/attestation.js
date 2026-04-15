@@ -19,7 +19,7 @@ import {
 import {
   monadCalculations,
   TEMPLATE_ID_FOR_LUMA_MONAD,
-} from '../pageDecode/specialTemplateLumaMonad';
+} from '../pageDecode/specialTemplates/specialTemplateLumaMonad';
 
 /**
  * Handle startAttestation: validate params, load template, build request/response templates, start offline, call pageDecode init.

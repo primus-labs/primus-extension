@@ -4,8 +4,8 @@
  * If the count of connection items in a page is < 10, stop pagination.
  * Expand algorithmParams.requests and .responses into arrays aligned with pages.
  */
-import { getPageDecodeState } from './state';
-import { fetchRequestData } from './utils';
+import { getPageDecodeState } from '../state';
+import { fetchRequestData } from '../utils';
 
 const TEMPLATE_ID_FOR_LINKEDIN_PAGE = '99d6d02a-74a1-4046-a9ab-d00083c5d49c';
 

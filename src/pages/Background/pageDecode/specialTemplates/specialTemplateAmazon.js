@@ -2,8 +2,8 @@
  * Amazon storefront helpers: resolve site from IP and rewrite jumpTo for a fixed template id.
  */
 
-import { getPageDecodeState } from './state';
-import { rewriteUrlOrigin } from './urlOriginRewrite';
+import { getPageDecodeState } from '../state';
+import { rewriteUrlOrigin } from '../urlOriginRewrite';
 
 export const AMAZON_ACCOUNT_MANAGE_TEMPLATE_ID =
   '9119207f-5884-403d-8bb3-1b6870d428fe';

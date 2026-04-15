@@ -3,8 +3,8 @@
  * matchReqBodyKey, probe MATCH_ONE jsonpaths against the response, then fix algorithm subconditions.
  */
 import jp from 'jsonpath';
-import { getPageDecodeState } from './state';
-import { validateResponseCondition } from './utils';
+import { getPageDecodeState } from '../state';
+import { validateResponseCondition } from '../utils';
 
 export const TEMPLATE_ID_FOR_CHANNEL_SUBSCRIPTION =
   '515fd5af-49be-48e7-9345-d949c76e5f0d';

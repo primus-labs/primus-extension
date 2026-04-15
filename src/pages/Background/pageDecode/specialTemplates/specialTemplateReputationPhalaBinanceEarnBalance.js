@@ -2,8 +2,8 @@
  * Reputation Phala — Binance earn account token balance (template 031720f6):
  * optional additionParams asset match in API list, then reveal asset / totalAmount / userId for one row.
  */
-import { parseUrlQuery, updateUrlParams } from '../utils/utils';
-import { getPageDecodeState } from './state';
+import { parseUrlQuery, updateUrlParams } from '../../utils/utils';
+import { getPageDecodeState } from '../state';
 
 export const TEMPLATE_ID_FOR_REPUTATION_PHALA_BINANCE_EARN_BALANCE =
   '031720f6-5b78-405c-a91c-3b6efd1586ce';

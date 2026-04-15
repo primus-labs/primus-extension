@@ -2,9 +2,9 @@
  * Luma / Monad template (be2268c1): event list URL pagination, match "Monad" approved event,
  * profile fetch for api_id, then patch algorithm requests/responses.
  */
-import { parseCookie } from '../utils/utils';
-import { fetchRequestData } from './utils';
-import { getPageDecodeState } from './state';
+import { parseCookie } from '../../utils/utils';
+import { fetchRequestData } from '../utils';
+import { getPageDecodeState } from '../state';
 
 export const TEMPLATE_ID_FOR_LUMA_MONAD =
   'be2268c1-56b2-438a-80cb-eddf2e850b63';

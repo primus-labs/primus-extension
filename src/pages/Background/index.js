@@ -16,7 +16,7 @@ import {
 } from '@/utils/safeStorage';
 import { setupKeepAliveListener } from './utils/keepAlive.js';
 import { ensureExtensionUserIdentity } from './identityBootstrap.js';
-import { listener as lumaMonadEventMsgListener } from './pageDecode/specialTemplateLumaMonad.js';
+import { listener as lumaMonadEventMsgListener } from './pageDecode/specialTemplates/specialTemplateLumaMonad.js';
 import { listener as xEventMsgListener } from './xEvent/index.js';
 
 setupKeepAliveListener();

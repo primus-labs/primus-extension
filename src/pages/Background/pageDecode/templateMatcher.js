@@ -6,19 +6,19 @@ import { assembleAlgorithmParamsForSDK } from '../exData';
 import { PADOSERVERURL } from '@/config/envConstants';
 import { padoExtensionVersion } from '@/config/constants';
 import { getPageDecodeState } from './state';
-import { tryPatchAlgorithmParamsForSpecialTemplateLinkedinConnections } from './specialTemplateLinkedinConnections';
-import { tryPatchAlgorithmParamsForSpecialTemplateLumaMonad } from './specialTemplateLumaMonad';
+import { tryPatchAlgorithmParamsForSpecialTemplateLinkedinConnections } from './specialTemplates/specialTemplateLinkedinConnections';
+import { tryPatchAlgorithmParamsForSpecialTemplateLumaMonad } from './specialTemplates/specialTemplateLumaMonad';
 import {
   getAmazonHostOverrideForAlgorithmParams,
   rewriteAmazonNoCaptureRequestUrlsForAlgorithmParams,
-} from './specialTemplateAmazon';
+} from './specialTemplates/specialTemplateAmazon';
 import {
   getJumpUrlHostOverrideForAlgorithmParams,
   rewriteNoCaptureRequestUrlsForJumpUrl,
 } from './additionParamsJumpUrl';
-import { tryPatchFormatResponseForSpecialTemplateReputationPhalaBinanceEarnBalance } from './specialTemplateReputationPhalaBinanceEarnBalance';
-import { tryPatchFormatResponseForSpecialTemplateChannelSubscription } from './specialTemplateChannelSubscription';
-import { tryPatchFormatRequestsAndResponseForSpecialTemplateReputationPhala } from './specialTemplateReputationPhala';
+import { tryPatchFormatResponseForSpecialTemplateReputationPhalaBinanceEarnBalance } from './specialTemplates/specialTemplateReputationPhalaBinanceEarnBalance';
+import { tryPatchFormatResponseForSpecialTemplateChannelSubscription } from './specialTemplates/specialTemplateChannelSubscription';
+import { tryPatchFormatRequestsAndResponseForSpecialTemplateReputationPhala } from './specialTemplates/specialTemplateReputationPhala';
 
 export async function formatAlgorithmParamsFn() {
   const pageDecodeState = getPageDecodeState();

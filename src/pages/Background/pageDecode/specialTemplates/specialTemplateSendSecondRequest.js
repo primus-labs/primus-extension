@@ -3,8 +3,8 @@
  * send the second requestUrl (needCapture:false) from the extension using the
  * first request's headers and cookie. Other flows are unchanged.
  */
-import { getPageDecodeState } from './state';
-import { fetchRequestData } from './utils';
+import { getPageDecodeState } from '../state';
+import { fetchRequestData } from '../utils';
 
 const SPECIAL_TEMPLATE_TWO_REQUEST_ID = '';
 

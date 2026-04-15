@@ -2,7 +2,7 @@
  * Phala Cloud templates: account email (3630e4cc), reputation CVM list (efcce302…f91e).
  */
 import { reputationPhalaCvmListCheckTime } from '@/services/api/phala';
-import { getPageDecodeState } from './state';
+import { getPageDecodeState } from '../state';
 
 export const TEMPLATE_ID_FOR_PHALA_ACCOUNT =
   '3630e4cc-9329-44c5-a4ed-25fbe5e195a3';

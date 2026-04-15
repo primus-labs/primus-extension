@@ -19,25 +19,25 @@ import {
   eventListUrlForMonad,
   checkTargetRequestFnForMonad,
   isLumaMonadTemplate,
-} from './specialTemplateLumaMonad';
+} from './specialTemplates/specialTemplateLumaMonad';
 import {
   isReputationPhalaBinanceEarnBalanceTemplate,
   updateRequestMapFnForReputationPhalaBinanceEarnBalance,
   checkTargetRequestFnForReputationPhalaBinanceEarnBalance,
-} from './specialTemplateReputationPhalaBinanceEarnBalance';
+} from './specialTemplates/specialTemplateReputationPhalaBinanceEarnBalance';
 import {
   isReputationPhalaCvmListTemplate,
   checkTargetRequestFnForReputationPhalaCvmList,
   PHALA_CVM_LIST_BATCH_STATUS_URL,
-} from './specialTemplateReputationPhala';
+} from './specialTemplates/specialTemplateReputationPhala';
 import {
   isChannelSubscriptionTemplate,
   formatJsonArrFnForChannelSubscription,
-} from './specialTemplateChannelSubscription';
+} from './specialTemplates/specialTemplateChannelSubscription';
 import { getPageDecodeState } from './state';
 import { formatAlgorithmParamsFn } from './templateMatcher';
 import { sendMsgToDataSourcePage } from './sdkBridge';
-import { trySendSecondRequestWithFirstHeaders } from './specialTemplateSendSecondRequest';
+import { trySendSecondRequestWithFirstHeaders } from './specialTemplates/specialTemplateSendSecondRequest';
 import {
   tryApplyJumpConfigFromResponse,
   tryJumpConfigStandaloneIntercept,
