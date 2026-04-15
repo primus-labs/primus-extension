@@ -193,11 +193,19 @@ export async function handleStartAttestation(
 
         const newResponses = dataSourceTemplateObj.reduce((prev, curr, currIdx) => {
           const { responseTemplate } = curr;
+          const plaintext_outputs = [];
           const subconditions = responseTemplate.reduce((prevS, currS) => {
             const {
               resolver: { expression },
               feilds: [{ key }],
+              plaintext,
             } = currS;
+            if (plaintext === 'true') {
+              plaintext_outputs.push({
+                id: `${String(key)}_plain`,
+                field: expression,
+              });
+            }
             let subconditionItem = { field: expression };
             const subItemCondition = params.attRequest?.attConditions?.[currIdx]?.find(
               (i) => {
@@ -266,6 +274,7 @@ export async function handleStartAttestation(
               op: 'BOOLEAN_AND',
               subconditions,
             },
+            plaintext_outputs,
           });
           return prev;
         }, []);
