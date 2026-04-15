@@ -16,6 +16,7 @@ import {
   getJumpUrlHostOverrideForAlgorithmParams,
   rewriteNoCaptureRequestUrlsForJumpUrl,
 } from './additionParamsJumpUrl';
+import { tryPatchFormatResponseForSpecialTemplateReputationPhalaBinanceEarnBalance } from './specialTemplateReputationPhalaBinanceEarnBalance';
 
 export async function formatAlgorithmParamsFn() {
   const pageDecodeState = getPageDecodeState();
@@ -122,6 +123,11 @@ export async function formatAlgorithmParamsFn() {
     getJumpUrlHostOverrideForAlgorithmParams(activeTemplate) ||
     getAmazonHostOverrideForAlgorithmParams(activeTemplate) ||
     host;
+
+  tryPatchFormatResponseForSpecialTemplateReputationPhalaBinanceEarnBalance(
+    formatResponse,
+    activeTemplate
+  );
 
   Object.assign(aligorithmParams, {
     reqType: 'web',

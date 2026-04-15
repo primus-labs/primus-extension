@@ -20,6 +20,11 @@ import {
   checkTargetRequestFnForMonad,
   isLumaMonadTemplate,
 } from './specialTemplateLumaMonad';
+import {
+  isReputationPhalaBinanceEarnBalanceTemplate,
+  updateRequestMapFnForReputationPhalaBinanceEarnBalance,
+  checkTargetRequestFnForReputationPhalaBinanceEarnBalance,
+} from './specialTemplateReputationPhalaBinanceEarnBalance';
 import { getPageDecodeState } from './state';
 import { formatAlgorithmParamsFn } from './templateMatcher';
 import { sendMsgToDataSourcePage } from './sdkBridge';
@@ -82,7 +87,7 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
       return isObject(i.field) && i.field?.field ? i.field.field : i.field;
     });
 
-    const targetRequestUrl = requestsMap[matchRequestId].url;
+    const baseRequestUrl = requestsMap[matchRequestId].url;
     const additionParamsObj = activeTemplate?.additionParamsObj || {};
     const needUpdateRequests = additionParamsObj.needUpdateRequests;
     const hasNeedUpdateRequests =
@@ -100,8 +105,8 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
       !Array.isArray(updateParams.bodyParams);
     const mergedUrl =
       hasNeedUpdateRequests && hasQueryParams
-        ? mergeQueryParamsIntoUrl(targetRequestUrl, updateParams.queryParams)
-        : targetRequestUrl;
+        ? mergeQueryParamsIntoUrl(baseRequestUrl, updateParams.queryParams)
+        : baseRequestUrl;
     const mergedBody =
       hasNeedUpdateRequests && hasBodyParams
         ? mergeBodyParams(
@@ -113,11 +118,26 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
     let matchRequestUrlResult;
     let isTargetUrl = false;
 
+    let effectiveRequestUrl = mergedUrl;
+    if (isReputationPhalaBinanceEarnBalanceTemplate(activeTemplate)) {
+      const newRequestMap =
+        updateRequestMapFnForReputationPhalaBinanceEarnBalance(
+          {
+            ...requestsMap[matchRequestId],
+            url: mergedUrl,
+            body: mergedBody,
+          },
+          additionParamsObj
+        );
+      effectiveRequestUrl = newRequestMap.url;
+      storeInRequestsMap(matchRequestId, newRequestMap);
+    }
+
     const urlForFetch =
       requestsMap[matchRequestId].type !== 'main_frame' &&
       isLumaMonadTemplate(activeTemplate)
         ? eventListUrlForMonad(mergedUrl)
-        : mergedUrl;
+        : effectiveRequestUrl;
 
     if (requestsMap[matchRequestId].type === 'main_frame') {
       matchRequestUrlResult = await fetchHtmlContent({
@@ -173,6 +193,27 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
           requestMonadMeta,
           notMetHandler
         );
+      } else if (
+        isReputationPhalaBinanceEarnBalanceTemplate(activeTemplate) &&
+        matchRequestUrlResult
+      ) {
+        const notMetHandler = async () => {
+          await handleAttestationError(
+            {
+              title: '',
+              desc: 'Binance earn balance check failed.',
+              code: '00104',
+            },
+            state.dataSourcePageTabId,
+            {}
+          );
+        };
+        isTargetUrl =
+          await checkTargetRequestFnForReputationPhalaBinanceEarnBalance(
+            matchRequestUrlResult,
+            notMetHandler,
+            additionParamsObj
+          );
       } else {
         isTargetUrl = validateResponseCondition(
           jsonPathArr,
@@ -181,7 +222,7 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
       }
       if (isTargetUrl && !isLumaMonadTemplate(activeTemplate)) {
         await tryApplyJumpConfigFromResponse({
-          requestUrl: mergedUrl,
+          requestUrl: effectiveRequestUrl,
           responseData: matchRequestUrlResult,
           method: requestsMap[matchRequestId]?.method,
         });
@@ -189,7 +230,7 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
       if (isTargetUrl) {
         storeInRequestsMap(matchRequestId, {
           isTarget: 1,
-          url: mergedUrl,
+          url: effectiveRequestUrl,
           body: mergedBody,
         });
         break;

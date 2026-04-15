@@ -42,6 +42,8 @@ export function createPageDecodeState() {
     jumpConfigState: null,
     /** Luma Monad template (be2268c1): fields filled during checkTargetRequestFnForMonad */
     monadFields: {},
+    /** Reputation Phala Binance earn balance (031720f6): asset row index for response reveals */
+    reputationPhalaBinanceEarnFields: {},
   };
 
   function reset() {
@@ -59,6 +61,9 @@ export function createPageDecodeState() {
     state.jumpConfigState = null;
     Object.keys(state.monadFields).forEach((k) => {
       delete state.monadFields[k];
+    });
+    Object.keys(state.reputationPhalaBinanceEarnFields).forEach((k) => {
+      delete state.reputationPhalaBinanceEarnFields[k];
     });
   }
 

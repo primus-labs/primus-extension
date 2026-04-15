@@ -118,6 +118,40 @@ export function mergeBodyParams(body, bodyParams) {
   return { ...bodyParams };
 }
 
+/** Replace or append query keys on a full URL (uses URLSearchParams). */
+export function updateUrlParams(url, paramsObj) {
+  const urlObj = new URL(url);
+  const searchParams = urlObj.searchParams;
+
+  Object.entries(paramsObj).forEach(([key, value]) => {
+    if (searchParams.has(key)) {
+      searchParams.set(key, value);
+    } else {
+      searchParams.append(key, value);
+    }
+  });
+
+  urlObj.search = searchParams.toString();
+  return urlObj.toString();
+}
+
+/** Parse query string into an object (numeric strings become numbers). */
+export function parseUrlQuery(url) {
+  const urlObj = new URL(url);
+  const searchParams = urlObj.searchParams;
+  const queryObj = {};
+
+  searchParams.forEach((value, key) => {
+    if (!isNaN(value) && value !== '') {
+      queryObj[key] = Number(value);
+    } else {
+      queryObj[key] = value;
+    }
+  });
+
+  return queryObj;
+}
+
 export const sendMsgToTab = async (tabId, msg) => {
   try {
     await chrome.tabs.sendMessage(tabId, msg);
