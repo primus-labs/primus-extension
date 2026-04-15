@@ -12,10 +12,13 @@ export async function assembleAlgorithmParamsForSDK(form, ext) {
     requestid: prevRequestid,
     sslCipherSuite,
     allJsonResponseFlag,
-    checkContext,
+    dataPageTemplate,
   } = form;
-  // const urlObj = new URL(dataPageTemplate.baseUrl);
-  // const baseName = urlObj.host;
+  const dataPageTemplateObj =
+    typeof dataPageTemplate === 'string'
+      ? safeJsonParse(dataPageTemplate, null)
+      : dataPageTemplate;
+  const checkContext = dataPageTemplateObj?.checkContext ?? 'true';
   const user = await assembleUserInfoParams({}, true);
   let authUseridHash;
   if (user.userid != null && user.userid !== '') {
