@@ -1,7 +1,7 @@
 /**
  * Builds algorithm params from the active template and captured request map.
  */
-import { isObject } from '../utils/utils';
+import { isObject, mergeQueryParamsIntoUrl } from '../utils/utils';
 import { assembleAlgorithmParamsForSDK } from '../exData';
 import { PADOSERVERURL } from '@/config/envConstants';
 import { padoExtensionVersion } from '@/config/constants';
@@ -66,15 +66,34 @@ export async function formatAlgorithmParamsFn() {
     ? { ...referenceRequestEntry.headers }
     : {};
 
-  for (const r of JSON.parse(JSON.stringify(requests))) {
+  const additionParamsObj = activeTemplate?.additionParamsObj || {};
+  const needUpdateRequests = additionParamsObj.needUpdateRequests;
+  const hasNeedUpdateRequests =
+    Array.isArray(needUpdateRequests) && needUpdateRequests.length > 0;
+
+  const requestsCloned = JSON.parse(JSON.stringify(requests));
+  for (let reqIdx = 0; reqIdx < requestsCloned.length; reqIdx++) {
+    const r = requestsCloned[reqIdx];
     if (r.queryDetail) continue;
 
+    const updateParams = hasNeedUpdateRequests
+      ? needUpdateRequests[reqIdx] ?? {}
+      : {};
+    const hasQueryParams =
+      typeof updateParams.queryParams === 'object' &&
+      updateParams.queryParams !== null &&
+      !Array.isArray(updateParams.queryParams);
+
     if (r.needCapture === false) {
+      let resolvedUrl = r.url;
+      if (hasNeedUpdateRequests && hasQueryParams) {
+        resolvedUrl = mergeQueryParamsIntoUrl(r.url, updateParams.queryParams);
+      }
       const noCaptureItem = {
         ...r,
         headers: { ...referenceHeaders },
         body: isObject(r.body) ? { ...r.body } : r.body || {},
-        url: r.url,
+        url: resolvedUrl,
       };
       if (noCaptureItem.headers) {
         noCaptureItem.headers['Accept-Encoding'] = 'identity';
