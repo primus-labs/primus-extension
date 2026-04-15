@@ -17,6 +17,8 @@ import {
   rewriteNoCaptureRequestUrlsForJumpUrl,
 } from './additionParamsJumpUrl';
 import { tryPatchFormatResponseForSpecialTemplateReputationPhalaBinanceEarnBalance } from './specialTemplateReputationPhalaBinanceEarnBalance';
+import { tryPatchFormatResponseForSpecialTemplateChannelSubscription } from './specialTemplateChannelSubscription';
+import { tryPatchFormatRequestsAndResponseForSpecialTemplateReputationPhala } from './specialTemplateReputationPhala';
 
 export async function formatAlgorithmParamsFn() {
   const pageDecodeState = getPageDecodeState();
@@ -125,6 +127,15 @@ export async function formatAlgorithmParamsFn() {
     host;
 
   tryPatchFormatResponseForSpecialTemplateReputationPhalaBinanceEarnBalance(
+    formatResponse,
+    activeTemplate
+  );
+  tryPatchFormatResponseForSpecialTemplateChannelSubscription(
+    formatResponse,
+    activeTemplate
+  );
+  tryPatchFormatRequestsAndResponseForSpecialTemplateReputationPhala(
+    formatRequests,
     formatResponse,
     activeTemplate
   );

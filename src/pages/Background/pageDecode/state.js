@@ -44,6 +44,10 @@ export function createPageDecodeState() {
     monadFields: {},
     /** Reputation Phala Binance earn balance (031720f6): asset row index for response reveals */
     reputationPhalaBinanceEarnFields: {},
+    /** Channel subscription / Twitch (515fd5af): MATCH_ONE jsonpath chosen from request body list */
+    channelSubscriptionFields: {},
+    /** Phala reputation CVM list: cvmIdList filled in checkTargetRequestFnForReputationPhalaCvmList */
+    reputationPhalaFields: {},
   };
 
   function reset() {
@@ -64,6 +68,12 @@ export function createPageDecodeState() {
     });
     Object.keys(state.reputationPhalaBinanceEarnFields).forEach((k) => {
       delete state.reputationPhalaBinanceEarnFields[k];
+    });
+    Object.keys(state.channelSubscriptionFields).forEach((k) => {
+      delete state.channelSubscriptionFields[k];
+    });
+    Object.keys(state.reputationPhalaFields).forEach((k) => {
+      delete state.reputationPhalaFields[k];
     });
   }
 

@@ -25,6 +25,15 @@ import {
   updateRequestMapFnForReputationPhalaBinanceEarnBalance,
   checkTargetRequestFnForReputationPhalaBinanceEarnBalance,
 } from './specialTemplateReputationPhalaBinanceEarnBalance';
+import {
+  isReputationPhalaCvmListTemplate,
+  checkTargetRequestFnForReputationPhalaCvmList,
+  PHALA_CVM_LIST_BATCH_STATUS_URL,
+} from './specialTemplateReputationPhala';
+import {
+  isChannelSubscriptionTemplate,
+  formatJsonArrFnForChannelSubscription,
+} from './specialTemplateChannelSubscription';
 import { getPageDecodeState } from './state';
 import { formatAlgorithmParamsFn } from './templateMatcher';
 import { sendMsgToDataSourcePage } from './sdkBridge';
@@ -214,6 +223,37 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
             notMetHandler,
             additionParamsObj
           );
+      } else if (
+        isReputationPhalaCvmListTemplate(activeTemplate) &&
+        matchRequestUrlResult &&
+        effectiveRequestUrl.includes(PHALA_CVM_LIST_BATCH_STATUS_URL)
+      ) {
+        const notMetHandler = async () => {
+          await handleAttestationError(
+            {
+              title: '',
+              desc: 'Phala CVM list check failed.',
+              code: '00104',
+            },
+            state.dataSourcePageTabId,
+            {}
+          );
+        };
+        isTargetUrl = await checkTargetRequestFnForReputationPhalaCvmList(
+          matchRequestUrlResult,
+          notMetHandler
+        );
+      } else if (
+        isChannelSubscriptionTemplate(activeTemplate) &&
+        matchRequestUrlResult
+      ) {
+        const formatRes = formatJsonArrFnForChannelSubscription(
+          jsonPathArr,
+          requestsMap[matchRequestId],
+          thisRequestObj.matchReqBodyKey,
+          matchRequestUrlResult
+        );
+        isTargetUrl = !!(formatRes && formatRes.checkRes);
       } else {
         isTargetUrl = validateResponseCondition(
           jsonPathArr,
