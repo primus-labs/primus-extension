@@ -183,7 +183,6 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
         const notMetHandler = async () => {
           await handleAttestationError(
             {
-              title: '',
               desc: 'Monad event or profile check failed.',
               code: '00104',
             },
@@ -209,7 +208,6 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
         const notMetHandler = async () => {
           await handleAttestationError(
             {
-              title: '',
               desc: 'Binance earn balance check failed.',
               code: '00104',
             },
@@ -231,7 +229,6 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
         const notMetHandler = async () => {
           await handleAttestationError(
             {
-              title: '',
               desc: 'Phala CVM list check failed.',
               code: '00104',
             },

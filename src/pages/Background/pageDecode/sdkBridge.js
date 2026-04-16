@@ -50,7 +50,7 @@ export async function handlerForSdk(processAlgorithmReq, operation) {
     const desc = `The user ${operation} the attestation`;
     const resParams = {
       result: false,
-      errorData: { title: '', desc, code: ERROR_USER_CANCELLED },
+      errorData: { desc, code: ERROR_USER_CANCELLED },
       reStartFlag: true,
     };
     try {
@@ -73,8 +73,6 @@ export async function eventReportGenerateFn(rawData) {
 export async function handleTargetDataMissing(options = {}) {
   await handleAttestationError(
     {
-      title:
-        'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
       desc:
         'Target data missing. Please check that the JSON path of the data in the response from the request URL matches your template.',
       code: '00013',
@@ -158,7 +156,6 @@ export async function handleDataSourcePageDialogTimeout(processAlgorithmReq) {
   stopKeepAlive();
   processAlgorithmReq({ reqMethodName: 'stop' });
   await handleAttestationError({
-    title: 'Request Timed Out',
     desc: 'The process did not respond within 2 minutes. Please try again later.',
     code: '00014',
   });

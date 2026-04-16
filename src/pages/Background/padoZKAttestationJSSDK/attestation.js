@@ -6,16 +6,13 @@ import { queryTemplateById } from '@/services/api/devconsole';
 import { pageDecodeMsgListener } from '../pageDecode/index.js';
 import { getAlgoApi } from './utils';
 import { STARTOFFLINETIMEOUT } from '@/config/constants';
-import { getErrorMsgTitleFn } from '../utils/handleError.js';
 import { getSdkState, setProcessAlgorithmReqRef, getProcessAlgorithmReqRef } from './init.js';
 import { safeStorageGet, safeStorageSet, safeStorageRemove } from '@/utils/safeStorage';
 import { sendMsgToTab } from '../utils/utils.js';
 import { safeJsonParse } from '@/utils/utils';
 import { stopKeepAlive } from '../utils/keepAlive.js';
-import {
-  getNoteV2Extension,
-  resolveNoteV2MapFromConfigParsed,
-} from '@/utils/attestationProcessNoteV2';
+import { resolveNoteV2MapFromConfigParsed } from '@/utils/attestationProcessNoteV2';
+import { getAttestTipForCode } from '../algorithm/errorMap.js';
 import {
   monadCalculations,
   TEMPLATE_ID_FOR_LUMA_MONAD,
@@ -64,7 +61,6 @@ export async function handleStartAttestation(
     const resParams = {
       result: false,
       errorData: {
-        title: '',
         desc:
           'An attestation process is currently being generated. Please try again later.',
         code: '00003',
@@ -94,7 +90,6 @@ export async function handleStartAttestation(
     const resParams = {
       result: false,
       errorData: {
-        title: 'Invalid Algorithm Parameters',
         desc: 'Invalid Algorithm Parameters',
         code: '00015',
       },
@@ -369,7 +364,6 @@ async function sendTemplateErrorToDapp(code) {
   const resParams = {
     result: false,
     errorData: {
-      title: 'Invalid Template ID.',
       desc: 'Invalid Template ID.',
       code,
     },
@@ -401,24 +395,13 @@ export async function handleGetAttestationResultTimeout(
 ) {
   const state = getSdkState();
   const { configMap } = await safeStorageGet(['configMap']);
-  let attestTipMap = {};
   const configMapParsed = safeJsonParse(configMap);
-  if (configMapParsed?.ATTESTATION_PROCESS_NOTE) {
-    const tipMap = safeJsonParse(configMapParsed.ATTESTATION_PROCESS_NOTE);
-    if (tipMap) attestTipMap = tipMap;
-  }
   const noteV2Map = resolveNoteV2MapFromConfigParsed(configMapParsed);
-  const errorMsgTitle = await getErrorMsgTitleFn();
   const code = '00002';
+  const tip = getAttestTipForCode(code, noteV2Map);
   const msgObj = {
-    type: attestTipMap[code]?.type,
-    title: errorMsgTitle,
-    desc: attestTipMap[code]?.desc,
-    sourcePageTip: getNoteV2Extension(
-      noteV2Map,
-      code,
-      attestTipMap[code]?.title ?? ''
-    ),
+    desc: tip.desc,
+    sourcePageTip: tip.sourcePageTip,
   };
 
   stopKeepAlive();
@@ -447,7 +430,6 @@ export async function handleGetAttestationResultTimeout(
   const resParams = {
     result: false,
     errorData: {
-      title: msgObj.title,
       desc: msgObj.desc,
       code,
       data: attestationLogInQuery || JSON.stringify({}),

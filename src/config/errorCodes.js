@@ -73,15 +73,16 @@ export const TOTAL_TIP_MAP = {
 };
 
 /**
- * Get user-facing error message by error code and optional attest tip map.
+ * Get user-facing error message by error code and optional NOTE_V2 map.
  * @param {string} code - Error code (e.g. from extraData or details)
- * @param {{ attestTipMap?: Record<string, { type?: string; desc?: string; title?: string }> }} [context] - Optional attest tip map from config
- * @returns {{ type?: string; desc?: string; title?: string; sourcePageTip?: string } | string | undefined}
+ * @param {{ attestTipMap?: Record<string, { sdk?: string; extension?: string }> }} [context] - Optional merged ATTESTATION_PROCESS_NOTE_V2 map
+ * @returns {{ sdk?: string; extension?: string } | string | undefined}
  */
 export function getErrorMessage(code, context = {}) {
   const { attestTipMap = {} } = context;
   const tip = TOTAL_TIP_MAP[code] ?? attestTipMap[code];
   if (typeof tip === 'string') return tip;
-  if (tip && typeof tip === 'object') return tip.desc ?? tip.title ?? tip.sourcePageTip;
+  if (tip && typeof tip === 'object')
+    return tip.sdk ?? tip.extension ?? undefined;
   return undefined;
 }

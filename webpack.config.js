@@ -264,6 +264,35 @@ var options = {
               jsonobj.content_scripts[0].matches.push(
                 'http://localhost:3001/*'
               );
+              const lumaMonadScript = jsonobj.content_scripts.find(
+                (script) =>
+                  Array.isArray(script.js) &&
+                  script.js.includes('lumaMonadEvent.bundle.js')
+              );
+              if (lumaMonadScript) {
+                const lumaMatches = new Set(lumaMonadScript.matches || []);
+                [
+                  'http://localhost/*',
+                  'https://test-luckydraw.primuslabs.xyz/*',
+                ].forEach((m) => lumaMatches.add(m));
+                lumaMonadScript.matches = Array.from(lumaMatches);
+              }
+              const xEventScript = jsonobj.content_scripts.find(
+                (script) =>
+                  Array.isArray(script.js) &&
+                  script.js.includes('xEvent.bundle.js')
+              );
+              if (xEventScript) {
+                const xEventMatches = new Set(xEventScript.matches || []);
+                [
+                  'http://localhost/*',
+                  'http://api-dev.padolabs.org/*',
+                  'http://api-dev.padolabs.org:38098/*',
+                  'http://api-dev.padolabs.org:38093/*',
+                  'https://test-luckydraw.primuslabs.xyz/*',
+                ].forEach((m) => xEventMatches.add(m));
+                xEventScript.matches = Array.from(xEventMatches);
+              }
               return Buffer.from(
                 JSON.stringify({
                   description: process.env.npm_package_description,

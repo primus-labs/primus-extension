@@ -26,6 +26,21 @@ export function getNoteV2Extension(
 }
 
 /**
+ * SDK / dApp-facing string from V2 map (.sdk). Empty or missing sdk falls back.
+ */
+export function getNoteV2Sdk(
+  noteV2Map: AttestationNoteV2Map | null | undefined,
+  code: string | number | null | undefined,
+  fallback: string
+): string {
+  if (!noteV2Map || code == null) return fallback;
+  const key = String(code);
+  const sdk = noteV2Map[key]?.sdk;
+  if (sdk != null && sdk !== '') return sdk;
+  return fallback;
+}
+
+/**
  * Parse ATTESTATION_PROCESS_NOTE_V2 from flattened config map and merge with local defaults.
  */
 export function resolveNoteV2MapFromConfigParsed(

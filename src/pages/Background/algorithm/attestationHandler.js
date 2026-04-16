@@ -3,21 +3,21 @@
  */
 import { pageDecodeMsgListener } from '../pageDecode/index.js';
 import { closeSdkDataSourceTabWithoutCancel } from '../pageDecode/closeDataSourceTab.js';
-import { getErrorMsgTitleFn } from '../utils/handleError.js';
 import { getErrorTipByExtraData, getAttestTipForCode } from './errorMap.js';
-import { TOTAL_TIP_MAP } from '@/config/errorCodes';
+import { TOTAL_TIP_MAP, ERROR_UNKNOWN } from '@/config/errorCodes';
 import { safeStorageGet, safeStorageSet, safeStorageRemove } from '@/utils/safeStorage';
 import { sendMsgToTab } from '../utils/utils.js';
 import { safeJsonParse } from '@/utils/utils';
 import { stopKeepAlive } from '../utils/keepAlive.js';
 import {
   getNoteV2Extension,
+  getNoteV2Sdk,
   resolveNoteV2MapFromConfigParsed,
 } from '@/utils/attestationProcessNoteV2';
 
 const HAS_GET_TWITTER_SCREEN_NAME = false;
 
-/** Maps algorithm errlog codes to parent code 50000 + subCode for SDK / attestTipMap composite keys. */
+/** Maps algorithm errlog codes to parent code 50000 + subCode for NOTE_V2 composite keys. */
 const ALGO_ERR_NORMALIZE_TO_50000 = {
   50001: '501',
   50002: '502',
@@ -43,25 +43,18 @@ export async function handleGetAttestation(
   const { configMap } = await safeStorageGet(['configMap']);
   const noteV2Map = resolveNoteV2MapFromConfigParsed(safeJsonParse(configMap));
 
+  const initDescFallback =
+    'The algorithm has not been initialized.Please try again later.';
   let msgObj = {
-    type: 'error',
-    title: '',
-    desc: 'The algorithm has not been initialized.Please try again later.',
+    desc: initDescFallback,
     sourcePageTip: '',
   };
   let result = retcode === '0';
 
   if (!result) {
-    const errorMsgTitle =
-      retcode === '2'
-        ? 'Wrong parameters. '
-        : 'Too many requests. Please try again later.';
-    msgObj.title = errorMsgTitle;
-    msgObj.sourcePageTip = getNoteV2Extension(
-      noteV2Map,
-      retcode === '2' ? '00001' : '00000',
-      errorMsgTitle
-    );
+    const tipCode = retcode === '2' ? '00001' : '00000';
+    msgObj.desc = getNoteV2Sdk(noteV2Map, tipCode, initDescFallback);
+    msgObj.sourcePageTip = getNoteV2Extension(noteV2Map, tipCode, '');
 
     await pageDecodeMsgListener(
       {
@@ -87,7 +80,6 @@ export async function handleGetAttestation(
   const resParams = { result };
   if (!result) {
     resParams.errorData = {
-      title: msgObj.title,
       desc: msgObj.desc,
       code: retcode === '2' ? '00001' : '00000',
       data: message.res,
@@ -110,7 +102,7 @@ export async function handleGetAttestation(
 }
 
 /**
- * Handle getAttestationResult response: success (sucFn), or failure with error mapping (extraData / attestTipMap), or retcode '2'.
+ * Handle getAttestationResult response: success (sucFn), or failure with error mapping (extraData / NOTE_V2), or retcode '2'.
  */
 export async function handleGetAttestationResult(
   message,
@@ -126,12 +118,7 @@ export async function handleGetAttestationResult(
     padoZKAttestationJSSDKAttestationPresetParams,
   } = storage;
 
-  let attestTipMap = {};
   const configMapParsed = safeJsonParse(configMap);
-  if (configMapParsed?.ATTESTATION_PROCESS_NOTE) {
-    const tipMap = safeJsonParse(configMapParsed.ATTESTATION_PROCESS_NOTE);
-    if (tipMap) attestTipMap = tipMap;
-  }
   const noteV2Map = resolveNoteV2MapFromConfigParsed(configMapParsed);
 
   if (!message.res) return;
@@ -144,7 +131,6 @@ export async function handleGetAttestationResult(
   const extendedParamsObj = activeAttestationParams?.extendedParams
     ? (safeJsonParse(activeAttestationParams.extendedParams, {}) || {})
     : {};
-  const errorMsgTitle = await getErrorMsgTitleFn();
 
   const sucFn = async (resData) => {
     const closeDataSourceOnProofComplete =
@@ -203,8 +189,6 @@ export async function handleGetAttestationResult(
       content?.balanceGreaterThanBaseValue === 'false'
     ) {
       let msgObj = {
-        type: 'error',
-        title: errorMsgTitle,
         desc: '',
         sourcePageTip: '',
       };
@@ -229,43 +213,42 @@ export async function handleGetAttestationResult(
           });
           return;
         }
-        const showTip = getErrorTipByExtraData(extraDataStr);
-        if (showTip) {
-          msgObj.type = '';
-          msgObj.desc = showTip;
-          msgObj.sourcePageTip = showTip;
-        }
+        const showTip = getErrorTipByExtraData(extraDataStr) ?? '';
+        msgObj.desc = getNoteV2Sdk(noteV2Map, errorCode, showTip);
+        msgObj.sourcePageTip = getNoteV2Extension(
+          noteV2Map,
+          errorCode,
+          showTip
+        );
       } else {
         if (!content?.signature && content?.encodedData) {
           errorCode = '00103';
-          Object.assign(msgObj, attestTipMap[errorCode] || {});
-          msgObj.sourcePageTip = (attestTipMap[errorCode] || {}).title ?? msgObj.sourcePageTip;
+          msgObj.desc = getNoteV2Sdk(noteV2Map, errorCode, '');
+          msgObj.sourcePageTip = getNoteV2Extension(
+            noteV2Map,
+            errorCode,
+            ''
+          );
         } else if (
           activeAttestationParams?.verificationContent === 'Assets Proof' &&
           activeAttestationParams?.dataSourceId === 'binance'
         ) {
           errorCode = '00102';
-          Object.assign(msgObj, {
-            type: attestTipMap['00102']?.type,
-            desc: attestTipMap['00102']?.desc,
-            sourcePageTip: attestTipMap['00102']?.title ?? msgObj.sourcePageTip,
-          });
+          msgObj.desc = getNoteV2Sdk(noteV2Map, errorCode, '');
+          msgObj.sourcePageTip = getNoteV2Extension(
+            noteV2Map,
+            errorCode,
+            ''
+          );
         } else {
           errorCode = '00104';
-          Object.assign(msgObj, {
-            type: attestTipMap['00104']?.type,
-            desc: attestTipMap['00104']?.desc,
-            sourcePageTip: attestTipMap['00104']?.title ?? msgObj.sourcePageTip,
-          });
+          msgObj.desc = getNoteV2Sdk(noteV2Map, errorCode, '');
+          msgObj.sourcePageTip = getNoteV2Extension(
+            noteV2Map,
+            errorCode,
+            ''
+          );
         }
-      }
-
-      if (errorCode != null && errorCode !== '') {
-        msgObj.sourcePageTip = getNoteV2Extension(
-          noteV2Map,
-          errorCode,
-          msgObj.sourcePageTip
-        );
       }
 
       await pageDecodeMsgListener(
@@ -288,7 +271,7 @@ export async function handleGetAttestationResult(
       ]);
       const resParams = {
         result: false,
-        errorData: { title: msgObj.title, desc: msgObj.desc, code: errorCode },
+        errorData: { desc: msgObj.desc, code: errorCode },
       };
       await sendMsgToTab(dappTabId, {
         type: 'padoZKAttestationJSSDK',
@@ -309,20 +292,12 @@ export async function handleGetAttestationResult(
       resolvedSubCode = detailsDesc?.match(/\b\d{3}\b/)?.[0];
     }
     processAlgorithmReq({ reqMethodName: 'stop' });
-    const msgObj = getAttestTipForCode(code, attestTipMap);
-    if (resolvedSubCode) {
-      msgObj.desc = getAttestTipForCode(
-        `${resolvedCode}:${resolvedSubCode}`,
-        attestTipMap
-      ).desc;
-    }
-    msgObj.title = errorMsgTitle;
-    const codeStr = code != null ? String(code) : '';
-    msgObj.sourcePageTip = getNoteV2Extension(
-      noteV2Map,
-      codeStr,
-      msgObj.sourcePageTip
-    );
+    const tipKey = resolvedSubCode
+      ? `${resolvedCode}:${resolvedSubCode}`
+      : code != null && code !== ''
+        ? String(code)
+        : ERROR_UNKNOWN;
+    const msgObj = getAttestTipForCode(tipKey, noteV2Map);
 
     await pageDecodeMsgListener(
       {
@@ -345,7 +320,6 @@ export async function handleGetAttestationResult(
     const resParams = {
       result: false,
       errorData: {
-        title: msgObj.title,
         desc: msgObj.desc,
         code: resolvedCode,
         data: message.res,
