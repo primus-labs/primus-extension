@@ -17,6 +17,16 @@ import {
 
 const HAS_GET_TWITTER_SCREEN_NAME = false;
 
+/** Maps algorithm errlog codes to parent code 50000 + subCode for SDK / attestTipMap composite keys. */
+const ALGO_ERR_NORMALIZE_TO_50000 = {
+  50001: '501',
+  50002: '502',
+  50005: '505',
+  50007: '507',
+  50008: '508',
+  50010: '510',
+};
+
 /**
  * Handle getAttestation response: map retcode to success or error, send getAttestationRes to dapp, optionally end pageDecode and stop.
  */
@@ -125,7 +135,6 @@ export async function handleGetAttestationResult(
   const noteV2Map = resolveNoteV2MapFromConfigParsed(configMapParsed);
 
   if (!message.res) return;
-
   const { retcode, content, details, isUserClick } = JSON.parse(message.res);
   if (isUserClick !== 'true') return;
 
@@ -288,9 +297,25 @@ export async function handleGetAttestationResult(
       });
     }
   } else if (retcode === '2') {
-    const { errlog: { code } = {} } = details || {};
+    const { errlog: { code, desc: detailsDesc } = {} } = details || {};
+    const rawNum = code != null ? Number(code) : NaN;
+    const mapped50000Sub = ALGO_ERR_NORMALIZE_TO_50000[rawNum];
+    let resolvedCode = code;
+    let resolvedSubCode;
+    if (mapped50000Sub !== undefined) {
+      resolvedCode = 50000;
+      resolvedSubCode = mapped50000Sub;
+    } else if (rawNum === 30001) {
+      resolvedSubCode = detailsDesc?.match(/\b\d{3}\b/)?.[0];
+    }
     processAlgorithmReq({ reqMethodName: 'stop' });
     const msgObj = getAttestTipForCode(code, attestTipMap);
+    if (resolvedSubCode) {
+      msgObj.desc = getAttestTipForCode(
+        `${resolvedCode}:${resolvedSubCode}`,
+        attestTipMap
+      ).desc;
+    }
     msgObj.title = errorMsgTitle;
     const codeStr = code != null ? String(code) : '';
     msgObj.sourcePageTip = getNoteV2Extension(
@@ -322,8 +347,9 @@ export async function handleGetAttestationResult(
       errorData: {
         title: msgObj.title,
         desc: msgObj.desc,
-        code: code,
+        code: resolvedCode,
         data: message.res,
+        ...(resolvedSubCode ? { details: { subCode: resolvedSubCode } } : {}),
       },
       reStartFlag: true,
     };
@@ -332,56 +358,10 @@ export async function handleGetAttestationResult(
       name: 'startAttestationRes',
       params: resParams,
     });
-  } else {
+  } else if (retcode === '1') {
+    // In progress (offline/online RUNNING); polling continues.
     await safeStorageSet({
       attestationLogInQuery: message.res,
     });
-    if (retcode !== '1') {
-      // retcode '1' = in progress (offline/online RUNNING), keep polling.
-      // Other retcodes = unknown final state, clean up to allow retry.
-      stopKeepAlive();
-      await safeStorageRemove([
-        'padoZKAttestationJSSDKBeginAttest',
-        'padoZKAttestationJSSDKWalletAddress',
-        'padoZKAttestationJSSDKAttestationPresetParams',
-        'activeRequestAttestation',
-        'padoZKAttestationJSSDKClientType',
-      ]);
-      const unknownRetcodeMsg = {
-        type: 'error',
-        title: errorMsgTitle,
-        desc: 'Attestation completed with unexpected result.',
-        sourcePageTip: getNoteV2Extension(
-          noteV2Map,
-          '00099',
-          getNoteV2Extension(noteV2Map, '99999', '')
-        ),
-      };
-      await pageDecodeMsgListener(
-        {
-          name: 'end',
-          params: { result: 'warn', failReason: { ...unknownRetcodeMsg } },
-        },
-        sender,
-        sendResponse,
-        HAS_GET_TWITTER_SCREEN_NAME,
-        processAlgorithmReq
-      );
-      await sendMsgToTab(dappTabId, {
-        type: 'padoZKAttestationJSSDK',
-        name: 'startAttestationRes',
-        params: {
-          result: false,
-          errorData: {
-            title: unknownRetcodeMsg.title,
-            desc: unknownRetcodeMsg.desc,
-            code: '00099',
-            data: message.res,
-          },
-          reStartFlag: true,
-        },
-      });
-      processAlgorithmReq({ reqMethodName: 'stop' });
-    }
   }
 }
