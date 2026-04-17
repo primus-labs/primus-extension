@@ -306,8 +306,9 @@ function PadoCard({ activeRequest }) {
     title = 'Verification Failed';
     errorMsg = errorTxt?.sourcePageTip || 'No verifiable data was detected.';
     const errorCode = errorTxt?.code || '';
-    subtitle = errorCode
-      ? `Error code: ${errorCode}. Redirecting in ${countdown}s`
+    const errorCodeForDisplay = errorCode.split(':')[0]?.trim() || errorCode;
+    subtitle = errorCodeForDisplay
+      ? `Error code: ${errorCodeForDisplay}. Redirecting in ${countdown}s`
       : `Redirecting in ${countdown}s`;
   }
 
