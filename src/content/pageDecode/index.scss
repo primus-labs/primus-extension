@@ -242,26 +242,52 @@
         }
 
         /* Top-left anchor like StatusModal (no -50% centering) */
+        /* Avoid `.success` / `.error` alone — host sites (e.g. Google dev docs) style those globals */
         .result-badge {
           position: absolute;
           left: calc(50% + 24px);
           top: calc(50% + 22px);
           transform: scale(0);
           transform-origin: center center;
-          width: 12px;
-          height: 12px;
+          width: 12px !important;
+          height: 12px !important;
+          min-width: 12px !important;
+          min-height: 12px !important;
+          max-width: 12px !important;
+          max-height: 12px !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          border: none !important;
+          box-sizing: border-box !important;
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
           z-index: 3;
+          line-height: 0;
+          overflow: hidden;
           animation: badgeSpring 0.45s cubic-bezier(0.34, 1.2, 0.64, 1) 0.05s forwards;
 
-          &.success {
+          /* Tiny badge SVGs: host `svg { width/height: 1rem }` + `width:auto` can break intrinsic size */
+          svg {
+            display: block !important;
+            flex: 0 0 auto !important;
+            width: 8px !important;
+            height: 6px !important;
+            max-width: none !important;
+            max-height: none !important;
+            overflow: visible !important;
+          }
+
+          &.result-badge--error svg {
+            height: 8px !important;
+          }
+
+          &.result-badge--success {
             background: var(--primus-orange, #fd4c00);
           }
 
-          &.error {
+          &.result-badge--error {
             background: var(--badge-error, #dc2626);
           }
         }
