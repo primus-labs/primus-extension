@@ -319,7 +319,7 @@ function PadoCard({ activeRequest }) {
 
   return (
     <div className="pado-extension-shell">
-      {/* 暂时关闭蒙层 */}
+      {/* Backdrop overlay disabled for now */}
       {/* <div className="pado-modal-backdrop" aria-hidden="true" /> */}
       <div className="pado-extension-root" ref={rootRef}>
         <div

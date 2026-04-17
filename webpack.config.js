@@ -402,7 +402,7 @@ var options = {
       }
     }),
     new MiniCssExtractPlugin({
-      // 定义输出文件名和目录
+      // Output filename and path for extracted CSS
       // filename: 'static/css/main.css',
       filename: 'static/css/[name].css',
     }),

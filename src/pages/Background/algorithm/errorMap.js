@@ -48,6 +48,6 @@ export function getAttestTipForCode(code, noteV2Map) {
   return {
     desc,
     sourcePageTip,
-    code: code != null && code !== '' ? `Error ${code}` : '',
+    code: code != null && code !== '' ? `${code}` : '',
   };
 }
