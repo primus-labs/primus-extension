@@ -82,6 +82,15 @@
     padding: 0;
   }
 
+  /* Host pages often use global `svg { width/height: 1rem }`, which overrides attribute sizes */
+  svg {
+    width: auto !important;
+    height: auto !important;
+    max-width: none !important;
+    max-height: none !important;
+    flex-shrink: 0;
+  }
+
   position: fixed;
   z-index: 10000000;
   top: 0;
