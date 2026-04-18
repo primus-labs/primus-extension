@@ -309,6 +309,12 @@
         text-align: center;
         color: var(--Foreground-default, #101010);
         margin: 0;
+        max-width: 262px;
+        width: 100%;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       .modal-subtitle {
@@ -318,8 +324,13 @@
         letter-spacing: 0px;
         text-align: center;
         width: 100%;
+        max-width: 262px;
+        min-width: 0;
         color: var(--Foreground-muted, #878787);
         margin: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       .modal-error-text {
