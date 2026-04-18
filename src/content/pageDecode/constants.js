@@ -18,12 +18,12 @@ export const DISABLED_PATH_SEGMENT_REGEX =
   /(?:^|[/?#])(?:login|register|signin|signup|forgotpassword|password_reset)(?:[/=?#]|$)/i;
 
 /**
- * Amazon-only: full URL prefixes www.amazon.{host}/… — claim + CVF + account recovery collect-new-password.
- * Prefix match so query/hash after path still counts. Host suffix not hard-coded.
+ * Amazon-only: full URL prefixes www.amazon.{host} or amazon.{host} (optional www).
+ * Covers claim, CVF, account recovery, and /ap/accountfixup paths.
+ * Host TLD not hard-coded. Prefix match so query/hash after path still counts.
  */
 export const DISABLED_AMAZON_URL_REGEX =
-  /^https:\/\/www\.amazon\.[^/]+\/(?:ax\/claim|ap\/cvf\/(?:transactionapproval|approval|verify|request|accountrecovery\/collectnewpassword))/i;
-
+  /^https:\/\/(?:www\.)?amazon\.[^/]+\/(?:ax\/claim|ap\/cvf\/(?:transactionapproval|approval|verify|request|accountrecovery\/collectnewpassword)|ap\/accountfixup)/i;
 /**
  * Steam-only: login help wizard + store mobile + store join. Prefix match (query/hash OK). href lowercased in index.jsx.
  */
