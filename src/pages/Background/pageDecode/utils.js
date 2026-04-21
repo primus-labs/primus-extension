@@ -153,15 +153,40 @@ export const validateResponseCondition = (
 };
 export const validateXPathWithLibs = (html, xpath) => {
   try {
+    const normalizedXpath = String(xpath || '')
+      .trim()
+      // Template configs may mark XPath as optional with a trailing "?".
+      // xpath lib does not support this syntax, so strip it before evaluation.
+      .replace(/\?+$/, '');
+    if (!normalizedXpath) return [];
+
     // Match duplicate aria-label/data-item-id attributes, keep the first one, and remove subsequent duplicates
     // const cleanedHtml = html
     //   .replace(/(\s+aria-label="[^"]+")(?=.*\1)/g, '')
     //   .replace(/(\s+data-item-id="[^"]+")(?=.*\1)/g, '');
     // Automatically handle all duplicate attributes without the need for manual regular expressions
-    const $ = cheerio.load(html);
-    const cleanedHtml = $.html();
-    const doc = new DOMParser().parseFromString(cleanedHtml);
-    const nodes = select(xpath, doc);
+    const $ = cheerio.load(html, { decodeEntities: false });
+    // xmldom parses as XML, and raw JS inside <script> often contains "<" which breaks XML parsing.
+    // Remove executable blocks only for XPath validation to keep structural nodes stable.
+    $('script,style,noscript').remove();
+    const cleanedHtml = $.html()
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/&(?!#?[a-zA-Z0-9]+;)/g, '&amp;')
+      .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '');
+    const parserMessages = [];
+    const doc = new DOMParser({
+      errorHandler: {
+        warning: () => {},
+        error: () => {},
+        fatalError: (msg) => {
+          parserMessages.push(String(msg || 'fatal parse error'));
+        },
+      },
+    }).parseFromString(cleanedHtml);
+    if (parserMessages.length) {
+      throw new Error(parserMessages[0]);
+    }
+    const nodes = select(normalizedXpath, doc);
 
     return nodes
       .map((node) => {
