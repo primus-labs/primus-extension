@@ -68,7 +68,7 @@ export function getJumpUrlHostOverrideForAlgorithmParams(activeTemplate) {
 }
 
 /**
- * Rewrite `needCapture: false` request URLs whose host matched jumpTo before jumpToUrl rewrite.
+ * Rewrite  request URLs whose host matched jumpTo before jumpToUrl rewrite.
  * @param {object[]} formatRequests Built request list (mutated in place).
  * @param {object} activeTemplate
  */
@@ -85,7 +85,6 @@ export function rewriteNoCaptureRequestUrlsForJumpUrl(
   if (typeof sourceHostname !== 'string' || !sourceHostname) return;
 
   for (const fr of formatRequests) {
-    if (fr.needCapture !== false) continue;
     const rawUrl = fr.url;
     if (typeof rawUrl !== 'string' || !rawUrl.trim()) continue;
     try {

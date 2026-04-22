@@ -286,7 +286,6 @@ export function rewriteAmazonNoCaptureRequestUrlsForAlgorithmParams(
   if (typeof base !== 'string' || !base.trim()) return;
 
   for (const fr of formatRequests) {
-    if (fr.needCapture !== false) continue;
     const rawUrl = fr.url;
     if (typeof rawUrl !== 'string' || !rawUrl.trim()) continue;
     if (!isAmazonStorefrontUrl(rawUrl)) continue;
