@@ -52,45 +52,6 @@ function changeMonadField(op, key, value) {
   }
 }
 
-let callerTabId;
-let createdTabIdByExtension;
-
-/**
- * Background listener for X follow flow (opened from DApp). Wire from chrome.runtime.onMessage.
- */
-export const listener = async (request, sender) => {
-  const { type, name, params } = request;
-
-  if (name === 'followX') {
-    callerTabId = sender.tab.id;
-    const url = `https://twitter.com/intent/follow?screen_name=${params.screen_name}`;
-    const tabCreatedByPado = await chrome.tabs.create({ url });
-    createdTabIdByExtension = tabCreatedByPado.id;
-  } else if (type === 'xFollow' && name === 'follow') {
-    if (createdTabIdByExtension) {
-      await chrome.tabs.remove(createdTabIdByExtension);
-      chrome.tabs.sendMessage(callerTabId, {
-        type: 'lumaMonadEvent',
-        name: 'followXRes',
-        params,
-      });
-      await chrome.tabs.update(callerTabId, { active: true });
-    }
-  }
-};
-
-export const informFollowXForMonad = async (params) => {
-  const { padoZKAttestationJSSDKDappTabId: dappTabId } =
-    await chrome.storage.local.get(['padoZKAttestationJSSDKDappTabId']);
-  if (dappTabId) {
-    chrome.tabs.sendMessage(dappTabId, {
-      type: 'padoZKAttestationJSSDK',
-      name: 'followX',
-      params,
-    });
-  }
-};
-
 export function isLumaMonadTemplate(activeTemplate) {
   const id = activeTemplate?.attTemplateID ?? activeTemplate?.id;
   return id === TEMPLATE_ID_FOR_LUMA_MONAD;

@@ -70,13 +70,6 @@ var options = {
       'devconsole',
       'catchFavicon.js'
     ),
-    lumaMonadEvent: path.join(
-      __dirname,
-      'src',
-      'content',
-      'lumaMonadEvent',
-      'index.js'
-    ),
     xPage: path.join(__dirname, 'src', 'content', 'xPage', 'index.js'),
     xEvent: path.join(__dirname, 'src', 'content', 'xEvent', 'index.js'),
     //offscreen: path.join(__dirname, 'src', 'services', 'algorithms', 'offscreen.js'),
@@ -264,19 +257,6 @@ var options = {
               jsonobj.content_scripts[0].matches.push(
                 'http://localhost:3001/*'
               );
-              const lumaMonadScript = jsonobj.content_scripts.find(
-                (script) =>
-                  Array.isArray(script.js) &&
-                  script.js.includes('lumaMonadEvent.bundle.js')
-              );
-              if (lumaMonadScript) {
-                const lumaMatches = new Set(lumaMonadScript.matches || []);
-                [
-                  'http://localhost/*',
-                  'https://test-luckydraw.primuslabs.xyz/*',
-                ].forEach((m) => lumaMatches.add(m));
-                lumaMonadScript.matches = Array.from(lumaMatches);
-              }
               const xEventScript = jsonobj.content_scripts.find(
                 (script) =>
                   Array.isArray(script.js) &&
@@ -335,11 +315,6 @@ var options = {
         },
         {
           from: 'src/services/algorithms/client_plugin.js',
-          to: path.join(__dirname, 'build'),
-          force: true,
-        },
-        {
-          from: 'src/content/xFollow.js',
           to: path.join(__dirname, 'build'),
           force: true,
         },

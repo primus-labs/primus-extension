@@ -51,20 +51,6 @@
     },
     {
       "matches": [
-        "https://twitter.com/intent/follow?screen_name=primus_labs",
-        "https://x.com/intent/follow?screen_name=primus_labs",
-        "https://x.com/intent/follow?screen_name=monad_xyz"
-      ],
-      "js": ["xFollow.js"]
-    },
-    {
-      "matches": [
-        "https://luckydraw.primuslabs.xyz/*"
-      ],
-      "js": ["lumaMonadEvent.bundle.js"]
-    },
-    {
-      "matches": [
         "https://twitter.com/intent/follow?screen_name=*",
         "https://x.com/intent/follow?screen_name=*",
         "https://x.com/intent/retweet?tweet_id=*"
