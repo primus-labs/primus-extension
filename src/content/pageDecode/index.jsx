@@ -12,6 +12,7 @@ import {
   DISABLED_PATH_SEGMENT_REGEX,
   DISABLED_AMAZON_URL_REGEX,
   DISABLED_STEAM_URL_REGEX,
+  STATUS,
   SESSION_KEYS,
 } from './constants';
 import './index.scss';
@@ -168,15 +169,21 @@ chrome.runtime.sendMessage(
     if (!response || response.name !== 'append') return;
     if (isDisabledPath()) return;
 
+    if (response.isReady) {
+      sessionStorage.setItem(SESSION_KEYS.READY, '1');
+    }
+    if (response.phase === 'attesting') {
+      sessionStorage.setItem(SESSION_KEYS.STATUS, STATUS.VERIFYING);
+    }
+
     if (activeRequest) {
-      if (response.isReady) {
-        sessionStorage.setItem(SESSION_KEYS.READY, '1');
-      }
+      activeRequest.pageDecodePhase = response.phase || activeRequest.pageDecodePhase;
       return;
     }
 
     const params = response.params || {};
     activeRequest = { ...params };
+    activeRequest.pageDecodePhase = response.phase || params.pageDecodePhase;
     delete activeRequest.PADOSERVERURL;
     delete activeRequest.padoExtensionVersion;
 

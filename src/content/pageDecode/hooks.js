@@ -181,17 +181,25 @@ export function useTimeoutManager(activeRequest, status, statusRef, setters) {
 }
 
 /** Auto-call handleConfirm when isReadyFetch becomes true and status is not result. */
-export function useAutoStartWhenReady(isReadyFetch, handleConfirm, setters) {
+export function useAutoStartWhenReady(
+  isReadyFetch,
+  handleConfirm,
+  setters,
+  pageDecodePhase
+) {
   useEffect(() => {
     if (!isReadyFetch) return;
     const lastStatus = sessionStorage.getItem(SESSION_KEYS.STATUS);
     if (lastStatus === STATUS.RESULT) return;
     setters.setStatus(STATUS.VERIFYING);
     sessionStorage.setItem(SESSION_KEYS.STATUS, STATUS.VERIFYING);
+    if (pageDecodePhase === 'attesting') {
+      return;
+    }
     if (lastStatus !== STATUS.VERIFYING) {
       handleConfirm();
     }
-  }, [isReadyFetch, handleConfirm, setters]);
+  }, [isReadyFetch, handleConfirm, setters, pageDecodePhase]);
 }
 
 /** Countdown from N seconds when status reaches RESULT, then call onComplete. */

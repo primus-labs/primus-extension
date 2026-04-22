@@ -34,7 +34,7 @@ import {
   isChannelSubscriptionTemplate,
   formatJsonArrFnForChannelSubscription,
 } from './specialTemplates/specialTemplateChannelSubscription';
-import { getPageDecodeState } from './state';
+import { getPageDecodeState, PAGE_DECODE_PHASES } from './state';
 import { formatAlgorithmParamsFn } from './templateMatcher';
 import { sendMsgToDataSourcePage } from './sdkBridge';
 import { trySendSecondRequestWithFirstHeaders } from './specialTemplates/specialTemplateSendSecondRequest';
@@ -283,6 +283,9 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
 export async function checkWebRequestIsReady() {
   const pageDecodeState = getPageDecodeState();
   const { state } = pageDecodeState;
+  if (state.phase === PAGE_DECODE_PHASES.ATTESTING) {
+    return state.isReadyRequest;
+  }
   const { requestsMap, activeTemplate, formatAlgorithmParams } = state;
   const {
     datasourceTemplate: { requests },
@@ -338,12 +341,16 @@ export async function checkWebRequestIsReady() {
 
   if (fl) {
     state.isReadyRequest = true;
+    state.phase = PAGE_DECODE_PHASES.READY;
     console.log('all web requests are captured', requestsMap);
-    await sendMsgToDataSourcePage({
-      type: 'pageDecode',
-      name: 'webRequestIsReady',
-      params: { isReady: true },
-    });
+    if (!state.readyNotified) {
+      state.readyNotified = true;
+      await sendMsgToDataSourcePage({
+        type: 'pageDecode',
+        name: 'webRequestIsReady',
+        params: { isReady: true },
+      });
+    }
   }
   return fl;
 }

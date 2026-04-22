@@ -7,12 +7,22 @@ const DEFAULT_PRE_ATTEST_PROMPT_V2 = [
   { text: ['Checking data', 'Ensure login and on target page.'], showTime: 30000 },
 ];
 
+export const PAGE_DECODE_PHASES = {
+  IDLE: 'idle',
+  CAPTURING: 'capturing',
+  READY: 'ready',
+  ATTESTING: 'attesting',
+};
+
 export function createPageDecodeState() {
   const state = {
     dataSourcePageTabId: null,
     activeTemplate: {},
     currExtentionId: null,
     isReadyRequest: false,
+    phase: PAGE_DECODE_PHASES.IDLE,
+    readyNotified: false,
+    startHandled: false,
     operationType: null,
     formatAlgorithmParams: null,
     onBeforeSendHeadersFn: () => {},
@@ -48,6 +58,9 @@ export function createPageDecodeState() {
 
   function reset() {
     state.isReadyRequest = false;
+    state.phase = PAGE_DECODE_PHASES.IDLE;
+    state.readyNotified = false;
+    state.startHandled = false;
     state.operationType = null;
     state.formatAlgorithmParams = null;
     state.requestsMap = {};

@@ -3,7 +3,7 @@
  */
 import { PADOSERVERURL } from '@/config/envConstants';
 import { padoExtensionVersion } from '@/config/constants';
-import { getPageDecodeState } from './state';
+import { getPageDecodeState, PAGE_DECODE_PHASES } from './state';
 import {
   setupWebRequestListener,
   removeWebRequestListener,
@@ -88,6 +88,7 @@ export async function pageDecodeMsgListener(
   if (name === 'init') {
     state.activeTemplate = params || {};
     pageDecodeState.reset();
+    state.phase = PAGE_DECODE_PHASES.CAPTURING;
     state.skipCancelOnNextDataSourceTabRemoved = false;
   }
 
@@ -152,7 +153,9 @@ export async function pageDecodeMsgListener(
           clearTimeout(injectDebounceTimer);
           injectDebounceTimer = setTimeout(async () => {
             await injectFn();
-            await checkWebRequestIsReady();
+            if (state.phase !== PAGE_DECODE_PHASES.ATTESTING) {
+              await checkWebRequestIsReady();
+            }
           }, 300);
         }
       });
@@ -184,15 +187,24 @@ export async function pageDecodeMsgListener(
           PRE_ATTEST_PROMOT_V2: state.PRE_ATTEST_PROMOT_V2,
           ATTESTATION_PROCESS_NOTE_V2: state.ATTESTATION_PROCESS_NOTE_V2,
           tabId: state.dataSourcePageTabId,
+          pageDecodePhase: state.phase,
         },
         dataSourcePageTabId: state.dataSourcePageTabId,
         isReady: state.isReadyRequest,
+        phase: state.phase,
         operation: state.operationType,
       });
       await checkWebRequestIsReady();
     }
 
     if (name === 'start') {
+      if (state.startHandled) {
+        respond({ ok: true });
+        return;
+      }
+      state.startHandled = true;
+      state.phase = PAGE_DECODE_PHASES.ATTESTING;
+      removeWebRequestListener();
       startKeepAlive();
       const { userInfo } = await safeStorageGet(['userInfo']);
       if (!userInfo) {

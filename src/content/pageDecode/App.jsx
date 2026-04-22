@@ -210,7 +210,12 @@ function PadoCard({ activeRequest }) {
     });
   }, []);
 
-  useAutoStartWhenReady(isReadyFetch, handleConfirm, setters);
+  useAutoStartWhenReady(
+    isReadyFetch,
+    handleConfirm,
+    setters,
+    activeRequest?.pageDecodePhase
+  );
 
   // --- Drag logic ---
   const [position, setPosition] = useState({ x: 0, y: 0 });
