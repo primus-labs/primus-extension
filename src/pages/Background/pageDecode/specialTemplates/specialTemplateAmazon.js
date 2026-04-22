@@ -4,6 +4,10 @@
 
 import { getPageDecodeState } from '../state';
 import { rewriteUrlOrigin } from '../urlOriginRewrite';
+import {
+  getTrueRequestHostname,
+  rewriteRequestUrlsToTrueOrigin,
+} from '../requestHostOverride';
 
 export const AMAZON_ACCOUNT_MANAGE_TEMPLATE_ID =
   '9119207f-5884-403d-8bb3-1b6870d428fe';
@@ -241,39 +245,24 @@ export async function getAmazonSiteByIP(tabId) {
 }
 
 /**
- * True if URL host looks like an Amazon storefront (www.amazon.xx / smile, etc.).
- * @param {string} url
- */
-function isAmazonStorefrontUrl(url) {
-  try {
-    return new URL(url).hostname.includes('amazon.');
-  } catch (_e) {
-    return false;
-  }
-}
-
-/**
  * For Amazon account-manage template, algorithm `host` must match the resolved storefront
- * (e.g. www.amazon.sg), not the template default (e.g. www.amazon.co.jp).
+ * derived from the real captured request, not the template default.
  * @param {object} activeTemplate
+ * @param {object[]} formatRequests
  * @returns {string|null} Hostname without port, or null if N/A.
  */
-export function getAmazonHostOverrideForAlgorithmParams(activeTemplate) {
+export function getAmazonHostOverrideForAlgorithmParams(
+  activeTemplate,
+  formatRequests
+) {
   const templateId =
     activeTemplate?.attTemplateID ?? activeTemplate?.id;
   if (templateId !== AMAZON_ACCOUNT_MANAGE_TEMPLATE_ID) return null;
   if (skipAmazonLogicForJumpToUrl(activeTemplate)) return null;
-
-  const base = getPageDecodeState().state.resolvedAmazonStorefrontBaseUrl;
-  if (typeof base !== 'string' || !base.trim()) return null;
-  try {
-    return new URL(base).hostname;
-  } catch (_e) {
-    return null;
-  }
+  return getTrueRequestHostname(formatRequests);
 }
 
-export function rewriteAmazonNoCaptureRequestUrlsForAlgorithmParams(
+export function rewriteAmazonRequestUrlsForAlgorithmParams(
   formatRequests,
   activeTemplate
 ) {
@@ -281,16 +270,7 @@ export function rewriteAmazonNoCaptureRequestUrlsForAlgorithmParams(
     activeTemplate?.attTemplateID ?? activeTemplate?.id;
   if (templateId !== AMAZON_ACCOUNT_MANAGE_TEMPLATE_ID) return;
   if (skipAmazonLogicForJumpToUrl(activeTemplate)) return;
-
-  const base = getPageDecodeState().state.resolvedAmazonStorefrontBaseUrl;
-  if (typeof base !== 'string' || !base.trim()) return;
-
-  for (const fr of formatRequests) {
-    const rawUrl = fr.url;
-    if (typeof rawUrl !== 'string' || !rawUrl.trim()) continue;
-    if (!isAmazonStorefrontUrl(rawUrl)) continue;
-    fr.url = rewriteUrlOrigin(rawUrl, base);
-  }
+  return rewriteRequestUrlsToTrueOrigin(formatRequests);
 }
 
 /**

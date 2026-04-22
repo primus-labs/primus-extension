@@ -32,12 +32,8 @@ export function createPageDecodeState() {
      * Set by closeSdkDataSourceTabWithoutCancel before closing; cleared by the onRemoved listener after handling.
      */
     skipCancelOnNextDataSourceTabRemoved: false,
-    /** Set for Amazon account-manage template: storefront base URL for jumpTo + no-capture request URLs */
+    /** Set for Amazon account-manage template: storefront base URL for jumpTo resolution */
     resolvedAmazonStorefrontBaseUrl: null,
-    /**
-     * Hostname of jumpTo before additionParams.jumpToUrl origin rewrite; used to match no-capture request URLs.
-     */
-    jumpUrlRewriteSourceHostname: null,
     /** Runtime for dataPageTemplate.jumpConfig multi-step redirects; see jumpConfigRedirect.js */
     jumpConfigState: null,
     /** Luma Monad template (be2268c1): fields filled during checkTargetRequestFnForMonad */
@@ -61,7 +57,6 @@ export function createPageDecodeState() {
     state.linkedinVoyagerPaginationCache = null;
     state.linkedinVoyagerPaginationInFlight = null;
     state.resolvedAmazonStorefrontBaseUrl = null;
-    state.jumpUrlRewriteSourceHostname = null;
     state.jumpConfigState = null;
     Object.keys(state.monadFields).forEach((k) => {
       delete state.monadFields[k];

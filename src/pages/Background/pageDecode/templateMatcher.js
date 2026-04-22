@@ -10,11 +10,11 @@ import { tryPatchAlgorithmParamsForSpecialTemplateLinkedinConnections } from './
 import { tryPatchAlgorithmParamsForSpecialTemplateLumaMonad } from './specialTemplates/specialTemplateLumaMonad';
 import {
   getAmazonHostOverrideForAlgorithmParams,
-  rewriteAmazonNoCaptureRequestUrlsForAlgorithmParams,
+  rewriteAmazonRequestUrlsForAlgorithmParams,
 } from './specialTemplates/specialTemplateAmazon';
 import {
   getJumpUrlHostOverrideForAlgorithmParams,
-  rewriteNoCaptureRequestUrlsForJumpUrl,
+  rewriteRequestUrlsForJumpUrl,
 } from './additionParamsJumpUrl';
 import { tryPatchFormatResponseForSpecialTemplateReputationPhalaBinanceEarnBalance } from './specialTemplates/specialTemplateReputationPhalaBinanceEarnBalance';
 import { tryPatchFormatResponseForSpecialTemplateChannelSubscription } from './specialTemplates/specialTemplateChannelSubscription';
@@ -119,16 +119,19 @@ export async function formatAlgorithmParamsFn() {
       body: isObject(curRequestBody) ? { ...curRequestBody } : curRequestBody,
       url: queryString ? r.url + '?' + queryString : r.url,
     });
-    // Use r.url from Object.assign; destructured `url` from requestsMap is often undefined before capture.
-    formatRequests.push({ ...r, url });
+    // Prefer the real captured URL when available; otherwise keep the merged template URL.
+    formatRequests.push({ ...r, url: url || r.url });
   }
 
-  rewriteAmazonNoCaptureRequestUrlsForAlgorithmParams(
+  const amazonHostOverride = rewriteAmazonRequestUrlsForAlgorithmParams(
     formatRequests,
     activeTemplate
   );
 
-  rewriteNoCaptureRequestUrlsForJumpUrl(formatRequests, activeTemplate);
+  const jumpUrlHostOverride = rewriteRequestUrlsForJumpUrl(
+    formatRequests,
+    activeTemplate
+  );
 
   const formatResponse = JSON.parse(JSON.stringify(responses));
   for (const fr of formatRequests) {
@@ -141,8 +144,10 @@ export async function formatAlgorithmParamsFn() {
   }
 
   const algorithmHost =
-    getJumpUrlHostOverrideForAlgorithmParams(activeTemplate) ||
-    getAmazonHostOverrideForAlgorithmParams(activeTemplate) ||
+    jumpUrlHostOverride ||
+    amazonHostOverride ||
+    getJumpUrlHostOverrideForAlgorithmParams(activeTemplate, formatRequests) ||
+    getAmazonHostOverrideForAlgorithmParams(activeTemplate, formatRequests) ||
     host;
 
   tryPatchFormatResponseForSpecialTemplateReputationPhalaBinanceEarnBalance(

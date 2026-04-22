@@ -4,8 +4,11 @@
  * launch_page replaces the full jumpTo URL; jumpToUrl only swaps the origin and keeps path, query, hash.
  */
 
-import { getPageDecodeState } from './state';
 import { rewriteUrlOrigin } from './urlOriginRewrite';
+import {
+  getTrueRequestHostname,
+  rewriteRequestUrlsToTrueOrigin,
+} from './requestHostOverride';
 
 /**
  * @param {string} raw
@@ -25,13 +28,9 @@ function trimValidJumpUrlBase(raw) {
 
 /**
  * After Amazon (or plain template) jumpTo is final, optionally rewrite origin from additionParams.jumpToUrl.
- * Sets state.jumpUrlRewriteSourceHostname when a rewrite is applied (for algorithm no-capture URL matching).
  * @param {object} activeTemplate
  */
 export function applyAdditionParamsJumpUrlToJumpTo(activeTemplate) {
-  const { state } = getPageDecodeState();
-  state.jumpUrlRewriteSourceHostname = null;
-
   const base = trimValidJumpUrlBase(
     activeTemplate?.additionParamsObj?.jumpToUrl ?? ''
   );
@@ -39,59 +38,39 @@ export function applyAdditionParamsJumpUrlToJumpTo(activeTemplate) {
 
   const jumpTo = activeTemplate?.jumpTo;
   if (typeof jumpTo !== 'string' || !jumpTo.trim()) return;
-
-  let sourceHostname;
-  try {
-    sourceHostname = new URL(jumpTo).hostname;
-  } catch (_e) {
-    return;
-  }
-
-  state.jumpUrlRewriteSourceHostname = sourceHostname;
   activeTemplate.jumpTo = rewriteUrlOrigin(jumpTo, base);
 }
 
 /**
  * @param {object} activeTemplate
+ * @param {object[]} formatRequests
  * @returns {string|null} Hostname without port, or null if N/A.
  */
-export function getJumpUrlHostOverrideForAlgorithmParams(activeTemplate) {
+export function getJumpUrlHostOverrideForAlgorithmParams(
+  activeTemplate,
+  formatRequests
+) {
   const base = trimValidJumpUrlBase(
     activeTemplate?.additionParamsObj?.jumpToUrl ?? ''
   );
   if (!base) return null;
-  try {
-    return new URL(base).hostname;
-  } catch (_e) {
-    return null;
-  }
+  return getTrueRequestHostname(formatRequests);
 }
 
 /**
- * Rewrite  request URLs whose host matched jumpTo before jumpToUrl rewrite.
+ * When jumpToUrl is used, align every algorithm request URL
+ * with the hostname of the real captured request.
  * @param {object[]} formatRequests Built request list (mutated in place).
  * @param {object} activeTemplate
+ * @returns {string|null} Hostname without port, or null if N/A.
  */
-export function rewriteNoCaptureRequestUrlsForJumpUrl(
+export function rewriteRequestUrlsForJumpUrl(
   formatRequests,
   activeTemplate
 ) {
   const base = trimValidJumpUrlBase(
     activeTemplate?.additionParamsObj?.jumpToUrl ?? ''
   );
-  if (!base) return;
-
-  const sourceHostname = getPageDecodeState().state.jumpUrlRewriteSourceHostname;
-  if (typeof sourceHostname !== 'string' || !sourceHostname) return;
-
-  for (const fr of formatRequests) {
-    const rawUrl = fr.url;
-    if (typeof rawUrl !== 'string' || !rawUrl.trim()) continue;
-    try {
-      if (new URL(rawUrl).hostname !== sourceHostname) continue;
-    } catch (_e) {
-      continue;
-    }
-    fr.url = rewriteUrlOrigin(rawUrl, base);
-  }
+  if (!base) return null;
+  return rewriteRequestUrlsToTrueOrigin(formatRequests);
 }
