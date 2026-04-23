@@ -29,9 +29,6 @@ export function createPageDecodeState() {
     onBeforeRequestFn: () => {},
     requestsMap: {},
     reportRequestIds: [],
-    /** For template 99d6d02a (LinkedIn Connections): pagination cache and in-flight promise */
-    linkedinVoyagerPaginationCache: null,
-    linkedinVoyagerPaginationInFlight: null,
     PRE_ATTEST_PROMOT_V2: [...DEFAULT_PRE_ATTEST_PROMPT_V2],
     /**
      * If true, the next data-source tab removal (e.g. chrome.tabs.remove) is treated as programmatic:
@@ -112,8 +109,6 @@ export function createPageDecodeState() {
     state.formatAlgorithmParams = null;
     state.requestsMap = {};
     state.reportRequestIds = [];
-    state.linkedinVoyagerPaginationCache = null;
-    state.linkedinVoyagerPaginationInFlight = null;
     state.resolvedAmazonStorefrontBaseUrl = null;
     state.uiResultSnapshot = null;
     state.jumpConfigState = null;
