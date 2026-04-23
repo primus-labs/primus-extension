@@ -18,6 +18,136 @@ export function createDomElement(html) {
   return dom.body.firstElementChild;
 }
 
+const HOST_THEME_ROOT_SELECTORS = [
+  '#root',
+  '#app',
+  '#__next',
+  '#__nuxt',
+  '#___gatsby',
+  '[data-reactroot]',
+];
+
+const HOST_THEME_ATTRIBUTE_NAMES = [
+  'data-theme',
+  'data-mode',
+  'data-color-mode',
+  'data-color-scheme',
+];
+
+function normalizeThemeValue(value) {
+  try {
+    if (typeof value !== 'string') return '';
+    return value.trim().toLowerCase();
+  } catch (_e) {
+    return '';
+  }
+}
+
+function resolveThemeFromText(value) {
+  try {
+    const normalized = normalizeThemeValue(value);
+    if (!normalized) return '';
+    if (
+      normalized === 'dark' ||
+      normalized.includes('theme-dark') ||
+      /(^|[\s_-])dark($|[\s_-])/.test(normalized)
+    ) {
+      return 'dark';
+    }
+    if (
+      normalized === 'light' ||
+      normalized.includes('theme-light') ||
+      /(^|[\s_-])light($|[\s_-])/.test(normalized)
+    ) {
+      return 'light';
+    }
+    return '';
+  } catch (_e) {
+    return '';
+  }
+}
+
+function resolveThemeFromElement(element) {
+  try {
+    if (!element) return '';
+
+    const className =
+      typeof element.className === 'string'
+        ? element.className
+        : element.getAttribute?.('class') || '';
+    const classTheme = resolveThemeFromText(className);
+    if (classTheme) return classTheme;
+
+    for (const attrName of HOST_THEME_ATTRIBUTE_NAMES) {
+      const attrValue = element.getAttribute?.(attrName);
+      const attrTheme = resolveThemeFromText(attrValue);
+      if (attrTheme) return attrTheme;
+    }
+
+    return '';
+  } catch (_e) {
+    return '';
+  }
+}
+
+function getHostThemeCandidateElements() {
+  const elements = [];
+  try {
+    if (typeof document === 'undefined') return elements;
+
+    if (document.documentElement) {
+      elements.push(document.documentElement);
+    }
+    if (document.body) {
+      elements.push(document.body);
+    }
+
+    for (const selector of HOST_THEME_ROOT_SELECTORS) {
+      try {
+        const element = document.querySelector(selector);
+        if (element && !elements.includes(element)) {
+          elements.push(element);
+        }
+      } catch (_e) {
+        // Ignore invalid selector/query issues to avoid affecting host pages.
+      }
+    }
+
+    return elements;
+  } catch (_e) {
+    return elements;
+  }
+}
+
+export function detectHostTheme() {
+  try {
+    const themeCandidates = getHostThemeCandidateElements();
+    for (const element of themeCandidates) {
+      const theme = resolveThemeFromElement(element);
+      if (theme === 'dark' || theme === 'light') {
+        return theme;
+      }
+    }
+  } catch (_e) {
+    // Fall through to media query detection, then final light fallback.
+  }
+
+  try {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+      return 'light';
+    }
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    if (!mediaQuery || typeof mediaQuery.matches !== 'boolean') {
+      return 'light';
+    }
+
+    return mediaQuery.matches ? 'dark' : 'light';
+  } catch (_e) {
+    return 'light';
+  }
+}
+
 export const request = async (fetchParams, baseUrl, padoExtensionVersion) => {
   let { method, url, data = {}, config } = fetchParams;
   method = method.toUpperCase();

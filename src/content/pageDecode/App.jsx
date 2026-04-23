@@ -21,6 +21,7 @@ import {
   STATUS,
   TIMING,
 } from './constants';
+import { detectHostTheme } from './utils';
 import { shouldUseDarkModalForSpotifyDataSourceUrl } from '@/pages/Background/pageDecode/specialTemplates/specialTemplateSpotify';
 
 const MODAL_CARD_WIDTH = 294;
@@ -159,10 +160,13 @@ function PadoCard({ activeRequest }) {
   useLayoutEffect(() => {
     const root = document.getElementById(CONTAINER_ID);
     if (!root) return undefined;
-    const blackModal =
+    const shouldForceBlackModal =
       pageDecodeTemplateId === PAGE_DECODE_BLACK_MODAL_TEMPLATE_ID ||
       shouldUseDarkModalForSpotifyDataSourceUrl(dataSourceHref);
-    if (blackModal) root.classList.add('pado-page-decode-theme--black');
+    const resolvedTheme = shouldForceBlackModal ? 'dark' : detectHostTheme();
+    if (resolvedTheme === 'dark') {
+      root.classList.add('pado-page-decode-theme--black');
+    }
     else root.classList.remove('pado-page-decode-theme--black');
     return () => root.classList.remove('pado-page-decode-theme--black');
   }, [pageDecodeTemplateId, dataSourceHref]);
