@@ -14,7 +14,7 @@ import {
  * @param {string} raw
  * @returns {string|null}
  */
-function trimValidJumpUrlBase(raw) {
+export function trimValidJumpUrlBase(raw) {
   if (typeof raw !== 'string') return null;
   const t = raw.trim();
   if (!t) return null;

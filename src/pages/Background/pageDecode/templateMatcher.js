@@ -11,7 +11,7 @@ import { tryPatchAlgorithmParamsForSpecialTemplateLumaMonad } from './specialTem
 import {
   getAmazonHostOverrideForAlgorithmParams,
   rewriteAmazonRequestUrlsForAlgorithmParams,
-} from './specialTemplates/specialTemplateAmazon';
+} from './specialTemplates/amazon';
 import {
   getJumpUrlHostOverrideForAlgorithmParams,
   rewriteRequestUrlsForJumpUrl,

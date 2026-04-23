@@ -18,7 +18,7 @@ import {
 import { safeStorageGet, safeStorageSet } from '@/utils/safeStorage';
 import { safeJsonParse } from '@/utils/utils';
 import { startKeepAlive } from '../utils/keepAlive.js';
-import { applyAmazonSiteJumpToIfNeeded } from './specialTemplates/specialTemplateAmazon';
+import { applyAmazonSiteJumpToIfNeeded } from './specialTemplates/amazon';
 import { applyAdditionParamsJumpUrlToJumpTo } from './additionParamsJumpUrl';
 import { initJumpConfigState } from './jumpConfigRedirect';
 import { resolveNoteV2MapFromConfigParsed } from '@/utils/attestationProcessNoteV2';
