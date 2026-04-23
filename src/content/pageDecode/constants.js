@@ -43,6 +43,7 @@ export const SESSION_KEYS = {
   STATUS: 'padoAttestRequestStatus',
   RESULT_STATUS: 'padoAttestRequestResultStatus',
   ERROR_TXT: 'padoAttestRequestErrorTxt',
+  RESULT_CLOSE_AT: 'padoAttestRequestResultCloseAt',
   READY: 'padoAttestRequestReady',
 };
 

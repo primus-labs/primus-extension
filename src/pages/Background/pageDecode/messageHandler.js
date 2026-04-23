@@ -1,3 +1,4 @@
+/* global chrome, console, clearTimeout, setTimeout */
 /**
  * Page decode message router: dispatches init, initCompleted, start, close, cancel, end, interceptionFail, timeout.
  */
@@ -23,14 +24,61 @@ import { applyAdditionParamsJumpUrlToJumpTo } from './additionParamsJumpUrl';
 import { initJumpConfigState } from './jumpConfigRedirect';
 import { resolveNoteV2MapFromConfigParsed } from '@/utils/attestationProcessNoteV2';
 import { ensureExtensionUserIdentity } from '../identityBootstrap.js';
+import { closeSdkDataSourceTabWithoutCancel } from './closeDataSourceTab.js';
+
+const RESULT_CLOSE_DELAY_MS = {
+  success: 3000,
+  warn: 5000,
+};
+
+function buildUiResultSnapshot(state, requestParams = {}) {
+  const result = requestParams?.result === 'success' ? 'success' : 'warn';
+  return {
+    result,
+    failReason: requestParams?.failReason,
+    closeAt: Date.now() + RESULT_CLOSE_DELAY_MS[result],
+    requestid:
+      state.formatAlgorithmParams?.requestid ||
+      state.activeTemplate?.requestid ||
+      null,
+    tabId: state.dataSourcePageTabId,
+  };
+}
+
+function getReplayableUiResultSnapshot(state) {
+  const snapshot = state.uiResultSnapshot;
+  if (!snapshot) return null;
+  if (
+    snapshot.tabId != null &&
+    state.dataSourcePageTabId != null &&
+    snapshot.tabId !== state.dataSourcePageTabId
+  ) {
+    return null;
+  }
+  const requestid =
+    state.formatAlgorithmParams?.requestid ||
+    state.activeTemplate?.requestid ||
+    null;
+  if (snapshot.requestid && requestid && snapshot.requestid !== requestid) {
+    return null;
+  }
+  return snapshot;
+}
 
 function handleEnd(request) {
   const pageDecodeState = getPageDecodeState();
   const { state } = pageDecodeState;
   if (state.dataSourcePageTabId) {
-    sendMsgToDataSourcePage(request);
+    const uiResultSnapshot = buildUiResultSnapshot(state, request.params);
+    state.uiResultSnapshot = uiResultSnapshot;
+    sendMsgToDataSourcePage({
+      ...request,
+      params: {
+        ...request.params,
+        closeAt: uiResultSnapshot.closeAt,
+      },
+    });
     removeWebRequestListener();
-    pageDecodeState.reset();
   }
 }
 
@@ -170,6 +218,7 @@ export async function pageDecodeMsgListener(
             chrome.runtime.sendMessage({ type: 'pageDecode', name: 'stop' });
             await handlerForSdk(processAlgorithmReq, 'cancel');
           }
+          pageDecodeState.reset();
         }
       });
 
@@ -178,6 +227,12 @@ export async function pageDecodeMsgListener(
 
     if (name === 'initCompleted') {
       console.log('content_scripts-bg-decode receive:initCompleted');
+      const uiResultSnapshot = getReplayableUiResultSnapshot(state);
+      if (uiResultSnapshot && Date.now() >= uiResultSnapshot.closeAt) {
+        await closeSdkDataSourceTabWithoutCancel();
+        respond({ name: 'expired' });
+        return;
+      }
       respond({
         name: 'append',
         params: {
@@ -188,11 +243,13 @@ export async function pageDecodeMsgListener(
           ATTESTATION_PROCESS_NOTE_V2: state.ATTESTATION_PROCESS_NOTE_V2,
           tabId: state.dataSourcePageTabId,
           pageDecodePhase: state.phase,
+          resultSnapshot: uiResultSnapshot,
         },
         dataSourcePageTabId: state.dataSourcePageTabId,
         isReady: state.isReadyRequest,
         phase: state.phase,
         operation: state.operationType,
+        resultSnapshot: uiResultSnapshot,
       });
       await checkWebRequestIsReady();
     }

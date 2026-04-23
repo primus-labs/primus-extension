@@ -8,17 +8,25 @@ import { getNoteV2Extension } from '@/utils/attestationProcessNoteV2';
 /**
  * Persist result state to sessionStorage and update React state (shared by message listener and timeouts).
  */
-function persistAndSetResult(setters, resultStatus, errorTxt) {
+function persistAndSetResult(setters, resultStatus, errorTxt, closeAt) {
+  const effectiveCloseAt =
+    closeAt ??
+    Date.now() +
+      (resultStatus === 'success'
+        ? TIMING.COUNTDOWN_SECONDS_SUCCESS * 1000
+        : TIMING.COUNTDOWN_SECONDS_ERROR * 1000);
   sessionStorage.setItem(SESSION_KEYS.STATUS, STATUS.RESULT);
+  sessionStorage.setItem(SESSION_KEYS.RESULT_CLOSE_AT, String(effectiveCloseAt));
   if (errorTxt != null) {
     sessionStorage.setItem(SESSION_KEYS.ERROR_TXT, JSON.stringify(errorTxt));
   }
-  if (resultStatus === 'success') {
-    sessionStorage.setItem(SESSION_KEYS.RESULT_STATUS, 'success');
+  if (resultStatus) {
+    sessionStorage.setItem(SESSION_KEYS.RESULT_STATUS, resultStatus);
   }
   setters.setStatus(STATUS.RESULT);
   setters.setResultStatus(resultStatus ?? '');
   setters.setErrorTxt(errorTxt);
+  setters.setResultCloseAt(effectiveCloseAt);
 }
 
 /** Restore and sync attestation status with sessionStorage. */
@@ -28,21 +36,29 @@ export function useAttestationStatus() {
   const [isReadyFetch, setIsReadyFetch] = useState(false);
   const [resultStatus, setResultStatus] = useState('');
   const [errorTxt, setErrorTxt] = useState();
+  const [resultCloseAt, setResultCloseAt] = useState(null);
 
   useEffect(() => {
     const lastStatus = sessionStorage.getItem(SESSION_KEYS.STATUS);
     const lastResultStatus = sessionStorage.getItem(SESSION_KEYS.RESULT_STATUS);
     const lastErrorTxt = sessionStorage.getItem(SESSION_KEYS.ERROR_TXT);
+    const lastResultCloseAt = sessionStorage.getItem(SESSION_KEYS.RESULT_CLOSE_AT);
     const lastIsReadyFetch = sessionStorage.getItem(SESSION_KEYS.READY);
 
     if (lastStatus) {
       setStatus(lastStatus);
-      if (lastResultStatus === 'success') setResultStatus('success');
+      if (lastResultStatus) setResultStatus(lastResultStatus);
       if (lastErrorTxt && lastErrorTxt !== 'undefined') {
         try {
           setErrorTxt(JSON.parse(lastErrorTxt));
         } catch (_e) {
           // ignore invalid stored JSON
+        }
+      }
+      if (lastResultCloseAt) {
+        const parsed = Number(lastResultCloseAt);
+        if (Number.isFinite(parsed)) {
+          setResultCloseAt(parsed);
         }
       }
     } else {
@@ -65,6 +81,8 @@ export function useAttestationStatus() {
     setResultStatus,
     errorTxt,
     setErrorTxt,
+    resultCloseAt,
+    setResultCloseAt,
   };
 }
 
@@ -76,7 +94,7 @@ export function useMessageListener(setters) {
   useEffect(() => {
     const listenerFn = (request) => {
       const { name, params = {} } = request;
-      const { result, failReason } = params;
+      const { result, failReason, closeAt } = params;
       const s = settersRef.current;
 
       if (name === 'webRequestIsReady') {
@@ -90,10 +108,7 @@ export function useMessageListener(setters) {
             JSON.stringify(failReason)
           );
         }
-        if (result === 'success') {
-          sessionStorage.setItem(SESSION_KEYS.RESULT_STATUS, 'success');
-        }
-        persistAndSetResult(s, result ?? '', failReason);
+        persistAndSetResult(s, result ?? '', failReason, closeAt);
       }
     };
     chrome.runtime.onMessage.addListener(listenerFn);
@@ -203,31 +218,45 @@ export function useAutoStartWhenReady(
 }
 
 /** Countdown from N seconds when status reaches RESULT, then call onComplete. */
-export function useCountdown(status, countdownSeconds, onComplete) {
+export function useCountdown(status, countdownSeconds, resultCloseAt, onComplete) {
   const [countdown, setCountdown] = useState(countdownSeconds);
   const onCompleteRef = useRef(onComplete);
   const completeFiredRef = useRef(false);
-  const resultSyncedRef = useRef(null);
+  const resultSyncedRef = useRef('');
   onCompleteRef.current = onComplete;
 
-  // Align duration when entering RESULT (success 3s vs error 5s). Kept separate from the tick
-  // effect so we never `return` early without a scheduled tick — if setCountdown equals current
-  // state, React skips re-render and the old single-effect version never started the timer.
   useEffect(() => {
     if (status !== STATUS.RESULT) {
-      resultSyncedRef.current = null;
+      resultSyncedRef.current = '';
       completeFiredRef.current = false;
       setCountdown(countdownSeconds);
       return;
     }
-    if (resultSyncedRef.current !== countdownSeconds) {
-      resultSyncedRef.current = countdownSeconds;
-      setCountdown(countdownSeconds);
+    const nextSyncKey = `${countdownSeconds}:${resultCloseAt || ''}`;
+    if (resultSyncedRef.current !== nextSyncKey) {
+      resultSyncedRef.current = nextSyncKey;
+      if (resultCloseAt && Number.isFinite(resultCloseAt)) {
+        setCountdown(
+          Math.max(Math.ceil((resultCloseAt - Date.now()) / 1000), 0)
+        );
+      } else {
+        setCountdown(countdownSeconds);
+      }
     }
-  }, [status, countdownSeconds]);
+  }, [status, countdownSeconds, resultCloseAt]);
 
   useEffect(() => {
     if (status !== STATUS.RESULT) return;
+
+    const nextCountdown =
+      resultCloseAt && Number.isFinite(resultCloseAt)
+        ? Math.max(Math.ceil((resultCloseAt - Date.now()) / 1000), 0)
+        : countdown;
+
+    if (nextCountdown !== countdown) {
+      setCountdown(nextCountdown);
+      return;
+    }
 
     if (countdown <= 0) {
       if (!completeFiredRef.current) {
@@ -238,11 +267,15 @@ export function useCountdown(status, countdownSeconds, onComplete) {
     }
 
     const timer = setTimeout(() => {
+      if (resultCloseAt && Number.isFinite(resultCloseAt)) {
+        setCountdown(Math.max(Math.ceil((resultCloseAt - Date.now()) / 1000), 0));
+        return;
+      }
       setCountdown((prev) => Math.max(prev - 1, 0));
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [status, countdown]);
+  }, [status, countdown, resultCloseAt]);
 
   return countdown;
 }

@@ -177,6 +177,8 @@ function PadoCard({ activeRequest }) {
     setResultStatus,
     errorTxt,
     setErrorTxt,
+    resultCloseAt,
+    setResultCloseAt,
   } = useAttestationStatus();
 
   const setters = useMemo(
@@ -185,8 +187,9 @@ function PadoCard({ activeRequest }) {
       setIsReadyFetch,
       setResultStatus,
       setErrorTxt,
+      setResultCloseAt,
     }),
-    [setStatus, setIsReadyFetch, setResultStatus, setErrorTxt]
+    [setStatus, setIsReadyFetch, setResultStatus, setErrorTxt, setResultCloseAt]
   );
 
   useMessageListener(setters);
@@ -294,7 +297,12 @@ function PadoCard({ activeRequest }) {
         ? TIMING.COUNTDOWN_SECONDS_SUCCESS
         : TIMING.COUNTDOWN_SECONDS_ERROR;
 
-  const countdown = useCountdown(status, resultCountdownSeconds, handleBack);
+  const countdown = useCountdown(
+    status,
+    resultCountdownSeconds,
+    resultCloseAt,
+    handleBack
+  );
 
   const targetItem =
     activeRequest?.verificationContent ??

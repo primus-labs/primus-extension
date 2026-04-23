@@ -24,6 +24,32 @@ let historyLocationListenerInstalled = false;
 let hrefPollIntervalId = null;
 let lastPolledHref = '';
 
+function clearPersistedResultState() {
+  sessionStorage.removeItem(SESSION_KEYS.STATUS);
+  sessionStorage.removeItem(SESSION_KEYS.RESULT_STATUS);
+  sessionStorage.removeItem(SESSION_KEYS.ERROR_TXT);
+  sessionStorage.removeItem(SESSION_KEYS.RESULT_CLOSE_AT);
+}
+
+function applyResultSnapshotToSession(resultSnapshot) {
+  clearPersistedResultState();
+  sessionStorage.setItem(SESSION_KEYS.STATUS, STATUS.RESULT);
+  sessionStorage.setItem(
+    SESSION_KEYS.RESULT_STATUS,
+    resultSnapshot?.result || ''
+  );
+  sessionStorage.setItem(
+    SESSION_KEYS.RESULT_CLOSE_AT,
+    String(resultSnapshot?.closeAt || '')
+  );
+  if (resultSnapshot?.failReason != null) {
+    sessionStorage.setItem(
+      SESSION_KEYS.ERROR_TXT,
+      JSON.stringify(resultSnapshot.failReason)
+    );
+  }
+}
+
 function isDisabledPath() {
   const href = window.location.href.toLowerCase();
   return (
@@ -169,21 +195,31 @@ chrome.runtime.sendMessage(
     if (!response || response.name !== 'append') return;
     if (isDisabledPath()) return;
 
+    if (response.resultSnapshot) {
+      applyResultSnapshotToSession(response.resultSnapshot);
+    } else {
+      clearPersistedResultState();
+    }
+
     if (response.isReady) {
       sessionStorage.setItem(SESSION_KEYS.READY, '1');
+    } else {
+      sessionStorage.removeItem(SESSION_KEYS.READY);
     }
-    if (response.phase === 'attesting') {
+    if (!response.resultSnapshot && response.phase === 'attesting') {
       sessionStorage.setItem(SESSION_KEYS.STATUS, STATUS.VERIFYING);
     }
 
     if (activeRequest) {
       activeRequest.pageDecodePhase = response.phase || activeRequest.pageDecodePhase;
+      activeRequest.resultSnapshot = response.resultSnapshot || null;
       return;
     }
 
     const params = response.params || {};
     activeRequest = { ...params };
     activeRequest.pageDecodePhase = response.phase || params.pageDecodePhase;
+    activeRequest.resultSnapshot = response.resultSnapshot || params.resultSnapshot || null;
     delete activeRequest.PADOSERVERURL;
     delete activeRequest.padoExtensionVersion;
 

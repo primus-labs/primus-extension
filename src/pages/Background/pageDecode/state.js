@@ -41,6 +41,8 @@ export function createPageDecodeState() {
     skipCancelOnNextDataSourceTabRemoved: false,
     /** Set for Amazon account-manage template: storefront base URL for jumpTo resolution */
     resolvedAmazonStorefrontBaseUrl: null,
+    /** Final UI result snapshot for replay after a same-tab navigation/reload during countdown */
+    uiResultSnapshot: null,
     /** Runtime for dataPageTemplate.jumpConfig multi-step redirects; see jumpConfigRedirect.js */
     jumpConfigState: null,
     /** Luma Monad template runtime context, written as a single object after target checks pass */
@@ -81,6 +83,7 @@ export function createPageDecodeState() {
     state.linkedinVoyagerPaginationCache = null;
     state.linkedinVoyagerPaginationInFlight = null;
     state.resolvedAmazonStorefrontBaseUrl = null;
+    state.uiResultSnapshot = null;
     state.jumpConfigState = null;
     resetMonadFields();
     Object.keys(state.reputationPhalaBinanceEarnFields).forEach((k) => {
