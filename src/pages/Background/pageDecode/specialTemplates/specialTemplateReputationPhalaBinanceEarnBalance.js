@@ -8,27 +8,16 @@ import { getPageDecodeState } from '../state';
 export const TEMPLATE_ID_FOR_REPUTATION_PHALA_BINANCE_EARN_BALANCE =
   '031720f6-5b78-405c-a91c-3b6efd1586ce';
 
-/** @deprecated Prefer TEMPLATE_ID_FOR_REPUTATION_PHALA_BINANCE_EARN_BALANCE */
-export const templateIdForReputationPhalaBinanceEarnBalance =
-  TEMPLATE_ID_FOR_REPUTATION_PHALA_BINANCE_EARN_BALANCE;
-
 function getReputationPhalaFields() {
-  return getPageDecodeState().state.reputationPhalaBinanceEarnFields;
+  return getPageDecodeState().getReputationPhalaBinanceEarnFields();
 }
 
-function changeReputationPhalaField(op, key, value) {
-  const fields = getReputationPhalaFields();
-  if (op === 'reset') {
-    Object.keys(fields).forEach((k) => {
-      delete fields[k];
-    });
-    return;
-  }
-  if (op === 'delete') {
-    delete fields[key];
-  } else if (op === 'add' || op === 'update') {
-    fields[key] = value;
-  }
+function resetReputationPhalaBinanceEarnFields() {
+  getPageDecodeState().resetReputationPhalaBinanceEarnFields();
+}
+
+function setReputationPhalaBinanceEarnFields(fields) {
+  return getPageDecodeState().setReputationPhalaBinanceEarnFields(fields);
 }
 
 export function isReputationPhalaBinanceEarnBalanceTemplate(activeTemplate) {
@@ -40,7 +29,13 @@ export function updateRequestMapFnForReputationPhalaBinanceEarnBalance(
   oldRequestMap,
   additionParamsObj
 ) {
+  if (!oldRequestMap || typeof oldRequestMap !== 'object') {
+    return oldRequestMap;
+  }
   const oldUrl = oldRequestMap.url;
+  if (typeof oldUrl !== 'string' || !oldUrl.trim()) {
+    return { ...oldRequestMap };
+  }
   const oldQueryParams = parseUrlQuery(oldUrl);
   const { pageSize } = oldQueryParams;
   const newUrlParams = {
@@ -51,35 +46,42 @@ export function updateRequestMapFnForReputationPhalaBinanceEarnBalance(
   }
 
   const newUrl = updateUrlParams(oldUrl, newUrlParams);
-  oldRequestMap.url = newUrl;
-  return oldRequestMap;
+  return {
+    ...oldRequestMap,
+    url: newUrl,
+  };
 }
 
-async function checkTargetAssetIdxFn(
-  matchRequestUrlResult,
-  notMetHandler,
-  additionParamsObj,
-  metHandler
-) {
+function resolveSelectedAssetIndex(data, asset) {
+  if (!Array.isArray(data) || data.length === 0) {
+    return -1;
+  }
+  if (!asset) {
+    return 0;
+  }
+  return data.findIndex((item) => item?.asset === asset);
+}
+
+function buildSelectedAssetContext(matchRequestUrlResult, additionParamsObj) {
   const { asset } = additionParamsObj ?? {};
-  changeReputationPhalaField('reset');
   if (!matchRequestUrlResult) {
-    return false;
+    return { selectedAssetContext: null, shouldNotifyFailure: false };
   }
   const { code, data } = matchRequestUrlResult;
   if (code !== '000000') {
-    return false;
+    return { selectedAssetContext: null, shouldNotifyFailure: false };
   }
-  let targetAssetIdx = data.findIndex((i) => i.asset === asset);
-  if (!asset) {
-    targetAssetIdx = 0;
+  const selectedAssetIndex = resolveSelectedAssetIndex(data, asset);
+  if (selectedAssetIndex < 0) {
+    return { selectedAssetContext: null, shouldNotifyFailure: true };
   }
-  if (targetAssetIdx >= 0) {
-    metHandler(targetAssetIdx, data[targetAssetIdx]);
-    return true;
-  }
-  await notMetHandler();
-  return false;
+  return {
+    selectedAssetContext: {
+      selectedAssetIndex,
+      selectedAsset: data[selectedAssetIndex] ?? null,
+    },
+    shouldNotifyFailure: false,
+  };
 }
 
 export async function checkTargetRequestFnForReputationPhalaBinanceEarnBalance(
@@ -87,38 +89,23 @@ export async function checkTargetRequestFnForReputationPhalaBinanceEarnBalance(
   notMetHandler,
   additionParamsObj
 ) {
-  const metHandler = (reputationPhalaBinanceEarnAssetIdx) => {
-    changeReputationPhalaField(
-      'add',
-      'reputationPhalaBinanceEarnAsset',
-      reputationPhalaBinanceEarnAssetIdx
-    );
-  };
-  return checkTargetAssetIdxFn(
+  resetReputationPhalaBinanceEarnFields();
+  const { selectedAssetContext, shouldNotifyFailure } = buildSelectedAssetContext(
     matchRequestUrlResult,
-    notMetHandler,
-    additionParamsObj,
-    metHandler
+    additionParamsObj
   );
+  if (!selectedAssetContext) {
+    if (shouldNotifyFailure) {
+      await notMetHandler();
+    }
+    return false;
+  }
+  setReputationPhalaBinanceEarnFields(selectedAssetContext);
+  return true;
 }
 
-/**
- * Patch template responses to reveal the selected row (index set during checkSDKTargetRequest).
- * Call before assigning responses into algorithm params so plaintext_outputs stay aligned.
- */
-export function tryPatchFormatResponseForSpecialTemplateReputationPhalaBinanceEarnBalance(
-  formatResponse,
-  activeTemplate
-) {
-  if (!isReputationPhalaBinanceEarnBalanceTemplate(activeTemplate)) {
-    return;
-  }
-  if (!Array.isArray(formatResponse) || formatResponse.length === 0) {
-    return;
-  }
-  const targetIdx =
-    getReputationPhalaFields().reputationPhalaBinanceEarnAsset ?? 0;
-  formatResponse[0].conditions.subconditions = [
+function buildBinanceEarnRevealSubconditions(targetIdx) {
+  return [
     {
       field: `$.data[${targetIdx}].asset`,
       op: 'REVEAL_STRING',
@@ -138,4 +125,28 @@ export function tryPatchFormatResponseForSpecialTemplateReputationPhalaBinanceEa
       reveal_id: 'userId',
     },
   ];
+}
+
+/**
+ * Build patched template responses to reveal the selected row (index set during checkSDKTargetRequest).
+ */
+export function getPatchedFormatResponseForSpecialTemplateReputationPhalaBinanceEarnBalance(
+  formatResponse,
+  activeTemplate
+) {
+  if (!isReputationPhalaBinanceEarnBalanceTemplate(activeTemplate)) {
+    return null;
+  }
+  if (!Array.isArray(formatResponse) || formatResponse.length === 0) {
+    return null;
+  }
+  const targetIdx =
+    getReputationPhalaFields().selectedAssetIndex ?? 0;
+  const nextFormatResponse = JSON.parse(JSON.stringify(formatResponse));
+  if (!nextFormatResponse?.[0]?.conditions) {
+    return nextFormatResponse;
+  }
+  nextFormatResponse[0].conditions.subconditions =
+    buildBinanceEarnRevealSubconditions(targetIdx);
+  return nextFormatResponse;
 }

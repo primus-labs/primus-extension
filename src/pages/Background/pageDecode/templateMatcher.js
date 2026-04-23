@@ -17,7 +17,7 @@ import {
   getJumpUrlHostOverrideForAlgorithmParams,
   rewriteRequestUrlsForJumpUrl,
 } from './additionParamsJumpUrl';
-import { tryPatchFormatResponseForSpecialTemplateReputationPhalaBinanceEarnBalance } from './specialTemplates/specialTemplateReputationPhalaBinanceEarnBalance';
+import { getPatchedFormatResponseForSpecialTemplateReputationPhalaBinanceEarnBalance } from './specialTemplates/specialTemplateReputationPhalaBinanceEarnBalance';
 import { tryPatchFormatResponseForSpecialTemplateChannelSubscription } from './specialTemplates/specialTemplateChannelSubscription';
 import { getPatchedFormatParamsForSpecialTemplateReputationPhala } from './specialTemplates/specialTemplateReputationPhala';
 
@@ -146,10 +146,18 @@ export async function formatAlgorithmParamsFn() {
     getAmazonHostOverrideForAlgorithmParams(activeTemplate, formatRequests) ||
     host;
 
-  tryPatchFormatResponseForSpecialTemplateReputationPhalaBinanceEarnBalance(
-    formatResponse,
-    activeTemplate
-  );
+  const patchedReputationPhalaBinanceEarnFormatResponse =
+    getPatchedFormatResponseForSpecialTemplateReputationPhalaBinanceEarnBalance(
+      formatResponse,
+      activeTemplate
+    );
+  if (patchedReputationPhalaBinanceEarnFormatResponse) {
+    formatResponse.splice(
+      0,
+      formatResponse.length,
+      ...patchedReputationPhalaBinanceEarnFormatResponse
+    );
+  }
   tryPatchFormatResponseForSpecialTemplateChannelSubscription(
     formatResponse,
     activeTemplate

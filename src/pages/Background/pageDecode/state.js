@@ -87,6 +87,22 @@ export function createPageDecodeState() {
     return state.reputationPhalaFields;
   }
 
+  function resetReputationPhalaBinanceEarnFields() {
+    Object.keys(state.reputationPhalaBinanceEarnFields).forEach((k) => {
+      delete state.reputationPhalaBinanceEarnFields[k];
+    });
+  }
+
+  function setReputationPhalaBinanceEarnFields(fields) {
+    resetReputationPhalaBinanceEarnFields();
+    Object.assign(state.reputationPhalaBinanceEarnFields, fields || {});
+    return state.reputationPhalaBinanceEarnFields;
+  }
+
+  function getReputationPhalaBinanceEarnFields() {
+    return state.reputationPhalaBinanceEarnFields;
+  }
+
   function reset() {
     state.isReadyRequest = false;
     state.phase = PAGE_DECODE_PHASES.IDLE;
@@ -102,9 +118,7 @@ export function createPageDecodeState() {
     state.uiResultSnapshot = null;
     state.jumpConfigState = null;
     resetMonadFields();
-    Object.keys(state.reputationPhalaBinanceEarnFields).forEach((k) => {
-      delete state.reputationPhalaBinanceEarnFields[k];
-    });
+    resetReputationPhalaBinanceEarnFields();
     Object.keys(state.channelSubscriptionFields).forEach((k) => {
       delete state.channelSubscriptionFields[k];
     });
@@ -135,12 +149,15 @@ export function createPageDecodeState() {
       return state;
     },
     getMonadFields,
+    getReputationPhalaBinanceEarnFields,
     getReputationPhalaFields,
     reset,
     resetMonadFields,
+    resetReputationPhalaBinanceEarnFields,
     resetReputationPhalaFields,
     removeFromRequestsMap,
     setMonadFields,
+    setReputationPhalaBinanceEarnFields,
     setReputationPhalaFields,
     storeInRequestsMap,
   };
