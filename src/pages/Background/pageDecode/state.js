@@ -71,6 +71,22 @@ export function createPageDecodeState() {
     return state.monadFields;
   }
 
+  function resetReputationPhalaFields() {
+    Object.keys(state.reputationPhalaFields).forEach((k) => {
+      delete state.reputationPhalaFields[k];
+    });
+  }
+
+  function setReputationPhalaFields(fields) {
+    resetReputationPhalaFields();
+    Object.assign(state.reputationPhalaFields, fields || {});
+    return state.reputationPhalaFields;
+  }
+
+  function getReputationPhalaFields() {
+    return state.reputationPhalaFields;
+  }
+
   function reset() {
     state.isReadyRequest = false;
     state.phase = PAGE_DECODE_PHASES.IDLE;
@@ -92,9 +108,7 @@ export function createPageDecodeState() {
     Object.keys(state.channelSubscriptionFields).forEach((k) => {
       delete state.channelSubscriptionFields[k];
     });
-    Object.keys(state.reputationPhalaFields).forEach((k) => {
-      delete state.reputationPhalaFields[k];
-    });
+    resetReputationPhalaFields();
   }
 
   function removeFromRequestsMap(requestId) {
@@ -121,10 +135,13 @@ export function createPageDecodeState() {
       return state;
     },
     getMonadFields,
+    getReputationPhalaFields,
     reset,
     resetMonadFields,
+    resetReputationPhalaFields,
     removeFromRequestsMap,
     setMonadFields,
+    setReputationPhalaFields,
     storeInRequestsMap,
   };
 }

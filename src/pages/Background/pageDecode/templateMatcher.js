@@ -1,3 +1,4 @@
+/* global console */
 /**
  * Builds algorithm params from the active template and captured request map.
  */
@@ -18,7 +19,7 @@ import {
 } from './additionParamsJumpUrl';
 import { tryPatchFormatResponseForSpecialTemplateReputationPhalaBinanceEarnBalance } from './specialTemplates/specialTemplateReputationPhalaBinanceEarnBalance';
 import { tryPatchFormatResponseForSpecialTemplateChannelSubscription } from './specialTemplates/specialTemplateChannelSubscription';
-import { tryPatchFormatRequestsAndResponseForSpecialTemplateReputationPhala } from './specialTemplates/specialTemplateReputationPhala';
+import { getPatchedFormatParamsForSpecialTemplateReputationPhala } from './specialTemplates/specialTemplateReputationPhala';
 
 export async function formatAlgorithmParamsFn() {
   const pageDecodeState = getPageDecodeState();
@@ -27,15 +28,10 @@ export async function formatAlgorithmParamsFn() {
   const requestsMap = state.requestsMap;
 
   const {
-    dataSource,
     schemaType,
-    datasourceTemplate: { host, requests, responses, calculations, cipher },
+    datasourceTemplate: { host, requests, responses, calculations },
     uiTemplate,
     id,
-    event,
-    category,
-    requestid,
-    algorithmType,
   } = activeTemplate;
 
   const aligorithmParams = await assembleAlgorithmParamsForSDK(
@@ -158,11 +154,24 @@ export async function formatAlgorithmParamsFn() {
     formatResponse,
     activeTemplate
   );
-  tryPatchFormatRequestsAndResponseForSpecialTemplateReputationPhala(
-    formatRequests,
-    formatResponse,
-    activeTemplate
-  );
+  const patchedReputationPhalaFormatParams =
+    getPatchedFormatParamsForSpecialTemplateReputationPhala(
+      formatRequests,
+      formatResponse,
+      activeTemplate
+    );
+  if (patchedReputationPhalaFormatParams) {
+    formatRequests.splice(
+      0,
+      formatRequests.length,
+      ...patchedReputationPhalaFormatParams.formatRequests
+    );
+    formatResponse.splice(
+      0,
+      formatResponse.length,
+      ...patchedReputationPhalaFormatParams.formatResponse
+    );
+  }
 
   Object.assign(aligorithmParams, {
     reqType: 'web',

@@ -11,37 +11,22 @@ export const TEMPLATE_ID_FOR_PHALA_ACCOUNT =
 export const TEMPLATE_ID_FOR_REPUTATION_PHALA_CVM_LIST =
   'efcce302-2405-4b4e-8920-952abec1f91e';
 
-export const templateIdForReputaionPhalaCvmList =
-  TEMPLATE_ID_FOR_REPUTATION_PHALA_CVM_LIST;
-
-export const templateIdForPhalaAccount = TEMPLATE_ID_FOR_PHALA_ACCOUNT;
-
 export const TRUE_REQUEST_URL_FOR_PHALA_ACCOUNT =
   'https://cloud-api.phala.com/api/v1/auth/me';
-// export const TRUE_REQUEST_URL_FOR_PHALA_ACCOUNT =
-//  " https://gateway.mava.app/sdk/identify"
 
 export const PHALA_CVM_LIST_BATCH_STATUS_URL =
   'https://cloud.phala.com/api/status/batch';
 
-
 function getPhalaFields() {
-  return getPageDecodeState().state.reputationPhalaFields;
+  return getPageDecodeState().getReputationPhalaFields();
 }
 
-function changePhalaField(op, key, value) {
-  const fields = getPhalaFields();
-  if (op === 'reset') {
-    Object.keys(fields).forEach((k) => {
-      delete fields[k];
-    });
-    return;
-  }
-  if (op === 'delete') {
-    delete fields[key];
-  } else if (op === 'add' || op === 'update') {
-    fields[key] = value;
-  }
+function resetReputationPhalaFields() {
+  getPageDecodeState().resetReputationPhalaFields();
+}
+
+function setReputationPhalaFields(fields) {
+  return getPageDecodeState().setReputationPhalaFields(fields);
 }
 
 export function isPhalaAccountTemplate(activeTemplate) {
@@ -68,70 +53,139 @@ async function reputationPhalaCvmListCheckTimeFn(cvmUpdateTimeArr) {
   return false;
 }
 
+function buildReputationPhalaCvmListContext(matchRequestUrlResult) {
+  if (
+    !matchRequestUrlResult ||
+    typeof matchRequestUrlResult !== 'object' ||
+    Array.isArray(matchRequestUrlResult)
+  ) {
+    return null;
+  }
+  const cvmIdList = Object.keys(matchRequestUrlResult);
+  if (cvmIdList.length === 0) {
+    return null;
+  }
+  const updateTimeArr = cvmIdList.map(
+    (cvmId) => matchRequestUrlResult?.[cvmId]?.uptime
+  );
+  return {
+    cvmIdList,
+    updateTimeArr,
+  };
+}
+
 export async function checkTargetRequestFnForReputationPhalaCvmList(
   matchRequestUrlResult,
   notMetHandler
 ) {
-  changePhalaField('reset');
-  if (!matchRequestUrlResult) {
+  resetReputationPhalaFields();
+  const phalaContext = buildReputationPhalaCvmListContext(matchRequestUrlResult);
+  if (!phalaContext) {
     return false;
   }
-  const cvmIdArr = Object.keys(matchRequestUrlResult);
-  const updateTimeArr = Object.values(matchRequestUrlResult).map(
-    (i) => i.uptime
+  const ok = await reputationPhalaCvmListCheckTimeFn(
+    phalaContext.updateTimeArr
   );
-  const ok = await reputationPhalaCvmListCheckTimeFn(updateTimeArr);
   if (ok) {
-    changePhalaField('add', 'cvmIdList', cvmIdArr);
+    setReputationPhalaFields({
+      cvmIdList: phalaContext.cvmIdList,
+    });
     return true;
   }
   await notMetHandler();
   return false;
 }
 
-function patchPhalaAccount(formatRequests, formatResponse) {
-  formatRequests[0].url = TRUE_REQUEST_URL_FOR_PHALA_ACCOUNT;
-  formatResponse[0].conditions.subconditions[0].field = '$.email';
-  // formatResponse[0].conditions.subconditions[0].field = '$.emailAddress';
-  formatResponse[0].conditions.subconditions[0].reveal_id = 'email';
+function cloneResponses(formatResponse) {
+  return JSON.parse(JSON.stringify(formatResponse));
 }
 
-function patchReputationPhalaCvmList(formatRequests, formatResponse) {
-  formatRequests[0].url = TRUE_REQUEST_URL_FOR_PHALA_ACCOUNT;
-  formatResponse[0].conditions.subconditions[0] = {
+function buildPatchedPhalaRequests(formatRequests) {
+  const nextRequests = formatRequests.map((request) => ({ ...request }));
+  if (nextRequests[0]) {
+    nextRequests[0] = {
+      ...nextRequests[0],
+      url: TRUE_REQUEST_URL_FOR_PHALA_ACCOUNT,
+    };
+  }
+  return nextRequests;
+}
+
+function buildPatchedPhalaAccountResponses(formatResponse) {
+  const nextResponse = cloneResponses(formatResponse);
+  const firstSubcondition =
+    nextResponse?.[0]?.conditions?.subconditions?.[0];
+  if (firstSubcondition) {
+    firstSubcondition.field = '$.email';
+    firstSubcondition.reveal_id = 'email';
+  }
+  return nextResponse;
+}
+
+function buildPatchedReputationPhalaCvmListResponses(formatResponse, cvmIdList) {
+  const nextResponse = cloneResponses(formatResponse);
+  if (nextResponse?.[0]?.conditions?.subconditions) {
+    nextResponse[0].conditions.subconditions[0] = buildPhalaEmailRevealCondition();
+  }
+  if (
+    Array.isArray(cvmIdList) &&
+    nextResponse?.[1]?.conditions?.subconditions
+  ) {
+    nextResponse[1].conditions.subconditions = cvmIdList.map((i, k) => ({
+      field: `$.${i}.uptime`,
+      op: 'REVEAL_STRING',
+      type: 'FIELD_REVEAL',
+      reveal_id: `cvm${k + 1}`,
+    }));
+  }
+  return nextResponse;
+}
+
+function buildPatchedPhalaFormatParams(formatRequests, formatResponse, activeTemplate) {
+  if (!Array.isArray(formatRequests) || !Array.isArray(formatResponse)) {
+    return null;
+  }
+
+  if (isPhalaAccountTemplate(activeTemplate)) {
+    return {
+      formatRequests: buildPatchedPhalaRequests(formatRequests),
+      formatResponse: buildPatchedPhalaAccountResponses(formatResponse),
+    };
+  }
+
+  if (isReputationPhalaCvmListTemplate(activeTemplate)) {
+    return {
+      formatRequests: buildPatchedPhalaRequests(formatRequests),
+      formatResponse: buildPatchedReputationPhalaCvmListResponses(
+        formatResponse,
+        getPhalaFields().cvmIdList
+      ),
+    };
+  }
+
+  return null;
+}
+
+function buildPhalaEmailRevealCondition() {
+  return {
     field: '$.email',
     op: 'REVEAL_STRING',
     type: 'FIELD_REVEAL',
     reveal_id: 'email',
   };
-  const cvmIdList = getPhalaFields().cvmIdList;
-  if (!Array.isArray(cvmIdList)) {
-    return;
-  }
-  formatResponse[1].conditions.subconditions = cvmIdList.map((i, k) => ({
-    field: `$.${i}.uptime`,
-    op: 'REVEAL_STRING',
-    type: 'FIELD_REVEAL',
-    reveal_id: `cvm${k + 1}`,
-  }));
 }
 
 /**
- * Mutate algorithm formatRequests / formatResponse for Phala templates (before Object.assign into SDK params).
+ * Build patched formatRequests / formatResponse for Phala templates.
  */
-export function tryPatchFormatRequestsAndResponseForSpecialTemplateReputationPhala(
+export function getPatchedFormatParamsForSpecialTemplateReputationPhala(
   formatRequests,
   formatResponse,
   activeTemplate
 ) {
-  if (!Array.isArray(formatRequests) || !Array.isArray(formatResponse)) {
-    return;
-  }
-  if (isPhalaAccountTemplate(activeTemplate)) {
-    patchPhalaAccount(formatRequests, formatResponse);
-    return;
-  }
-  if (isReputationPhalaCvmListTemplate(activeTemplate)) {
-    patchReputationPhalaCvmList(formatRequests, formatResponse);
-  }
+  return buildPatchedPhalaFormatParams(
+    formatRequests,
+    formatResponse,
+    activeTemplate
+  );
 }
