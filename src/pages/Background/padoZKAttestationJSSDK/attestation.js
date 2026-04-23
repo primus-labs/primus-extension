@@ -14,9 +14,9 @@ import { stopKeepAlive } from '../utils/keepAlive.js';
 import { resolveNoteV2MapFromConfigParsed } from '@/utils/attestationProcessNoteV2';
 import { getAttestTipForCode } from '../algorithm/errorMap.js';
 import {
-  monadCalculations,
   TEMPLATE_ID_FOR_LUMA_MONAD,
-} from '../pageDecode/specialTemplates/specialTemplateLumaMonad';
+  MONAD_CALCULATIONS,
+} from '../pageDecode/specialTemplates/lumaMonad/constants';
 
 /**
  * Handle startAttestation: validate params, load template, build request/response templates, start offline, call pageDecode init.
@@ -289,7 +289,7 @@ export async function handleStartAttestation(
             responses: newResponses,
             calculations:
               attTemplateID === TEMPLATE_ID_FOR_LUMA_MONAD
-                ? monadCalculations
+                ? MONAD_CALCULATIONS
                 : undefined,
           },
           sslCipherSuite,

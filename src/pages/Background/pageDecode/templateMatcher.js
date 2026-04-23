@@ -7,7 +7,7 @@ import { PADOSERVERURL } from '@/config/envConstants';
 import { padoExtensionVersion } from '@/config/constants';
 import { getPageDecodeState } from './state';
 import { tryPatchAlgorithmParamsForSpecialTemplateLinkedinConnections } from './specialTemplates/specialTemplateLinkedinConnections';
-import { tryPatchAlgorithmParamsForSpecialTemplateLumaMonad } from './specialTemplates/specialTemplateLumaMonad';
+import { tryPatchAlgorithmParamsForSpecialTemplateLumaMonad } from './specialTemplates/lumaMonad';
 import {
   getAmazonHostOverrideForAlgorithmParams,
   rewriteAmazonRequestUrlsForAlgorithmParams,

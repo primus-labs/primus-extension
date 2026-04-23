@@ -1,35 +1,70 @@
+/* global Set, console */
 /**
- * For template 9119207f: when the first requestUrl (needCapture) is intercepted,
- * send the second requestUrl (needCapture:false) from the extension using the
- * first request's headers and cookie. Other flows are unchanged.
+ * Development-only helper:
+ * replay the first `needCapture:false` request with the first captured request's
+ * headers/cookie. This is only for local verification and never participates in
+ * the formal attestation path.
  */
+import { CURENV } from '@/config/envConstants';
 import { getPageDecodeState } from '../state';
 import { fetchRequestData } from '../utils';
 
-const SPECIAL_TEMPLATE_TWO_REQUEST_ID = '';
+const replayedRequestIds = new Set();
+
+function resolveReplayConfig(activeTemplate) {
+  if (CURENV !== 'development') {
+    return null;
+  }
+  const requests = activeTemplate?.datasourceTemplate?.requests;
+  if (!Array.isArray(requests) || requests.length < 2) {
+    return null;
+  }
+
+  const captureRequestIndex = requests.findIndex((r) => r.needCapture !== false);
+  const replayRequestIndex = requests.findIndex((r) => r.needCapture === false);
+
+  if (
+    captureRequestIndex < 0 ||
+    replayRequestIndex < 0 ||
+    captureRequestIndex >= requests.length ||
+    replayRequestIndex >= requests.length ||
+    captureRequestIndex === replayRequestIndex
+  ) {
+    return null;
+  }
+
+  return {
+    captureRequestIndex,
+    replayRequestIndex,
+  };
+}
 
 /**
- * If active template is the special one with two requestUrls (one needCapture, one needCapture:false),
- * and we have captured the first request, send the second request from the extension with the
- * first request's headers and cookie, and store the response in state.
+ * In development only, replay the chosen no-capture request with headers copied
+ * from the chosen captured request. Runs at most once per active request id.
  */
 export async function trySendSecondRequestWithFirstHeaders() {
   const pageDecodeState = getPageDecodeState();
   const { state } = pageDecodeState;
-  const templateId = state.activeTemplate?.attTemplateID ?? state.activeTemplate?.id;
-  if (templateId !== SPECIAL_TEMPLATE_TWO_REQUEST_ID) return;
+  const activeTemplate = state.activeTemplate;
+  const replayConfig = resolveReplayConfig(activeTemplate);
+  if (!replayConfig) return;
 
-  const { requestsMap, specialSecondRequestSent } = state;
+  const activeRequestId = activeTemplate?.requestid;
+  if (typeof activeRequestId !== 'string' || !activeRequestId) return;
+  if (replayedRequestIds.has(activeRequestId)) return;
+
+  const { requestsMap } = state;
   const {
     datasourceTemplate: { requests },
-  } = state.activeTemplate || { datasourceTemplate: { requests: [] } };
+  } = activeTemplate || { datasourceTemplate: { requests: [] } };
 
-  const needCaptureRequest = requests.find(
-    (r) => r.needCapture !== false
-  );
-  const noCaptureRequest = requests.find((r) => r.needCapture === false);
+  const needCaptureRequest = requests[replayConfig.captureRequestIndex];
+  const noCaptureRequest = requests[replayConfig.replayRequestIndex];
   if (!needCaptureRequest || !noCaptureRequest) return;
-  if (specialSecondRequestSent) return;
+  if (needCaptureRequest.needCapture === false || noCaptureRequest.needCapture !== false) {
+    return;
+  }
 
   const firstCaptured = Object.values(requestsMap).find(
     (sInfo) =>
@@ -45,15 +80,22 @@ export async function trySendSecondRequestWithFirstHeaders() {
   const url = noCaptureRequest.url;
 
   try {
+    replayedRequestIds.add(activeRequestId);
     const response = await fetchRequestData({
       url,
       method,
       header,
       body,
     });
-    state.specialSecondRequestResponse = response;
-    state.specialSecondRequestSent = true;
+    console.log('debugSendSecondRequest success', {
+      requestid: activeRequestId,
+      captureRequestIndex: replayConfig.captureRequestIndex,
+      replayRequestIndex: replayConfig.replayRequestIndex,
+      method,
+      url,
+      response,
+    });
   } catch (e) {
-    console.log('specialTemplateSendSecondRequest fetch error', e);
+    console.log('debugSendSecondRequest fetch error', e);
   }
 }

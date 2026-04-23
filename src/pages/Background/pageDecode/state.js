@@ -29,9 +29,6 @@ export function createPageDecodeState() {
     onBeforeRequestFn: () => {},
     requestsMap: {},
     reportRequestIds: [],
-    /** For template 9119207f: response of 2nd request sent by extension with 1st request headers/cookie */
-    specialSecondRequestResponse: null,
-    specialSecondRequestSent: false,
     /** For template 99d6d02a (LinkedIn Connections): pagination cache and in-flight promise */
     linkedinVoyagerPaginationCache: null,
     linkedinVoyagerPaginationInFlight: null,
@@ -46,7 +43,7 @@ export function createPageDecodeState() {
     resolvedAmazonStorefrontBaseUrl: null,
     /** Runtime for dataPageTemplate.jumpConfig multi-step redirects; see jumpConfigRedirect.js */
     jumpConfigState: null,
-    /** Luma Monad template (be2268c1): fields filled during checkTargetRequestFnForMonad */
+    /** Luma Monad template runtime context, written as a single object after target checks pass */
     monadFields: {},
     /** Reputation Phala Binance earn balance (031720f6): asset row index for response reveals */
     reputationPhalaBinanceEarnFields: {},
@@ -55,6 +52,22 @@ export function createPageDecodeState() {
     /** Phala reputation CVM list: cvmIdList filled in checkTargetRequestFnForReputationPhalaCvmList */
     reputationPhalaFields: {},
   };
+
+  function resetMonadFields() {
+    Object.keys(state.monadFields).forEach((k) => {
+      delete state.monadFields[k];
+    });
+  }
+
+  function setMonadFields(fields) {
+    resetMonadFields();
+    Object.assign(state.monadFields, fields || {});
+    return state.monadFields;
+  }
+
+  function getMonadFields() {
+    return state.monadFields;
+  }
 
   function reset() {
     state.isReadyRequest = false;
@@ -65,15 +78,11 @@ export function createPageDecodeState() {
     state.formatAlgorithmParams = null;
     state.requestsMap = {};
     state.reportRequestIds = [];
-    state.specialSecondRequestResponse = null;
-    state.specialSecondRequestSent = false;
     state.linkedinVoyagerPaginationCache = null;
     state.linkedinVoyagerPaginationInFlight = null;
     state.resolvedAmazonStorefrontBaseUrl = null;
     state.jumpConfigState = null;
-    Object.keys(state.monadFields).forEach((k) => {
-      delete state.monadFields[k];
-    });
+    resetMonadFields();
     Object.keys(state.reputationPhalaBinanceEarnFields).forEach((k) => {
       delete state.reputationPhalaBinanceEarnFields[k];
     });
@@ -108,8 +117,11 @@ export function createPageDecodeState() {
     get state() {
       return state;
     },
+    getMonadFields,
     reset,
+    resetMonadFields,
     removeFromRequestsMap,
+    setMonadFields,
     storeInRequestsMap,
   };
 }

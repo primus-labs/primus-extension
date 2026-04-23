@@ -19,7 +19,7 @@ import {
   eventListUrlForMonad,
   checkTargetRequestFnForMonad,
   isLumaMonadTemplate,
-} from './specialTemplates/specialTemplateLumaMonad';
+} from './specialTemplates/lumaMonad';
 import {
   isReputationPhalaBinanceEarnBalanceTemplate,
   updateRequestMapFnForReputationPhalaBinanceEarnBalance,
