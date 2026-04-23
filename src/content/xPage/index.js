@@ -21,44 +21,44 @@ const bindings = [
   },
 ];
 
-function confirmHandler() {
-  console.log('confirm btn clicked');
+function getCurrentXEventContext() {
   const currentUrl = window.location.href;
   const url = new URL(currentUrl);
   const pathname = url.pathname;
   const searchParams = url.searchParams;
-  if (Object.keys(xEventMap).includes(pathname)) {
-    const { searchParamKey, eventName } = xEventMap[pathname];
-    const specificParamValue = searchParams.get(searchParamKey);
-    chrome.runtime.sendMessage({
-      type: pageMsgType,
-      name: eventName,
-      params: {
-        [searchParamKey]: specificParamValue,
-        result: true,
-      },
-    });
+  if (!Object.prototype.hasOwnProperty.call(xEventMap, pathname)) {
+    return null;
   }
+  const { searchParamKey, eventName } = xEventMap[pathname];
+  return {
+    eventName,
+    searchParamKey,
+    specificParamValue: searchParams.get(searchParamKey),
+  };
+}
+
+function sendXPageResult(result) {
+  const context = getCurrentXEventContext();
+  if (!context) {
+    return;
+  }
+  const { eventName, searchParamKey, specificParamValue } = context;
+  chrome.runtime.sendMessage({
+    type: pageMsgType,
+    name: eventName,
+    params: {
+      [searchParamKey]: specificParamValue,
+      result,
+    },
+  });
+}
+
+function confirmHandler() {
+  sendXPageResult(true);
 }
 
 function cancelHandler() {
-  console.log('cancel btn clicked');
-  const currentUrl = window.location.href;
-  const url = new URL(currentUrl);
-  const pathname = url.pathname;
-  const searchParams = url.searchParams;
-  if (Object.keys(xEventMap).includes(pathname)) {
-    const { searchParamKey, eventName } = xEventMap[pathname];
-    const specificParamValue = searchParams.get(searchParamKey);
-    chrome.runtime.sendMessage({
-      type: pageMsgType,
-      name: eventName,
-      params: {
-        [searchParamKey]: specificParamValue,
-        result: false,
-      },
-    });
-  }
+  sendXPageResult(false);
 }
 
 function bindIfExists(selector, handler) {
@@ -66,7 +66,6 @@ function bindIfExists(selector, handler) {
   if (el && !el.dataset.bound) {
     el.dataset.bound = 'true';
     el.addEventListener('click', handler);
-    console.log(`[bound] ${selector}`);
   }
 }
 
