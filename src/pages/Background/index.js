@@ -21,6 +21,11 @@ import {
 import { setupKeepAliveListener } from './utils/keepAlive.js';
 import { ensureExtensionUserIdentity } from './identityBootstrap.js';
 import { listener as xEventMsgListener } from './xEvent/index.js';
+import {
+  clearSdkAttestationPreset,
+  clearSdkAttestationSession,
+  getSdkAttestationSession,
+} from './padoZKAttestationJSSDK/sessionStorage.js';
 
 setupKeepAliveListener();
 
@@ -43,6 +48,8 @@ chrome.runtime.onInstalled.addListener(async ({ reason, version: _version }) => 
       SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
       'activeRequestAttestation',
     ]);
+    await clearSdkAttestationSession();
+    await clearSdkAttestationPreset();
     await ensureExtensionUserIdentity();
   }
 });
@@ -61,9 +68,8 @@ const processAlgorithmReq = async (message) => {
       await createOffscreenDoc();
       console.log(`${new Date().toLocaleString()} offscreen document created`);
     } else {
-      const { padoZKAttestationJSSDKBeginAttest } =
-        await safeStorageGet(['padoZKAttestationJSSDKBeginAttest']);
-      if (padoZKAttestationJSSDKBeginAttest) {
+      const session = await getSdkAttestationSession();
+      if (session?.sdkVersion) {
         await sendInitAttestationRes();
       }
       console.log(
@@ -77,14 +83,13 @@ const processAlgorithmReq = async (message) => {
       await startFn();
       break;
     case 'init': {
-      const { padoZKAttestationJSSDKClientType: clientType } =
-        await safeStorageGet(['padoZKAttestationJSSDKClientType']);
+      const session = await getSdkAttestationSession();
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'init',
         params: {
           errLogUrl: 'wss://api.padolabs.org/logs',
-          clientType: clientType || '',
+          clientType: session?.clientType || '',
         },
       });
       break;
@@ -92,12 +97,11 @@ const processAlgorithmReq = async (message) => {
     case 'getAttestation':
       break;
     case 'getAttestationResult': {
-      const { padoZKAttestationJSSDKClientType: clientType } =
-        await safeStorageGet(['padoZKAttestationJSSDKClientType']);
+      const session = await getSdkAttestationSession();
       chrome.runtime.sendMessage({
         type: 'algorithm',
         method: 'getAttestationResult',
-        params: { ...params, clientType: clientType || '' },
+        params: { ...params, clientType: session?.clientType || '' },
       });
       break;
     }
@@ -114,7 +118,6 @@ const processAlgorithmReq = async (message) => {
         SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
         SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
         'activeRequestAttestation',
-        'padoZKAttestationJSSDKClientType',
       ]);
       if (!params?.noRestart) {
         await startFn();

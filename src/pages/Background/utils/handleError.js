@@ -1,12 +1,7 @@
-import { safeStorageGet } from '@/utils/safeStorage';
-import { safeJsonParse } from '@/utils/utils';
+import { getSdkAttestationPreset } from '../padoZKAttestationJSSDK/sessionStorage.js';
 
 export const getErrorMsgTitleFn = async () => {
-  const { padoZKAttestationJSSDKAttestationPresetParams } =
-    await safeStorageGet([
-      'padoZKAttestationJSSDKAttestationPresetParams',
-    ]);
-  const activeAttestationParams = safeJsonParse(padoZKAttestationJSSDKAttestationPresetParams, {}) || {};
+  const activeAttestationParams = (await getSdkAttestationPreset()) || {};
   let eT = ['Assets Verification', 'Humanity Verification'].includes(
     activeAttestationParams.attestationType
   )

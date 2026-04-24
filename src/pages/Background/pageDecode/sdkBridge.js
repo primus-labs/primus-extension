@@ -13,15 +13,21 @@ import { getPageDecodeState } from './state';
 import { safeStorageGet, safeStorageRemove } from '@/utils/safeStorage';
 import { safeJsonParse } from '@/utils/utils';
 import { stopKeepAlive } from '../utils/keepAlive.js';
+import {
+  clearSdkAttestationPreset,
+  clearSdkAttestationSession,
+  getSdkAttestationPresetFromStorage,
+  getSdkAttestationSessionFromStorage,
+  SDK_ATTESTATION_PRESET_STORAGE_KEYS,
+  SDK_ATTESTATION_SESSION_STORAGE_KEYS,
+} from '../padoZKAttestationJSSDK/sessionStorage.js';
+import { captureSdkTabMessageSender, createTabMessageSender } from '../utils/msgTransfer.js';
 
 const CLIENTTYPE = '@primuslabs/extension';
 
 export async function sendMsgToSdk(msg) {
-  const { padoZKAttestationJSSDKDappTabId: dappTabId } =
-    await safeStorageGet(['padoZKAttestationJSSDKDappTabId']);
-  if (dappTabId) {
-    await sendMsgToTab(dappTabId, msg);
-  }
+  const sendToSdk = await captureSdkTabMessageSender();
+  await sendToSdk(msg);
 }
 
 export async function sendMsgToDataSourcePage(msg) {
@@ -32,29 +38,29 @@ export async function sendMsgToDataSourcePage(msg) {
 }
 
 export async function handlerForSdk(processAlgorithmReq, operation) {
-  const {
-    padoZKAttestationJSSDKBeginAttest,
-    [SDK_START_ATTESTATION_LOCK_TAB_ID_KEY]: startAttestationLockTabId,
-    activeRequestAttestation: lastActiveRequestAttestationStr,
-  } = await safeStorageGet([
-    'padoZKAttestationJSSDKBeginAttest',
-    'padoZKAttestationJSSDKDappTabId',
+  const storage = await safeStorageGet([
+    ...SDK_ATTESTATION_SESSION_STORAGE_KEYS,
     SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
     'activeRequestAttestation',
   ]);
+  const session = getSdkAttestationSessionFromStorage(storage);
+  const sendToSdk = createTabMessageSender(session?.ownerTabId);
+  const {
+    [SDK_START_ATTESTATION_LOCK_TAB_ID_KEY]: startAttestationLockTabId,
+    activeRequestAttestation: lastActiveRequestAttestationStr,
+  } = storage;
   if (processAlgorithmReq && (lastActiveRequestAttestationStr || startAttestationLockTabId != null)) {
     processAlgorithmReq({ reqMethodName: 'stop' });
   }
-  if (padoZKAttestationJSSDKBeginAttest) {
+  if (session?.sdkVersion) {
     stopKeepAlive();
     await safeStorageRemove([
       SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
       SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-      'padoZKAttestationJSSDKBeginAttest',
-      'padoZKAttestationJSSDKAttestationPresetParams',
       'activeRequestAttestation',
-      'padoZKAttestationJSSDKClientType',
     ]);
+    await clearSdkAttestationSession();
+    await clearSdkAttestationPreset();
     const desc = `The user ${operation} the attestation`;
     const resParams = {
       result: false,
@@ -62,7 +68,7 @@ export async function handlerForSdk(processAlgorithmReq, operation) {
       reStartFlag: true,
     };
     try {
-      await sendMsgToSdk({
+      await sendToSdk({
         type: 'padoZKAttestationJSSDK',
         name: 'startAttestationRes',
         params: resParams,
@@ -100,17 +106,14 @@ export async function handleDataSourcePageDialogTimeout(processAlgorithmReq) {
     },
   };
   const storage = await safeStorageGet([
-    'padoZKAttestationJSSDKBeginAttest',
-    'padoZKAttestationJSSDKAttestationPresetParams',
+    ...SDK_ATTESTATION_SESSION_STORAGE_KEYS,
+    ...SDK_ATTESTATION_PRESET_STORAGE_KEYS,
     'activeRequestAttestation',
     'getAttestationResultRes',
   ]);
-  const {
-    padoZKAttestationJSSDKBeginAttest,
-    padoZKAttestationJSSDKAttestationPresetParams,
-    activeRequestAttestation,
-    getAttestationResultRes,
-  } = storage;
+  const session = getSdkAttestationSessionFromStorage(storage);
+  const sdkPreset = getSdkAttestationPresetFromStorage(storage);
+  const { activeRequestAttestation, getAttestationResultRes } = storage;
 
   const { state } = getPageDecodeState();
 
@@ -126,8 +129,8 @@ export async function handleDataSourcePageDialogTimeout(processAlgorithmReq) {
   };
 
 
-  if (padoZKAttestationJSSDKBeginAttest && padoZKAttestationJSSDKAttestationPresetParams) {
-    const parsed = safeJsonParse(padoZKAttestationJSSDKAttestationPresetParams, {}) || {};
+  if (session?.sdkVersion && sdkPreset) {
+    const parsed = sdkPreset;
     if (!state.reportRequestIds.includes(parsed.requestid)) {
       state.reportRequestIds.push(parsed.requestid);
       const { dataSourceId, attTemplateID, ext: { appSignParameters }, clientType } = parsed;

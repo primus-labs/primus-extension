@@ -10,7 +10,6 @@ import {
   SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
 } from '@/config/constants';
 import { safeStorageGet, safeStorageSet, safeStorageRemove } from '@/utils/safeStorage';
-import { sendMsgToTab } from '../utils/utils.js';
 import { safeJsonParse } from '@/utils/utils';
 import { stopKeepAlive } from '../utils/keepAlive.js';
 import {
@@ -18,6 +17,13 @@ import {
   getNoteV2Sdk,
   resolveNoteV2MapFromConfigParsed,
 } from '@/utils/attestationProcessNoteV2';
+import {
+  clearSdkAttestationPreset,
+  clearSdkAttestationSession,
+  getSdkAttestationPresetFromStorage,
+  getSdkAttestationSessionFromStorage,
+} from '../padoZKAttestationJSSDK/sessionStorage.js';
+import { createTabMessageSender } from '../utils/msgTransfer.js';
 
 const HAS_GET_TWITTER_SCREEN_NAME = false;
 
@@ -41,6 +47,7 @@ export async function handleGetAttestation(
   sendResponse,
   processAlgorithmReq
 ) {
+  const sendToSdk = createTabMessageSender(dappTabId);
   const { retcode, isUserClick } = JSON.parse(message.res);
   if (isUserClick !== 'true') return;
 
@@ -74,11 +81,10 @@ export async function handleGetAttestation(
     await safeStorageRemove([
       SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
       SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-      'padoZKAttestationJSSDKBeginAttest',
-      'padoZKAttestationJSSDKAttestationPresetParams',
       'activeRequestAttestation',
-      'padoZKAttestationJSSDKClientType',
     ]);
+    await clearSdkAttestationSession();
+    await clearSdkAttestationPreset();
     processAlgorithmReq({ reqMethodName: 'stop' });
   }
 
@@ -99,7 +105,7 @@ export async function handleGetAttestation(
     'resParams',
     JSON.stringify(resParams)
   );
-  await sendMsgToTab(dappTabId, {
+  await sendToSdk({
     type: 'padoZKAttestationJSSDK',
     name: 'getAttestationRes',
     params: resParams,
@@ -117,11 +123,14 @@ export async function handleGetAttestationResult(
   processAlgorithmReq
 ) {
   const {
-    padoZKAttestationJSSDKDappTabId: dappTabId,
     configMap,
     activeRequestAttestation,
-    padoZKAttestationJSSDKAttestationPresetParams,
   } = storage;
+  const session = storage.sdkAttestationSession || getSdkAttestationSessionFromStorage(storage);
+  const dappTabId = session?.ownerTabId;
+  const sendToSdk = createTabMessageSender(dappTabId);
+  const activeAttestationParams =
+    storage.sdkAttestationPreset || getSdkAttestationPresetFromStorage(storage) || {};
 
   const configMapParsed = safeJsonParse(configMap);
   const noteV2Map = resolveNoteV2MapFromConfigParsed(configMapParsed);
@@ -132,7 +141,6 @@ export async function handleGetAttestationResult(
 
   await safeStorageSet({ getAttestationResultRes: message.res });
   const parsedActiveRequestAttestation = safeJsonParse(activeRequestAttestation, {}) || {};
-  const activeAttestationParams = safeJsonParse(padoZKAttestationJSSDKAttestationPresetParams, {}) || {};
   const extendedParamsObj = activeAttestationParams?.extendedParams
     ? (safeJsonParse(activeAttestationParams.extendedParams, {}) || {})
     : {};
@@ -155,12 +163,11 @@ export async function handleGetAttestationResult(
     await safeStorageRemove([
       SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
       SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-      'padoZKAttestationJSSDKBeginAttest',
-      'padoZKAttestationJSSDKAttestationPresetParams',
       'activeRequestAttestation',
-      'padoZKAttestationJSSDKClientType',
     ]);
-    await sendMsgToTab(dappTabId, {
+    await clearSdkAttestationSession();
+    await clearSdkAttestationPreset();
+    await sendToSdk({
       type: 'padoZKAttestationJSSDK',
       name: 'startAttestationRes',
       params: { result: true, data: resData },
@@ -178,11 +185,10 @@ export async function handleGetAttestationResult(
         await safeStorageRemove([
           SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
           SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-          'padoZKAttestationJSSDKBeginAttest',
-          'padoZKAttestationJSSDKAttestationPresetParams',
           'activeRequestAttestation',
-          'padoZKAttestationJSSDKClientType',
         ]);
+        await clearSdkAttestationSession();
+        await clearSdkAttestationPreset();
         return;
       }
 
@@ -272,16 +278,15 @@ export async function handleGetAttestationResult(
       await safeStorageRemove([
         SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
         SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-        'padoZKAttestationJSSDKBeginAttest',
-        'padoZKAttestationJSSDKAttestationPresetParams',
         'activeRequestAttestation',
-        'padoZKAttestationJSSDKClientType',
       ]);
+      await clearSdkAttestationSession();
+      await clearSdkAttestationPreset();
       const resParams = {
         result: false,
         errorData: { desc: msgObj.desc, code: errorCode },
       };
-      await sendMsgToTab(dappTabId, {
+      await sendToSdk({
         type: 'padoZKAttestationJSSDK',
         name: 'startAttestationRes',
         params: resParams,
@@ -321,11 +326,10 @@ export async function handleGetAttestationResult(
     await safeStorageRemove([
       SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
       SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-      'padoZKAttestationJSSDKBeginAttest',
-      'padoZKAttestationJSSDKAttestationPresetParams',
       'activeRequestAttestation',
-      'padoZKAttestationJSSDKClientType',
     ]);
+    await clearSdkAttestationSession();
+    await clearSdkAttestationPreset();
     const resParams = {
       result: false,
       errorData: {
@@ -336,7 +340,7 @@ export async function handleGetAttestationResult(
       },
       reStartFlag: true,
     };
-    await sendMsgToTab(dappTabId, {
+    await sendToSdk({
       type: 'padoZKAttestationJSSDK',
       name: 'startAttestationRes',
       params: resParams,

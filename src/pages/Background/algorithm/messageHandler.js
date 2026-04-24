@@ -4,6 +4,12 @@
 import { sendInitAttestationRes } from '../utils/msgTransfer.js';
 import { handleGetAttestation, handleGetAttestationResult } from './attestationHandler.js';
 import { safeStorageGet } from '@/utils/safeStorage';
+import {
+  getSdkAttestationPresetFromStorage,
+  getSdkAttestationSessionFromStorage,
+  SDK_ATTESTATION_PRESET_STORAGE_KEYS,
+  SDK_ATTESTATION_SESSION_STORAGE_KEYS,
+} from '../padoZKAttestationJSSDK/sessionStorage.js';
 
 export async function algorithmMsgListener(
   message,
@@ -14,20 +20,21 @@ export async function algorithmMsgListener(
   const { resMethodName } = message;
 
   const storage = await safeStorageGet([
-    'padoZKAttestationJSSDKBeginAttest',
-    'padoZKAttestationJSSDKDappTabId',
+    ...SDK_ATTESTATION_SESSION_STORAGE_KEYS,
     'configMap',
     'activeRequestAttestation',
-    'padoZKAttestationJSSDKAttestationPresetParams',
+    ...SDK_ATTESTATION_PRESET_STORAGE_KEYS,
   ]);
 
-  const { padoZKAttestationJSSDKBeginAttest, padoZKAttestationJSSDKDappTabId: dappTabId } = storage;
+  const session = getSdkAttestationSessionFromStorage(storage);
+  const preset = getSdkAttestationPresetFromStorage(storage);
+  const dappTabId = session?.ownerTabId;
 
   if (resMethodName === 'start') {
     processAlgorithmReq({ reqMethodName: 'init' });
   }
 
-  if (padoZKAttestationJSSDKBeginAttest) {
+  if (session?.sdkVersion) {
     if (resMethodName === 'start') {
       await sendInitAttestationRes();
     }
@@ -43,7 +50,7 @@ export async function algorithmMsgListener(
     if (resMethodName === 'getAttestationResult') {
       await handleGetAttestationResult(
         message,
-        storage,
+        { ...storage, sdkAttestationSession: session, sdkAttestationPreset: preset },
         sender,
         sendResponse,
         processAlgorithmReq

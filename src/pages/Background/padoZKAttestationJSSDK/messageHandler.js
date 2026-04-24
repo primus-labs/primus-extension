@@ -2,6 +2,7 @@
  * Pado ZK Attestation SDK message router. Dispatches by message name and registers tab-removed listener.
  */
 import { handleInitAttestation } from './init.js';
+import { clearSdkAttestationRuntimeState } from './sessionStorage.js';
 import {
   handleStartAttestation,
   handleGetAttestationResult,
@@ -31,6 +32,14 @@ export async function padoZKAttestationJSSDKMsgListener(
         sendResponse?.({});
       } catch (_e) {}
     }
+    return;
+  }
+
+  if (name === 'removeActiveAttestation') {
+    await clearSdkAttestationRuntimeState();
+    try {
+      sendResponse?.({});
+    } catch (_e) {}
     return;
   }
 

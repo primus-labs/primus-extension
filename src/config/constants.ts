@@ -21,3 +21,9 @@ export const SDK_START_ATTESTATION_LOCK_TAB_ID_KEY =
 export const SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY =
   'padoZKAttestationJSSDKStartAttestationLockStartedAt';
 
+/** Unified lightweight SDK attestation session object key. */
+export const SDK_ATTESTATION_SESSION_KEY = 'padoZKAttestationJSSDKSession';
+
+/** Unified SDK attestation preset/context object key. */
+export const SDK_ATTESTATION_PRESET_KEY = 'padoZKAttestationJSSDKPreset';
+

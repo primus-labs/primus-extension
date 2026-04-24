@@ -2,7 +2,7 @@
  * Programmatically close the SDK data source tab without user-cancel semantics.
  */
 import { getPageDecodeState } from './state';
-import { safeStorageGet } from '@/utils/safeStorage';
+import { getSdkAttestationSession } from '../padoZKAttestationJSSDK/sessionStorage.js';
 
 export async function closeSdkDataSourceTabWithoutCancel() {
   const pageDecodeState = getPageDecodeState();
@@ -20,10 +20,8 @@ export async function closeSdkDataSourceTabWithoutCancel() {
   }
   // Focus the DApp / SDK host tab (e.g. dev-console), not currExtentionId (may be extension UI).
   try {
-    const { padoZKAttestationJSSDKDappTabId: dappTabIdRaw } =
-      await safeStorageGet(['padoZKAttestationJSSDKDappTabId']);
-    const dappTabId =
-      dappTabIdRaw != null ? Number(dappTabIdRaw) : NaN;
+    const session = await getSdkAttestationSession();
+    const dappTabId = session?.ownerTabId != null ? Number(session.ownerTabId) : NaN;
     if (Number.isFinite(dappTabId)) {
       await chrome.tabs.update(dappTabId, { active: true });
     }

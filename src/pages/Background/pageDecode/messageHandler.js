@@ -24,6 +24,7 @@ import { applyAdditionParamsJumpUrlToJumpTo } from './additionParamsJumpUrl';
 import { initJumpConfigState } from './jumpConfigRedirect';
 import { resolveNoteV2MapFromConfigParsed } from '@/utils/attestationProcessNoteV2';
 import { ensureExtensionUserIdentity } from '../identityBootstrap.js';
+import { getSdkAttestationSession } from '../padoZKAttestationJSSDK/sessionStorage.js';
 import { closeSdkDataSourceTabWithoutCancel } from './closeDataSourceTab.js';
 
 const RESULT_CLOSE_DELAY_MS = {
@@ -273,11 +274,10 @@ export async function pageDecodeMsgListener(
         { isUserClick: 'true' },
         state.formatAlgorithmParams
       );
-      const { padoZKAttestationJSSDKClientType: clientType } =
-        await safeStorageGet(['padoZKAttestationJSSDKClientType']);
+      const session = await getSdkAttestationSession();
       const getAttestationParams = {
         ...aligorithmParams,
-        clientType: clientType || '',
+        clientType: session?.clientType || '',
       };
       await safeStorageSet({
         activeRequestAttestation: JSON.stringify(aligorithmParams),
@@ -297,10 +297,9 @@ export async function pageDecodeMsgListener(
       handleEnd(request);
     }
     if (name === 'interceptionFail') {
-      const { padoZKAttestationJSSDKBeginAttest } =
-        await safeStorageGet(['padoZKAttestationJSSDKBeginAttest']);
+      const session = await getSdkAttestationSession();
       await handleTargetDataMissing(
-        padoZKAttestationJSSDKBeginAttest
+        session?.sdkVersion
           ? {}
           : { skipRemoveActiveRequestAttestation: true }
       );
@@ -313,10 +312,9 @@ export async function pageDecodeMsgListener(
       await handleClose(params, processAlgorithmReq);
     }
     if (name === 'interceptionFail') {
-      const { padoZKAttestationJSSDKBeginAttest } =
-        await safeStorageGet(['padoZKAttestationJSSDKBeginAttest']);
+      const session = await getSdkAttestationSession();
       await handleTargetDataMissing(
-        padoZKAttestationJSSDKBeginAttest
+        session?.sdkVersion
           ? {}
           : { skipRemoveActiveRequestAttestation: true }
       );

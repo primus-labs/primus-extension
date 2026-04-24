@@ -1,8 +1,3 @@
-import { safeStorageRemove } from '@/utils/safeStorage';
-import {
-  SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-  SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-} from '@/config/constants';
 import { sendMessageWithRetry } from '@/utils/contentMessaging';
 
 let removeInFlight = false;
@@ -61,15 +56,10 @@ window.addEventListener('message', (e) => {
     if (name === 'removeActiveAttestation') {
       if (removeInFlight) return;
       removeInFlight = true;
-      const keys = [
-        SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-        SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-        'padoZKAttestationJSSDKBeginAttest',
-        'padoZKAttestationJSSDKAttestationPresetParams',
-        'activeRequestAttestation',
-        'padoZKAttestationJSSDKClientType',
-      ];
-      safeStorageRemove(keys).finally(() => {
+      sendMessageWithRetry({
+        type: 'padoZKAttestationJSSDK',
+        name: 'removeActiveAttestation',
+      }).finally(() => {
         removeInFlight = false;
       });
     }

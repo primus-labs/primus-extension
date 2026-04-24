@@ -10,6 +10,10 @@ import {
   SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
 } from '@/config/constants';
 import { safeStorageGet, safeStorageSet } from '@/utils/safeStorage';
+import {
+  getSdkAttestationSession,
+  setSdkAttestationSession,
+} from './sessionStorage.js';
 
 const sdkState = {
   hasGetTwitterScreenName: false,
@@ -53,8 +57,12 @@ export async function fetchConfigure() {
 }
 
 export async function storeDappTabId(id) {
-  await safeStorageSet({
-    padoZKAttestationJSSDKDappTabId: id,
+  const currentSession = await getSdkAttestationSession();
+  await setSdkAttestationSession({
+    ownerTabId: id,
+    clientType: currentSession?.clientType || '',
+    sdkVersion: currentSession?.sdkVersion || '',
+    active: true,
   });
   return id;
 }
@@ -101,10 +109,11 @@ export async function handleInitAttestation(params, senderTabId, processAlgorith
   sdkState.isNetworkSdk = !!(sdkState.sdkName && sdkState.sdkName.indexOf('network') > -1);
 
   const dappTabId = await storeDappTabId(senderTabId);
-
-  await safeStorageSet({
-    padoZKAttestationJSSDKBeginAttest: sdkState.sdkVersion,
-    padoZKAttestationJSSDKClientType: params?.clientType || '',
+  await setSdkAttestationSession({
+    ownerTabId: dappTabId,
+    clientType: params?.clientType || '',
+    sdkVersion: sdkState.sdkVersion,
+    active: true,
   });
   processAlgorithmReq({ reqMethodName: 'start' });
 

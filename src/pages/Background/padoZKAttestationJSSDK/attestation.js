@@ -18,10 +18,19 @@ import { safeJsonParse } from '@/utils/utils';
 import { stopKeepAlive } from '../utils/keepAlive.js';
 import { resolveNoteV2MapFromConfigParsed } from '@/utils/attestationProcessNoteV2';
 import { getAttestTipForCode } from '../algorithm/errorMap.js';
+import { ERROR_UNKNOWN } from '@/config/errorCodes';
 import {
   TEMPLATE_ID_FOR_LUMA_MONAD,
   MONAD_CALCULATIONS,
 } from '../pageDecode/specialTemplates/lumaMonad/constants';
+import {
+  clearSdkAttestationPreset,
+  clearSdkAttestationSession,
+  getSdkAttestationSession,
+  setSdkAttestationPreset,
+  setSdkAttestationSession,
+} from './sessionStorage.js';
+import { createTabMessageSender } from '../utils/msgTransfer.js';
 
 const ACTIVE_REQUEST_STALE_GRACE_MS = 60 * 1000;
 
@@ -38,21 +47,48 @@ async function cleanupStartAttestationState() {
   await safeStorageRemove([
     SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
     SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-    'padoZKAttestationJSSDKBeginAttest',
-    'padoZKAttestationJSSDKClientType',
   ]);
+  await clearSdkAttestationSession();
 }
 
 async function cleanupStaleActiveAttestationState() {
   await safeStorageRemove([
     SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
     SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-    'padoZKAttestationJSSDKBeginAttest',
-    'padoZKAttestationJSSDKAttestationPresetParams',
     'activeRequestAttestation',
-    'padoZKAttestationJSSDKClientType',
     'getAttestationResultRes',
   ]);
+  await clearSdkAttestationSession();
+  await clearSdkAttestationPreset();
+}
+
+async function cleanupAbortedStartAttestationState() {
+  await safeStorageRemove([
+    SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+    SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
+    'activeRequestAttestation',
+    'getAttestationResultRes',
+  ]);
+  await clearSdkAttestationSession();
+  await clearSdkAttestationPreset();
+}
+
+async function sendUnexpectedStartAttestationError(sendToSdk) {
+  const { configMap } = await safeStorageGet(['configMap']);
+  const noteV2Map = resolveNoteV2MapFromConfigParsed(safeJsonParse(configMap));
+  const tip = getAttestTipForCode(ERROR_UNKNOWN, noteV2Map);
+  await sendToSdk({
+    type: 'padoZKAttestationJSSDK',
+    name: 'startAttestationRes',
+    params: {
+      result: false,
+      errorData: {
+        desc: tip.desc || 'Undefined error. Please try again later.',
+        code: ERROR_UNKNOWN,
+      },
+      reStartFlag: true,
+    },
+  });
 }
 
 async function sendBusyStartAttestationResponse(targetTabId) {
@@ -82,6 +118,7 @@ export async function handleStartAttestation(
 ) {
   const state = getSdkState();
   const currentDappTabId = sender?.tab?.id;
+  const sendToSdk = createTabMessageSender(currentDappTabId);
   const pageDecodeVerifyTimeoutMs = resolvePageDecodeVerifyTimeoutMs(
     params?.attRequest
   );
@@ -101,13 +138,13 @@ export async function handleStartAttestation(
     [SDK_START_ATTESTATION_LOCK_TAB_ID_KEY]: startAttestationLockTabId,
     [SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY]: startAttestationLockStartedAt,
     activeRequestAttestation: lastActiveRequestAttestationStr,
-    padoZKAttestationJSSDKBeginAttest: beginAttestFlag,
   } = await safeStorageGet([
     SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
     SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
     'activeRequestAttestation',
-    'padoZKAttestationJSSDKBeginAttest',
   ]);
+  const currentSession = await getSdkAttestationSession();
+  const beginAttestFlag = currentSession?.sdkVersion;
 
   if (startAttestationLockTabId != null) {
     const startedAt = Number(startAttestationLockStartedAt);
@@ -153,78 +190,80 @@ export async function handleStartAttestation(
     }
   }
 
-  state.sdkVersion = params?.sdkVersion;
-  state.sdkName = params?.sdkName;
-  state.isNetworkSdk = !!(state.sdkName && state.sdkName.indexOf('network') > -1);
-  state.sdkParams = params;
+  try {
+    state.sdkVersion = params?.sdkVersion;
+    state.sdkName = params?.sdkName;
+    state.isNetworkSdk = !!(state.sdkName && state.sdkName.indexOf('network') > -1);
+    state.sdkParams = params;
 
-  await safeStorageSet({
-    [SDK_START_ATTESTATION_LOCK_TAB_ID_KEY]: currentDappTabId,
-    [SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY]: Date.now(),
-    padoZKAttestationJSSDKDappTabId: currentDappTabId,
-    padoZKAttestationJSSDKBeginAttest: state.sdkVersion,
-    padoZKAttestationJSSDKClientType: params?.clientType || '',
-  });
-  processAlgorithmReq({ reqMethodName: 'start' });
-
-  let activeWebProofTemplate = {};
-  let activeAttestationParams = {};
-  const requestid = uuidv4();
-  const chainName = params.chainName;
-  let walletAddress;
-  let algorithmType = state.sdkVersion
-    ? params.attRequest?.attMode?.algorithmType || 'proxytls'
-    : undefined;
-
-  const algoApisParam = state.isNetworkSdk ? params.attRequest?.algoApis : undefined;
-
-  if (state.isNetworkSdk && !params.attRequest?.algoApis?.[0]) {
-    console.log('network-sdk params error');
-    await cleanupStartAttestationState();
-    const resParams = {
-      result: false,
-      errorData: {
-        desc: 'Invalid Algorithm Parameters',
-        code: '00015',
-      },
-    };
-    const { padoZKAttestationJSSDKDappTabId: dappTabIdErr } =
-      await safeStorageGet(['padoZKAttestationJSSDKDappTabId']);
-    await sendMsgToTab(dappTabIdErr, {
-      type: 'padoZKAttestationJSSDK',
-      name: 'getAttestationRes',
-      params: resParams,
+    await safeStorageSet({
+      [SDK_START_ATTESTATION_LOCK_TAB_ID_KEY]: currentDappTabId,
+      [SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY]: Date.now(),
     });
-    return;
-  }
+    await setSdkAttestationSession({
+      ownerTabId: currentDappTabId,
+      clientType: params?.clientType || '',
+      sdkVersion: state.sdkVersion,
+      active: true,
+    });
+    processAlgorithmReq({ reqMethodName: 'start' });
 
-  const padoUrlKey = algorithmType === 'proxytls' ? 'zkPadoUrl' : 'padoUrl';
-  const padoUrl = await getAlgoApi(padoUrlKey, algoApisParam);
-  const proxyUrl = await getAlgoApi('proxyUrl', algoApisParam);
+    let activeWebProofTemplate = {};
+    let activeAttestationParams = {};
+    const requestid = uuidv4();
+    const chainName = params.chainName;
+    let walletAddress;
+    let algorithmType = state.sdkVersion
+      ? params.attRequest?.attMode?.algorithmType || 'proxytls'
+      : undefined;
 
-  const clientType = params?.clientType || '';
-  chrome.runtime.sendMessage({
-    type: 'algorithm',
-    method: 'startOffline',
-    params: {
-      offlineTimeout: STARTOFFLINETIMEOUT,
-      padoUrl,
-      proxyUrl,
-      clientType,
-    },
-  });
+    const algoApisParam = state.isNetworkSdk ? params.attRequest?.algoApis : undefined;
 
-  if (state.sdkVersion) {
-    const {
-      attRequest: { attTemplateID, userAddress },
-      appSignature,
-    } = params;
-    walletAddress = userAddress;
+    if (state.isNetworkSdk && !params.attRequest?.algoApis?.[0]) {
+      console.log('network-sdk params error');
+      await cleanupStartAttestationState();
+      const resParams = {
+        result: false,
+        errorData: {
+          desc: 'Invalid Algorithm Parameters',
+          code: '00015',
+        },
+      };
+      await sendToSdk({
+        type: 'padoZKAttestationJSSDK',
+        name: 'getAttestationRes',
+        params: resParams,
+      });
+      return;
+    }
 
-    try {
-      const { rc, result } = await queryTemplateById(attTemplateID);
-      if (rc === 0 && result) {
-        const {
+    const padoUrlKey = algorithmType === 'proxytls' ? 'zkPadoUrl' : 'padoUrl';
+    const padoUrl = await getAlgoApi(padoUrlKey, algoApisParam);
+    const proxyUrl = await getAlgoApi('proxyUrl', algoApisParam);
+
+    const clientType = params?.clientType || '';
+    chrome.runtime.sendMessage({
+      type: 'algorithm',
+      method: 'startOffline',
+      params: {
+        offlineTimeout: STARTOFFLINETIMEOUT,
+        padoUrl,
+        proxyUrl,
+        clientType,
+      },
+    });
+
+    if (state.sdkVersion) {
+      const {
+        attRequest: { attTemplateID, userAddress },
+        appSignature,
+      } = params;
+      walletAddress = userAddress;
+
+      try {
+        const { rc, result } = await queryTemplateById(attTemplateID);
+        if (rc === 0 && result) {
+          const {
           id,
           name,
           description,
@@ -388,7 +427,7 @@ export async function handleStartAttestation(
           },
           sslCipherSuite,
         };
-        activeAttestationParams = {
+          activeAttestationParams = {
           dataSourceId: dataSource,
           verificationContent: name,
           verificationValue: description,
@@ -413,48 +452,55 @@ export async function handleStartAttestation(
           clientType: state.sdkName,
           closeDataSourceOnProofComplete:
             params.attRequest?.closeDataSourceOnProofComplete === true,
-        };
-      } else {
+          };
+        } else {
+          await cleanupStartAttestationState();
+          await sendTemplateErrorToDapp('00012', sendToSdk);
+          return;
+        }
+      } catch (e) {
+        console.log('sdk template error:', e);
         await cleanupStartAttestationState();
-        await sendTemplateErrorToDapp('00012');
+        await sendTemplateErrorToDapp('00012', sendToSdk);
         return;
       }
-    } catch (e) {
-      console.log('sdk template error:', e);
-      await cleanupStartAttestationState();
-      await sendTemplateErrorToDapp('00012');
-      return;
     }
+
+    console.log('debuge-zktls-startAttestation2', walletAddress);
+    await safeStorageRemove(['getAttestationResultRes']);
+    await setSdkAttestationPreset(Object.assign({ chainName }, activeAttestationParams));
+
+    const currRequestTemplate = {
+      ...activeAttestationParams,
+      ...activeWebProofTemplate,
+      pageDecodeVerifyTimeoutMs,
+    };
+    await pageDecodeMsgListener(
+      {
+        type: 'pageDecode',
+        name: 'init',
+        params: { ...currRequestTemplate, requestid },
+        operation: 'attest',
+      },
+      sender,
+      sendResponse,
+      state.hasGetTwitterScreenName,
+      processAlgorithmReq
+    );
+  } catch (e) {
+    console.log('startAttestation unexpected error:', e);
+    stopKeepAlive();
+    await cleanupAbortedStartAttestationState();
+    try {
+      await processAlgorithmReq({ reqMethodName: 'stop', params: { noRestart: true } });
+    } catch (_stopErr) {
+      // Best-effort cleanup; primary goal is to release the lock and notify the dapp.
+    }
+    await sendUnexpectedStartAttestationError(sendToSdk);
   }
-
-  console.log('debuge-zktls-startAttestation2', walletAddress);
-  await safeStorageRemove(['getAttestationResultRes']);
-  await safeStorageSet({
-    padoZKAttestationJSSDKAttestationPresetParams: JSON.stringify(
-      Object.assign({ chainName }, activeAttestationParams)
-    ),
-  });
-
-  const currRequestTemplate = {
-    ...activeAttestationParams,
-    ...activeWebProofTemplate,
-    pageDecodeVerifyTimeoutMs,
-  };
-  await pageDecodeMsgListener(
-    {
-      type: 'pageDecode',
-      name: 'init',
-      params: { ...currRequestTemplate, requestid },
-      operation: 'attest',
-    },
-    sender,
-    sendResponse,
-    state.hasGetTwitterScreenName,
-    processAlgorithmReq
-  );
 }
 
-async function sendTemplateErrorToDapp(code) {
+async function sendTemplateErrorToDapp(code, sendToSdk) {
   const resParams = {
     result: false,
     errorData: {
@@ -462,9 +508,7 @@ async function sendTemplateErrorToDapp(code) {
       code,
     },
   };
-  const { padoZKAttestationJSSDKDappTabId: dappTabId } =
-    await safeStorageGet(['padoZKAttestationJSSDKDappTabId']);
-  await sendMsgToTab(dappTabId, {
+  await sendToSdk({
     type: 'padoZKAttestationJSSDK',
     name: 'getAttestationRes',
     params: resParams,
@@ -488,6 +532,8 @@ export async function handleGetAttestationResultTimeout(
   processAlgorithmReq
 ) {
   const state = getSdkState();
+  const session = await getSdkAttestationSession();
+  const sendToSdk = createTabMessageSender(session?.ownerTabId);
   const { configMap } = await safeStorageGet(['configMap']);
   const configMapParsed = safeJsonParse(configMap);
   const noteV2Map = resolveNoteV2MapFromConfigParsed(configMapParsed);
@@ -502,11 +548,10 @@ export async function handleGetAttestationResultTimeout(
   await safeStorageRemove([
     SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
     SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-    'padoZKAttestationJSSDKBeginAttest',
-    'padoZKAttestationJSSDKAttestationPresetParams',
     'activeRequestAttestation',
-    'padoZKAttestationJSSDKClientType',
   ]);
+  await clearSdkAttestationSession();
+  await clearSdkAttestationPreset();
 
   await pageDecodeMsgListener(
     {
@@ -520,8 +565,8 @@ export async function handleGetAttestationResultTimeout(
   );
   processAlgorithmReq({ reqMethodName: 'stop' });
 
-  const { padoZKAttestationJSSDKDappTabId: dappTabId, attestationLogInQuery } =
-    await safeStorageGet(['padoZKAttestationJSSDKDappTabId', 'attestationLogInQuery']);
+  const storage = await safeStorageGet(['attestationLogInQuery']);
+  const { attestationLogInQuery } = storage;
   const resParams = {
     result: false,
     errorData: {
@@ -531,7 +576,7 @@ export async function handleGetAttestationResultTimeout(
     },
     reStartFlag: true,
   };
-  await sendMsgToTab(dappTabId, {
+  await sendToSdk({
     type: 'padoZKAttestationJSSDK',
     name: 'startAttestationRes',
     params: resParams,
@@ -541,14 +586,8 @@ export async function handleGetAttestationResultTimeout(
 /** Called when dapp tab is closed during attestation; cancel pageDecode. */
 export async function handleDappTabRemoved(tabId) {
   const processAlgorithmReq = getProcessAlgorithmReqRef();
-  const {
-    padoZKAttestationJSSDKBeginAttest,
-    padoZKAttestationJSSDKDappTabId: dappTabId,
-  } = await safeStorageGet([
-    'padoZKAttestationJSSDKBeginAttest',
-    'padoZKAttestationJSSDKDappTabId',
-  ]);
-  if (tabId === dappTabId && padoZKAttestationJSSDKBeginAttest) {
+  const session = await getSdkAttestationSession();
+  if (tabId === session?.ownerTabId && session?.sdkVersion) {
     await pageDecodeMsgListener(
       { type: 'pageDecode', name: 'cancel' },
       {},

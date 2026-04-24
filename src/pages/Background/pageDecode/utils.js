@@ -8,8 +8,13 @@ import {
   SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
 } from '@/config/constants';
 import { customFetch2 } from '../utils/request';
-import { safeStorageGet, safeStorageRemove } from '@/utils/safeStorage';
-import { sendMsgToTab } from '../utils/utils.js';
+import { safeStorageRemove } from '@/utils/safeStorage';
+import {
+  clearSdkAttestationPreset,
+  clearSdkAttestationSession,
+  getSdkAttestationSession,
+} from '../padoZKAttestationJSSDK/sessionStorage.js';
+import { createTabMessageSender } from '../utils/msgTransfer.js';
 
 /** Fetch request data (JSON/object) for template matching. Re-sends captured request. */
 export const fetchRequestData = async (params) => {
@@ -86,27 +91,24 @@ export const handleAttestationError = async (errorData, dataSourcePageTabId, opt
     result: false,
     errorData,
   };
-  const { padoZKAttestationJSSDKDappTabId: dappTabId } =
-    await safeStorageGet(['padoZKAttestationJSSDKDappTabId']);
-  if (dappTabId) {
-    await sendMsgToTab(dappTabId, {
-      type: 'padoZKAttestationJSSDK',
-      name: 'getAttestationRes',
-      params: resParams,
-    });
-  }
+  const session = await getSdkAttestationSession();
+  const sendToSdk = createTabMessageSender(session?.ownerTabId);
+  await sendToSdk({
+    type: 'padoZKAttestationJSSDK',
+    name: 'getAttestationRes',
+    params: resParams,
+  });
 
   const keysToRemove = [
     SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
     SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-    'padoZKAttestationJSSDKBeginAttest',
-    'padoZKAttestationJSSDKAttestationPresetParams',
-    'padoZKAttestationJSSDKClientType',
   ];
   if (!options.skipRemoveActiveRequestAttestation) {
     keysToRemove.push('activeRequestAttestation');
   }
   await safeStorageRemove(keysToRemove);
+  await clearSdkAttestationSession();
+  await clearSdkAttestationPreset();
   if (dataSourcePageTabId) {
     await chrome.tabs.remove(dataSourcePageTabId);
   }

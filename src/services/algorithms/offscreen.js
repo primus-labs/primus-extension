@@ -16,6 +16,7 @@ Module.onRuntimeInitialized = async () => {
 
 const CLIENT_VERSION = '1.4.26';
 const LEGACY_NETWORK_VERSION = '1.1.1';
+const SDK_ATTESTATION_SESSION_KEY = 'padoZKAttestationJSSDKSession';
 
 /**
  * Returns effective algorithm version based on clientType.
@@ -50,8 +51,14 @@ class AlgorithmClient {
     let clientType = params?.clientType;
     if (clientType == null || clientType === '') {
       try {
-        const stored = await chrome.storage.local.get(['padoZKAttestationJSSDKClientType']);
-        clientType = stored?.padoZKAttestationJSSDKClientType || '';
+        const stored = await chrome.storage.local.get([
+          SDK_ATTESTATION_SESSION_KEY,
+          'padoZKAttestationJSSDKClientType',
+        ]);
+        clientType =
+          stored?.[SDK_ATTESTATION_SESSION_KEY]?.clientType ||
+          stored?.padoZKAttestationJSSDKClientType ||
+          '';
       } catch (_e) {
         clientType = '';
       }

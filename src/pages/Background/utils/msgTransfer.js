@@ -1,16 +1,29 @@
 import { padoExtensionVersion } from '@/config/constants';
-import { safeStorageGet } from '@/utils/safeStorage';
 import { sendMsgToTab } from './utils.js';
+import { getSdkAttestationSession } from '../padoZKAttestationJSSDK/sessionStorage.js';
 
 /* global chrome, console, URL */
+
+export function createTabMessageSender(targetTabId) {
+  return async (msg) => {
+    if (targetTabId == null) return;
+    await sendMsgToTab(targetTabId, msg);
+  };
+}
+
+export async function captureSdkTabMessageSender(targetTabId) {
+  const session = await getSdkAttestationSession();
+  const dappTabId = targetTabId ?? session?.ownerTabId;
+  return createTabMessageSender(dappTabId);
+}
 /**
  * Send initAttestationRes message to the dapp tab (used by algorithm and index).
  * Gets domain from tab URL, then sends message.
  */
 export async function sendInitAttestationRes(targetTabId) {
-  const { padoZKAttestationJSSDKDappTabId: storedDappTabId } =
-    await safeStorageGet(['padoZKAttestationJSSDKDappTabId']);
-  const dappTabId = targetTabId ?? storedDappTabId;
+  const session = await getSdkAttestationSession();
+  const dappTabId = targetTabId ?? session?.ownerTabId;
+  const sendToTab = createTabMessageSender(dappTabId);
   const attestationTypeIdList = [];
 
   let domain = '';
@@ -23,7 +36,7 @@ export async function sendInitAttestationRes(targetTabId) {
     console.warn('get dapp tab domain failed', e);
   }
 
-  await sendMsgToTab(dappTabId, {
+  await sendToTab({
     type: 'padoZKAttestationJSSDK',
     name: 'initAttestationRes',
     params: {
