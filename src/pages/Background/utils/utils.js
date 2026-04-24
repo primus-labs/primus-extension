@@ -40,8 +40,9 @@ export function matchReg(regStr, str) {
 
 // just for pageDecode.js
 export const isUrlWithQueryFn = (url, queryKeyArr) => {
-  const urlStrArr = url.split('?');
-  const queryStr = urlStrArr[1];
+  const urlStrArr = url?.split('?');
+  const queryStr = urlStrArr?.[1];
+  if (!queryStr) return false;
   const queryStrArr = queryStr.split('&');
   const isUrlWithQuery = queryKeyArr.every((tQItem) => {
     return queryStrArr.some((qItem) => {

@@ -88,18 +88,28 @@ async function handleClose(params, processAlgorithmReq) {
   const { state } = pageDecodeState;
   console.log('pageDecode-close');
   const deleteTabId = params?.tabId ?? state.dataSourcePageTabId;
+  const isCurrentSessionTabClose =
+    deleteTabId != null && deleteTabId === state.dataSourcePageTabId;
   console.log('pageDecode-close-tabId', params?.tabId, state.dataSourcePageTabId);
   if (deleteTabId) {
-    if (deleteTabId === state.dataSourcePageTabId) {
+    if (isCurrentSessionTabClose) {
       state.skipCancelOnNextDataSourceTabRemoved = true;
     }
     try {
       await chrome.tabs.remove(deleteTabId);
     } catch (e) {
-      state.skipCancelOnNextDataSourceTabRemoved = false;
+      if (isCurrentSessionTabClose) {
+        state.skipCancelOnNextDataSourceTabRemoved = false;
+      }
       console.log('chrome.tabs.remove error:', e);
     }
   }
+
+  // Ignore stale countdown-driven close from a previous attestation session.
+  if (!isCurrentSessionTabClose) {
+    return;
+  }
+
   console.log('pageDecode-close-currExtentionId', state.currExtentionId);
   try {
     if (state.currExtentionId) {
