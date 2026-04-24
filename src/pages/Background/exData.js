@@ -19,7 +19,8 @@ export async function assembleAlgorithmParamsForSDK(form, ext) {
       ? safeJsonParse(dataPageTemplate, null)
       : dataPageTemplate;
   const checkContext = dataPageTemplateObj?.checkContext ?? 'true';
-  const user = await assembleUserInfoParams({}, true);
+  const appSignParameters = JSON.parse(ext.appSignParameters);
+  const user = await assembleUserInfoParams({}, true, appSignParameters?.userAddress);
   let authUseridHash;
   if (user.userid != null && user.userid !== '') {
     authUseridHash = strToHex(String(user.userid));
@@ -30,7 +31,6 @@ export async function assembleAlgorithmParamsForSDK(form, ext) {
   const proxyUrl = await getProxyUrl();
   const zkPadoUrl = await getZkPadoUrl();
 
-  const appSignParameters = JSON.parse(ext.appSignParameters);
   let specialTask = '';
   if (appSignParameters?.computeMode === 'nonecomplete') {
     specialTask = 'CompleteHttpResponseCiphertext';
@@ -72,24 +72,16 @@ export async function assembleAlgorithmParamsForSDK(form, ext) {
   return params;
 }
 
-async function assembleUserInfoParams(_form, isFromSDK) {
-  const storage = await safeStorageGet([
-    'userInfo',
-    'padoZKAttestationJSSDKWalletAddress',
-  ]);
+async function assembleUserInfoParams(_form, isFromSDK, sdkUserAddress) {
+  const storage = await safeStorageGet(['userInfo']);
   const userInfo = storage.userInfo;
-  const padoZKAttestationJSSDKWalletAddress =
-    storage.padoZKAttestationJSSDKWalletAddress;
 
   let formatAddress;
-  if (isFromSDK && padoZKAttestationJSSDKWalletAddress) {
-    formatAddress = padoZKAttestationJSSDKWalletAddress;
+  if (isFromSDK && sdkUserAddress) {
+    formatAddress = sdkUserAddress;
     console.log('algorithmParams-userAddress-isFromSDK', formatAddress);
   }
-  console.log(
-    'algorithmParams-userAddress',
-    padoZKAttestationJSSDKWalletAddress
-  );
+  console.log('algorithmParams-userAddress', formatAddress);
 
   let userid;
   let loginToken;

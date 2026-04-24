@@ -65,7 +65,6 @@ window.addEventListener('message', (e) => {
         SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
         SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
         'padoZKAttestationJSSDKBeginAttest',
-        'padoZKAttestationJSSDKWalletAddress',
         'padoZKAttestationJSSDKAttestationPresetParams',
         'activeRequestAttestation',
         'padoZKAttestationJSSDKClientType',

@@ -103,21 +103,19 @@ export async function handleDataSourcePageDialogTimeout(processAlgorithmReq) {
     'padoZKAttestationJSSDKBeginAttest',
     'padoZKAttestationJSSDKAttestationPresetParams',
     'activeRequestAttestation',
-    'beginAttest',
     'getAttestationResultRes',
   ]);
   const {
     padoZKAttestationJSSDKBeginAttest,
     padoZKAttestationJSSDKAttestationPresetParams,
     activeRequestAttestation,
-    beginAttest,
     getAttestationResultRes,
   } = storage;
 
   const { state } = getPageDecodeState();
 
   const eventReportFn = async (rawData) => {
-    if (beginAttest === '1') {
+    if (activeRequestAttestation) {
       Object.assign(rawData, {
         ext: { ...rawData.ext, getAttestationResultRes },
       });

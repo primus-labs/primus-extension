@@ -280,7 +280,6 @@ export async function pageDecodeMsgListener(
         clientType: clientType || '',
       };
       await safeStorageSet({
-        beginAttest: '1',
         activeRequestAttestation: JSON.stringify(aligorithmParams),
       });
       console.log('pageDecode-algorithmParams', aligorithmParams);

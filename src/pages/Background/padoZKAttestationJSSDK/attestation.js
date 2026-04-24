@@ -48,11 +48,9 @@ async function cleanupStaleActiveAttestationState() {
     SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
     SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
     'padoZKAttestationJSSDKBeginAttest',
-    'padoZKAttestationJSSDKWalletAddress',
     'padoZKAttestationJSSDKAttestationPresetParams',
     'activeRequestAttestation',
     'padoZKAttestationJSSDKClientType',
-    'beginAttest',
     'getAttestationResultRes',
   ]);
 }
@@ -429,11 +427,8 @@ export async function handleStartAttestation(
     }
   }
 
-  await safeStorageSet({
-    padoZKAttestationJSSDKWalletAddress: walletAddress,
-  });
   console.log('debuge-zktls-startAttestation2', walletAddress);
-  await safeStorageRemove(['beginAttest', 'getAttestationResultRes']);
+  await safeStorageRemove(['getAttestationResultRes']);
   await safeStorageSet({
     padoZKAttestationJSSDKAttestationPresetParams: JSON.stringify(
       Object.assign({ chainName }, activeAttestationParams)
@@ -508,7 +503,6 @@ export async function handleGetAttestationResultTimeout(
     SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
     SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
     'padoZKAttestationJSSDKBeginAttest',
-    'padoZKAttestationJSSDKWalletAddress',
     'padoZKAttestationJSSDKAttestationPresetParams',
     'activeRequestAttestation',
     'padoZKAttestationJSSDKClientType',
