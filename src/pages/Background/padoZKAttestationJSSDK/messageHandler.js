@@ -23,6 +23,16 @@ export async function padoZKAttestationJSSDKMsgListener(
   processAlgorithmReq
 ) {
   const { name, params } = request;
+  let responded = false;
+  const respondOnce = (payload = { ok: true }) => {
+    if (responded) return;
+    responded = true;
+    try {
+      sendResponse?.(payload);
+    } catch (_e) {
+      // Ignore closed or invalid message ports.
+    }
+  };
 
   setProcessAlgorithmReqRef(processAlgorithmReq);
 
@@ -32,9 +42,7 @@ export async function padoZKAttestationJSSDKMsgListener(
     } catch (e) {
       console.log('closeDataSourceTab', e);
     } finally {
-      try {
-        sendResponse?.({});
-      } catch (_e) {}
+      respondOnce({});
     }
     return;
   }
@@ -48,9 +56,7 @@ export async function padoZKAttestationJSSDKMsgListener(
     } catch (e) {
       console.log('removeActiveAttestation stop error', e);
     }
-    try {
-      sendResponse?.({});
-    } catch (_e) {}
+    respondOnce({});
     return;
   }
 
@@ -60,28 +66,38 @@ export async function padoZKAttestationJSSDKMsgListener(
       sender.tab?.id,
       processAlgorithmReq
     );
+    respondOnce();
+    return;
   }
 
   if (name === 'startAttestation') {
     await handleStartAttestation(
       params,
       sender,
-      sendResponse,
+      respondOnce,
       processAlgorithmReq
     );
+    respondOnce();
+    return;
   }
 
   if (name === 'getAttestationResult') {
     handleGetAttestationResult(processAlgorithmReq);
+    respondOnce();
+    return;
   }
 
   if (name === 'getAttestationResultTimeout') {
     await handleGetAttestationResultTimeout(
       sender,
-      sendResponse,
+      respondOnce,
       processAlgorithmReq
     );
+    respondOnce();
+    return;
   }
+
+  respondOnce();
 }
 
 chrome.tabs.onRemoved.addListener((tabId) => {

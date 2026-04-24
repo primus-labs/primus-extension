@@ -2,6 +2,15 @@ import { sendMessageWithRetry } from '@/utils/contentMessaging';
 
 let removeInFlight = false;
 
+function shouldRetryStartAttestationError(err) {
+  const message = String(err?.message || err || '').toLowerCase();
+  return (
+    message.includes('extension context invalidated') ||
+    message.includes('receiving end does not exist') ||
+    message.includes('could not establish connection')
+  );
+}
+
 window.addEventListener('message', (e) => {
   const { target, name, params } = e.data;
   if (target === 'padoExtension') {
@@ -21,7 +30,7 @@ window.addEventListener('message', (e) => {
         type: 'padoZKAttestationJSSDK',
         name: 'startAttestation',
         params,
-      }).catch(() => {});
+      }, 2, shouldRetryStartAttestationError).catch(() => {});
     }
     if (name === 'getAttestationResult') {
       sendMessageWithRetry({
