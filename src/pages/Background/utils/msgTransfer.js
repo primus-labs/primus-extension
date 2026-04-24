@@ -7,9 +7,10 @@ import { sendMsgToTab } from './utils.js';
  * Send initAttestationRes message to the dapp tab (used by algorithm and index).
  * Gets domain from tab URL, then sends message.
  */
-export async function sendInitAttestationRes() {
-  const { padoZKAttestationJSSDKDappTabId: dappTabId } =
-        await safeStorageGet(['padoZKAttestationJSSDKDappTabId']);
+export async function sendInitAttestationRes(targetTabId) {
+  const { padoZKAttestationJSSDKDappTabId: storedDappTabId } =
+    await safeStorageGet(['padoZKAttestationJSSDKDappTabId']);
+  const dappTabId = targetTabId ?? storedDappTabId;
   const attestationTypeIdList = [];
 
   let domain = '';

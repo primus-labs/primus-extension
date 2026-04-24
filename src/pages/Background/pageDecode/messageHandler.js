@@ -282,7 +282,6 @@ export async function pageDecodeMsgListener(
       await safeStorageSet({
         beginAttest: '1',
         activeRequestAttestation: JSON.stringify(aligorithmParams),
-        activeRequestAttestationStartedAt: Date.now(),
       });
       console.log('pageDecode-algorithmParams', aligorithmParams);
       chrome.runtime.sendMessage({

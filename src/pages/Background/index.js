@@ -1,6 +1,10 @@
 import { sendInitAttestationRes } from './utils/msgTransfer.js';
 import { eventReport } from '@/services/api/usertracker';
 import {
+  SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+  SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
+} from '@/config/constants';
+import {
   createOffscreenDoc,
   closeOffscreenDoc,
   hasOffscreenDocument,
@@ -34,7 +38,11 @@ chrome.runtime.onInstalled.addListener(async ({ reason, version: _version }) => 
       reqMethodName: 'start',
     });
   } else if (reason === chrome.runtime.OnInstalledReason.UPDATE) {
-    await safeStorageRemove(['activeRequestAttestation']);
+    await safeStorageRemove([
+      SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+      SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
+      'activeRequestAttestation',
+    ]);
     await ensureExtensionUserIdentity();
   }
 });
@@ -103,6 +111,8 @@ const processAlgorithmReq = async (message) => {
     case 'stop': {
       await closeOffscreenDoc();
       await safeStorageRemove([
+        SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+        SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
         'activeRequestAttestation',
         'padoZKAttestationJSSDKClientType',
       ]);

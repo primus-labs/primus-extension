@@ -5,6 +5,10 @@ import { sendMsgToTab } from '../utils/utils';
 import { handleAttestationError } from './utils';
 import { eventReport } from '@/services/api/usertracker';
 import { ERROR_USER_CANCELLED } from '@/config/errorCodes';
+import {
+  SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+  SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
+} from '@/config/constants';
 import { getPageDecodeState } from './state';
 import { safeStorageGet, safeStorageRemove } from '@/utils/safeStorage';
 import { safeJsonParse } from '@/utils/utils';
@@ -30,18 +34,22 @@ export async function sendMsgToDataSourcePage(msg) {
 export async function handlerForSdk(processAlgorithmReq, operation) {
   const {
     padoZKAttestationJSSDKBeginAttest,
+    [SDK_START_ATTESTATION_LOCK_TAB_ID_KEY]: startAttestationLockTabId,
     activeRequestAttestation: lastActiveRequestAttestationStr,
   } = await safeStorageGet([
     'padoZKAttestationJSSDKBeginAttest',
     'padoZKAttestationJSSDKDappTabId',
+    SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
     'activeRequestAttestation',
   ]);
-  if (processAlgorithmReq && lastActiveRequestAttestationStr) {
+  if (processAlgorithmReq && (lastActiveRequestAttestationStr || startAttestationLockTabId != null)) {
     processAlgorithmReq({ reqMethodName: 'stop' });
   }
   if (padoZKAttestationJSSDKBeginAttest) {
     stopKeepAlive();
     await safeStorageRemove([
+      SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+      SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
       'padoZKAttestationJSSDKBeginAttest',
       'padoZKAttestationJSSDKAttestationPresetParams',
       'activeRequestAttestation',
@@ -149,7 +157,11 @@ export async function handleDataSourcePageDialogTimeout(processAlgorithmReq) {
         ext: { sigFormat, event },
       });
       await eventReportFn(eventInfo.rawData);
-      await safeStorageRemove(['activeRequestAttestation']);
+      await safeStorageRemove([
+        SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+        SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
+        'activeRequestAttestation',
+      ]);
     }
   }
 

@@ -5,6 +5,10 @@ import { pageDecodeMsgListener } from '../pageDecode/index.js';
 import { closeSdkDataSourceTabWithoutCancel } from '../pageDecode/closeDataSourceTab.js';
 import { getErrorTipByExtraData, getAttestTipForCode } from './errorMap.js';
 import { TOTAL_TIP_MAP, ERROR_UNKNOWN } from '@/config/errorCodes';
+import {
+  SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+  SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
+} from '@/config/constants';
 import { safeStorageGet, safeStorageSet, safeStorageRemove } from '@/utils/safeStorage';
 import { sendMsgToTab } from '../utils/utils.js';
 import { safeJsonParse } from '@/utils/utils';
@@ -68,6 +72,8 @@ export async function handleGetAttestation(
     );
     stopKeepAlive();
     await safeStorageRemove([
+      SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+      SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
       'padoZKAttestationJSSDKBeginAttest',
       'padoZKAttestationJSSDKWalletAddress',
       'padoZKAttestationJSSDKAttestationPresetParams',
@@ -148,6 +154,8 @@ export async function handleGetAttestationResult(
       await closeSdkDataSourceTabWithoutCancel();
     }
     await safeStorageRemove([
+      SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+      SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
       'padoZKAttestationJSSDKBeginAttest',
       'padoZKAttestationJSSDKWalletAddress',
       'padoZKAttestationJSSDKAttestationPresetParams',
@@ -170,6 +178,8 @@ export async function handleGetAttestationResult(
       if (activeRequestId !== content?.requestid) {
         stopKeepAlive();
         await safeStorageRemove([
+          SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+          SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
           'padoZKAttestationJSSDKBeginAttest',
           'padoZKAttestationJSSDKWalletAddress',
           'padoZKAttestationJSSDKAttestationPresetParams',
@@ -263,6 +273,8 @@ export async function handleGetAttestationResult(
       );
       stopKeepAlive();
       await safeStorageRemove([
+        SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+        SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
         'padoZKAttestationJSSDKBeginAttest',
         'padoZKAttestationJSSDKWalletAddress',
         'padoZKAttestationJSSDKAttestationPresetParams',
@@ -311,6 +323,8 @@ export async function handleGetAttestationResult(
     );
     stopKeepAlive();
     await safeStorageRemove([
+      SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+      SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
       'padoZKAttestationJSSDKBeginAttest',
       'padoZKAttestationJSSDKWalletAddress',
       'padoZKAttestationJSSDKAttestationPresetParams',

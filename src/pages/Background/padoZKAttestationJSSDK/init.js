@@ -4,7 +4,12 @@
 import { getSysConfig } from '@/services/api/config';
 import { updateAlgoUrl } from '@/services/api/algorithmUrlSync';
 import { getAlgoApi } from './utils';
-import { safeStorageSet } from '@/utils/safeStorage';
+import { sendInitAttestationRes } from '../utils/msgTransfer.js';
+import {
+  SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+  SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
+} from '@/config/constants';
+import { safeStorageGet, safeStorageSet } from '@/utils/safeStorage';
 
 const sdkState = {
   hasGetTwitterScreenName: false,
@@ -66,6 +71,30 @@ export async function handleInitAttestation(params, senderTabId, processAlgorith
   );
 
   await fetchConfigure();
+
+  const {
+    [SDK_START_ATTESTATION_LOCK_TAB_ID_KEY]: startAttestationLockTabId,
+    [SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY]: startAttestationLockStartedAt,
+  } = await safeStorageGet([
+    SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+    SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
+  ]);
+  if (
+    startAttestationLockTabId != null &&
+    senderTabId != null &&
+    startAttestationLockTabId !== senderTabId
+  ) {
+    console.log(
+      'debuge-zktls-initAttestation-skip-owner-override',
+      JSON.stringify({
+        senderTabId,
+        ownerTabId: startAttestationLockTabId,
+        startedAt: startAttestationLockStartedAt ?? null,
+      })
+    );
+    await sendInitAttestationRes(senderTabId);
+    return;
+  }
 
   sdkState.sdkVersion = params?.sdkVersion;
   sdkState.sdkName = params?.sdkName;

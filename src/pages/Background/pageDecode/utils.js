@@ -3,6 +3,10 @@ const { select } = require('xpath');
 const { DOMParser } = require('xmldom');
 const cheerio = require('cheerio');
 
+import {
+  SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+  SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
+} from '@/config/constants';
 import { customFetch2 } from '../utils/request';
 import { safeStorageGet, safeStorageRemove } from '@/utils/safeStorage';
 import { sendMsgToTab } from '../utils/utils.js';
@@ -93,6 +97,8 @@ export const handleAttestationError = async (errorData, dataSourcePageTabId, opt
   }
 
   const keysToRemove = [
+    SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+    SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
     'padoZKAttestationJSSDKBeginAttest',
     'padoZKAttestationJSSDKWalletAddress',
     'padoZKAttestationJSSDKAttestationPresetParams',

@@ -6,9 +6,15 @@
  * or browser restart, while the rest of the state remains in local storage.
  */
 
+import {
+  SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+  SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
+} from '@/config/constants';
+
 const SESSION_STORAGE_KEYS = new Set([
   'activeRequestAttestation',
-  'activeRequestAttestationStartedAt',
+  SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+  SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
 ]);
 
 function hasSessionStorageArea() {

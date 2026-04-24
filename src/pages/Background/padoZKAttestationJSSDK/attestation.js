@@ -8,6 +8,8 @@ import { getAlgoApi } from './utils';
 import {
   STARTOFFLINETIMEOUT,
   DEFAULT_PAGE_DECODE_VERIFY_MS,
+  SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+  SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
 } from '@/config/constants';
 import { getSdkState, getProcessAlgorithmReqRef } from './init.js';
 import { safeStorageGet, safeStorageSet, safeStorageRemove } from '@/utils/safeStorage';
@@ -34,6 +36,8 @@ function resolvePageDecodeVerifyTimeoutMs(attRequest) {
 
 async function cleanupStartAttestationState() {
   await safeStorageRemove([
+    SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+    SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
     'padoZKAttestationJSSDKBeginAttest',
     'padoZKAttestationJSSDKClientType',
   ]);
@@ -41,15 +45,32 @@ async function cleanupStartAttestationState() {
 
 async function cleanupStaleActiveAttestationState() {
   await safeStorageRemove([
+    SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+    SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
     'padoZKAttestationJSSDKBeginAttest',
     'padoZKAttestationJSSDKWalletAddress',
     'padoZKAttestationJSSDKAttestationPresetParams',
     'activeRequestAttestation',
-    'activeRequestAttestationStartedAt',
     'padoZKAttestationJSSDKClientType',
     'beginAttest',
     'getAttestationResultRes',
   ]);
+}
+
+async function sendBusyStartAttestationResponse(targetTabId) {
+  if (targetTabId == null) return;
+  await sendMsgToTab(targetTabId, {
+    type: 'padoZKAttestationJSSDK',
+    name: 'startAttestationRes',
+    params: {
+      result: false,
+      errorData: {
+        desc:
+          'An attestation process is currently being generated. Please try again later.',
+        code: '00003',
+      },
+    },
+  });
 }
 
 /**
@@ -62,11 +83,7 @@ export async function handleStartAttestation(
   processAlgorithmReq
 ) {
   const state = getSdkState();
-  state.sdkVersion = params?.sdkVersion;
-  state.sdkName = params?.sdkName;
-  state.isNetworkSdk = !!(state.sdkName && state.sdkName.indexOf('network') > -1);
-  state.sdkParams = params;
-
+  const currentDappTabId = sender?.tab?.id;
   const pageDecodeVerifyTimeoutMs = resolvePageDecodeVerifyTimeoutMs(
     params?.attRequest
   );
@@ -82,26 +99,41 @@ export async function handleStartAttestation(
     JSON.stringify(params)
   );
 
-  await safeStorageSet({
-    padoZKAttestationJSSDKBeginAttest: state.sdkVersion,
-    padoZKAttestationJSSDKClientType: params?.clientType || '',
-  });
-  processAlgorithmReq({ reqMethodName: 'start' });
-
   const {
+    [SDK_START_ATTESTATION_LOCK_TAB_ID_KEY]: startAttestationLockTabId,
+    [SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY]: startAttestationLockStartedAt,
     activeRequestAttestation: lastActiveRequestAttestationStr,
-    activeRequestAttestationStartedAt: lastActiveRequestAttestationStartedAt,
     padoZKAttestationJSSDKBeginAttest: beginAttestFlag,
-    padoZKAttestationJSSDKDappTabId: dappTabId,
   } = await safeStorageGet([
+    SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+    SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
     'activeRequestAttestation',
-    'activeRequestAttestationStartedAt',
     'padoZKAttestationJSSDKBeginAttest',
-    'padoZKAttestationJSSDKDappTabId',
   ]);
 
+  if (startAttestationLockTabId != null) {
+    const startedAt = Number(startAttestationLockStartedAt);
+    const hasValidStartedAt = Number.isFinite(startedAt);
+    const isStaleLock =
+      !hasValidStartedAt || Date.now() - startedAt > activeRequestStaleTtlMs;
+
+    if (isStaleLock) {
+      console.log(
+        'debuge-zktls-clear-stale-startAttestation-lock',
+        JSON.stringify({
+          startedAt: hasValidStartedAt ? startedAt : null,
+          ownerTabId: startAttestationLockTabId,
+        })
+      );
+      await cleanupStaleActiveAttestationState();
+    } else {
+      await sendBusyStartAttestationResponse(currentDappTabId);
+      return;
+    }
+  }
+
   if (lastActiveRequestAttestationStr) {
-    const startedAt = Number(lastActiveRequestAttestationStartedAt);
+    const startedAt = Number(startAttestationLockStartedAt);
     const hasValidStartedAt = Number.isFinite(startedAt);
     const isStaleLock =
       !beginAttestFlag ||
@@ -118,23 +150,24 @@ export async function handleStartAttestation(
       );
       await cleanupStaleActiveAttestationState();
     } else {
-      await safeStorageRemove(['padoZKAttestationJSSDKBeginAttest']);
-      const resParams = {
-        result: false,
-        errorData: {
-          desc:
-            'An attestation process is currently being generated. Please try again later.',
-          code: '00003',
-        },
-      };
-      await sendMsgToTab(dappTabId, {
-        type: 'padoZKAttestationJSSDK',
-        name: 'startAttestationRes',
-        params: resParams,
-      });
+      await sendBusyStartAttestationResponse(currentDappTabId);
       return;
     }
   }
+
+  state.sdkVersion = params?.sdkVersion;
+  state.sdkName = params?.sdkName;
+  state.isNetworkSdk = !!(state.sdkName && state.sdkName.indexOf('network') > -1);
+  state.sdkParams = params;
+
+  await safeStorageSet({
+    [SDK_START_ATTESTATION_LOCK_TAB_ID_KEY]: currentDappTabId,
+    [SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY]: Date.now(),
+    padoZKAttestationJSSDKDappTabId: currentDappTabId,
+    padoZKAttestationJSSDKBeginAttest: state.sdkVersion,
+    padoZKAttestationJSSDKClientType: params?.clientType || '',
+  });
+  processAlgorithmReq({ reqMethodName: 'start' });
 
   let activeWebProofTemplate = {};
   let activeAttestationParams = {};
@@ -472,11 +505,12 @@ export async function handleGetAttestationResultTimeout(
 
   stopKeepAlive();
   await safeStorageRemove([
+    SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+    SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
     'padoZKAttestationJSSDKBeginAttest',
     'padoZKAttestationJSSDKWalletAddress',
     'padoZKAttestationJSSDKAttestationPresetParams',
     'activeRequestAttestation',
-    'activeRequestAttestationStartedAt',
     'padoZKAttestationJSSDKClientType',
   ]);
 
