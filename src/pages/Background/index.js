@@ -22,8 +22,8 @@ import { setupKeepAliveListener } from './utils/keepAlive.js';
 import { ensureExtensionUserIdentity } from './identityBootstrap.js';
 import { listener as xEventMsgListener } from './xEvent/index.js';
 import {
-  clearSdkAttestationPreset,
-  clearSdkAttestationSession,
+  clearSdkAttestationResultCache,
+  clearSdkAttestationRuntimeState,
   getSdkAttestationSession,
 } from './padoZKAttestationJSSDK/sessionStorage.js';
 
@@ -43,13 +43,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason, version: _version }) => 
       reqMethodName: 'start',
     });
   } else if (reason === chrome.runtime.OnInstalledReason.UPDATE) {
-    await safeStorageRemove([
-      SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-      SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-      'activeRequestAttestation',
-    ]);
-    await clearSdkAttestationSession();
-    await clearSdkAttestationPreset();
+    await clearSdkAttestationRuntimeState();
     await ensureExtensionUserIdentity();
   }
 });
@@ -119,6 +113,7 @@ const processAlgorithmReq = async (message) => {
         SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
         'activeRequestAttestation',
       ]);
+      await clearSdkAttestationResultCache();
       if (!params?.noRestart) {
         await startFn();
       }

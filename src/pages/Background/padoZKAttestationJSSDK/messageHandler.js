@@ -10,7 +10,11 @@ import {
   handleDappTabRemoved,
 } from './attestation.js';
 import { setProcessAlgorithmReqRef } from './init.js';
-import { closeSdkDataSourceTabWithoutCancel } from '../pageDecode/closeDataSourceTab.js';
+import {
+  cleanupPageDecodeWithoutCancel,
+  closeSdkDataSourceTabWithoutCancel,
+} from '../pageDecode/closeDataSourceTab.js';
+import { stopKeepAlive } from '../utils/keepAlive.js';
 
 export async function padoZKAttestationJSSDKMsgListener(
   request,
@@ -36,7 +40,14 @@ export async function padoZKAttestationJSSDKMsgListener(
   }
 
   if (name === 'removeActiveAttestation') {
+    stopKeepAlive();
+    await cleanupPageDecodeWithoutCancel();
     await clearSdkAttestationRuntimeState();
+    try {
+      await processAlgorithmReq({ reqMethodName: 'stop', params: { noRestart: true } });
+    } catch (e) {
+      console.log('removeActiveAttestation stop error', e);
+    }
     try {
       sendResponse?.({});
     } catch (_e) {}

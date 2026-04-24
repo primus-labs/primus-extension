@@ -12,7 +12,7 @@ import {
   SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
 } from '@/config/constants';
 import { getSdkState, getProcessAlgorithmReqRef } from './init.js';
-import { safeStorageGet, safeStorageSet, safeStorageRemove } from '@/utils/safeStorage';
+import { safeStorageGet, safeStorageSet } from '@/utils/safeStorage';
 import { sendMsgToTab } from '../utils/utils.js';
 import { safeJsonParse } from '@/utils/utils';
 import { stopKeepAlive } from '../utils/keepAlive.js';
@@ -24,13 +24,16 @@ import {
   MONAD_CALCULATIONS,
 } from '../pageDecode/specialTemplates/lumaMonad/constants';
 import {
+  clearSdkAttestationResultCache,
   clearSdkAttestationPreset,
+  clearSdkAttestationRuntimeState,
   clearSdkAttestationSession,
   getSdkAttestationSession,
   setSdkAttestationPreset,
   setSdkAttestationSession,
 } from './sessionStorage.js';
 import { createTabMessageSender } from '../utils/msgTransfer.js';
+import { cleanupPageDecodeWithoutCancel } from '../pageDecode/closeDataSourceTab.js';
 
 const ACTIVE_REQUEST_STALE_GRACE_MS = 60 * 1000;
 
@@ -44,33 +47,15 @@ function resolvePageDecodeVerifyTimeoutMs(attRequest) {
 }
 
 async function cleanupStartAttestationState() {
-  await safeStorageRemove([
-    SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-    SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-  ]);
-  await clearSdkAttestationSession();
+  await clearSdkAttestationRuntimeState();
 }
 
 async function cleanupStaleActiveAttestationState() {
-  await safeStorageRemove([
-    SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-    SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-    'activeRequestAttestation',
-    'getAttestationResultRes',
-  ]);
-  await clearSdkAttestationSession();
-  await clearSdkAttestationPreset();
+  await clearSdkAttestationRuntimeState();
 }
 
 async function cleanupAbortedStartAttestationState() {
-  await safeStorageRemove([
-    SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-    SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-    'activeRequestAttestation',
-    'getAttestationResultRes',
-  ]);
-  await clearSdkAttestationSession();
-  await clearSdkAttestationPreset();
+  await clearSdkAttestationRuntimeState();
 }
 
 async function sendUnexpectedStartAttestationError(sendToSdk) {
@@ -467,7 +452,7 @@ export async function handleStartAttestation(
     }
 
     console.log('debuge-zktls-startAttestation2', walletAddress);
-    await safeStorageRemove(['getAttestationResultRes']);
+    await clearSdkAttestationResultCache();
     await setSdkAttestationPreset(Object.assign({ chainName }, activeAttestationParams));
 
     const currRequestTemplate = {
@@ -490,6 +475,7 @@ export async function handleStartAttestation(
   } catch (e) {
     console.log('startAttestation unexpected error:', e);
     stopKeepAlive();
+    await cleanupPageDecodeWithoutCancel();
     await cleanupAbortedStartAttestationState();
     try {
       await processAlgorithmReq({ reqMethodName: 'stop', params: { noRestart: true } });
@@ -534,7 +520,10 @@ export async function handleGetAttestationResultTimeout(
   const state = getSdkState();
   const session = await getSdkAttestationSession();
   const sendToSdk = createTabMessageSender(session?.ownerTabId);
-  const { configMap } = await safeStorageGet(['configMap']);
+  const { configMap, attestationLogInQuery } = await safeStorageGet([
+    'configMap',
+    'attestationLogInQuery',
+  ]);
   const configMapParsed = safeJsonParse(configMap);
   const noteV2Map = resolveNoteV2MapFromConfigParsed(configMapParsed);
   const code = '00002';
@@ -545,13 +534,7 @@ export async function handleGetAttestationResultTimeout(
   };
 
   stopKeepAlive();
-  await safeStorageRemove([
-    SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-    SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-    'activeRequestAttestation',
-  ]);
-  await clearSdkAttestationSession();
-  await clearSdkAttestationPreset();
+  await clearSdkAttestationRuntimeState();
 
   await pageDecodeMsgListener(
     {
@@ -563,10 +546,7 @@ export async function handleGetAttestationResultTimeout(
     state.hasGetTwitterScreenName,
     processAlgorithmReq
   );
-  processAlgorithmReq({ reqMethodName: 'stop' });
-
-  const storage = await safeStorageGet(['attestationLogInQuery']);
-  const { attestationLogInQuery } = storage;
+  processAlgorithmReq({ reqMethodName: 'stop', params: { noRestart: true } });
   const resParams = {
     result: false,
     errorData: {

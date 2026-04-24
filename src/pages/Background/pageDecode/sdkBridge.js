@@ -14,8 +14,8 @@ import { safeStorageGet, safeStorageRemove } from '@/utils/safeStorage';
 import { safeJsonParse } from '@/utils/utils';
 import { stopKeepAlive } from '../utils/keepAlive.js';
 import {
-  clearSdkAttestationPreset,
-  clearSdkAttestationSession,
+  clearSdkAttestationResultCache,
+  clearSdkAttestationRuntimeState,
   getSdkAttestationPresetFromStorage,
   getSdkAttestationSessionFromStorage,
   SDK_ATTESTATION_PRESET_STORAGE_KEYS,
@@ -49,18 +49,9 @@ export async function handlerForSdk(processAlgorithmReq, operation) {
     [SDK_START_ATTESTATION_LOCK_TAB_ID_KEY]: startAttestationLockTabId,
     activeRequestAttestation: lastActiveRequestAttestationStr,
   } = storage;
-  if (processAlgorithmReq && (lastActiveRequestAttestationStr || startAttestationLockTabId != null)) {
-    processAlgorithmReq({ reqMethodName: 'stop' });
-  }
   if (session?.sdkVersion) {
     stopKeepAlive();
-    await safeStorageRemove([
-      SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-      SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-      'activeRequestAttestation',
-    ]);
-    await clearSdkAttestationSession();
-    await clearSdkAttestationPreset();
+    await clearSdkAttestationRuntimeState();
     const desc = `The user ${operation} the attestation`;
     const resParams = {
       result: false,
@@ -76,6 +67,9 @@ export async function handlerForSdk(processAlgorithmReq, operation) {
     } catch (error) {
       console.log('handlerForSdk error:', error);
     }
+  }
+  if (processAlgorithmReq && (lastActiveRequestAttestationStr || startAttestationLockTabId != null)) {
+    await processAlgorithmReq({ reqMethodName: 'stop', params: { noRestart: true } });
   }
 }
 
@@ -163,11 +157,12 @@ export async function handleDataSourcePageDialogTimeout(processAlgorithmReq) {
         SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
         'activeRequestAttestation',
       ]);
+      await clearSdkAttestationResultCache();
     }
   }
 
   stopKeepAlive();
-  processAlgorithmReq({ reqMethodName: 'stop' });
+  processAlgorithmReq({ reqMethodName: 'stop', params: { noRestart: true } });
   await handleAttestationError({
     desc: 'The process did not respond within 2 minutes. Please try again later.',
     code: '00014',

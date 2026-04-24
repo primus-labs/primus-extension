@@ -90,9 +90,13 @@ async function handleClose(params, processAlgorithmReq) {
   const deleteTabId = params?.tabId ?? state.dataSourcePageTabId;
   console.log('pageDecode-close-tabId', params?.tabId, state.dataSourcePageTabId);
   if (deleteTabId) {
+    if (deleteTabId === state.dataSourcePageTabId) {
+      state.skipCancelOnNextDataSourceTabRemoved = true;
+    }
     try {
       await chrome.tabs.remove(deleteTabId);
     } catch (e) {
+      state.skipCancelOnNextDataSourceTabRemoved = false;
       console.log('chrome.tabs.remove error:', e);
     }
   }
@@ -104,6 +108,7 @@ async function handleClose(params, processAlgorithmReq) {
   } catch (error) {
     console.log('chrome.tabs.update error:', error);
   }
+  removeWebRequestListener();
   pageDecodeState.reset();
   await handlerForSdk(processAlgorithmReq, 'cancel');
 }
@@ -135,8 +140,8 @@ export async function pageDecodeMsgListener(
   console.log('pageDecodeMsgListener');
 
   if (name === 'init') {
-    state.activeTemplate = params || {};
     pageDecodeState.reset();
+    state.activeTemplate = params || {};
     state.phase = PAGE_DECODE_PHASES.CAPTURING;
     state.skipCancelOnNextDataSourceTabRemoved = false;
   }
@@ -193,23 +198,25 @@ export async function pageDecodeMsgListener(
       };
 
       await checkWebRequestIsReady();
-      let injectDebounceTimer = null;
-      chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+      state.tabUpdatedListener = (tabId, changeInfo) => {
         if (
           tabId === state.dataSourcePageTabId &&
           (changeInfo.url || changeInfo.title)
         ) {
-          clearTimeout(injectDebounceTimer);
-          injectDebounceTimer = setTimeout(async () => {
+          if (state.injectDebounceTimer) {
+            clearTimeout(state.injectDebounceTimer);
+          }
+          state.injectDebounceTimer = setTimeout(async () => {
             await injectFn();
             if (state.phase !== PAGE_DECODE_PHASES.ATTESTING) {
               await checkWebRequestIsReady();
             }
           }, 300);
         }
-      });
+      };
+      chrome.tabs.onUpdated.addListener(state.tabUpdatedListener);
 
-      chrome.tabs.onRemoved.addListener(async (tabId) => {
+      state.tabRemovedListener = async (tabId) => {
         if (tabId === state.dataSourcePageTabId) {
           const skipCancel = state.skipCancelOnNextDataSourceTabRemoved;
           state.skipCancelOnNextDataSourceTabRemoved = false;
@@ -221,7 +228,8 @@ export async function pageDecodeMsgListener(
           }
           pageDecodeState.reset();
         }
-      });
+      };
+      chrome.tabs.onRemoved.addListener(state.tabRemovedListener);
 
       await injectFn();
     }

@@ -27,6 +27,18 @@ export const SDK_ATTESTATION_PRESET_STORAGE_KEYS = [
   ...LEGACY_SDK_ATTESTATION_PRESET_KEYS,
 ];
 
+export const SDK_ATTESTATION_RESULT_CACHE_KEYS = [
+  'getAttestationResultRes',
+  'attestationLogInQuery',
+];
+
+export const SDK_ATTESTATION_RUNTIME_STORAGE_KEYS = [
+  SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+  SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
+  'activeRequestAttestation',
+  ...SDK_ATTESTATION_RESULT_CACHE_KEYS,
+];
+
 export function getSdkAttestationSessionFromStorage(storage = {}) {
   const sessionValue = storage?.[SDK_ATTESTATION_SESSION_KEY];
   const session =
@@ -102,12 +114,12 @@ export async function clearSdkAttestationPreset() {
   ]);
 }
 
+export async function clearSdkAttestationResultCache() {
+  await safeStorageRemove(SDK_ATTESTATION_RESULT_CACHE_KEYS);
+}
+
 export async function clearSdkAttestationRuntimeState() {
-  await safeStorageRemove([
-    SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-    SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-    'activeRequestAttestation',
-  ]);
+  await safeStorageRemove(SDK_ATTESTATION_RUNTIME_STORAGE_KEYS);
   await clearSdkAttestationSession();
   await clearSdkAttestationPreset();
 }

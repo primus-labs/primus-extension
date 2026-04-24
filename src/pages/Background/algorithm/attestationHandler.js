@@ -18,8 +18,7 @@ import {
   resolveNoteV2MapFromConfigParsed,
 } from '@/utils/attestationProcessNoteV2';
 import {
-  clearSdkAttestationPreset,
-  clearSdkAttestationSession,
+  clearSdkAttestationRuntimeState,
   getSdkAttestationPresetFromStorage,
   getSdkAttestationSessionFromStorage,
 } from '../padoZKAttestationJSSDK/sessionStorage.js';
@@ -78,14 +77,8 @@ export async function handleGetAttestation(
       processAlgorithmReq
     );
     stopKeepAlive();
-    await safeStorageRemove([
-      SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-      SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-      'activeRequestAttestation',
-    ]);
-    await clearSdkAttestationSession();
-    await clearSdkAttestationPreset();
-    processAlgorithmReq({ reqMethodName: 'stop' });
+    await clearSdkAttestationRuntimeState();
+    processAlgorithmReq({ reqMethodName: 'stop', params: { noRestart: true } });
   }
 
   const resParams = { result };
@@ -160,13 +153,7 @@ export async function handleGetAttestationResult(
     if (closeDataSourceOnProofComplete) {
       await closeSdkDataSourceTabWithoutCancel();
     }
-    await safeStorageRemove([
-      SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-      SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-      'activeRequestAttestation',
-    ]);
-    await clearSdkAttestationSession();
-    await clearSdkAttestationPreset();
+    await clearSdkAttestationRuntimeState();
     await sendToSdk({
       type: 'padoZKAttestationJSSDK',
       name: 'startAttestationRes',
@@ -182,13 +169,7 @@ export async function handleGetAttestationResult(
       const activeRequestId = parsedActiveRequestAttestation.requestid;
       if (activeRequestId !== content?.requestid) {
         stopKeepAlive();
-        await safeStorageRemove([
-          SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-          SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-          'activeRequestAttestation',
-        ]);
-        await clearSdkAttestationSession();
-        await clearSdkAttestationPreset();
+        await clearSdkAttestationRuntimeState();
         return;
       }
 
@@ -275,13 +256,7 @@ export async function handleGetAttestationResult(
         processAlgorithmReq
       );
       stopKeepAlive();
-      await safeStorageRemove([
-        SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-        SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-        'activeRequestAttestation',
-      ]);
-      await clearSdkAttestationSession();
-      await clearSdkAttestationPreset();
+      await clearSdkAttestationRuntimeState();
       const resParams = {
         result: false,
         errorData: { desc: msgObj.desc, code: errorCode },
@@ -304,7 +279,7 @@ export async function handleGetAttestationResult(
     } else if (rawNum === 30001) {
       resolvedSubCode = detailsDesc?.match(/\b\d{3}\b/)?.[0];
     }
-    processAlgorithmReq({ reqMethodName: 'stop' });
+    processAlgorithmReq({ reqMethodName: 'stop', params: { noRestart: true } });
     const tipKey = resolvedSubCode
       ? `${resolvedCode}:${resolvedSubCode}`
       : code != null && code !== ''
@@ -323,13 +298,7 @@ export async function handleGetAttestationResult(
       processAlgorithmReq
     );
     stopKeepAlive();
-    await safeStorageRemove([
-      SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-      SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-      'activeRequestAttestation',
-    ]);
-    await clearSdkAttestationSession();
-    await clearSdkAttestationPreset();
+    await clearSdkAttestationRuntimeState();
     const resParams = {
       result: false,
       errorData: {

@@ -1,3 +1,4 @@
+/* global require, chrome, console, FormData, TextDecoder, Promise, fetch */
 import jp from 'jsonpath';
 const { select } = require('xpath');
 const { DOMParser } = require('xmldom');
@@ -10,11 +11,13 @@ import {
 import { customFetch2 } from '../utils/request';
 import { safeStorageRemove } from '@/utils/safeStorage';
 import {
+  clearSdkAttestationResultCache,
   clearSdkAttestationPreset,
   clearSdkAttestationSession,
   getSdkAttestationSession,
 } from '../padoZKAttestationJSSDK/sessionStorage.js';
 import { createTabMessageSender } from '../utils/msgTransfer.js';
+import { getPageDecodeState } from './state';
 
 /** Fetch request data (JSON/object) for template matching. Re-sends captured request. */
 export const fetchRequestData = async (params) => {
@@ -107,9 +110,14 @@ export const handleAttestationError = async (errorData, dataSourcePageTabId, opt
     keysToRemove.push('activeRequestAttestation');
   }
   await safeStorageRemove(keysToRemove);
+  await clearSdkAttestationResultCache();
   await clearSdkAttestationSession();
   await clearSdkAttestationPreset();
   if (dataSourcePageTabId) {
+    const { state } = getPageDecodeState();
+    if (dataSourcePageTabId === state.dataSourcePageTabId) {
+      state.skipCancelOnNextDataSourceTabRemoved = true;
+    }
     await chrome.tabs.remove(dataSourcePageTabId);
   }
 };

@@ -1,3 +1,4 @@
+/* global chrome, clearTimeout */
 /**
  * Centralized state for the page decode / attestation flow.
  * Replaces module-level mutable variables for testability and clear lifecycle.
@@ -27,6 +28,9 @@ export function createPageDecodeState() {
     formatAlgorithmParams: null,
     onBeforeSendHeadersFn: () => {},
     onBeforeRequestFn: () => {},
+    tabUpdatedListener: null,
+    tabRemovedListener: null,
+    injectDebounceTimer: null,
     requestsMap: {},
     reportRequestIds: [],
     PRE_ATTEST_PROMOT_V2: [...DEFAULT_PRE_ATTEST_PROMPT_V2],
@@ -100,7 +104,30 @@ export function createPageDecodeState() {
     return state.reputationPhalaBinanceEarnFields;
   }
 
+  function clearInjectDebounceTimer() {
+    if (state.injectDebounceTimer) {
+      clearTimeout(state.injectDebounceTimer);
+      state.injectDebounceTimer = null;
+    }
+  }
+
+  function removeTabLifecycleListeners() {
+    clearInjectDebounceTimer();
+    if (typeof chrome !== 'undefined' && chrome?.tabs?.onUpdated && state.tabUpdatedListener) {
+      chrome.tabs.onUpdated.removeListener(state.tabUpdatedListener);
+      state.tabUpdatedListener = null;
+    }
+    if (typeof chrome !== 'undefined' && chrome?.tabs?.onRemoved && state.tabRemovedListener) {
+      chrome.tabs.onRemoved.removeListener(state.tabRemovedListener);
+      state.tabRemovedListener = null;
+    }
+  }
+
   function reset() {
+    removeTabLifecycleListeners();
+    state.dataSourcePageTabId = null;
+    state.activeTemplate = {};
+    state.currExtentionId = null;
     state.isReadyRequest = false;
     state.phase = PAGE_DECODE_PHASES.IDLE;
     state.readyNotified = false;
@@ -109,9 +136,12 @@ export function createPageDecodeState() {
     state.formatAlgorithmParams = null;
     state.requestsMap = {};
     state.reportRequestIds = [];
+    state.skipCancelOnNextDataSourceTabRemoved = false;
     state.resolvedAmazonStorefrontBaseUrl = null;
     state.uiResultSnapshot = null;
     state.jumpConfigState = null;
+    state.PRE_ATTEST_PROMOT_V2 = [...DEFAULT_PRE_ATTEST_PROMPT_V2];
+    state.ATTESTATION_PROCESS_NOTE_V2 = null;
     resetMonadFields();
     resetReputationPhalaBinanceEarnFields();
     Object.keys(state.channelSubscriptionFields).forEach((k) => {
