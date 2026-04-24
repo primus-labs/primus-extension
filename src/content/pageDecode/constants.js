@@ -3,6 +3,8 @@
  * Centralizes magic strings to avoid typos and simplify maintenance.
  */
 
+import { DEFAULT_PAGE_DECODE_VERIFY_MS } from '@/config/constants';
+
 /** DOM id for the injected popup container */
 export const CONTAINER_ID = 'pado-extension-content';
 
@@ -51,7 +53,7 @@ export const SESSION_KEYS = {
 export const TIMING = {
   DEFAULT_UNINIT_MS: 5000,
   DEFAULT_INIT_MS: 30000,
-  POLLING_TIMEOUT_MS: 2 * 60 * 1000,
+  POLLING_TIMEOUT_MS: DEFAULT_PAGE_DECODE_VERIFY_MS,
   /** Auto-close data source tab after success; SDK tab stays open. */
   COUNTDOWN_SECONDS_SUCCESS: 3,
   /** Auto-close data source tab after failure; SDK tab stays open. */

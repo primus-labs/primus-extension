@@ -5,8 +5,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { queryTemplateById } from '@/services/api/devconsole';
 import { pageDecodeMsgListener } from '../pageDecode/index.js';
 import { getAlgoApi } from './utils';
-import { STARTOFFLINETIMEOUT } from '@/config/constants';
-import { getSdkState, setProcessAlgorithmReqRef, getProcessAlgorithmReqRef } from './init.js';
+import {
+  STARTOFFLINETIMEOUT,
+  DEFAULT_PAGE_DECODE_VERIFY_MS,
+} from '@/config/constants';
+import { getSdkState, getProcessAlgorithmReqRef } from './init.js';
 import { safeStorageGet, safeStorageSet, safeStorageRemove } from '@/utils/safeStorage';
 import { sendMsgToTab } from '../utils/utils.js';
 import { safeJsonParse } from '@/utils/utils';
@@ -17,6 +20,37 @@ import {
   TEMPLATE_ID_FOR_LUMA_MONAD,
   MONAD_CALCULATIONS,
 } from '../pageDecode/specialTemplates/lumaMonad/constants';
+
+const ACTIVE_REQUEST_STALE_GRACE_MS = 60 * 1000;
+
+/** `attRequest.timeout` in milliseconds; invalid or missing → 2 minutes. */
+function resolvePageDecodeVerifyTimeoutMs(attRequest) {
+  const raw = attRequest?.timeout;
+  if (raw == null || raw === '') return DEFAULT_PAGE_DECODE_VERIFY_MS;
+  const n = typeof raw === 'number' ? raw : Number(String(raw).trim());
+  if (!Number.isFinite(n) || n <= 0) return DEFAULT_PAGE_DECODE_VERIFY_MS;
+  return Math.round(n);
+}
+
+async function cleanupStartAttestationState() {
+  await safeStorageRemove([
+    'padoZKAttestationJSSDKBeginAttest',
+    'padoZKAttestationJSSDKClientType',
+  ]);
+}
+
+async function cleanupStaleActiveAttestationState() {
+  await safeStorageRemove([
+    'padoZKAttestationJSSDKBeginAttest',
+    'padoZKAttestationJSSDKWalletAddress',
+    'padoZKAttestationJSSDKAttestationPresetParams',
+    'activeRequestAttestation',
+    'activeRequestAttestationStartedAt',
+    'padoZKAttestationJSSDKClientType',
+    'beginAttest',
+    'getAttestationResultRes',
+  ]);
+}
 
 /**
  * Handle startAttestation: validate params, load template, build request/response templates, start offline, call pageDecode init.
@@ -32,6 +66,12 @@ export async function handleStartAttestation(
   state.sdkName = params?.sdkName;
   state.isNetworkSdk = !!(state.sdkName && state.sdkName.indexOf('network') > -1);
   state.sdkParams = params;
+
+  const pageDecodeVerifyTimeoutMs = resolvePageDecodeVerifyTimeoutMs(
+    params?.attRequest
+  );
+  const activeRequestStaleTtlMs =
+    pageDecodeVerifyTimeoutMs + ACTIVE_REQUEST_STALE_GRACE_MS;
 
   console.log(
     'debuge-zktls-startAttestation',
@@ -50,28 +90,50 @@ export async function handleStartAttestation(
 
   const {
     activeRequestAttestation: lastActiveRequestAttestationStr,
+    activeRequestAttestationStartedAt: lastActiveRequestAttestationStartedAt,
+    padoZKAttestationJSSDKBeginAttest: beginAttestFlag,
     padoZKAttestationJSSDKDappTabId: dappTabId,
   } = await safeStorageGet([
     'activeRequestAttestation',
+    'activeRequestAttestationStartedAt',
+    'padoZKAttestationJSSDKBeginAttest',
     'padoZKAttestationJSSDKDappTabId',
   ]);
 
   if (lastActiveRequestAttestationStr) {
-    await safeStorageRemove(['padoZKAttestationJSSDKBeginAttest']);
-    const resParams = {
-      result: false,
-      errorData: {
-        desc:
-          'An attestation process is currently being generated. Please try again later.',
-        code: '00003',
-      },
-    };
-    await sendMsgToTab(dappTabId, {
-      type: 'padoZKAttestationJSSDK',
-      name: 'startAttestationRes',
-      params: resParams,
-    });
-    return;
+    const startedAt = Number(lastActiveRequestAttestationStartedAt);
+    const hasValidStartedAt = Number.isFinite(startedAt);
+    const isStaleLock =
+      !beginAttestFlag ||
+      !hasValidStartedAt ||
+      Date.now() - startedAt > activeRequestStaleTtlMs;
+
+    if (isStaleLock) {
+      console.log(
+        'debuge-zktls-clear-stale-activeRequestAttestation',
+        JSON.stringify({
+          hasBeginAttest: !!beginAttestFlag,
+          startedAt: hasValidStartedAt ? startedAt : null,
+        })
+      );
+      await cleanupStaleActiveAttestationState();
+    } else {
+      await safeStorageRemove(['padoZKAttestationJSSDKBeginAttest']);
+      const resParams = {
+        result: false,
+        errorData: {
+          desc:
+            'An attestation process is currently being generated. Please try again later.',
+          code: '00003',
+        },
+      };
+      await sendMsgToTab(dappTabId, {
+        type: 'padoZKAttestationJSSDK',
+        name: 'startAttestationRes',
+        params: resParams,
+      });
+      return;
+    }
   }
 
   let activeWebProofTemplate = {};
@@ -87,6 +149,7 @@ export async function handleStartAttestation(
 
   if (state.isNetworkSdk && !params.attRequest?.algoApis?.[0]) {
     console.log('network-sdk params error');
+    await cleanupStartAttestationState();
     const resParams = {
       result: false,
       errorData: {
@@ -321,11 +384,13 @@ export async function handleStartAttestation(
             params.attRequest?.closeDataSourceOnProofComplete === true,
         };
       } else {
+        await cleanupStartAttestationState();
         await sendTemplateErrorToDapp('00012');
         return;
       }
     } catch (e) {
       console.log('sdk template error:', e);
+      await cleanupStartAttestationState();
       await sendTemplateErrorToDapp('00012');
       return;
     }
@@ -345,6 +410,7 @@ export async function handleStartAttestation(
   const currRequestTemplate = {
     ...activeAttestationParams,
     ...activeWebProofTemplate,
+    pageDecodeVerifyTimeoutMs,
   };
   await pageDecodeMsgListener(
     {
@@ -410,6 +476,7 @@ export async function handleGetAttestationResultTimeout(
     'padoZKAttestationJSSDKWalletAddress',
     'padoZKAttestationJSSDKAttestationPresetParams',
     'activeRequestAttestation',
+    'activeRequestAttestationStartedAt',
     'padoZKAttestationJSSDKClientType',
   ]);
 

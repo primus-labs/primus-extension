@@ -116,11 +116,13 @@ export function useMessageListener(setters) {
   }, []);
 }
 
-/** Timeouts: show initialized, interception fail (00013), data source dialog timeout (2 min). */
+/** Timeouts: show initialized, interception fail (00013), verifying-phase dialog timeout (default 2 min, overridable via activeRequest.pageDecodeVerifyTimeoutMs). */
 export function useTimeoutManager(activeRequest, status, statusRef, setters) {
   const noteV2 = activeRequest?.ATTESTATION_PROCESS_NOTE_V2;
   const { setStatus } = setters;
   const PRE_ATTEST_PROMOT_V2 = activeRequest?.PRE_ATTEST_PROMOT_V2;
+  const verifyingTimeoutMs =
+    activeRequest?.pageDecodeVerifyTimeoutMs ?? TIMING.POLLING_TIMEOUT_MS;
   const uninitializedShowTime =
     PRE_ATTEST_PROMOT_V2?.[0]?.showTime ?? TIMING.DEFAULT_UNINIT_MS;
   const initializedShowTime =
@@ -178,7 +180,7 @@ export function useTimeoutManager(activeRequest, status, statusRef, setters) {
             name: 'dataSourcePageDialogTimeout',
           });
         }
-      }, TIMING.POLLING_TIMEOUT_MS);
+      }, verifyingTimeoutMs);
     }
 
     return () => {
@@ -189,6 +191,7 @@ export function useTimeoutManager(activeRequest, status, statusRef, setters) {
     status,
     initializedShowTime,
     noteV2,
+    verifyingTimeoutMs,
     setters.setStatus,
     setters.setResultStatus,
     setters.setErrorTxt,
