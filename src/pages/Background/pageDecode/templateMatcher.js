@@ -26,6 +26,15 @@ export async function formatAlgorithmParamsFn() {
   const { state } = pageDecodeState;
   const activeTemplate = state.activeTemplate;
   const requestsMap = state.requestsMap;
+  const datasourceTemplate = activeTemplate?.datasourceTemplate;
+  if (
+    !datasourceTemplate ||
+    !Array.isArray(datasourceTemplate.requests) ||
+    !Array.isArray(datasourceTemplate.responses)
+  ) {
+    console.log('[formatAlgorithmParamsFn] skip: datasourceTemplate is not ready');
+    return;
+  }
 
   const {
     schemaType,

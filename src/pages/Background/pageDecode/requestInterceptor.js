@@ -44,6 +44,17 @@ import {
   shouldStoreBodyForJumpConfig,
 } from './jumpConfigRedirect';
 
+function getActiveDatasourceTemplate(state, logTag) {
+  const template = state?.activeTemplate?.datasourceTemplate;
+  const requests = Array.isArray(template?.requests) ? template.requests : null;
+  const responses = Array.isArray(template?.responses) ? template.responses : null;
+  if (!requests || !responses) {
+    console.log(`[${logTag}] skip: datasourceTemplate is not ready`);
+    return null;
+  }
+  return { requests, responses };
+}
+
 /**
  * Check if a captured request matches the template response conditions; mark as target if so.
  */
@@ -52,9 +63,9 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
   const { state, storeInRequestsMap } = pageDecodeState;
   const { requestsMap } = state;
   const activeTemplate = state.activeTemplate;
-  const {
-    datasourceTemplate: { requests, responses },
-  } = activeTemplate;
+  const template = getActiveDatasourceTemplate(state, 'checkSDKTargetRequest');
+  if (!template) return;
+  const { requests, responses } = template;
 
   const thisRequestUrlIdx = requests.findIndex((r) => r.url === templateRequestUrl);
   const thisRequestObj = requests[thisRequestUrlIdx];
@@ -287,9 +298,9 @@ export async function checkWebRequestIsReady() {
     return state.isReadyRequest;
   }
   const { requestsMap, activeTemplate, formatAlgorithmParams } = state;
-  const {
-    datasourceTemplate: { requests },
-  } = activeTemplate;
+  const template = getActiveDatasourceTemplate(state, 'checkWebRequestIsReady');
+  if (!template) return false;
+  const { requests } = template;
 
   const interceptorRequests = requests.filter(
     (r) => r.needCapture !== false
@@ -381,9 +392,9 @@ export function setupWebRequestListener() {
     if (![-1, dataSourcePageTabId].includes(details.tabId)) return;
     if (details.method === 'OPTIONS') return;
     
-    const {
-      datasourceTemplate: { requests },
-    } = state.activeTemplate;
+    const template = getActiveDatasourceTemplate(state, 'onBeforeSendHeadersFn');
+    if (!template) return;
+    const { requests } = template;
     const { url: currRequestUrl, requestHeaders, method, requestId } = details;
 
     let addQueryStr = '';
@@ -451,9 +462,9 @@ export function setupWebRequestListener() {
     if (![-1, dataSourcePageTabId].includes(subDetails.tabId)) return;
     if (subDetails.method === 'OPTIONS') return;
 
-    const {
-      datasourceTemplate: { requests },
-    } = state.activeTemplate;
+    const template = getActiveDatasourceTemplate(state, 'onBeforeRequestFn');
+    if (!template) return;
+    const { requests } = template;
     const { url: currRequestUrl, requestBody, requestId } = subDetails;
 
     removeFromRequestsMap(requestId);
