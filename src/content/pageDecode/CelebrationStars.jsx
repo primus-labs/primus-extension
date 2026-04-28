@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 
+/** Paths from Design Popup with Stars new: `src/imports/svg-zbteb0o3r1.ts` / Frame1411067627 */
 const STAR_PATHS = {
   p3f8cc180:
     'M293.605 60.4633C295.718 58.7728 298.761 60.7779 298.21 63.4983L296.787 70.5255C296.615 71.3752 296.811 72.2667 297.324 72.9661L301.603 78.8025C303.224 81.0128 301.372 84.0784 298.764 83.5023L291.878 81.981C291.053 81.7987 290.198 81.9977 289.538 82.5257L284.078 86.8928C281.964 88.5833 278.921 86.5782 279.472 83.8579L280.895 76.8306C281.067 75.9809 280.871 75.0895 280.359 74.3901L276.079 68.5536C274.459 66.3433 276.311 63.2777 278.918 63.8538L285.804 65.3751C286.63 65.5574 287.484 65.3584 288.145 64.8304L293.605 60.4633Z',
@@ -20,33 +21,42 @@ const STAR_PATHS = {
     'M373.183 103.707C375.131 103.911 375.761 106.44 374.155 107.609L369.867 110.731C369.356 111.103 369.027 111.68 368.966 112.309L368.468 117.491C368.273 119.52 365.669 120.228 364.552 118.554L361.701 114.283C361.354 113.763 360.798 113.427 360.177 113.362L354.977 112.817C353.029 112.613 352.4 110.085 354.006 108.915L358.293 105.794C358.805 105.421 359.134 104.844 359.194 104.215L359.692 99.0336C359.887 97.0038 362.492 96.2966 363.609 97.97L366.46 102.242C366.806 102.761 367.363 103.097 367.983 103.162L373.183 103.707Z',
 };
 
+/** Ellipses from Frame1411067627 (same order / colors as reference) */
 const ELLIPSES = [
-  { cx: 350.374, cy: 51.9462, rx: 4.73576, ry: 4.94624, fill: '#9D34EA' },
-  { cx: 78.8944, cy: 87.401, rx: 4.21375, ry: 4.40103, fill: '#3459EA' },
-  { cx: 256.916, cy: 87.3351, rx: 7.02292, ry: 7.33505, fill: '#699BFF' },
-  { cx: 167.49, cy: 79.934, rx: 2.80917, ry: 2.93402, fill: '#2F5FFF' },
-  { cx: 6.87489, cy: 123.311, rx: 4.21375, ry: 4.40103, fill: '#699BFF' },
-  { cx: 3.27736, cy: 218.423, rx: 3.27736, ry: 3.42302, fill: '#7E2EFF' },
-  { cx: 105.725, cy: 3.42302, rx: 3.27736, ry: 3.42302, fill: '#2E5DFF' },
+  { cx: 350.374, cy: 51.9462, rx: 4.73576, ry: 4.94624, fill: '#FFAA3D' },
+  { cx: 78.8944, cy: 87.401, rx: 4.21375, ry: 4.40103, fill: '#FF7A1A' },
+  { cx: 256.916, cy: 87.3351, rx: 7.02292, ry: 7.33505, fill: '#FFD1A3' },
+  { cx: 167.49, cy: 79.934, rx: 2.80917, ry: 2.93402, fill: '#FF9526' },
+  { cx: 6.87489, cy: 123.311, rx: 4.21375, ry: 4.40103, fill: '#FE7A4D' },
+  { cx: 3.27736, cy: 218.423, rx: 3.27736, ry: 3.42302, fill: '#FFA726' },
+  { cx: 105.725, cy: 3.42302, rx: 3.27736, ry: 3.42302, fill: '#FF8F26' },
 ];
 
 const STAR_FILLS = [
-  '#6113FF',
-  '#2842EC',
-  '#923EFF',
-  '#C302FF',
-  '#8C48FF',
-  '#B53EFF',
-  '#947AFA',
-  '#AA69FD',
+  '#FD4C00',
+  '#FF6B00',
+  '#FFA033',
+  '#FFB84D',
+  '#FFCC66',
+  '#FFDD80',
+  '#FFD480',
+  '#FF9933',
 ];
 
 const PATH_KEYS = Object.keys(STAR_PATHS);
 
+/** Match Design Popup Frame1411067627 svg */
+const STARS_SVG_WIDTH = 382.523;
 const STAR_BOX_HEIGHT = 236.547;
 
 /** Vertical settle after spring (negative = up); design -80, end state +20% higher. */
 const STARS_END_Y = -80 * 1.2;
+
+/** Nudge entire layer down vs pinned layout (product: success stars rest 10px lower). */
+const STARS_END_POSITION_NUDGE_PX = 10;
+
+/** Shift entire stars layer horizontally (positive = right). */
+const STARS_HORIZONTAL_NUDGE_PX = 8;
 
 /**
  * Success modal ~275px tall → vertical mid ~137px from `.pado-modal-group` top (card top).
@@ -68,8 +78,8 @@ function CelebrationStars({ countdown }) {
     <motion.div
       className="celebration-stars"
       style={{
-        left: 147 - 191.26,
-        top: STARS_TOP_PX,
+        left: 147 - STARS_SVG_WIDTH / 2 + STARS_HORIZONTAL_NUDGE_PX,
+        top: STARS_TOP_PX + STARS_END_POSITION_NUDGE_PX,
       }}
       initial={{ y: 80, opacity: 0, scale: 0.7 }}
       animate={{
@@ -89,8 +99,8 @@ function CelebrationStars({ countdown }) {
       }}
     >
       <svg
-        width="382.523"
-        height="236.547"
+        width={STARS_SVG_WIDTH}
+        height={STAR_BOX_HEIGHT}
         viewBox="0 0 382.523 236.547"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
