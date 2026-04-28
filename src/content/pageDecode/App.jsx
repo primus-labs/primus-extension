@@ -14,15 +14,9 @@ import {
   useAutoStartWhenReady,
   useCountdown,
 } from './hooks';
-import {
-  CONTAINER_ID,
-  EXTENSION_VERSION,
-  PAGE_DECODE_BLACK_MODAL_TEMPLATE_ID,
-  STATUS,
-  TIMING,
-} from './constants';
+import { CONTAINER_ID, EXTENSION_VERSION, STATUS, TIMING } from './constants';
 import { detectHostTheme } from './utils';
-import { shouldUseDarkModalForSpotifyDataSourceUrl } from '@/pages/Background/pageDecode/specialTemplates/specialTemplateSpotify';
+import { shouldUseDarkModalForDataSourceUrl } from '@/pages/Background/pageDecode/specialTemplates/dataSourceDarkModalOrigins';
 
 const MODAL_CARD_WIDTH = 294;
 
@@ -151,9 +145,6 @@ function SolidRing() {
 }
 
 function PadoCard({ activeRequest }) {
-  const pageDecodeTemplateId =
-    activeRequest?.attTemplateID ?? activeRequest?.id ?? null;
-
   const dataSourceHref =
     typeof window !== 'undefined' ? window.location.href : '';
 
@@ -161,15 +152,14 @@ function PadoCard({ activeRequest }) {
     const root = document.getElementById(CONTAINER_ID);
     if (!root) return undefined;
     const shouldForceBlackModal =
-      pageDecodeTemplateId === PAGE_DECODE_BLACK_MODAL_TEMPLATE_ID ||
-      shouldUseDarkModalForSpotifyDataSourceUrl(dataSourceHref);
+      shouldUseDarkModalForDataSourceUrl(dataSourceHref);
     const resolvedTheme = shouldForceBlackModal ? 'dark' : detectHostTheme();
     if (resolvedTheme === 'dark') {
       root.classList.add('pado-page-decode-theme--black');
     }
     else root.classList.remove('pado-page-decode-theme--black');
     return () => root.classList.remove('pado-page-decode-theme--black');
-  }, [pageDecodeTemplateId, dataSourceHref]);
+  }, [dataSourceHref]);
 
   const {
     status,
