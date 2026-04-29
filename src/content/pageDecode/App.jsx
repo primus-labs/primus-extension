@@ -17,6 +17,7 @@ import {
 import { CONTAINER_ID, EXTENSION_VERSION, STATUS, TIMING } from './constants';
 import { detectHostTheme } from './utils';
 import { shouldUseDarkModalForDataSourceUrl } from '@/pages/Background/pageDecode/specialTemplates/dataSourceDarkModalOrigins';
+import { DEFAULT_PRE_ATTEST_PROMPT_V2 } from '@/pages/Background/pageDecode/state';
 
 const MODAL_CARD_WIDTH = 294;
 
@@ -142,6 +143,16 @@ function SolidRing() {
       />
     </svg>
   );
+}
+
+/** Join `PRE_ATTEST_PROMOT_V2` item `text` with a fullwidth comma for one-line subtitle. */
+function joinPreAttestPromotText(entry) {
+  const parts = entry?.text;
+  if (!Array.isArray(parts) || parts.length === 0) return '';
+  return parts
+    .map((s) => (s == null ? '' : String(s).trim()))
+    .filter(Boolean)
+    .join('，');
 }
 
 function PadoCard({ activeRequest }) {
@@ -303,12 +314,20 @@ function PadoCard({ activeRequest }) {
     activeRequest?.verificationValue ??
     '';
 
+  const promotV2 = activeRequest?.PRE_ATTEST_PROMOT_V2;
+  const subtitleFromPromot0 =
+    joinPreAttestPromotText(promotV2?.[0]) ||
+    joinPreAttestPromotText(DEFAULT_PRE_ATTEST_PROMPT_V2[0]);
+  const subtitleFromPromot1 =
+    joinPreAttestPromotText(promotV2?.[1]) ||
+    joinPreAttestPromotText(DEFAULT_PRE_ATTEST_PROMPT_V2[1]);
+
   let title = 'Data Verification';
-  let subtitle = 'Processing request...';
+  let subtitle = subtitleFromPromot0;
   let errorMsg = null;
 
   if (status === STATUS.INITIALIZED) {
-    subtitle = 'Confirming login and account details...';
+    subtitle = subtitleFromPromot1;
   } else if (status === STATUS.VERIFYING) {
     subtitle = `Verifying ${targetItem}...`;
   } else if (isSuccess) {
