@@ -55,8 +55,14 @@ const STARS_END_Y = -80 * 1.2;
 /** Nudge entire layer down vs pinned layout (product: success stars rest 10px lower). */
 const STARS_END_POSITION_NUDGE_PX = 10;
 
+/** Shift layer up on top (reduces top px). */
+const STARS_NUDGE_UP_PX = 26;
+
 /** Shift entire stars layer horizontally (positive = right). */
-const STARS_HORIZONTAL_NUDGE_PX = 8;
+const STARS_HORIZONTAL_NUDGE_PX = 4;
+
+/** Fixed tilt (degrees) for the whole motion; no rotate transition. Origin: box center. */
+const STARS_TILT_DEG = 5;
 
 /**
  * Success modal ~275px tall → vertical mid ~137px from `.pado-modal-group` top (card top).
@@ -79,12 +85,14 @@ function CelebrationStars({ countdown }) {
       className="celebration-stars"
       style={{
         left: 147 - STARS_SVG_WIDTH / 2 + STARS_HORIZONTAL_NUDGE_PX,
-        top: STARS_TOP_PX + STARS_END_POSITION_NUDGE_PX,
+        top: STARS_TOP_PX + STARS_END_POSITION_NUDGE_PX - STARS_NUDGE_UP_PX,
+        transformOrigin: 'center center',
       }}
-      initial={{ y: 80, opacity: 0, scale: 0.7 }}
+      initial={{ y: 80, opacity: 0, scale: 0.7, rotate: STARS_TILT_DEG }}
       animate={{
         y: STARS_END_Y,
         scale: 1,
+        rotate: STARS_TILT_DEG,
         opacity: countdown <= 0 ? 0 : fadeOutLastSecond ? 0 : 1,
       }}
       transition={{
