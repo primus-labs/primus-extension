@@ -97,7 +97,10 @@ export const fetchHtmlContent = async (params) => {
       }
 
       const html = await response.text();
-      resolve(html);
+      resolve({
+        data: html,
+        finalUrl: response.url,
+      });
 
       // resolve({
       //   success: true,

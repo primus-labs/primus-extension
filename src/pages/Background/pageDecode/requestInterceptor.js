@@ -1,3 +1,4 @@
+/* global chrome, console, clearTimeout, setTimeout, Uint8Array, TextDecoder, URL */
 /**
  * Web request interception for page decode: capture requests, match templates, signal when ready.
  */
@@ -54,6 +55,25 @@ function getActiveDatasourceTemplate(state, logTag) {
     return null;
   }
   return { requests, responses };
+}
+
+function normalizeUrlForResponseMatch(url) {
+  if (typeof url !== 'string' || !url) return '';
+  try {
+    const parsedUrl = new URL(url);
+    parsedUrl.hash = '';
+    return parsedUrl.toString();
+  } catch {
+    return url.split('#')[0];
+  }
+}
+
+function isFetchedResponseForRequest(requestUrl, responseUrl) {
+  if (!responseUrl) return true;
+  return (
+    normalizeUrlForResponseMatch(requestUrl) ===
+    normalizeUrlForResponseMatch(responseUrl)
+  );
 }
 
 /**
@@ -139,6 +159,7 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
     let matchRequestUrlResult;
     let isTargetUrl = false;
     let fetchedContentType = '';
+    let fetchedResponseUrl = '';
 
     let effectiveRequestUrl = mergedUrl;
     if (isReputationPhalaBinanceEarnBalanceTemplate(activeTemplate)) {
@@ -162,12 +183,22 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
         : effectiveRequestUrl;
 
     if (requestsMap[matchRequestId].type === 'main_frame') {
-      matchRequestUrlResult = await fetchHtmlContent({
+      const fetched = await fetchHtmlContent({
         ...requestsMap[matchRequestId],
         header: requestsMap[matchRequestId].headers,
         url: mergedUrl,
         body: mergedBody,
       });
+      if (fetched) {
+        matchRequestUrlResult = fetched.data;
+        fetchedResponseUrl = fetched.finalUrl;
+      }
+      if (
+        !isFetchedResponseForRequest(mergedUrl, fetchedResponseUrl)
+      ) {
+        storeInRequestsMap(matchRequestId, { isTarget: 2 });
+        continue;
+      }
       if (matchRequestUrlResult) {
         isTargetUrl = validateHtmlResponseCondition(
           jsonPathArr,
@@ -192,10 +223,18 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
       if (fetched) {
         matchRequestUrlResult = fetched.data;
         fetchedContentType = fetched.contentType;
+        fetchedResponseUrl = fetched.finalUrl;
       }
     }
 
     if (requestsMap[matchRequestId].type !== 'main_frame') {
+      if (
+        !isFetchedResponseForRequest(urlForFetch, fetchedResponseUrl)
+      ) {
+        storeInRequestsMap(matchRequestId, { isTarget: 2 });
+        continue;
+      }
+
       const replayLooksLikeHtml = shouldTreatFetchedBodyAsHtmlForValidation(
         fetchedContentType,
         matchRequestUrlResult
@@ -317,7 +356,7 @@ export async function checkWebRequestIsReady() {
   if (state.phase === PAGE_DECODE_PHASES.ATTESTING) {
     return state.isReadyRequest;
   }
-  const { requestsMap, activeTemplate, formatAlgorithmParams } = state;
+  const { requestsMap, formatAlgorithmParams } = state;
   const template = getActiveDatasourceTemplate(state, 'checkWebRequestIsReady');
   if (!template) return false;
   const { requests } = template;

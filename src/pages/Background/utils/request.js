@@ -60,7 +60,7 @@ async function executeCustomFetch2(finalOptions, url) {
   } else {
     data = await response.text();
   }
-  return { data, contentType };
+  return { data, contentType, finalUrl: response.url };
 }
 
 export async function customFetch2(params) {
@@ -79,7 +79,7 @@ export async function customFetch2(params) {
 
 /**
  * Same request as customFetch2, but returns response Content-Type for routing validators.
- * @returns {{ data: unknown, contentType: string }}
+ * @returns {{ data: unknown, contentType: string, finalUrl: string }}
  */
 export async function customFetch2WithMeta(params) {
   const { url, method, body, header, isFormData } =
