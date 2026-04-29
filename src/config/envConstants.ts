@@ -28,7 +28,7 @@ export let PROXYURL = PROXYURLMAP[CURENV];
 const PADOSERVERURLMAP: Record<ENVTYPE, string> = {
   development: 'https://api-dev.padolabs.org',
   test: 'http://18.179.8.186:8080',
-  production: 'https://api2.padolabs.org',
+  production: 'https://api.padolabs.org',
 };
 export const PADOSERVERURL = PADOSERVERURLMAP[CURENV];
 
