@@ -8,27 +8,27 @@ export const CURENV = process.env.NODE_ENV as ENVTYPE;
 const PADOURLMAP: Record<ENVTYPE, string> = {
   development: 'wss://api-dev.padolabs.org/algorithm',
   test: '18.179.8.186:8888',
-  production: 'wss://api.padolabs.org/algorithm',
+  production: 'wss://api2.padolabs.org/algorithm',
 };
 export let PADOURL = PADOURLMAP[CURENV];
 
 const ZKPADOURLMAP: Partial<Record<ENVTYPE, string>> = {
   development: 'wss://api-dev.padolabs.org/algorithm-proxy',
-  production: 'wss://api.padolabs.org/algorithm-proxy',
+  production: 'wss://api2.padolabs.org/algorithm-proxy',
 };
 export let ZKPADOURL = ZKPADOURLMAP[CURENV] ?? '';
 
 const PROXYURLMAP: Record<ENVTYPE, string> = {
   development: 'wss://api-dev.padolabs.org/algoproxy',
   test: '18.179.8.186:9000',
-  production: 'wss://api.padolabs.org/algoproxy',
+  production: 'wss://api2.padolabs.org/algoproxy',
 };
 export let PROXYURL = PROXYURLMAP[CURENV];
 
 const PADOSERVERURLMAP: Record<ENVTYPE, string> = {
   development: 'https://api-dev.padolabs.org',
   test: 'http://18.179.8.186:8080',
-  production: 'https://api.padolabs.org',
+  production: 'https://api2.padolabs.org',
 };
 export const PADOSERVERURL = PADOSERVERURLMAP[CURENV];
 

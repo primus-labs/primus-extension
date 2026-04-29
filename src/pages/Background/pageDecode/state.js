@@ -5,7 +5,7 @@
  */
 const DEFAULT_PRE_ATTEST_PROMPT_V2 = [
   { text: ['Processing data'], showTime: 5000 },
-  { text: ['Checking data', 'Ensure login and on target page.'], showTime: 30000 },
+  { text: ['Checking data', 'Ensure login and on target page.'], showTime: 50000 },
 ];
 
 export const PAGE_DECODE_PHASES = {
