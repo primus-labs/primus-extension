@@ -9,11 +9,12 @@ import {
   mergeBodyParams,
 } from '../utils/utils';
 import {
-  fetchRequestData,
+  fetchRequestDataForTemplateValidation,
   fetchHtmlContent,
   validateResponseCondition,
   validateHtmlResponseCondition,
   handleAttestationError,
+  shouldTreatFetchedBodyAsHtmlForValidation,
 } from './utils';
 import {
   eventListUrlForMonad,
@@ -137,6 +138,7 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
 
     let matchRequestUrlResult;
     let isTargetUrl = false;
+    let fetchedContentType = '';
 
     let effectiveRequestUrl = mergedUrl;
     if (isReputationPhalaBinanceEarnBalanceTemplate(activeTemplate)) {
@@ -181,16 +183,34 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
         }
       }
     } else {
-      matchRequestUrlResult = await fetchRequestData({
+      const fetched = await fetchRequestDataForTemplateValidation({
         ...requestsMap[matchRequestId],
         header: requestsMap[matchRequestId].headers,
         url: urlForFetch,
         body: mergedBody,
       });
+      if (fetched) {
+        matchRequestUrlResult = fetched.data;
+        fetchedContentType = fetched.contentType;
+      }
     }
 
     if (requestsMap[matchRequestId].type !== 'main_frame') {
-      if (isLumaMonadTemplate(activeTemplate) && matchRequestUrlResult) {
+      const replayLooksLikeHtml = shouldTreatFetchedBodyAsHtmlForValidation(
+        fetchedContentType,
+        matchRequestUrlResult
+      );
+
+      if (
+        replayLooksLikeHtml &&
+        typeof matchRequestUrlResult === 'string' &&
+        matchRequestUrlResult
+      ) {
+        isTargetUrl = validateHtmlResponseCondition(
+          jsonPathArr,
+          matchRequestUrlResult
+        );
+      } else if (isLumaMonadTemplate(activeTemplate) && matchRequestUrlResult) {
         const notMetHandler = async () => {
           await handleAttestationError(
             {

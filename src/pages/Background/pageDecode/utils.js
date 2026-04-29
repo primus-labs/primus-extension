@@ -8,7 +8,7 @@ import {
   SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
   SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
 } from '@/config/constants';
-import { customFetch2 } from '../utils/request';
+import { customFetch2, customFetch2WithMeta } from '../utils/request';
 import { safeStorageRemove } from '@/utils/safeStorage';
 import {
   clearSdkAttestationResultCache,
@@ -31,6 +31,34 @@ export const fetchRequestData = async (params) => {
     console.log('fetch custom request error', e);
   }
 };
+
+/** Re-send captured request and return body + Content-Type (for template validation routing). */
+export async function fetchRequestDataForTemplateValidation(params) {
+  try {
+    const { ...requestParams } = params;
+    return await customFetch2WithMeta(requestParams);
+  } catch (e) {
+    console.log('fetchRequestDataForTemplateValidation error', e);
+    return null;
+  }
+}
+
+/**
+ * Prefer XPath/HTML validation when the replayed response is HTML, even if webRequest type is not main_frame
+ * (e.g. fetch/XHR that returns text/html).
+ */
+export function shouldTreatFetchedBodyAsHtmlForValidation(contentType, data) {
+  const ct = (contentType || '').toLowerCase();
+  if (ct.includes('text/html') || ct.includes('application/xhtml')) return true;
+  if (
+    typeof data === 'string' &&
+    /^\s*</.test(data) &&
+    /<\s*html[\s>]/i.test(data)
+  ) {
+    return true;
+  }
+  return false;
+}
 
 /** Fetch HTML content for main_frame requests. Used for XPath/HTML condition checks. */
 export const fetchHtmlContent = async (params) => {
