@@ -524,7 +524,7 @@ export function setupWebRequestListener() {
     const template = getActiveDatasourceTemplate(state, 'onBeforeRequestFn');
     if (!template) return;
     const { requests } = template;
-    const { url: currRequestUrl, requestBody, requestId } = subDetails;
+    const { url: currRequestUrl, requestBody, requestId, method } = subDetails;
 
     removeFromRequestsMap(requestId);
     const isTarget = requests.some((r) => {
@@ -544,13 +544,22 @@ export function setupWebRequestListener() {
     );
 
     if (isTarget || jumpBodyCapture) {
+      const baseCapture = {
+        url: currRequestUrl,
+        requestId,
+        method: method || 'GET',
+      };
       if (requestBody?.raw?.[0]?.bytes) {
         const byteArray = new Uint8Array(requestBody.raw[0].bytes);
         const bodyText = new TextDecoder().decode(byteArray);
-        storeInRequestsMap(requestId, { body: JSON.parse(bodyText) });
+        storeInRequestsMap(requestId, {
+          ...baseCapture,
+          body: JSON.parse(bodyText),
+        });
       }
       if (requestBody?.formData) {
         storeInRequestsMap(requestId, {
+          ...baseCapture,
           body: requestBody.formData,
           isFormData: true,
         });

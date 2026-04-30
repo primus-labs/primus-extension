@@ -58,6 +58,9 @@ export function checkIsRequiredUrl({
   urlType,
   queryParams,
 }) {
+  if (typeof requestUrl !== 'string' || !requestUrl) {
+    return false;
+  }
   const specifiedQueryParams = queryParams?.[0] ? queryParams : null;
   // console.log('requestUrl', requestUrl);
   const hostUrl = requestUrl.split('?')[0];
@@ -69,6 +72,9 @@ export function checkIsRequiredUrl({
       : '';
 
   if (type === 'REGX') {
+    if (typeof requiredUrl !== 'string' || !requiredUrl) {
+      return false;
+    }
     return matchReg(requiredUrl, requestUrl);
   } else if (type === 'withSpecifiedQueryParams') {
     let curUrlWithQuery = isUrlWithQueryFn(requestUrl, specifiedQueryParams);
