@@ -30,11 +30,13 @@ export async function sendMsgToSdk(msg) {
   await sendToSdk(msg);
 }
 
+/** @returns {Promise<boolean>} */
 export async function sendMsgToDataSourcePage(msg) {
   const { state } = getPageDecodeState();
-  if (state.dataSourcePageTabId) {
-    sendMsgToTab(state.dataSourcePageTabId, msg);
+  if (!state.dataSourcePageTabId) {
+    return false;
   }
+  return sendMsgToTab(state.dataSourcePageTabId, msg);
 }
 
 export async function handlerForSdk(processAlgorithmReq, operation) {

@@ -23,6 +23,61 @@ let historyLocationListenerInstalled = false;
 /** Polling id: content scripts run in an isolated world, so patching history.* may not see the page's navigations. */
 let hrefPollIntervalId = null;
 let lastPolledHref = '';
+const PAGE_DECODE_SYNC_EVENT = 'pado-page-decode-sync';
+let pageDecodeStateSyncInFlight = false;
+/** One-shot follow-up pulls after inject: avoids 1s polling while tolerating delayed ready. */
+const deferredPageDecodeSyncTimeouts = [];
+
+function dispatchPageDecodeSyncEvent(detail) {
+  window.dispatchEvent(
+    new CustomEvent(PAGE_DECODE_SYNC_EVENT, {
+      detail,
+    })
+  );
+}
+
+function clearDeferredPageDecodeSyncs() {
+  deferredPageDecodeSyncTimeouts.forEach((id) => clearTimeout(id));
+  deferredPageDecodeSyncTimeouts.length = 0;
+}
+
+function scheduleDeferredPageDecodeSync(delayMs) {
+  const id = setTimeout(() => {
+    const i = deferredPageDecodeSyncTimeouts.indexOf(id);
+    if (i >= 0) deferredPageDecodeSyncTimeouts.splice(i, 1);
+    syncPageDecodeStateOnce();
+  }, delayMs);
+  deferredPageDecodeSyncTimeouts.push(id);
+}
+
+function syncPageDecodeStateOnce() {
+  if (!activeRequest || pageDecodeStateSyncInFlight) return;
+  pageDecodeStateSyncInFlight = true;
+  chrome.runtime.sendMessage(
+    {
+      type: 'pageDecode',
+      name: 'initCompleted',
+    },
+    (response) => {
+      pageDecodeStateSyncInFlight = false;
+      if (chrome.runtime.lastError) {
+        return;
+      }
+      if (!response || response.name !== 'append') return;
+      if (
+        response.isReady ||
+        response.phase === 'attesting' ||
+        response.resultSnapshot
+      ) {
+        dispatchPageDecodeSyncEvent({
+          isReady: !!response.isReady,
+          phase: response.phase || activeRequest?.pageDecodePhase,
+          resultSnapshot: response.resultSnapshot || null,
+        });
+      }
+    }
+  );
+}
 
 function clearPersistedResultState() {
   sessionStorage.removeItem(SESSION_KEYS.STATUS);
@@ -213,6 +268,16 @@ chrome.runtime.sendMessage(
     if (activeRequest) {
       activeRequest.pageDecodePhase = response.phase || activeRequest.pageDecodePhase;
       activeRequest.resultSnapshot = response.resultSnapshot || null;
+      dispatchPageDecodeSyncEvent({
+        isReady: !!response.isReady,
+        phase: response.phase || activeRequest.pageDecodePhase,
+        resultSnapshot: response.resultSnapshot || null,
+      });
+      clearDeferredPageDecodeSyncs();
+      if (!response.isReady) {
+        scheduleDeferredPageDecodeSync(400);
+        scheduleDeferredPageDecodeSync(1600);
+      }
       return;
     }
 
@@ -226,6 +291,11 @@ chrome.runtime.sendMessage(
     installHistoryLocationListener();
     startHrefPollingWhileAttestationActive();
     renderPageDecodeCardIfAllowed();
+    clearDeferredPageDecodeSyncs();
+    if (!response.isReady) {
+      scheduleDeferredPageDecodeSync(400);
+      scheduleDeferredPageDecodeSync(1600);
+    }
   }
 );
 

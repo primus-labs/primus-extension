@@ -5,6 +5,8 @@ import { useState, useEffect, useRef } from 'react';
 import { STATUS, SESSION_KEYS, TIMING, ERROR_CODES } from './constants';
 import { getNoteV2Extension } from '@/utils/attestationProcessNoteV2';
 
+const PAGE_DECODE_SYNC_EVENT = 'pado-page-decode-sync';
+
 /**
  * Persist result state to sessionStorage and update React state (shared by message listener and timeouts).
  */
@@ -113,6 +115,33 @@ export function useMessageListener(setters) {
     };
     chrome.runtime.onMessage.addListener(listenerFn);
     return () => chrome.runtime.onMessage.removeListener(listenerFn);
+  }, []);
+
+  useEffect(() => {
+    const syncListener = (event) => {
+      const s = settersRef.current;
+      const detail = event?.detail || {};
+
+      if (detail.isReady) {
+        s.setIsReadyFetch(true);
+        sessionStorage.setItem(SESSION_KEYS.READY, '1');
+      }
+      if (detail.phase === 'attesting') {
+        s.setStatus(STATUS.VERIFYING);
+        sessionStorage.setItem(SESSION_KEYS.STATUS, STATUS.VERIFYING);
+      }
+      if (detail.resultSnapshot) {
+        persistAndSetResult(
+          s,
+          detail.resultSnapshot.result ?? '',
+          detail.resultSnapshot.failReason,
+          detail.resultSnapshot.closeAt
+        );
+      }
+    };
+
+    window.addEventListener(PAGE_DECODE_SYNC_EVENT, syncListener);
+    return () => window.removeEventListener(PAGE_DECODE_SYNC_EVENT, syncListener);
   }, []);
 }
 

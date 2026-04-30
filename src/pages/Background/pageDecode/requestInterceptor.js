@@ -347,6 +347,26 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
   }
 }
 
+/** Retry: content listener may register slightly after navigation. */
+const WEB_REQUEST_READY_NOTIFY_ATTEMPTS = 8;
+const WEB_REQUEST_READY_RETRY_DELAY_MS = 250;
+
+async function notifyDataSourcePageWebRequestReady() {
+  const msg = {
+    type: 'pageDecode',
+    name: 'webRequestIsReady',
+    params: { isReady: true },
+  };
+  for (let attempt = 0; attempt < WEB_REQUEST_READY_NOTIFY_ATTEMPTS; attempt++) {
+    const ok = await sendMsgToDataSourcePage(msg);
+    if (ok) return true;
+    if (attempt < WEB_REQUEST_READY_NOTIFY_ATTEMPTS - 1) {
+      await new Promise((r) => setTimeout(r, WEB_REQUEST_READY_RETRY_DELAY_MS));
+    }
+  }
+  return false;
+}
+
 /**
  * Check if all required requests are captured and matched; if so, build algorithm params and notify.
  */
@@ -414,12 +434,10 @@ export async function checkWebRequestIsReady() {
     state.phase = PAGE_DECODE_PHASES.READY;
     console.log('all web requests are captured', requestsMap);
     if (!state.readyNotified) {
-      state.readyNotified = true;
-      await sendMsgToDataSourcePage({
-        type: 'pageDecode',
-        name: 'webRequestIsReady',
-        params: { isReady: true },
-      });
+      const sent = await notifyDataSourcePageWebRequestReady();
+      if (sent) {
+        state.readyNotified = true;
+      }
     }
   }
   return fl;

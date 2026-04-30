@@ -159,10 +159,13 @@ export function parseUrlQuery(url) {
   return queryObj;
 }
 
+/** @returns {Promise<boolean>} */
 export const sendMsgToTab = async (tabId, msg) => {
   try {
     await chrome.tabs.sendMessage(tabId, msg);
+    return true;
   } catch (err) {
     console.warn(`[sendMsgToTab] tab ${tabId} unreachable:`, err.message);
+    return false;
   }
 };
