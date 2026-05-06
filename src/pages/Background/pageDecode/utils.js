@@ -212,9 +212,10 @@ export const validateXPathWithLibs = (html, xpath) => {
     //   .replace(/(\s+data-item-id="[^"]+")(?=.*\1)/g, '');
     // Automatically handle all duplicate attributes without the need for manual regular expressions
     const $ = cheerio.load(html, { decodeEntities: false });
-    // xmldom parses as XML, and raw JS inside <script> often contains "<" which breaks XML parsing.
-    // Remove executable blocks only for XPath validation to keep structural nodes stable.
-    $('script,style,noscript').remove();
+    // xmldom parses as XML; raw JS inside <script> often contains "<" which breaks XML parsing.
+    // Empty <script> bodies (keep elements/attrs) so XPath like //script[n] still matches; strip style/noscript.
+    $('script').empty();
+    $('style,noscript').remove();
     const cleanedHtml = $.html()
       .replace(/&nbsp;/gi, ' ')
       .replace(/&(?!#?[a-zA-Z0-9]+;)/g, '&amp;')
