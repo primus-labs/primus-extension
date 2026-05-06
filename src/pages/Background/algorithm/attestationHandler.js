@@ -4,7 +4,11 @@
 import { pageDecodeMsgListener } from '../pageDecode/index.js';
 import { closeSdkDataSourceTabWithoutCancel } from '../pageDecode/closeDataSourceTab.js';
 import { getErrorTipByExtraData, getAttestTipForCode } from './errorMap.js';
-import { TOTAL_TIP_MAP, ERROR_UNKNOWN } from '@/config/errorCodes';
+import {
+  TOTAL_TIP_MAP,
+  ERROR_UNKNOWN,
+  ERROR_UNKNOWN_SUB_ALGO_MISSING_ERRCODE,
+} from '@/config/errorCodes';
 import {
   SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
   SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
@@ -279,13 +283,26 @@ export async function handleGetAttestationResult(
     } else if (rawNum === 30001) {
       resolvedSubCode = detailsDesc?.match(/\b\d{3}\b/)?.[0];
     }
+
+    const normalizedAlgoCode =
+      code != null && String(code).trim() !== '' ? String(code).trim() : '';
+    const hasCompositeSub =
+      resolvedSubCode != null && resolvedSubCode !== '';
+    const missingAlgoErrCode = !normalizedAlgoCode && !hasCompositeSub;
+
+    let tipKeyForMessage;
+    if (missingAlgoErrCode) {
+      tipKeyForMessage = `${ERROR_UNKNOWN}:${ERROR_UNKNOWN_SUB_ALGO_MISSING_ERRCODE}`;
+    } else if (hasCompositeSub) {
+      tipKeyForMessage = `${resolvedCode}:${resolvedSubCode}`;
+    } else if (code != null && code !== '') {
+      tipKeyForMessage = String(code);
+    } else {
+      tipKeyForMessage = ERROR_UNKNOWN;
+    }
+
     processAlgorithmReq({ reqMethodName: 'stop', params: { noRestart: true } });
-    const tipKey = resolvedSubCode
-      ? `${resolvedCode}:${resolvedSubCode}`
-      : code != null && code !== ''
-        ? String(code)
-        : ERROR_UNKNOWN;
-    const msgObj = getAttestTipForCode(tipKey, noteV2Map);
+    const msgObj = getAttestTipForCode(tipKeyForMessage, noteV2Map);
 
     await pageDecodeMsgListener(
       {
@@ -299,13 +316,30 @@ export async function handleGetAttestationResult(
     );
     stopKeepAlive();
     await clearSdkAttestationRuntimeState();
+
+    let errorCodeOut;
+    /** @type {{ subCode?: string } | undefined} */
+    let errorDetailsOut;
+    if (missingAlgoErrCode) {
+      errorCodeOut = ERROR_UNKNOWN;
+      errorDetailsOut = { subCode: ERROR_UNKNOWN_SUB_ALGO_MISSING_ERRCODE };
+    } else if (normalizedAlgoCode === ERROR_UNKNOWN) {
+      errorCodeOut = ERROR_UNKNOWN;
+      errorDetailsOut = undefined;
+    } else {
+      errorCodeOut = resolvedCode;
+      errorDetailsOut = hasCompositeSub
+        ? { subCode: resolvedSubCode }
+        : undefined;
+    }
+
     const resParams = {
       result: false,
       errorData: {
         desc: msgObj.desc,
-        code: resolvedCode,
+        code: errorCodeOut,
         data: message.res,
-        ...(resolvedSubCode ? { details: { subCode: resolvedSubCode } } : {}),
+        ...(errorDetailsOut ? { details: errorDetailsOut } : {}),
       },
       reStartFlag: true,
     };

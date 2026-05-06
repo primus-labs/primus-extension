@@ -9,6 +9,8 @@ export const ERROR_TARGET_DATA_MISSING = '00013';
 export const ERROR_REQUEST_TIMEOUT = '00014';
 /** User cancelled attestation */
 export const ERROR_USER_CANCELLED = '00004';
+/** Data source tab failed to load (Chrome error page; extension cannot inject) */
+export const ERROR_DATA_SOURCE_TAB_ERROR_PAGE = '00007';
 /** Algorithm wrong parameters */
 export const ERROR_ALGO_WRONG_PARAMS = '00001';
 /** Too many requests */
@@ -23,6 +25,10 @@ export const ERROR_ATTESTATION_FAILURE = '00104';
 export const ERROR_SSL_CERTIFICATE = '40002';
 /** Unknown / fallback code for attest tip map */
 export const ERROR_UNKNOWN = '99999';
+/** ERROR_UNKNOWN before attestation algorithm run completes (details.subCode to disambiguate) */
+export const ERROR_UNKNOWN_SUB_PRE_ALGORITHM = '000';
+/** ERROR_UNKNOWN when algorithm fails but provides no parseable errlog code */
+export const ERROR_UNKNOWN_SUB_ALGO_MISSING_ERRCODE = '001';
 
 /** SDK-level error codes and messages */
 export const SDK_ERROR_TIPS = {

@@ -18,7 +18,11 @@ import { safeJsonParse } from '@/utils/utils';
 import { stopKeepAlive } from '../utils/keepAlive.js';
 import { resolveNoteV2MapFromConfigParsed } from '@/utils/attestationProcessNoteV2';
 import { getAttestTipForCode } from '../algorithm/errorMap.js';
-import { ERROR_UNKNOWN } from '@/config/errorCodes';
+import {
+  ERROR_UNKNOWN,
+  ERROR_UNKNOWN_SUB_PRE_ALGORITHM,
+  ERROR_DATA_SOURCE_TAB_ERROR_PAGE,
+} from '@/config/errorCodes';
 import {
   TEMPLATE_ID_FOR_LUMA_MONAD,
   MONAD_CALCULATIONS,
@@ -58,19 +62,47 @@ async function cleanupAbortedStartAttestationState() {
   await clearSdkAttestationRuntimeState();
 }
 
-async function sendUnexpectedStartAttestationError(sendToSdk) {
+/** Chrome scripting API when the main frame shows an interstitial / network error page. */
+function isChromeMainFrameErrorPageInjectFailure(err) {
+  const msg =
+    err != null && typeof err === 'object' && err.message != null
+      ? String(err.message)
+      : err != null
+        ? String(err)
+        : '';
+  return /Frame with ID \d+ is showing error page/i.test(msg);
+}
+
+/**
+ * @param {string | undefined} [unknown99999SubCode] - details.subCode when code is ERROR_UNKNOWN (pre-algorithm only)
+ */
+async function sendStartAttestationResolvedError(
+  sendToSdk,
+  code,
+  unknown99999SubCode
+) {
   const { configMap } = await safeStorageGet(['configMap']);
   const noteV2Map = resolveNoteV2MapFromConfigParsed(safeJsonParse(configMap));
-  const tip = getAttestTipForCode(ERROR_UNKNOWN, noteV2Map);
+  const tipLookupKey =
+    code === ERROR_UNKNOWN && unknown99999SubCode
+      ? `${ERROR_UNKNOWN}:${unknown99999SubCode}`
+      : code;
+  const tip = getAttestTipForCode(tipLookupKey, noteV2Map);
+  const errorData = {
+    desc: tip.desc,
+    code,
+    ...(code === ERROR_UNKNOWN &&
+    unknown99999SubCode &&
+    typeof unknown99999SubCode === 'string'
+      ? { details: { subCode: unknown99999SubCode } }
+      : {}),
+  };
   await sendToSdk({
     type: 'padoZKAttestationJSSDK',
     name: 'startAttestationRes',
     params: {
       result: false,
-      errorData: {
-        desc: tip.desc || 'Undefined error. Please try again later.',
-        code: ERROR_UNKNOWN,
-      },
+      errorData,
       reStartFlag: true,
     },
   });
@@ -482,7 +514,14 @@ export async function handleStartAttestation(
     } catch (_stopErr) {
       // Best-effort cleanup; primary goal is to release the lock and notify the dapp.
     }
-    await sendUnexpectedStartAttestationError(sendToSdk);
+    const code = isChromeMainFrameErrorPageInjectFailure(e)
+      ? ERROR_DATA_SOURCE_TAB_ERROR_PAGE
+      : ERROR_UNKNOWN;
+    await sendStartAttestationResolvedError(
+      sendToSdk,
+      code,
+      code === ERROR_UNKNOWN ? ERROR_UNKNOWN_SUB_PRE_ALGORITHM : undefined
+    );
   }
 }
 

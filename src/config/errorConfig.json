@@ -1,107 +1,15 @@
 {
-  "10001": {
-    "sdk": "Unstable internet connection.",
-    "extension": "Network unstable. Retry later."
-  },
-  "10002": {
-    "sdk": "Network connection interrupted during attestation.",
-    "extension": "Connection interrupted. Retry later."
-  },
-  "10003": {
-    "sdk": "Connection to the attestation server was interrupted during processing.",
-    "extension": "Service connection interrupted. Retry later."
-  },
-  "10004": {
-    "sdk": "Connection to the data source server was interrupted during processing.",
-    "extension": "Data source connection interrupted. Retry later."
-  },
-  "20001": {
-    "sdk": "Internal runtime error: LengthException. Contact Primus Team for assistance.",
-    "extension": "Service issue."
-  },
-  "20002": {
-    "sdk": "Internal runtime error: OutOfRangeException. Contact Primus Team for assistance.",
-    "extension": "Service issue."
-  },
-  "20003": {
-    "sdk": "Invalid algorithm parameters.",
-    "extension": "Invalid request."
-  },
-  "20004": {
-    "sdk": "Internal runtime error: LogicError. Contact Primus Team for assistance.",
-    "extension": "Service issue. Retry later."
-  },
-  "20005": {
-    "sdk": "Runtime error: NotDefined. Contact Primus Team for assistance.",
-    "extension": "Service issue. Retry later."
-  },
-  "30001": {
-    "sdk": "Response error.",
-    "extension": "Response error. Retry later."
-  },
-  "30002": {
-    "sdk": "Response validation error.",
-    "extension": "Response validation error. Retry later."
-  },
-  "30003": {
-    "sdk": "Response parsing error. Please try again later.",
-    "extension": "Data parsing error. Retry later."
-  },
-  "30004": {
-    "sdk": "JSON parsing error. Contact Primus Team for assistance.",
-    "extension": "Service issue."
-  },
-  "30005": {
-    "sdk": "HTML parsing error. Contact Primus Team for assistance.",
-    "extension": "Service issue."
-  },
-  "30006": {
-    "sdk": "Preset path key not found in the response. Contact Primus Team for assistance.",
-    "extension": "Service issue."
-  },
-  "40001": {
-    "sdk": "Internal error: FileNotExistException. Contact Primus Team for assistance.",
-    "extension": "Service issue."
-  },
-  "40002": {
-    "sdk": "SSL certificate error. Contact Primus Team for assistance.",
-    "extension": "Service issue."
-  },
-  "50003": {
-    "sdk": "The client encountered an unexpected error. Please try again later.",
-    "extension": "Client error. Retry later."
-  },
-  "50004": {
-    "sdk": "The client did not start correctly. Please try again.",
-    "extension": "Request failed to start. Retry later"
-  },
-  "50006": {
-    "sdk": "Algorithm server not started. Please try again later.",
-    "extension": "Service unavailable. Retry later."
-  },
-  "50009": {
-    "sdk": "Algorithm service timed out. Please try again later.",
-    "extension": "Service timed out. Retry later."
-  },
-  "50011": {
-    "sdk": "Unsupported TLS version. Contact Primus Team for assistance.",
-    "extension": "Service issue."
-  },
-  "99999": {
-    "sdk": "Undefined error. Please try again later.",
-    "extension": "Unknown error. Retry later."
-  },
   "00000": {
     "sdk": "Too many requests. Please try again later.",
-    "extension": "Too many attempts. Retry later."
+    "extension": "Too many attempts"
   },
   "00001": {
-    "sdk": "Failed to start the algorithm.",
-    "extension": "Initialization issue. Retry later."
+    "sdk": "Failed to start the algorithm. Please refresh the page, then try again.",
+    "extension": "Initialization issue"
   },
   "00002": {
-    "sdk": "The verification process timed out.",
-    "extension": "Verification timed out. Retry later."
+    "sdk": "The verification process timed out. Please try again later.",
+    "extension": "Verification timed out"
   },
   "00003": {
     "sdk": "Verification is in progress. Please try again later.",
@@ -116,8 +24,12 @@
     "extension": ""
   },
   "00006": {
-    "sdk": "Unsupported extension version. Please install the latest version.",
+    "sdk": "Extension not detected. Please install and enable Primus Extension from the Chrome Web Store (https://chromewebstore.google.com/detail/primus/oeiomhmbaapihbilkfkhmlajkeegnjhe), then try again.",
     "extension": ""
+  },
+  "00007": {
+    "sdk": "Unable to load the target page. Please check your network connection and try again.",
+    "extension": "Unable to load the target page. Please check your network connection and try again."
   },
   "00012": {
     "sdk": "Invalid template ID.",
@@ -125,87 +37,187 @@
   },
   "00104": {
     "sdk": "Verification requirements not met.",
-    "extension": "Requirements not met."
+    "extension": "Requirements not met"
   },
   "00013": {
     "sdk": "No verifiable data detected. Please confirm login status and account details.",
-    "extension": "No verifiable data detected."
+    "extension": "No verifiable data detected"
   },
   "00014": {
-    "sdk": "The verification process timed out due to a connection interruption.",
-    "extension": "Request timed out. Retry later."
+    "sdk": "The verification process timed out due to a connection interruption. Please try again later.",
+    "extension": "Request timed out"
   },
   "01000": {
     "sdk": "Attestation timed out.",
-    "extension": "Mobile only."
+    "extension": "Mobile only"
+  },
+  "10001": {
+    "sdk": "Unstable internet connection. Please try again later.",
+    "extension": "Network unstable"
+  },
+  "10002": {
+    "sdk": "Network connection interrupted during attestation. Please try again later.",
+    "extension": "Connection interrupted"
+  },
+  "10003": {
+    "sdk": "Connection to the attestation server was interrupted during processing. Please try again later.",
+    "extension": "Service connection interrupted"
+  },
+  "10004": {
+    "sdk": "Connection to the data source server was interrupted during processing. Please try again later.",
+    "extension": "Data source connection interrupted"
+  },
+  "20001": {
+    "sdk": "Internal runtime error: LengthException. Contact Primus Team for assistance.",
+    "extension": "Service issue"
+  },
+  "20002": {
+    "sdk": "Internal runtime error: OutOfRangeException. Contact Primus Team for assistance.",
+    "extension": "Service issue"
+  },
+  "20003": {
+    "sdk": "Invalid algorithm parameters.",
+    "extension": "Invalid request"
+  },
+  "20004": {
+    "sdk": "Internal runtime error: LogicError. Contact Primus Team for assistance.",
+    "extension": "Service issue"
+  },
+  "20005": {
+    "sdk": "Runtime error: NotDefined. Contact Primus Team for assistance.",
+    "extension": "Service issue"
+  },
+  "30001": {
+    "sdk": "Response error. Please try again later.",
+    "extension": "Response error"
   },
   "30001:301": {
     "sdk": "Request URL not detected. Contact Primus Team for assistance.",
-    "extension": "Request error."
+    "extension": "Request error"
   },
   "30001:302": {
     "sdk": "Response error. Please try again later.",
-    "extension": "Response error. Retry later."
+    "extension": "Response error"
   },
   "30001:401": {
     "sdk": "Session expired. Please log in again.",
-    "extension": "Session expired. Sign in again."
+    "extension": "Session expired. Sign in again"
   },
   "30001:403": {
-    "sdk": "Access blocked due to data source server's risk control. Please try again later.",
-    "extension": "Access restricted. Retry later."
+    "sdk": "Access blocked due to the data source server's risk control. Please try again later.",
+    "extension": "Access restricted"
   },
   "30001:404": {
     "sdk": "Request URL not detected. Contact Primus Team for assistance.",
-    "extension": "Request error."
+    "extension": "Request error"
   },
   "30001:429": {
     "sdk": "Rate limited by the data source server due to excessive requests from this user. Please try again later.",
-    "extension": "Too many attempts.  Retry later."
+    "extension": "Too many attempts"
+  },
+  "30002": {
+    "sdk": "Response validation error. Please try again later.",
+    "extension": "Response validation error"
+  },
+  "30003": {
+    "sdk": "Response parsing error. Please try again later.",
+    "extension": "Data parsing error"
+  },
+  "30004": {
+    "sdk": "JSON parsing error. Contact Primus Team for assistance.",
+    "extension": "Service issue"
+  },
+  "30005": {
+    "sdk": "HTML parsing error. Contact Primus Team for assistance.",
+    "extension": "Service issue"
+  },
+  "30006": {
+    "sdk": "Preset path key not found in the response. Contact Primus Team for assistance.",
+    "extension": "Service issue"
+  },
+  "40001": {
+    "sdk": "Internal error: FileNotExistException. Contact Primus Team for assistance.",
+    "extension": "Service issue"
+  },
+  "40002": {
+    "sdk": "SSL certificate error. Contact Primus Team for assistance.",
+    "extension": "Service issue"
   },
   "50000:501": {
     "sdk": "Internal algorithm error. Contact Primus Team for assistance.",
-    "extension": "Service issue."
+    "extension": "Service issue"
   },
   "50000:502": {
     "sdk": "Internal algorithm error. Contact Primus Team for assistance.",
-    "extension": "Service issue."
+    "extension": "Service issue"
+  },
+  "50003": {
+    "sdk": "The client encountered an unexpected error. Please try again later.",
+    "extension": "Client error"
+  },
+  "50004": {
+    "sdk": "The client did not start correctly. Please try again later.",
+    "extension": "Request failed to start"
   },
   "50000:505": {
     "sdk": "Internal algorithm error. Contact Primus Team for assistance.",
-    "extension": "Service issue."
+    "extension": "Service issue"
+  },
+  "50006": {
+    "sdk": "Algorithm server not started. Please try again later.",
+    "extension": "Service unavailable"
   },
   "50000:507": {
     "sdk": "Internal algorithm error. Contact Primus Team for assistance.",
-    "extension": "Service issue."
+    "extension": "Service issue"
   },
   "50000:508": {
     "sdk": "Internal algorithm error. Contact Primus team for assistance.",
-    "extension": "Service issue."
+    "extension": "Service issue"
+  },
+  "50009": {
+    "sdk": "Algorithm service timed out. Please try again later.",
+    "extension": "Service timed out"
   },
   "50000:510": {
     "sdk": "Internal algorithm error. Contact Primus Team for assistance.",
-    "extension": "Service issue."
+    "extension": "Service issue"
+  },
+  "50011": {
+    "sdk": "Unsupported TLS version. Contact Primus Team for assistance.",
+    "extension": "Service issue"
+  },
+  "99999": {
+    "sdk": "Undefined error. Please try again later.",
+    "extension": "Unknown error"
+  },
+  "99999:000": {
+    "sdk": "Undefined error. Please try again later.",
+    "extension": "Unknown error"
+  },
+  "99999:001": {
+    "sdk": "Undefined error. Please try again later.",
+    "extension": "Unknown error"
   },
   "-1002001": {
     "sdk": "Invalid app ID.",
-    "extension": "Invalid request. Contact support."
+    "extension": "Invalid request. Contact support"
   },
   "-1002002": {
     "sdk": "Invalid app secret.",
-    "extension": "Invalid request. Contact support."
+    "extension": "Invalid request. Contact support"
   },
   "-1002003": {
     "sdk": "Trial quota exhausted.",
-    "extension": "Service trial quota exhausted."
+    "extension": "Service trial quota exhausted"
   },
   "-1002004": {
     "sdk": "Subscription expired.",
-    "extension": "Service subscription expired."
+    "extension": "Service subscription expired"
   },
   "-1002005": {
     "sdk": "Quota exhausted.",
-    "extension": "Service quota exhausted."
+    "extension": "Service quota exhausted"
   },
   "00015": {
     "sdk": "Invalid algorithm parameters.",
@@ -213,51 +225,51 @@
   },
   "-500": {
     "sdk": "Unexpected attester node service failure. Please try again later.",
-    "extension": "Node service issue. Retry later."
+    "extension": "Node service issue"
   },
   "-10101": {
     "sdk": "This task has already been completed. No need to resubmit.",
-    "extension": "Task already completed."
+    "extension": "Task already completed"
   },
   "-10102": {
     "sdk": "This task is still in progress. No need to resubmit.",
-    "extension": "Task is in progress."
+    "extension": "Task is in progress"
   },
   "-10103": {
     "sdk": "Submission attempt limit reached (15 attempts) for this task. Start a new task to continue.",
-    "extension": "Submission limit reached. Start a new task."
+    "extension": "Submission limit reached"
   },
   "-10104": {
-    "sdk": "Failed to fetch task details. Please check network status or task ID.",
-    "extension": "Failed to load task details. Retry later."
+    "sdk": "Failed to fetch task details. Please check network status or task ID, then try again.",
+    "extension": "Failed to load task details"
   },
   "-10105": {
-    "sdk": "Invalid attestation parameters. Please check the connection between the node and the template server.",
-    "extension": "Invalid request."
+    "sdk": "Invalid attestation parameters. Please check the connection between the node and template server.",
+    "extension": "Invalid request"
   },
   "-10106": {
     "sdk": "Attestation template ID mismatch between task and server.",
-    "extension": "Template mismatch."
+    "extension": "Template mismatch"
   },
   "-10107": {
     "sdk": "Attestation template ID mismatch in submission.",
-    "extension": "Submission template mismatch."
+    "extension": "Submission template mismatch"
   },
   "-10108": {
     "sdk": "Invalid task ID. Please check and ensure the submitted ID matches the task.",
-    "extension": "Invalid task ID."
+    "extension": "Invalid task ID"
   },
   "-10109": {
     "sdk": "Task was terminated due to a network fee issue. Please start a new task.",
-    "extension": "Task ended. Start a new one."
+    "extension": "Task ended. Start a new one"
   },
   "-10110": {
     "sdk": "Attester node mismatch. Please ensure the node matches the task requirements and resubmit.",
-    "extension": "Node mismatch. Retry later."
+    "extension": "Node mismatch"
   },
   "-10111": {
     "sdk": "Submission time limit reached (15 minutes). Start a new task to continue.",
-    "extension": "Submission expired."
+    "extension": "Submission expired"
   },
   "-210001": {
     "sdk": "Address has pending proof for identityPropertyId.",
