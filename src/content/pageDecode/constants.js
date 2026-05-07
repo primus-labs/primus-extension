@@ -32,6 +32,14 @@ export const DISABLED_AMAZON_URL_REGEX =
 export const DISABLED_STEAM_URL_REGEX =
   /^https:\/\/help\.steampowered\.com\/[^/]+\/wizard\/HelpWithLogin|^https:\/\/store\.steampowered\.com\/(?:mobile|join)/i;
 
+/**
+ * Special data-source entry URLs where the attestation card should be hidden (query is wildcard).
+ * - Naver: https://nid.naver.com/nidlogin.login?...
+ * - Apple Account / Sign in: https://appleid.apple.com/auth/authorize?client_id=...
+ */
+export const DISABLED_NAVER_URL_REGEX =
+  /^https:\/\/(?:nid\.naver\.com\/nidlogin\.login|appleid\.apple\.com\/auth\/authorize)(?:\?.*|#.*|\/|$)/i;
+
 /** Attestation UI status values */
 export const STATUS = {
   UNINITIALIZED: 'uninitialized',
