@@ -17,7 +17,7 @@ export const PAGE_DECODE_BLACK_MODAL_TEMPLATE_ID =
  * Case-insensitive (href lowercased in index.jsx).
  */
 export const DISABLED_PATH_SEGMENT_REGEX =
-  /(?:^|[/?#])(?:login|register|signin|signup|forgotpassword|password_reset)(?:[/=?#]|$)/i;
+  /(?:^|[/?#])(?:login|register|signin|signup|signon|signout|loginout|forgotpassword|password_reset)(?:[/=?#]|$)/i;
 
 /**
  * Amazon-only: full URL prefixes www.amazon.{host} or amazon.{host} (optional www).
@@ -39,6 +39,16 @@ export const DISABLED_STEAM_URL_REGEX =
  */
 export const DISABLED_NAVER_URL_REGEX =
   /^https:\/\/(?:nid\.naver\.com\/nidlogin\.login|appleid\.apple\.com\/auth\/authorize)(?:\?.*|#.*|\/|$)/i;
+
+/**
+ * X (Twitter): hide card on SSO path ending with segment single_sign_on.
+ * Prefix path is flexible (/i/flow/... optional): https://x.com/single_sign_on,
+ * https://x.com/i/flow/single_sign_on, https://x.com/a/b/single_sign_on?...
+ * Must match path segment single_sign_on exactly (not single_sign_on_foo).
+ * href is lowercased before matching in index.jsx.
+ */
+export const DISABLED_X_FLOW_URL_REGEX =
+  /^https:\/\/(?:www\.)?x\.com(?:\/.+)?\/single_sign_on(?:\/|[?#]|$)/i;
 
 /** Attestation UI status values */
 export const STATUS = {

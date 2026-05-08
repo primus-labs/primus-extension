@@ -13,6 +13,7 @@ import {
   DISABLED_AMAZON_URL_REGEX,
   DISABLED_STEAM_URL_REGEX,
   DISABLED_NAVER_URL_REGEX,
+  DISABLED_X_FLOW_URL_REGEX,
   STATUS,
   SESSION_KEYS,
 } from './constants';
@@ -112,7 +113,8 @@ function isDisabledPath() {
     DISABLED_PATH_SEGMENT_REGEX.test(href) ||
     DISABLED_AMAZON_URL_REGEX.test(href) ||
     DISABLED_STEAM_URL_REGEX.test(href) ||
-    DISABLED_NAVER_URL_REGEX.test(href)
+    DISABLED_NAVER_URL_REGEX.test(href) ||
+    DISABLED_X_FLOW_URL_REGEX.test(href)
   );
 }
 
