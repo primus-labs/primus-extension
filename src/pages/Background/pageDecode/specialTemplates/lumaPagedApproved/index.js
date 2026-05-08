@@ -1,0 +1,168 @@
+/**
+ * Luma list pagination (52167341): scan every page for approved entries, then patch
+ * algorithm params to one request/response per hit page (FIELD_REVEAL / REVEAL_STRING).
+ */
+import { fetchRequestData } from '../../utils';
+import { getPageDecodeState } from '../../state';
+import { eventListUrlForMonad } from '../lumaMonad';
+import {
+  buildPagedApprovedCalculations,
+  TEMPLATE_ID_FOR_LUMA_PAGED_APPROVED,
+} from './constants';
+
+const APPROVED_VALUE = 'approved';
+
+function getLumaPagedApprovedHits() {
+  return getPageDecodeState().getLumaPagedApprovedHits();
+}
+
+function resetLumaPagedApprovedHits() {
+  getPageDecodeState().resetLumaPagedApprovedHits();
+}
+
+function setLumaPagedApprovedHits(payload) {
+  return getPageDecodeState().setLumaPagedApprovedHits(payload);
+}
+
+export function isLumaPagedApprovedTemplate(activeTemplate) {
+  const id = activeTemplate?.attTemplateID ?? activeTemplate?.id;
+  return id === TEMPLATE_ID_FOR_LUMA_PAGED_APPROVED;
+}
+
+export function collectApprovedEntryIndexes(entries) {
+  if (!Array.isArray(entries)) return [];
+  return entries
+    .map((entry, idx) =>
+      entry?.role?.approval_status === APPROVED_VALUE ? idx : -1
+    )
+    .filter((idx) => idx >= 0);
+}
+
+function buildPagedApprovedResponseSubconditions(pageHits, pageIdx) {
+  const subs = [];
+  for (const { entryIdx } of pageHits.hits) {
+    const ridBase = `p${pageIdx}_e${entryIdx}`;
+    subs.push({
+      field: `$.entries[${entryIdx}].event.name`,
+      op: 'REVEAL_STRING',
+      type: 'FIELD_REVEAL',
+      reveal_id: `${ridBase}_eventName`,
+    });
+    subs.push({
+      field: `$.entries[${entryIdx}].role.approval_status`,
+      op: 'REVEAL_STRING',
+      type: 'FIELD_REVEAL',
+      reveal_id: `${ridBase}_approvalStatus`,
+    });
+  }
+  return subs;
+}
+
+function buildPagedApprovedResponseItem(pageHits, pageIdx) {
+  return {
+    conditions: {
+      op: 'BOOLEAN_AND',
+      type: 'CONDITION_EXPANSION',
+      subconditions: buildPagedApprovedResponseSubconditions(pageHits, pageIdx),
+    },
+  };
+}
+
+export async function resolvePagedApprovedHits(
+  result,
+  checkUrl,
+  requestMetaInfo,
+  hitPagesSoFar = []
+) {
+  if (!result) {
+    return hitPagesSoFar.length > 0 ? { pages: hitPagesSoFar } : null;
+  }
+
+  const entries = Array.isArray(result.entries) ? result.entries : [];
+  const approvedIndexes = collectApprovedEntryIndexes(entries);
+
+  if (approvedIndexes.length > 0) {
+    hitPagesSoFar.push({
+      url: checkUrl,
+      hits: approvedIndexes.map((entryIdx) => ({
+        entryIdx,
+      })),
+    });
+  }
+
+  if (!result.has_more) {
+    return hitPagesSoFar.length > 0 ? { pages: hitPagesSoFar } : null;
+  }
+
+  const nextUrl = eventListUrlForMonad(
+    requestMetaInfo.url,
+    result.next_cursor
+  );
+  const nextResult = await fetchRequestData({
+    ...requestMetaInfo,
+    header: requestMetaInfo?.headers,
+    url: nextUrl,
+    method: requestMetaInfo?.method || 'GET',
+  });
+
+  return resolvePagedApprovedHits(
+    nextResult,
+    nextUrl,
+    requestMetaInfo,
+    hitPagesSoFar
+  );
+}
+
+export async function checkTargetRequestFnForLumaPagedApproved(
+  targetRequestUrl,
+  matchRequestUrlResult,
+  requestMetaInfo,
+  notMetHandler
+) {
+  resetLumaPagedApprovedHits();
+  const resolved = await resolvePagedApprovedHits(
+    matchRequestUrlResult,
+    targetRequestUrl,
+    requestMetaInfo,
+    []
+  );
+  if (!resolved?.pages?.length) {
+    await notMetHandler();
+    return false;
+  }
+  setLumaPagedApprovedHits(resolved);
+  return true;
+}
+
+export function tryPatchAlgorithmParamsForSpecialTemplateLumaPagedApproved(
+  algorithmParams,
+  activeTemplate
+) {
+  if (!isLumaPagedApprovedTemplate(activeTemplate)) return;
+
+  const { pages } = getLumaPagedApprovedHits() || {};
+  if (
+    !Array.isArray(pages) ||
+    pages.length === 0 ||
+    !Array.isArray(algorithmParams.requests) ||
+    algorithmParams.requests.length === 0 ||
+    !Array.isArray(algorithmParams.responses)
+  ) {
+    return;
+  }
+
+  const baseRequest = algorithmParams.requests[0];
+  const nextRequests = pages.map((pageHits, idx) => ({
+    ...baseRequest,
+    url: pageHits.url,
+    name: idx === 0 ? baseRequest.name : `sdk-${idx}`,
+  }));
+
+  const nextResponse = pages.map((pageHits, pageIdx) =>
+    buildPagedApprovedResponseItem(pageHits, pageIdx)
+  );
+
+  algorithmParams.requests = nextRequests;
+  algorithmParams.responses = nextResponse;
+  algorithmParams.calculations = buildPagedApprovedCalculations(pages.length);
+}

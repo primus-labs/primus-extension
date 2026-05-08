@@ -60,6 +60,8 @@ export function createPageDecodeState() {
     channelSubscriptionFields: {},
     /** Phala reputation CVM list: cvmIdList filled in checkTargetRequestFnForReputationPhalaCvmList */
     reputationPhalaFields: {},
+    /** Luma paged approved (52167341): { pages: [{ url, hits: [{ entryIdx }] }] } */
+    lumaPagedApprovedHits: null,
   };
 
   function resetMonadFields() {
@@ -92,6 +94,20 @@ export function createPageDecodeState() {
 
   function getReputationPhalaFields() {
     return state.reputationPhalaFields;
+  }
+
+  function resetLumaPagedApprovedHits() {
+    state.lumaPagedApprovedHits = null;
+  }
+
+  function setLumaPagedApprovedHits(payload) {
+    state.lumaPagedApprovedHits =
+      payload && typeof payload === 'object' ? { ...payload } : null;
+    return state.lumaPagedApprovedHits;
+  }
+
+  function getLumaPagedApprovedHits() {
+    return state.lumaPagedApprovedHits;
   }
 
   function resetReputationPhalaBinanceEarnFields() {
@@ -154,6 +170,7 @@ export function createPageDecodeState() {
       delete state.channelSubscriptionFields[k];
     });
     resetReputationPhalaFields();
+    resetLumaPagedApprovedHits();
   }
 
   function removeFromRequestsMap(requestId) {
@@ -182,14 +199,17 @@ export function createPageDecodeState() {
     getMonadFields,
     getReputationPhalaBinanceEarnFields,
     getReputationPhalaFields,
+    getLumaPagedApprovedHits,
     reset,
     resetMonadFields,
     resetReputationPhalaBinanceEarnFields,
     resetReputationPhalaFields,
+    resetLumaPagedApprovedHits,
     removeFromRequestsMap,
     setMonadFields,
     setReputationPhalaBinanceEarnFields,
     setReputationPhalaFields,
+    setLumaPagedApprovedHits,
     storeInRequestsMap,
   };
 }

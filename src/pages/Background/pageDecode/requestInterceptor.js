@@ -23,6 +23,10 @@ import {
   isLumaMonadTemplate,
 } from './specialTemplates/lumaMonad';
 import {
+  checkTargetRequestFnForLumaPagedApproved,
+  isLumaPagedApprovedTemplate,
+} from './specialTemplates/lumaPagedApproved';
+import {
   isReputationPhalaBinanceEarnBalanceTemplate,
   updateRequestMapFnForReputationPhalaBinanceEarnBalance,
   checkTargetRequestFnForReputationPhalaBinanceEarnBalance,
@@ -178,7 +182,8 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
 
     const urlForFetch =
       requestsMap[matchRequestId].type !== 'main_frame' &&
-      isLumaMonadTemplate(activeTemplate)
+      (isLumaMonadTemplate(activeTemplate) ||
+        isLumaPagedApprovedTemplate(activeTemplate))
         ? eventListUrlForMonad(mergedUrl)
         : effectiveRequestUrl;
 
@@ -272,6 +277,31 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
           notMetHandler
         );
       } else if (
+        isLumaPagedApprovedTemplate(activeTemplate) &&
+        matchRequestUrlResult
+      ) {
+        const notMetHandler = async () => {
+          await handleAttestationError(
+            {
+              desc: 'No approved Luma event entries.',
+              code: '00104',
+            },
+            state.dataSourcePageTabId,
+            {}
+          );
+        };
+        const requestLumaPagedMeta = {
+          ...requestsMap[matchRequestId],
+          headers: requestsMap[matchRequestId].headers,
+          url: requestsMap[matchRequestId].url,
+        };
+        isTargetUrl = await checkTargetRequestFnForLumaPagedApproved(
+          urlForFetch,
+          matchRequestUrlResult,
+          requestLumaPagedMeta,
+          notMetHandler
+        );
+      } else if (
         isReputationPhalaBinanceEarnBalanceTemplate(activeTemplate) &&
         matchRequestUrlResult
       ) {
@@ -327,7 +357,11 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
           matchRequestUrlResult
         );
       }
-      if (isTargetUrl && !isLumaMonadTemplate(activeTemplate)) {
+      if (
+        isTargetUrl &&
+        !isLumaMonadTemplate(activeTemplate) &&
+        !isLumaPagedApprovedTemplate(activeTemplate)
+      ) {
         await tryApplyJumpConfigFromResponse({
           requestUrl: effectiveRequestUrl,
           responseData: matchRequestUrlResult,
