@@ -2,16 +2,16 @@ export const TEMPLATE_ID_FOR_LUMA_PAGED_APPROVED =
   '52167341-a507-4bd3-804f-9fcb105cbeeb';
 
 /**
- * Chains K list-response proofs (variable length vs fixed Monad pair).
+ * Chains response proofs by RESPONSE_ID order: paginated hits first (0..pages-1), then tails.
  */
-export function buildPagedApprovedCalculations(k) {
-  if (!Number.isFinite(k) || k <= 0) {
+export function buildPagedApprovedCalculations(totalResponseCount) {
+  if (!Number.isFinite(totalResponseCount) || totalResponseCount <= 0) {
     return undefined;
   }
   return {
     type: 'CONDITION_EXPANSION',
     op: '&',
-    subconditions: Array.from({ length: k }, (_, id) => ({
+    subconditions: Array.from({ length: totalResponseCount }, (_, id) => ({
       type: 'RESPONSE_ID',
       id,
     })),

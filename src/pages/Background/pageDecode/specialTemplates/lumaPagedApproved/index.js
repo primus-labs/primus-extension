@@ -1,6 +1,7 @@
 /**
  * Luma list pagination (52167341): scan every page for approved entries, then patch
  * algorithm params to one request/response per hit page (FIELD_REVEAL / REVEAL_STRING).
+ * Remaining template requests/responses (after the first) are appended unchanged.
  */
 import { fetchRequestData } from '../../utils';
 import { getPageDecodeState } from '../../state';
@@ -152,17 +153,25 @@ export function tryPatchAlgorithmParamsForSpecialTemplateLumaPagedApproved(
   }
 
   const baseRequest = algorithmParams.requests[0];
-  const nextRequests = pages.map((pageHits, idx) => ({
+  const pagedRequests = pages.map((pageHits, idx) => ({
     ...baseRequest,
     url: pageHits.url,
     name: idx === 0 ? baseRequest.name : `sdk-${idx}`,
   }));
 
-  const nextResponse = pages.map((pageHits, pageIdx) =>
+  const pagedResponses = pages.map((pageHits, pageIdx) =>
     buildPagedApprovedResponseItem(pageHits, pageIdx)
   );
 
-  algorithmParams.requests = nextRequests;
-  algorithmParams.responses = nextResponse;
-  algorithmParams.calculations = buildPagedApprovedCalculations(pages.length);
+  const rawTailReq = algorithmParams.requests.slice(1);
+  const rawTailRes = algorithmParams.responses.slice(1);
+  const tailLen = Math.min(rawTailReq.length, rawTailRes.length);
+  const tailRequests = rawTailReq.slice(0, tailLen).map((r) => ({ ...r }));
+  const tailResponses = rawTailRes.slice(0, tailLen).map((r) => ({ ...r }));
+
+  algorithmParams.requests = [...pagedRequests, ...tailRequests];
+  algorithmParams.responses = [...pagedResponses, ...tailResponses];
+  algorithmParams.calculations = buildPagedApprovedCalculations(
+    pagedResponses.length + tailResponses.length
+  );
 }
