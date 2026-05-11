@@ -1,7 +1,9 @@
 /**
  * Luma list pagination (52167341): scan every page for approved entries, then patch
  * algorithm params to one request/response per hit page (FIELD_REVEAL / REVEAL_STRING).
- * Remaining template requests/responses (after the first) are appended unchanged.
+ * Remaining template request/response pairs (after the first) are appended; their
+ * request `name` values are reassigned to sdk-(lastPagedN+1).. so they never collide
+ * with paginated sdk-0..sdk-(pages-1).
  */
 import { fetchRequestData } from '../../utils';
 import { getPageDecodeState } from '../../state';
@@ -37,6 +39,16 @@ export function collectApprovedEntryIndexes(entries) {
       entry?.role?.approval_status === APPROVED_VALUE ? idx : -1
     )
     .filter((idx) => idx >= 0);
+}
+
+/** First tail request uses sdk-(N+1) when the last paged request is sdk-N. */
+function nextSdkNumericIndexAfterPaged(pagedRequests) {
+  const last = pagedRequests[pagedRequests.length - 1]?.name;
+  if (typeof last === 'string') {
+    const m = last.match(/^sdk-(\d+)$/i);
+    if (m) return Number(m[1]) + 1;
+  }
+  return pagedRequests.length;
 }
 
 function buildPagedApprovedResponseSubconditions(pageHits, pageIdx) {
@@ -166,7 +178,10 @@ export function tryPatchAlgorithmParamsForSpecialTemplateLumaPagedApproved(
   const rawTailReq = algorithmParams.requests.slice(1);
   const rawTailRes = algorithmParams.responses.slice(1);
   const tailLen = Math.min(rawTailReq.length, rawTailRes.length);
-  const tailRequests = rawTailReq.slice(0, tailLen).map((r) => ({ ...r }));
+  const tailSdkStart = nextSdkNumericIndexAfterPaged(pagedRequests);
+  const tailRequests = rawTailReq
+    .slice(0, tailLen)
+    .map((r, i) => ({ ...r, name: `sdk-${tailSdkStart + i}` }));
   const tailResponses = rawTailRes.slice(0, tailLen).map((r) => ({ ...r }));
 
   algorithmParams.requests = [...pagedRequests, ...tailRequests];

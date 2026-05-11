@@ -536,7 +536,7 @@ export function setupWebRequestListener() {
     });
 
     if (isTarget) {
-      console.log('captured request', currRequestUrl,details.type);
+      console.log('captured request', currRequestUrl,JSON.stringify(details));
       const newCapturedInfo = {
         headers: formatHeader,
         method,
