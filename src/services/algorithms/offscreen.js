@@ -15,7 +15,8 @@ Module.onRuntimeInitialized = async () => {
 };
 
 const CLIENT_VERSION = '1.4.26';
-const LEGACY_NETWORK_VERSION = '1.1.1';
+// const LEGACY_NETWORK_VERSION = '1.1.1';
+const LEGACY_NETWORK_VERSION = '1.4.26';
 const SDK_ATTESTATION_SESSION_KEY = 'padoZKAttestationJSSDKSession';
 
 /**

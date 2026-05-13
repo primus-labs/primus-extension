@@ -149,6 +149,7 @@ export async function pageDecodeMsgListener(
 
   console.log('pageDecodeMsgListener');
 
+  try {
   if (name === 'init') {
     pageDecodeState.reset();
     state.activeTemplate = params || {};
@@ -345,5 +346,7 @@ export async function pageDecodeMsgListener(
     }
   }
 
-  if (!responded) respond({ ok: true });
+  } finally {
+    if (!responded) respond({ ok: true });
+  }
 }

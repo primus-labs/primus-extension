@@ -30,6 +30,25 @@ import { createTabMessageSender } from '../utils/msgTransfer.js';
 
 const HAS_GET_TWITTER_SCREEN_NAME = false;
 
+/**
+ * Async onMessage listeners return true and must call sendResponse exactly once
+ * (avoids "Error message from listener couldn't be parsed or was empty").
+ */
+export function createAlgorithmMessageAck(sendResponse) {
+  let done = false;
+  return function ackAlgorithmMessage(payload = { ok: true }) {
+    if (done) return;
+    done = true;
+    try {
+      if (typeof sendResponse === 'function') {
+        sendResponse(payload);
+      }
+    } catch (_e) {
+      /* message port may already be closed */
+    }
+  };
+}
+
 /** Maps algorithm errlog codes to parent code 50000 + subCode for NOTE_V2 composite keys. */
 const ALGO_ERR_NORMALIZE_TO_50000 = {
   50001: '501',
@@ -47,13 +66,20 @@ export async function handleGetAttestation(
   message,
   dappTabId,
   sender,
-  sendResponse,
+  ack,
   processAlgorithmReq
 ) {
-  const sendToSdk = createTabMessageSender(dappTabId);
-  const { retcode, isUserClick } = JSON.parse(message.res);
+  if (!message?.res) return;
+  let parsed;
+  try {
+    parsed = JSON.parse(message.res);
+  } catch {
+    return;
+  }
+  const { retcode, isUserClick } = parsed;
   if (isUserClick !== 'true') return;
 
+  const sendToSdk = createTabMessageSender(dappTabId);
   const { configMap } = await safeStorageGet(['configMap']);
   const noteV2Map = resolveNoteV2MapFromConfigParsed(safeJsonParse(configMap));
 
@@ -76,7 +102,7 @@ export async function handleGetAttestation(
         params: { result: 'warn', failReason: { ...msgObj } },
       },
       sender,
-      sendResponse,
+      ack,
       HAS_GET_TWITTER_SCREEN_NAME,
       processAlgorithmReq
     );
@@ -116,7 +142,7 @@ export async function handleGetAttestationResult(
   message,
   storage,
   sender,
-  sendResponse,
+  ack,
   processAlgorithmReq
 ) {
   const {
@@ -132,8 +158,14 @@ export async function handleGetAttestationResult(
   const configMapParsed = safeJsonParse(configMap);
   const noteV2Map = resolveNoteV2MapFromConfigParsed(configMapParsed);
 
-  if (!message.res) return;
-  const { retcode, content, details, isUserClick } = JSON.parse(message.res);
+  if (!message?.res) return;
+  let parsedRes;
+  try {
+    parsedRes = JSON.parse(message.res);
+  } catch {
+    return;
+  }
+  const { retcode, content, details, isUserClick } = parsedRes;
   if (isUserClick !== 'true') return;
 
   await safeStorageSet({ getAttestationResultRes: message.res });
@@ -149,7 +181,7 @@ export async function handleGetAttestationResult(
     await pageDecodeMsgListener(
       { name: 'end', params: { result: 'success' } },
       sender,
-      sendResponse,
+      ack,
       HAS_GET_TWITTER_SCREEN_NAME,
       processAlgorithmReq
     );
@@ -255,7 +287,7 @@ export async function handleGetAttestationResult(
           params: { result: 'warn', failReason: { ...msgObj } },
         },
         sender,
-        sendResponse,
+        ack,
         HAS_GET_TWITTER_SCREEN_NAME,
         processAlgorithmReq
       );
@@ -310,7 +342,7 @@ export async function handleGetAttestationResult(
         params: { result: 'warn', failReason: { ...msgObj } },
       },
       sender,
-      sendResponse,
+      ack,
       HAS_GET_TWITTER_SCREEN_NAME,
       processAlgorithmReq
     );
