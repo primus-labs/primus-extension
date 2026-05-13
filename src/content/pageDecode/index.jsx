@@ -3,6 +3,7 @@
  * Reuses a single React root to avoid repeated createRoot/unmount and listener churn.
  */
 import React from 'react';
+import { flushSync } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import { createDomElement } from './utils';
 import PadoCard from './App';
@@ -29,6 +30,33 @@ const PAGE_DECODE_SYNC_EVENT = 'pado-page-decode-sync';
 let pageDecodeStateSyncInFlight = false;
 /** One-shot follow-up pulls after inject: avoids 1s polling while tolerating delayed ready. */
 const deferredPageDecodeSyncTimeouts = [];
+
+/** Serializes mount/unmount/render so host SPA DOM churn cannot race React commit (removeChild NotFoundError). */
+let pageDecodeUiChain = Promise.resolve();
+
+function enqueuePageDecodeUi(syncTask) {
+  pageDecodeUiChain = pageDecodeUiChain
+    .then(() => {
+      syncTask();
+    })
+    .catch((e) => {
+      console.warn('[pageDecode] UI queue task failed', e);
+    });
+}
+
+/** After root.unmount(), defer physical removal so React finishes internal detach first. */
+function deferRemoveDomNode(node) {
+  if (!node) return;
+  queueMicrotask(() => {
+    requestAnimationFrame(() => {
+      try {
+        if (node.isConnected) node.remove();
+      } catch (_e) {
+        /* ignore */
+      }
+    });
+  });
+}
 
 function dispatchPageDecodeSyncEvent(detail) {
   window.dispatchEvent(
@@ -119,6 +147,7 @@ function isDisabledPath() {
 }
 
 function hidePageDecodeUi() {
+  const container = document.getElementById(CONTAINER_ID);
   try {
     if (rootRef) {
       rootRef.unmount();
@@ -127,21 +156,15 @@ function hidePageDecodeUi() {
     /* ignore */
   }
   rootRef = null;
-  const container = document.getElementById(CONTAINER_ID);
-  if (container) {
-    try {
-      container.remove();
-    } catch (_e) {
-      /* ignore */
-    }
-  }
+  deferRemoveDomNode(container);
 }
 
 /**
  * Show PadoCard when there is an active attestation and the URL is not a disabled path;
  * otherwise unmount and remove the container (e.g. SPA navigated to /login).
+ * Runs inside enqueuePageDecodeUi — do not call directly from async entrypoints.
  */
-function renderPageDecodeCardIfAllowed() {
+function renderPageDecodeCardIfAllowedInner() {
   if (!activeRequest) {
     return;
   }
@@ -153,7 +176,13 @@ function renderPageDecodeCardIfAllowed() {
   if (!rootRef) {
     rootRef = createRoot(container);
   }
-  rootRef.render(<PadoCard activeRequest={activeRequest} />);
+  flushSync(() => {
+    rootRef.render(<PadoCard activeRequest={activeRequest} />);
+  });
+}
+
+function scheduleRenderPageDecodeCardIfAllowed() {
+  enqueuePageDecodeUi(() => renderPageDecodeCardIfAllowedInner());
 }
 
 function installHistoryLocationListener() {
@@ -168,7 +197,7 @@ function installHistoryLocationListener() {
     }
     lastPolledHref = window.location.href;
     queueMicrotask(() => {
-      renderPageDecodeCardIfAllowed();
+      scheduleRenderPageDecodeCardIfAllowed();
     });
   };
 
@@ -209,7 +238,7 @@ function startHrefPollingWhileAttestationActive() {
     const href = window.location.href;
     if (href !== lastPolledHref) {
       lastPolledHref = href;
-      renderPageDecodeCardIfAllowed();
+      scheduleRenderPageDecodeCardIfAllowed();
     }
   }, 250);
 }
@@ -232,11 +261,7 @@ function ensurePageDecodeContainer() {
   }
   rootRef = null;
   if (container && !document.body.contains(container)) {
-    try {
-      container.remove();
-    } catch (_e) {
-      /* ignore */
-    }
+    deferRemoveDomNode(container);
   }
   container = createDomElement(`<div id="${CONTAINER_ID}"></div>`);
   document.body.appendChild(container);
@@ -294,7 +319,7 @@ chrome.runtime.sendMessage(
 
     installHistoryLocationListener();
     startHrefPollingWhileAttestationActive();
-    renderPageDecodeCardIfAllowed();
+    scheduleRenderPageDecodeCardIfAllowed();
     clearDeferredPageDecodeSyncs();
     if (!response.isReady) {
       scheduleDeferredPageDecodeSync(400);
