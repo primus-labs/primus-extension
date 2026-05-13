@@ -1,11 +1,9 @@
 /**
  * Luma list pagination (52167341): scan every page for approved entries, then patch
  * algorithm params to one request/response per hit page (FIELD_REVEAL / REVEAL_STRING).
- *
- * Locates the event-list datasource row by URL (`get-events`) and expands it to one pair
- * per captured page with sequential sdk-* names. Leading rows (e.g. email) stay first using
- * the same interceptor-built headers/body; trailing template rows append after paging with
- * non-colliding sdk-* indices.
+ * Remaining template request/response pairs (after the first) are appended; their
+ * request `name` values are reassigned to sdk-(lastPagedN+1).. so they never collide
+ * with paginated sdk-0..sdk-(pages-1).
  */
 import { fetchRequestData } from '../../utils';
 import { getPageDecodeState } from '../../state';
@@ -43,15 +41,14 @@ export function collectApprovedEntryIndexes(entries) {
     .filter((idx) => idx >= 0);
 }
 
-/** Index of the datasource row that expands into multi-page event-list proofs. */
-export function findLumaPagingDatasourceIndex(requests) {
-  if (!Array.isArray(requests) || requests.length === 0) return 0;
-  const idx = requests.findIndex(
-    (r) =>
-      typeof r.url === 'string' &&
-      (r.url.includes('home/get-events') || r.url.includes('get-events'))
-  );
-  return idx >= 0 ? idx : 0;
+/** First tail request uses sdk-(N+1) when the last paged request is sdk-N. */
+function nextSdkNumericIndexAfterPaged(pagedRequests) {
+  const last = pagedRequests[pagedRequests.length - 1]?.name;
+  if (typeof last === 'string') {
+    const m = last.match(/^sdk-(\d+)$/i);
+    if (m) return Number(m[1]) + 1;
+  }
+  return pagedRequests.length;
 }
 
 function buildPagedApprovedResponseSubconditions(pageHits, pageIdx) {
@@ -167,46 +164,29 @@ export function tryPatchAlgorithmParamsForSpecialTemplateLumaPagedApproved(
     return;
   }
 
-  const req = algorithmParams.requests;
-  const res = algorithmParams.responses;
-  const pagerIdx = findLumaPagingDatasourceIndex(req);
-  if (pagerIdx >= req.length || pagerIdx >= res.length) {
-    return;
-  }
-
-  const leadRequests = req
-    .slice(0, pagerIdx)
-    .map((r, i) => ({ ...r, name: `sdk-${i}` }));
-  const leadResponses = res.slice(0, pagerIdx).map((r) => ({ ...r }));
-
-  const pagingBaseRequest = req[pagerIdx];
-  const sdkPageStart = leadRequests.length;
-  const pagedRequests = pages.map((pageHits, pageIdx) => ({
-    ...pagingBaseRequest,
+  const baseRequest = algorithmParams.requests[0];
+  const pagedRequests = pages.map((pageHits, idx) => ({
+    ...baseRequest,
     url: pageHits.url,
-    name: `sdk-${sdkPageStart + pageIdx}`,
+    name: idx === 0 ? baseRequest.name : `sdk-${idx}`,
   }));
 
   const pagedResponses = pages.map((pageHits, pageIdx) =>
     buildPagedApprovedResponseItem(pageHits, pageIdx)
   );
 
-  const rawTailReq = req.slice(pagerIdx + 1);
-  const rawTailRes = res.slice(pagerIdx + 1);
+  const rawTailReq = algorithmParams.requests.slice(1);
+  const rawTailRes = algorithmParams.responses.slice(1);
   const tailLen = Math.min(rawTailReq.length, rawTailRes.length);
-  const tailSdkStart = sdkPageStart + pagedRequests.length;
+  const tailSdkStart = nextSdkNumericIndexAfterPaged(pagedRequests);
   const tailRequests = rawTailReq
     .slice(0, tailLen)
     .map((r, i) => ({ ...r, name: `sdk-${tailSdkStart + i}` }));
   const tailResponses = rawTailRes.slice(0, tailLen).map((r) => ({ ...r }));
 
-  algorithmParams.requests = [...leadRequests, ...pagedRequests, ...tailRequests];
-  algorithmParams.responses = [
-    ...leadResponses,
-    ...pagedResponses,
-    ...tailResponses,
-  ];
+  algorithmParams.requests = [...pagedRequests, ...tailRequests];
+  algorithmParams.responses = [...pagedResponses, ...tailResponses];
   algorithmParams.calculations = buildPagedApprovedCalculations(
-    leadResponses.length + pagedResponses.length + tailResponses.length
+    pagedResponses.length + tailResponses.length
   );
 }
