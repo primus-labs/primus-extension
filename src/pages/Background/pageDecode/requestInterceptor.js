@@ -2,9 +2,9 @@
 /**
  * Web request interception for page decode: capture requests, match templates, signal when ready.
  */
-import { isObject } from '../utils/utils';
 import {
   checkIsRequiredUrl,
+  isObject,
   isUrlWithQueryFn,
   mergeQueryParamsIntoUrl,
   mergeBodyParams,
@@ -92,9 +92,44 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
   if (!template) return;
   const { requests, responses } = template;
 
-  const thisRequestUrlIdx = requests.findIndex((r) => r.url === templateRequestUrl);
+  const capturedBrowseUrlEarly = requestsMap[requestId]?.url;
+  let thisRequestUrlIdx = requests.findIndex((r) => r.url === templateRequestUrl);
+  if (
+    thisRequestUrlIdx < 0 &&
+    typeof capturedBrowseUrlEarly === 'string' &&
+    capturedBrowseUrlEarly
+  ) {
+    thisRequestUrlIdx = requests.findIndex((r) =>
+      r.needCapture !== false
+        ? checkIsRequiredUrl({
+            requestUrl: capturedBrowseUrlEarly,
+            requiredUrl: r.url,
+            urlType: r.urlType,
+            queryParams: r.queryParams,
+          })
+        : false
+    );
+  }
+  if (thisRequestUrlIdx < 0) {
+    console.warn('[checkSDKTargetRequest] could not resolve datasource row', {
+      templateRequestUrl,
+      requestId,
+    });
+    return;
+  }
   const thisRequestObj = requests[thisRequestUrlIdx];
   const thisResponseObj = responses[thisRequestUrlIdx];
+  if (
+    !thisRequestObj ||
+    !thisResponseObj?.conditions?.subconditions ||
+    thisResponseObj.conditions.subconditions.length === 0
+  ) {
+    console.warn(
+      '[checkSDKTargetRequest] missing template slot or response.subconditions',
+      { templateRequestUrl, requestId }
+    );
+    return;
+  }
   const { url, urlType, queryParams, ignoreResponse } = thisRequestObj;
 
   const thisRequestUrlFoundFlag = Object.values(requestsMap).find(
