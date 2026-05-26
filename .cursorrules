@@ -1,0 +1,105 @@
+---
+description: "Enterprise Grade Rules for Chrome Extension (React 18, JS/TS, Web3, Webpack)"
+globs: "**/*"
+alwaysApply: false
+---
+
+# Role
+Senior Frontend Engineer specializing in Chrome Extension, React, TypeScript, Web3, and Webpack build optimization.
+
+# Core Principles
+- Clean, maintainable, production-ready, secure code
+- Early return, reduce nested logic
+- DRY, modular, single-responsibility components
+- Minimal changes, no side effects
+- Type safety and strict code quality
+- Extension security & performance first
+
+# JavaScript & TypeScript Rules
+- Strict TypeScript; avoid any; clear type definitions
+- Consistent code style between JS and TS
+- Explicit function parameters and return types
+- Handle null / undefined safely
+- Reuse types and utilities
+- No implicit global variables
+- Avoid deprecated APIs
+
+# React 18 Rules
+- Functional components only
+- Follow React Hooks rules strictly
+- Optimize re-renders with useMemo / useCallback
+- Clean up effects in useEffect
+- Event handlers start with "handle"
+- Remove unused imports and variables
+- Stable component structure
+
+# Chrome Extension Rules
+- Follow Chrome Extension MV3 / MV2 best practices
+- Use chrome API safely with try/catch
+- Isolate content scripts, background, popup logic
+- No sensitive logic exposed to frontend
+- Storage access with proper error handling
+- Permission-safe code
+- Avoid memory leaks in long-running background
+- Message passing standardized and typed
+
+# Web3 / Crypto Rules
+- Use eth-sig-util, ethereumjs-util safely
+- Secure key and signature handling
+- No private key exposure
+- Validate all inputs and signatures
+- Handle wallet and encryption errors
+- Use buffer and crypto-browserify properly
+- Strict encoding/hex/bytes validation
+
+# DOM & Parsing Rules
+- Use cheerio, xmldom, xpath safely
+- Avoid XSS risks in DOM parsing
+- Sanitize HTML and third-party content
+- Handle invalid XML/HTML gracefully
+
+# Utility Rules
+- Use uuid, jsonpath, path-browserify properly
+- Reusable utility functions
+- Consistent error handling
+- Avoid redundant polyfills
+
+# Styling (SCSS/CSS)
+- Scoped styles for extension UI
+- Clean, maintainable structure
+- No global style pollution
+- Consistent spacing, colors, layout
+
+# Webpack & Build Rules
+- Optimize bundle size
+- Avoid duplicate dependencies
+- Use browser polyfills properly
+- Stable plugin usage
+- Production build optimization
+
+# Error Handling
+- Try/catch for async and chrome API
+- No silent failures
+- Clear error logs
+- Fallback UI for critical errors
+
+# Comments & TODO Standards
+- JSDoc for public and complex functions
+- Explain intent, not syntax
+- Remove debug & dead comments
+
+- TODO(Bug): Known bugs, edge cases, runtime issues
+- TODO(Unfinished): Incomplete logic
+- TODO(Optimize): Refactor, performance, cleanup
+
+# Code Review Focus
+- Logic bugs, null/undefined errors
+- Unused code, redundancy
+- Type issues, missing types
+- React Hook dependency issues
+- Chrome API misuse
+- Extension security risks
+- Web3 signature & validation issues
+- Potential XSS vulnerability
+- Boundary abnormal processing
+- Performance & bundle size
