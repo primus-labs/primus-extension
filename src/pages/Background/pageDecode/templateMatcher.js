@@ -2,7 +2,11 @@
 /**
  * Builds algorithm params from the active template and captured request map.
  */
-import { isObject, mergeQueryParamsIntoUrl } from '../utils/utils';
+import {
+  isObject,
+  mergeBodyParams,
+  mergeQueryParamsIntoUrl,
+} from '../utils/utils';
 import { assembleAlgorithmParamsForSDK } from '../exData';
 import { PADOSERVERURL } from '@/config/envConstants';
 import { padoExtensionVersion } from '@/config/constants';
@@ -89,16 +93,32 @@ export async function formatAlgorithmParamsFn() {
       typeof updateParams.queryParams === 'object' &&
       updateParams.queryParams !== null &&
       !Array.isArray(updateParams.queryParams);
+    const hasBodyParams =
+      typeof updateParams.bodyParams === 'object' &&
+      updateParams.bodyParams !== null &&
+      !Array.isArray(updateParams.bodyParams);
+    const applyNeedUpdateRequestParams = (baseUrl, baseBody) => {
+      const resolvedUrl =
+        hasNeedUpdateRequests && hasQueryParams
+          ? mergeQueryParamsIntoUrl(baseUrl, updateParams.queryParams)
+          : baseUrl;
+      const resolvedBody =
+        hasNeedUpdateRequests && hasBodyParams
+          ? mergeBodyParams(baseBody, updateParams.bodyParams)
+          : baseBody;
+
+      return { resolvedUrl, resolvedBody };
+    };
 
     if (r.needCapture === false) {
-      let resolvedUrl = r.url;
-      if (hasNeedUpdateRequests && hasQueryParams) {
-        resolvedUrl = mergeQueryParamsIntoUrl(r.url, updateParams.queryParams);
-      }
+      const { resolvedUrl, resolvedBody } = applyNeedUpdateRequestParams(
+        r.url,
+        isObject(r.body) ? { ...r.body } : r.body || {}
+      );
       const noCaptureItem = {
         ...r,
         headers: { ...referenceHeaders },
-        body: isObject(r.body) ? { ...r.body } : r.body || {},
+        body: resolvedBody,
         url: resolvedUrl,
       };
       if (noCaptureItem.headers) {
@@ -120,13 +140,21 @@ export async function formatAlgorithmParamsFn() {
       url
     } = currRequestInfoObj;
 
+    const baseUrl = url || (queryString ? r.url + '?' + queryString : r.url);
+    const baseBody = isObject(curRequestBody)
+      ? { ...curRequestBody }
+      : curRequestBody;
+    const { resolvedUrl, resolvedBody } = applyNeedUpdateRequestParams(
+      baseUrl,
+      baseBody
+    );
+
     Object.assign(r, {
       headers: { ...curRequestHeader },
-      body: isObject(curRequestBody) ? { ...curRequestBody } : curRequestBody,
-      url: queryString ? r.url + '?' + queryString : r.url,
+      body: resolvedBody,
+      url: resolvedUrl,
     });
-    // Prefer the real captured URL when available; otherwise keep the merged template URL.
-    formatRequests.push({ ...r, url: url || r.url });
+    formatRequests.push({ ...r });
   }
 
   const amazonHostOverride = rewriteAmazonRequestUrlsForAlgorithmParams(
