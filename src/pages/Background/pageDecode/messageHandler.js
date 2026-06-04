@@ -212,7 +212,7 @@ export async function pageDecodeMsgListener(
       state.tabUpdatedListener = (tabId, changeInfo) => {
         if (
           tabId === state.dataSourcePageTabId &&
-          (changeInfo.url || changeInfo.title)
+          (changeInfo.url || changeInfo.title || changeInfo.status === 'complete')
         ) {
           if (state.injectDebounceTimer) {
             clearTimeout(state.injectDebounceTimer);
