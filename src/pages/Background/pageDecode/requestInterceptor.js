@@ -1,4 +1,4 @@
-/* global chrome, console, clearTimeout, setTimeout, Uint8Array, TextDecoder, URL */
+/* global chrome, console, clearTimeout, setTimeout, Uint8Array, TextDecoder, URL, Promise */
 /**
  * Web request interception for page decode: capture requests, match templates, signal when ready.
  */
@@ -119,10 +119,15 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
   }
   const thisRequestObj = requests[thisRequestUrlIdx];
   const thisResponseObj = responses[thisRequestUrlIdx];
+  const requireReplayValidation =
+    thisRequestObj?.requireReplayValidation === true;
+  const shouldValidateReplayOnly = thisRequestObj?.ignoreResponse === true &&
+    requireReplayValidation;
   if (
     !thisRequestObj ||
-    !thisResponseObj?.conditions?.subconditions ||
-    thisResponseObj.conditions.subconditions.length === 0
+    (!shouldValidateReplayOnly &&
+      (!thisResponseObj?.conditions?.subconditions ||
+        thisResponseObj.conditions.subconditions.length === 0))
   ) {
     console.warn(
       '[checkSDKTargetRequest] missing template slot or response.subconditions',
@@ -138,7 +143,7 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
 
   if (thisRequestUrlFoundFlag) return;
 
-  if (ignoreResponse) {
+  if (ignoreResponse && !requireReplayValidation) {
     const done = Object.entries(requestsMap).some(([rid, sInfo]) => {
       if (sInfo.templateRequestUrl === url && sInfo.headers) {
         storeInRequestsMap(rid, { isTarget: 1 });
@@ -162,10 +167,12 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
     if (requestsMap[matchRequestId]?.isTarget === 1) break;
     if (requestsMap[matchRequestId]?.isTarget === 2) continue;
 
-    const jsonPathArr = thisResponseObj.conditions.subconditions.map((i) => {
-      if (i?.op === 'MATCH_ONE') return i;
-      return isObject(i.field) && i.field?.field ? i.field.field : i.field;
-    });
+    const jsonPathArr = shouldValidateReplayOnly
+      ? []
+      : thisResponseObj.conditions.subconditions.map((i) => {
+          if (i?.op === 'MATCH_ONE') return i;
+          return isObject(i.field) && i.field?.field ? i.field.field : i.field;
+        });
 
     const baseRequestUrl = requestsMap[matchRequestId].url;
     const additionParamsObj = activeTemplate?.additionParamsObj || {};
@@ -239,6 +246,18 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
         storeInRequestsMap(matchRequestId, { isTarget: 2 });
         continue;
       }
+      if (shouldValidateReplayOnly) {
+        if (fetched) {
+          storeInRequestsMap(matchRequestId, {
+            isTarget: 1,
+            url: mergedUrl,
+            body: mergedBody,
+          });
+          break;
+        }
+        storeInRequestsMap(matchRequestId, { isTarget: 2 });
+        continue;
+      }
       if (matchRequestUrlResult) {
         isTargetUrl = validateHtmlResponseCondition(
           jsonPathArr,
@@ -271,6 +290,18 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
       if (
         !isFetchedResponseForRequest(urlForFetch, fetchedResponseUrl)
       ) {
+        storeInRequestsMap(matchRequestId, { isTarget: 2 });
+        continue;
+      }
+      if (shouldValidateReplayOnly) {
+        if (fetchedResponseUrl) {
+          storeInRequestsMap(matchRequestId, {
+            isTarget: 1,
+            url: effectiveRequestUrl,
+            body: mergedBody,
+          });
+          break;
+        }
         storeInRequestsMap(matchRequestId, { isTarget: 2 });
         continue;
       }

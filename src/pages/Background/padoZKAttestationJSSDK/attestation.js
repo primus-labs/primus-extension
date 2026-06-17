@@ -321,6 +321,7 @@ export async function handleStartAttestation(
               method,
               matchReqBodyKey,
               ignoreResponse,
+              requireReplayValidation,
               needCapture,
             },
           } = curr;
@@ -331,6 +332,7 @@ export async function handleStartAttestation(
             method,
             matchReqBodyKey,
             ignoreResponse,
+            requireReplayValidation,
             needCapture,
           });
           return prev;
