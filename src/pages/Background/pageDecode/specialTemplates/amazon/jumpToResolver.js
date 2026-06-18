@@ -1,6 +1,5 @@
 import { getPageDecodeState } from '../../state';
-import { rewriteUrlOrigin } from '../../urlOriginRewrite';
-import { getAmazonSiteByIP } from './geoResolver';
+import { resolveAmazonSite } from './geoResolver';
 import { shouldHandleAmazonTemplate } from './guard';
 
 export async function applyAmazonSiteJumpToIfNeeded(
@@ -9,11 +8,14 @@ export async function applyAmazonSiteJumpToIfNeeded(
 ) {
   if (!shouldHandleAmazonTemplate(activeTemplate)) return;
 
-  const amazonBase = await getAmazonSiteByIP(browserTabId);
-  getPageDecodeState().state.resolvedAmazonStorefrontBaseUrl = amazonBase;
+  const amazonSite = await resolveAmazonSite(
+    browserTabId,
+    activeTemplate?.additionParamsObj?.jumpToUrl
+  );
+  getPageDecodeState().state.resolvedAmazonStorefrontBaseUrl =
+    amazonSite.storefrontUrl;
 
-  const jumpTo = activeTemplate?.jumpTo;
-  if (typeof jumpTo !== 'string' || !jumpTo.trim()) return;
-
-  activeTemplate.jumpTo = rewriteUrlOrigin(jumpTo, amazonBase);
+  // New Amazon flow: discard the template/override path and query, then use
+  // the selected site's canonical cnep URL with its fixed assoc_handle.
+  activeTemplate.jumpTo = amazonSite.cnepUrl;
 }

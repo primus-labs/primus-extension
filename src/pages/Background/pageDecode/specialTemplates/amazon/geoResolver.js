@@ -1,5 +1,6 @@
-/* global AbortController, chrome */
+/* global AbortController, chrome, URL */
 import {
+  DEFAULT_AMAZON_CNEP_URL,
   AMAZON_GEO_FETCH_TIMEOUT_MS,
   AMAZON_STOREFRONT_BY_COUNTRY,
   CLOUDFLARE_TRACE_URLS,
@@ -36,6 +37,39 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = AMAZON_GEO_FETCH_
 function normalizeCountryCode(value) {
   const code = value?.toUpperCase?.() || String(value || '').toUpperCase();
   return /^[A-Z]{2}$/.test(code) ? code : null;
+}
+
+function normalizeHostname(value) {
+  return String(value || '').toLowerCase().replace(/^www\./, '');
+}
+
+export function getAmazonStorefrontConfig(countryCode) {
+  return (
+    AMAZON_STOREFRONT_BY_COUNTRY[countryCode] ||
+    AMAZON_STOREFRONT_BY_COUNTRY[DEFAULT_AMAZON_COUNTRY_CODE] || {
+      storefrontUrl: DEFAULT_AMAZON_STOREFRONT,
+      cnepUrl: DEFAULT_AMAZON_CNEP_URL,
+    }
+  );
+}
+
+export function resolveAmazonCountryCodeFromUrl(rawUrl) {
+  if (typeof rawUrl !== 'string' || !rawUrl.trim()) return null;
+  try {
+    const targetHostname = normalizeHostname(new URL(rawUrl).hostname);
+    for (const [countryCode, config] of Object.entries(
+      AMAZON_STOREFRONT_BY_COUNTRY
+    )) {
+      if (countryCode === DEFAULT_AMAZON_COUNTRY_CODE) continue;
+      const storefrontHostname = normalizeHostname(
+        new URL(config.storefrontUrl).hostname
+      );
+      if (targetHostname === storefrontHostname) return countryCode;
+    }
+  } catch (error) {
+    logAmazonGeo('warn', 'jump_to_url_parse_failed', { rawUrl, error });
+  }
+  return null;
 }
 
 function ipFromCloudflareTrace(text) {
@@ -189,16 +223,46 @@ async function resolveCountryCodeByProviders(tabId) {
 
 export async function getAmazonSiteByIP(tabId) {
   try {
-    const countryCode = await resolveCountryCodeByProviders(tabId);
-    const amazonUrl =
-      AMAZON_STOREFRONT_BY_COUNTRY[countryCode] || DEFAULT_AMAZON_STOREFRONT;
-    logAmazonGeo('info', 'storefront_selected', {
-      countryCode,
-      amazonUrl,
-    });
-    return amazonUrl;
+    const amazonSite = await resolveAmazonSite(tabId);
+    return amazonSite.storefrontUrl;
   } catch (error) {
     logAmazonGeo('error', 'storefront_resolution_failed', error);
     return DEFAULT_AMAZON_STOREFRONT;
+  }
+}
+
+export async function resolveAmazonSite(tabId, preferredJumpToUrl) {
+  try {
+    const preferredCountryCode =
+      resolveAmazonCountryCodeFromUrl(preferredJumpToUrl);
+    const countryCode =
+      preferredCountryCode || (await resolveCountryCodeByProviders(tabId));
+    const selectedCountryCode = AMAZON_STOREFRONT_BY_COUNTRY[countryCode]
+      ? countryCode
+      : DEFAULT_AMAZON_COUNTRY_CODE;
+    const { storefrontUrl, cnepUrl } =
+      getAmazonStorefrontConfig(selectedCountryCode);
+
+    logAmazonGeo('info', 'storefront_selected', {
+      countryCode: selectedCountryCode,
+      source: preferredCountryCode ? 'jumpToUrl' : 'ip',
+      storefrontUrl,
+      cnepUrl,
+    });
+    return {
+      countryCode: selectedCountryCode,
+      storefrontUrl,
+      cnepUrl,
+    };
+  } catch (error) {
+    logAmazonGeo('error', 'storefront_resolution_failed', error);
+    const { storefrontUrl, cnepUrl } = getAmazonStorefrontConfig(
+      DEFAULT_AMAZON_COUNTRY_CODE
+    );
+    return {
+      countryCode: DEFAULT_AMAZON_COUNTRY_CODE,
+      storefrontUrl,
+      cnepUrl,
+    };
   }
 }

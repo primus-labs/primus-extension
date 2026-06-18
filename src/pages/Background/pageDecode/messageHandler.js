@@ -19,7 +19,10 @@ import {
 import { safeStorageGet, safeStorageSet } from '@/utils/safeStorage';
 import { safeJsonParse } from '@/utils/utils';
 import { startKeepAlive } from '../utils/keepAlive.js';
-import { applyAmazonSiteJumpToIfNeeded } from './specialTemplates/amazon';
+import {
+  applyAmazonSiteJumpToIfNeeded,
+  isAmazonAccountManageTemplate,
+} from './specialTemplates/amazon';
 import { applyAdditionParamsJumpUrlToJumpTo } from './additionParamsJumpUrl';
 import { initJumpConfigState } from './jumpConfigRedirect';
 import { resolveNoteV2MapFromConfigParsed } from '@/utils/attestationProcessNoteV2';
@@ -183,7 +186,9 @@ export async function pageDecodeMsgListener(
         state.currExtentionId
       );
 
-      applyAdditionParamsJumpUrlToJumpTo(state.activeTemplate);
+      if (!isAmazonAccountManageTemplate(state.activeTemplate)) {
+        applyAdditionParamsJumpUrlToJumpTo(state.activeTemplate);
+      }
 
       initJumpConfigState(state.activeTemplate.jumpConfig ?? null);
 
