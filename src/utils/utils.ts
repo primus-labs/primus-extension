@@ -12,6 +12,17 @@ export function safeJsonParse<T = unknown>(str: string | undefined | null, fallb
   }
 }
 
+/** Normalize algorithm RPC payload for SDK event-report `errorData.data`. */
+export function parseAlgorithmReportData(raw: unknown): Record<string, unknown> {
+  if (!raw) return {};
+  if (typeof raw !== 'string') return raw as Record<string, unknown>;
+  try {
+    return JSON.parse(raw) as Record<string, unknown>;
+  } catch {
+    return { raw };
+  }
+}
+
 export function strToHex(str: string) {
   const value = Buffer.from(str, 'utf-8');
   const returnValue = ethereumjsUtil.bufferToHex(

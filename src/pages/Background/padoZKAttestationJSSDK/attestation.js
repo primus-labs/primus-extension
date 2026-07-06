@@ -14,7 +14,7 @@ import {
 import { getSdkState, getProcessAlgorithmReqRef } from './init.js';
 import { safeStorageGet, safeStorageSet } from '@/utils/safeStorage';
 import { sendMsgToTab } from '../utils/utils.js';
-import { safeJsonParse } from '@/utils/utils';
+import { safeJsonParse, parseAlgorithmReportData } from '@/utils/utils';
 import { stopKeepAlive } from '../utils/keepAlive.js';
 import { resolveNoteV2MapFromConfigParsed } from '@/utils/attestationProcessNoteV2';
 import { getAttestTipForCode } from '../algorithm/errorMap.js';
@@ -593,7 +593,7 @@ export async function handleGetAttestationResultTimeout(
     errorData: {
       desc: msgObj.desc,
       code,
-      data: attestationLogInQuery || JSON.stringify({}),
+      data: parseAlgorithmReportData(attestationLogInQuery),
     },
     reStartFlag: true,
   };

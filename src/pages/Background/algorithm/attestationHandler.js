@@ -14,7 +14,7 @@ import {
   SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
 } from '@/config/constants';
 import { safeStorageGet, safeStorageSet, safeStorageRemove } from '@/utils/safeStorage';
-import { safeJsonParse } from '@/utils/utils';
+import { safeJsonParse, parseAlgorithmReportData } from '@/utils/utils';
 import { stopKeepAlive } from '../utils/keepAlive.js';
 import {
   getNoteV2Extension,
@@ -116,7 +116,7 @@ export async function handleGetAttestation(
     resParams.errorData = {
       desc: msgObj.desc,
       code: retcode === '2' ? '00001' : '00000',
-      data: message.res,
+      data: parsed,
     };
   }
   console.log(
@@ -295,7 +295,11 @@ export async function handleGetAttestationResult(
       await clearSdkAttestationRuntimeState();
       const resParams = {
         result: false,
-        errorData: { desc: msgObj.desc, code: errorCode },
+        errorData: {
+          desc: msgObj.desc,
+          code: errorCode,
+          data: parsedRes,
+        },
       };
       await sendToSdk({
         type: 'padoZKAttestationJSSDK',
@@ -370,7 +374,7 @@ export async function handleGetAttestationResult(
       errorData: {
         desc: msgObj.desc,
         code: errorCodeOut,
-        data: message.res,
+        data: parsedRes,
         ...(errorDetailsOut ? { details: errorDetailsOut } : {}),
       },
       reStartFlag: true,
@@ -383,7 +387,7 @@ export async function handleGetAttestationResult(
   } else if (retcode === '1') {
     // In progress (offline/online RUNNING); polling continues.
     await safeStorageSet({
-      attestationLogInQuery: message.res,
+      attestationLogInQuery: JSON.stringify(parseAlgorithmReportData(message.res)),
     });
   }
 }
