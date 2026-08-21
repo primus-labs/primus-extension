@@ -94,7 +94,7 @@ export const algorithmMsgListener = async (
     }
     if (resMethodName === 'getAttestation') {
       const { retcode, isUserClick } = JSON.parse(message.res);
-      if (isUserClick === 'true') {
+      if (isUserClick === 'true' || padoZKAttestationJSSDKBeginAttest) {
         let msgObj = {};
         let result = false;
         if (retcode === '0') {
@@ -193,7 +193,7 @@ export const algorithmMsgListener = async (
       const { retcode, content, retdesc, details, isUserClick } = JSON.parse(
         message.res
       );
-      if (isUserClick === 'true') {
+      if (isUserClick === 'true' || padoZKAttestationJSSDKBeginAttest) {
         await chrome.storage.local.set({
           getAttestationResultRes: message.res,
         });
@@ -340,6 +340,7 @@ export const algorithmMsgListener = async (
               '-1200010': 'Invalid message.', // chatgpt input error
               '-1002001': 'Invalid App ID.',
               '-1002002': 'Invalid App Secret.',
+              '-1002003': 'Primus proof quota exhausted for this appId.',
             };
             const tipMapForPrimusNetworkSdk = {
               '-500': 'Unexpected attester node program failure.',

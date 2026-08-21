@@ -1,8 +1,30 @@
+const appendKaitoPadoTrace = (eventName, extra = {}) => {
+  try {
+    chrome.storage.local.get(['kaitoPadoMessageTrace']).then((storage) => {
+      const trace = Array.isArray(storage.kaitoPadoMessageTrace)
+        ? storage.kaitoPadoMessageTrace
+        : [];
+      trace.push({
+        at: Date.now(),
+        side: 'content',
+        event: eventName,
+        ...extra,
+      });
+      chrome.storage.local.set({
+        kaitoPadoMessageTrace: trace.slice(-80),
+      });
+    });
+  } catch {}
+};
+
 window.addEventListener('message', (e) => {
   const { target, name, params } = e.data;
-  if (target === 'padoExtension') {
+  if (target === 'padoExtension' || target === 'kaitoPadoExtension') {
     // console.log('333pado-content-sdk-listen-message', e.data);
     if (name === 'initAttestation') {
+      appendKaitoPadoTrace('page_to_content_initAttestation', {
+        hasSdkVersion: Boolean(params?.sdkVersion),
+      });
       chrome.runtime.sendMessage({
         type: 'padoZKAttestationJSSDK',
         name: 'initAttestation',
@@ -13,6 +35,11 @@ window.addEventListener('message', (e) => {
       });
     }
     if (name === 'startAttestation') {
+      appendKaitoPadoTrace('page_to_content_startAttestation', {
+        hasSdkVersion: Boolean(params?.sdkVersion),
+        hasAttRequest: Boolean(params?.attRequest),
+        hasKaitoTemplate: Boolean(params?.kaitoTemplate),
+      });
       chrome.runtime.sendMessage({
         type: 'padoZKAttestationJSSDK',
         name: 'startAttestation',
@@ -20,6 +47,7 @@ window.addEventListener('message', (e) => {
       });
     }
     if (name === 'getAttestationResult') {
+      appendKaitoPadoTrace('page_to_content_getAttestationResult');
       chrome.runtime.sendMessage({
         type: 'padoZKAttestationJSSDK',
         name: 'getAttestationResult',
@@ -27,6 +55,7 @@ window.addEventListener('message', (e) => {
       });
     }
     if (name === 'getAttestationResultTimeout') {
+      appendKaitoPadoTrace('page_to_content_getAttestationResultTimeout');
       chrome.runtime.sendMessage({
         type: 'padoZKAttestationJSSDK',
         name: 'getAttestationResultTimeout',
@@ -34,6 +63,7 @@ window.addEventListener('message', (e) => {
       });
     }
     if (name === 'checkIsInstalled') {
+      appendKaitoPadoTrace('page_to_content_checkIsInstalled');
       window.postMessage({
         target: 'padoZKAttestationJSSDK',
         origin: 'padoExtension',
@@ -80,6 +110,9 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   const { type, name, params } = message;
   if (type === 'padoZKAttestationJSSDK') {
     if (name === 'initAttestationRes') {
+      appendKaitoPadoTrace('content_to_page_initAttestationRes', {
+        result: params?.result === true,
+      });
       window.postMessage({
         target: 'padoZKAttestationJSSDK',
         origin: 'padoExtension',
@@ -90,6 +123,10 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     }
 
     if (name === 'getAttestationRes') {
+      appendKaitoPadoTrace('content_to_page_getAttestationRes', {
+        result: params?.result === true,
+        errorCode: params?.errorData?.code || null,
+      });
       console.log(
         'dappTab receive getAttestationRes msg',
         'time:',
@@ -107,6 +144,10 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     }
 
     if (name === 'startAttestationRes') {
+      appendKaitoPadoTrace('content_to_page_startAttestationRes', {
+        result: params?.result === true,
+        errorCode: params?.errorData?.code || null,
+      });
       console.log(
         'padoExtension-content-sdk-receive-startAttestationRes',
         'time:',

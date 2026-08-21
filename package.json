@@ -1,11 +1,16 @@
 {
   "name": "PADO",
   "version": "0.3.45",
-  "description": "PADO Browser Extension",
-  "license": "MIT",
+  "description": "Primus browser extension fork used by Kaito Pulse",
+  "license": "SEE LICENSE IN LICENSE",
+  "packageManager": "pnpm@9.10.0",
+  "engines": {
+    "node": "22.23.1",
+    "pnpm": "9.10.0"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/pado-labs/pado-extension.git"
+    "url": "https://github.com/OpenKaito/primus-extension-fork.git"
   },
   "scripts": {
     "build": "node utils/build.js",

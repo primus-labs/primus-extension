@@ -61,8 +61,14 @@ export async function customFetch2({ url, method, body, header, isFormData }) {
     finalOptions.body = encodeFormData(obj);
   }
 
-  try {
-    const response = await fetch(url, finalOptions);
+  // Try with cookies first (session-scoped endpoints need them). Public
+  // endpoints that reply Access-Control-Allow-Origin: * (e.g. Lighter) reject a
+  // credentialed cross-origin fetch in the browser, so retry without
+  // credentials on failure. This is the fetch that validates the target
+  // response for readiness (extraRequestFn2), so it MUST succeed for such
+  // endpoints or isTarget never becomes 1 and the attestation times out (00013).
+  const attempt = async (credentials) => {
+    const response = await fetch(url, { ...finalOptions, credentials });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -77,7 +83,18 @@ export async function customFetch2({ url, method, body, header, isFormData }) {
     } else {
       return await response.text();
     }
+  };
+  try {
+    return await attempt(finalOptions.credentials);
   } catch (error) {
+    if (finalOptions.credentials !== 'omit') {
+      try {
+        return await attempt('omit');
+      } catch (fallbackError) {
+        console.error('Fetch error:', url, fallbackError);
+        throw fallbackError;
+      }
+    }
     console.error('Fetch error:', url, error);
     throw error;
   }

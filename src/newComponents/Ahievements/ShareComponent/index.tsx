@@ -327,8 +327,6 @@ const ShareComponent: React.FC<PButtonProps> = memo(
                 color: '#6F6F6F',
               }}
               spin
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
             />
           }
         />

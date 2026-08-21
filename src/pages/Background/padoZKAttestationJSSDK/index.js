@@ -16,11 +16,29 @@ import {
 } from '../lumaMonadEvent/index.js';
 import { getErrorMsgTitleFn } from '../utils/handleError.js';
 import { addSDKParamsToReportParamsFn } from '../utils/reportEvent.js';
+import { padoExtensionVersion } from '@/config/constants';
 
 let hasGetTwitterScreenName = false;
 let sdkParams = {};
 let sdkVersion = '';
 let sdkName = '';
+const appendKaitoPadoTrace = async (eventName, extra = {}) => {
+  try {
+    const storage = await chrome.storage.local.get(['kaitoPadoMessageTrace']);
+    const trace = Array.isArray(storage.kaitoPadoMessageTrace)
+      ? storage.kaitoPadoMessageTrace
+      : [];
+    trace.push({
+      at: Date.now(),
+      side: 'vendor-background',
+      event: eventName,
+      ...extra,
+    });
+    await chrome.storage.local.set({
+      kaitoPadoMessageTrace: trace.slice(-80),
+    });
+  } catch {}
+};
 const fetchAttestationTemplateList = async () => {
   try {
     const fetchRes = await getProofTypes({
@@ -76,16 +94,60 @@ export const padoZKAttestationJSSDKMsgListener = async (
   const { name, params } = request;
 
   if (name === 'initAttestation') {
+    await appendKaitoPadoTrace('background_receive_initAttestation', {
+      tabId: sender.tab?.id || null,
+      hasSdkVersion: Boolean(params?.sdkVersion),
+    });
     console.log(
       'debuge-zktls-initAttestation',
       params?.sdkVersion,
       'dapptabTabId:',
       sender.tab.id
     );
-    await fetchAttestationTemplateList();
-    await fetchConfigure();
     sdkVersion = params?.sdkVersion;
     sdkName = params?.sdkName;
+
+    const dappTabId = await storeDappTabId(sender.tab.id);
+
+    if (sdkVersion) {
+      await chrome.storage.local.set({
+        padoZKAttestationJSSDKBeginAttest: sdkVersion || '1',
+      });
+
+      const { webProofTypes } = await chrome.storage.local.get(['webProofTypes']);
+      const attestationTypeIdList = (
+        webProofTypes ? JSON.parse(webProofTypes) : []
+      ).map((i) => ({
+        text: i.description,
+        value: i.id,
+      }));
+
+      chrome.tabs.sendMessage(dappTabId, {
+        type: 'padoZKAttestationJSSDK',
+        name: 'initAttestationRes',
+        params: {
+          result: true,
+          data: {
+            attestationTypeIdList,
+            padoExtensionVersion,
+          },
+        },
+      });
+      await appendKaitoPadoTrace('background_send_initAttestationRes', {
+        tabId: dappTabId,
+      });
+
+      fetchAttestationTemplateList();
+      fetchConfigure();
+      processAlgorithmReq({
+        reqMethodName: 'start',
+      });
+      console.log('333pado-bg-receive-initAttestation', dappTabId);
+      return;
+    }
+
+    await fetchAttestationTemplateList();
+    await fetchConfigure();
 
     const { configMap } = await chrome.storage.local.get(['configMap']);
     let sdkSupportHosts = [];
@@ -96,8 +158,6 @@ export const padoZKAttestationJSSDKMsgListener = async (
     ) {
       sdkSupportHosts = JSON.parse(JSON.parse(configMap).SDK_SUPPORT_HOST);
     }
-    const dappTabId = await storeDappTabId(sender.tab.id);
-
     if (!sdkVersion) {
       if (params.hostname === 'localhost') {
       } else if (!sdkSupportHosts.includes(params.hostname)) {
@@ -129,6 +189,12 @@ export const padoZKAttestationJSSDKMsgListener = async (
     console.log('333pado-bg-receive-initAttestation', dappTabId);
   }
   if (name === 'startAttestation') {
+    await appendKaitoPadoTrace('background_receive_startAttestation', {
+      tabId: sender.tab?.id || null,
+      hasSdkVersion: Boolean(params?.sdkVersion),
+      hasAttRequest: Boolean(params?.attRequest),
+      hasKaitoTemplate: Boolean(params?.kaitoTemplate),
+    });
     sdkVersion = params?.sdkVersion;
     sdkName = params?.sdkName;
     console.log(
@@ -153,6 +219,20 @@ export const padoZKAttestationJSSDKMsgListener = async (
       'padoZKAttestationJSSDKDappTabId',
     ]);
     if (lastActiveRequestAttestationStr) {
+      let staleActiveRequest = false;
+      try {
+        const lastActiveRequest = JSON.parse(lastActiveRequestAttestationStr);
+        const startedAt = Number(lastActiveRequest?.kaitoStartedAt || 0);
+        staleActiveRequest = !startedAt || Date.now() - startedAt > 2 * 60 * 1000;
+      } catch (error) {
+        staleActiveRequest = true;
+      }
+      if (staleActiveRequest) {
+        await chrome.storage.local.remove([
+          'activeRequestAttestation',
+          'padoZKAttestationJSSDKBeginAttest',
+        ]);
+      } else {
       await chrome.storage.local.remove(['padoZKAttestationJSSDKBeginAttest']);
       const desc =
         'An attestation process is currently being generated. Please try again later.';
@@ -170,6 +250,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
         params: resParams,
       });
       return;
+      }
     }
     let activeWebProofTemplate = {};
     let activeAttestationParams = {};
@@ -213,6 +294,21 @@ export const padoZKAttestationJSSDKMsgListener = async (
     const padoUrlKey = algorithmType === 'proxytls' ? 'zkPadoUrl' : 'padoUrl';
     let padoUrl = await getAlgoApi(padoUrlKey, algoApisParam);
     let proxyUrl = await getAlgoApi('proxyUrl', algoApisParam);
+    await chrome.storage.local.set({
+      kaitoAlgorithmUrlDebug: {
+        at: Date.now(),
+        algorithmType,
+        padoUrlKey,
+        padoUrl,
+        proxyUrl,
+        hasDynamicAlgoApis: Boolean(algoApisParam),
+      },
+    });
+    await appendKaitoPadoTrace('background_algo_urls_ready', {
+      hasPadoUrl: Boolean(padoUrl),
+      hasProxyUrl: Boolean(proxyUrl),
+      algorithmType,
+    });
 
     chrome.runtime.sendMessage({
       type: 'algorithm',
@@ -228,8 +324,17 @@ export const padoZKAttestationJSSDKMsgListener = async (
       walletAddress = userAddress;
 
       try {
-        const { rc, result } = await queryTemplateById(attTemplateID);
-        if (rc === 0 && result) {
+        const kaitoTemplate = params.kaitoTemplate;
+        const { rc, result } = kaitoTemplate
+          ? { rc: 0, result: kaitoTemplate }
+          : await queryTemplateById(attTemplateID);
+        const templateResult = result;
+        if (rc === 0 && templateResult) {
+          await appendKaitoPadoTrace('background_template_loaded', {
+            hasKaitoTemplate: Boolean(kaitoTemplate),
+            hasDataSourceTemplate: Boolean(templateResult?.dataSourceTemplate),
+            hasDataPageTemplate: Boolean(templateResult?.dataPageTemplate),
+          });
           const {
             id,
             name,
@@ -239,7 +344,7 @@ export const padoZKAttestationJSSDKMsgListener = async (
             dataPageTemplate,
             dataSourceTemplate,
             sslCipherSuite,
-          } = result;
+          } = templateResult;
 
           const dataSourceTemplateObj = JSON.parse(dataSourceTemplate);
           let jumpTo = JSON.parse(dataPageTemplate).baseUrl;
@@ -424,7 +529,8 @@ export const padoZKAttestationJSSDKMsgListener = async (
               params.attRequest?.attMode?.algorithmType || 'proxytls', // TODO-zktls
             sdkVersion,
             ext: {
-              appSignParameters: JSON.stringify(params.attRequest),
+              appSignParameters:
+                params.kaitoRawAttRequest || JSON.stringify(params.attRequest),
               appSignature,
               padoUrl,
               proxyUrl,
@@ -452,6 +558,9 @@ export const padoZKAttestationJSSDKMsgListener = async (
           });
         }
       } catch (e) {
+        await appendKaitoPadoTrace('background_sdk_template_error', {
+          message: e?.message || String(e),
+        });
         console.log('sdk template error:', e);
         const resParams = {
           result: false,
@@ -647,24 +756,36 @@ export const padoZKAttestationJSSDKMsgListener = async (
       ...activeAttestationParams,
       ...activeWebProofTemplate,
     };
-    pageDecodeMsgListener(
-      {
-        type: 'pageDecode',
-        name: 'init',
-        params: {
-          ...currRequestTemplate,
-          requestid,
+    try {
+      await pageDecodeMsgListener(
+        {
+          type: 'pageDecode',
+          name: 'init',
+          params: {
+            ...currRequestTemplate,
+            requestid,
+          },
+          // extensionTabId: currentWindowTabs[0]?.id,
+          operation: 'attest',
         },
-        // extensionTabId: currentWindowTabs[0]?.id,
-        operation: 'attest',
-      },
-      sender,
-      sendResponse,
-      USERPASSWORD,
-      fullscreenPort,
-      hasGetTwitterScreenName,
-      processAlgorithmReq
-    );
+        sender,
+        sendResponse,
+        USERPASSWORD,
+        fullscreenPort,
+        hasGetTwitterScreenName,
+        processAlgorithmReq
+      );
+      await appendKaitoPadoTrace('background_pageDecode_init_called', {
+        hasDataSource: Boolean(currRequestTemplate?.dataSource || currRequestTemplate?.dataSourceId),
+        hasDatasourceTemplate: Boolean(currRequestTemplate?.datasourceTemplate),
+        requestCount: currRequestTemplate?.datasourceTemplate?.requests?.length || 0,
+      });
+    } catch (e) {
+      await appendKaitoPadoTrace('background_pageDecode_init_error', {
+        message: e?.message || String(e),
+      });
+      throw e;
+    }
   }
 
   if (name === 'getAttestationResult') {

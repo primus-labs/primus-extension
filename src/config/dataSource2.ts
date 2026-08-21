@@ -15,7 +15,7 @@ import iconDataSourceYoutube from '@/assets/img/iconDataSourceYoutube.svg';
 import iconDataSourceZan from '@/assets/img/iconDataSourceZan.svg';
 import iconDataSourceOnChainAssets from '@/assets/img/iconDataSourceOnChainAssets.svg';
 import iconDataSourceGoogle from '@/assets/img/iconGoogle.svg';
-import iconDataSourceTikTok from '@/assets/img/iconDataSourceTikTok.png';
+import iconDataSourceTikTok from '@/assets/img/iconDataSourceTiktok.png';
 import iconDataSourceChatgpt from '@/assets/img/iconDataSourceChatgpt.svg';
 
 // import Binance from '@/services/webdata/webexchange/webbinance';

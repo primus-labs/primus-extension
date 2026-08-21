@@ -10,27 +10,33 @@ import store from '@/store';
 import type { UserState } from '@/types/store';
 type ENVTYPE = 'development' | 'test' | 'production';
 
-export const CURENV = process.env.NODE_ENV as ENVTYPE;
+const DEFAULT_ENV: ENVTYPE = 'development';
+const normalizeEnv = (value: string | undefined): ENVTYPE =>
+  value === 'development' || value === 'test' || value === 'production'
+    ? value
+    : DEFAULT_ENV;
+
+export const CURENV = normalizeEnv(process.env.NODE_ENV);
 // export const CURENV = 'development';
 // export const CURENV = 'production';
 console.log('222CURENV', CURENV, process.env);
 const PADOURLMAP = {
   development: 'wss://api-dev.padolabs.org/algorithm',
   test: '18.179.8.186:8888',
-  production: 'wss://api.padolabs.org/algorithm',
+  production: 'wss://api2.padolabs.org/algorithm',
 };
 export let PADOURL = PADOURLMAP[CURENV];
 
 const ZKPADOURLMAP = {
   development: 'wss://api-dev.padolabs.org/algorithm-proxy',
-  production: 'wss://api.padolabs.org/algorithm-proxy',
+  production: 'wss://api2.padolabs.org/algorithm-proxy',
 };
 export let ZKPADOURL = ZKPADOURLMAP[CURENV];
 
 const PROXYURLMAP = {
   development: 'wss://api-dev.padolabs.org/algoproxy',
   test: '18.179.8.186:9000',
-  production: 'wss://api.padolabs.org/algoproxy',
+  production: 'wss://api2.padolabs.org/algoproxy',
 };
 export let PROXYURL = PROXYURLMAP[CURENV];
 
@@ -774,9 +780,9 @@ export const getPadoUrl = async () => {
   if (algorithmUrl) {
     const algorithmUrlObj = JSON.parse(algorithmUrl);
     console.log('updateAlgoUrl getPadoUrl PADOURL=', algorithmUrlObj.padoUrl);
-    return algorithmUrlObj.padoUrl;
+    return algorithmUrlObj.padoUrl || PADOURL;
   } else {
-    return '';
+    return PADOURL;
   }
 };
 
@@ -785,9 +791,9 @@ export const getZkPadoUrl = async () => {
   if (algorithmUrl) {
     const algorithmUrlObj = JSON.parse(algorithmUrl);
     console.log('updateAlgoUrl getZkPadoUrl ZKPADOURL=', algorithmUrlObj.zkPadoUrl);
-    return algorithmUrlObj.zkPadoUrl;
+    return algorithmUrlObj.zkPadoUrl || ZKPADOURL;
   } else {
-    return '';
+    return ZKPADOURL;
   }
 };
 
@@ -800,9 +806,9 @@ export const getProxyUrl = async () => {
       'updateAlgoUrl getProxyUrl PROXYURL=',
       algorithmUrlObj.proxyUrl
     );
-    return algorithmUrlObj.proxyUrl;
+    return algorithmUrlObj.proxyUrl || PROXYURL;
   } else {
-    return '';
+    return PROXYURL;
   }
 };
 

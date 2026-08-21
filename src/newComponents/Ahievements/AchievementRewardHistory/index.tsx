@@ -110,8 +110,6 @@ const Nav: React.FC<PButtonProps> = memo(({ onClose }) => {
                       fontSize: 24,
                     }}
                     src={loading}
-                    onPointerEnterCapture={undefined}
-                    onPointerLeaveCapture={undefined}
                   ></LoadingOutlined>
                 </div>
               </div>
