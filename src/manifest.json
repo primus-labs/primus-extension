@@ -61,6 +61,8 @@
       "matches": [
         "http://app.primuslabs.xyz/*",
         "https://app.primuslabs.xyz/*",
+        "http://points.primuslabs.xyz/*",
+        "https://points.primuslabs.xyz/*",
         "http://pay.primuslabs.xyz/*",
         "https://pay.primuslabs.xyz/*",
         "https://luckydraw.primuslabs.xyz/*"
