@@ -11,11 +11,13 @@ import { fetchRequestData } from '../../utils';
 import { getPageDecodeState } from '../../state';
 import { eventListUrlForMonad } from '../lumaMonad';
 import {
+  getEntryApprovalStatusJsonPath,
+  isEntryApproved,
+} from '../lumaEntryUtils';
+import {
   buildPagedApprovedCalculations,
   TEMPLATE_ID_FOR_LUMA_PAGED_APPROVED,
 } from './constants';
-
-const APPROVED_VALUE = 'approved';
 
 function getLumaPagedApprovedHits() {
   return getPageDecodeState().getLumaPagedApprovedHits();
@@ -37,9 +39,7 @@ export function isLumaPagedApprovedTemplate(activeTemplate) {
 export function collectApprovedEntryIndexes(entries) {
   if (!Array.isArray(entries)) return [];
   return entries
-    .map((entry, idx) =>
-      entry?.role?.approval_status === APPROVED_VALUE ? idx : -1
-    )
+    .map((entry, idx) => (isEntryApproved(entry) ? idx : -1))
     .filter((idx) => idx >= 0);
 }
 
@@ -56,7 +56,7 @@ export function findLumaPagingDatasourceIndex(requests) {
 
 function buildPagedApprovedResponseSubconditions(pageHits, pageIdx) {
   const subs = [];
-  for (const { entryIdx } of pageHits.hits) {
+  for (const { entryIdx, approvalStatusJsonPath } of pageHits.hits) {
     const ridBase = `p${pageIdx}_e${entryIdx}`;
     subs.push({
       field: `$.entries[${entryIdx}].event.name`,
@@ -65,7 +65,7 @@ function buildPagedApprovedResponseSubconditions(pageHits, pageIdx) {
       reveal_id: `${ridBase}_eventName`,
     });
     subs.push({
-      field: `$.entries[${entryIdx}].role.approval_status`,
+      field: approvalStatusJsonPath,
       op: 'REVEAL_STRING',
       type: 'FIELD_REVEAL',
       reveal_id: `${ridBase}_approvalStatus`,
@@ -102,6 +102,10 @@ export async function resolvePagedApprovedHits(
       url: checkUrl,
       hits: approvedIndexes.map((entryIdx) => ({
         entryIdx,
+        approvalStatusJsonPath: getEntryApprovalStatusJsonPath(
+          entryIdx,
+          entries[entryIdx]
+        ),
       })),
     });
   }

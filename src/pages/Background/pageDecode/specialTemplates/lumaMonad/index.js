@@ -6,6 +6,11 @@ import { parseCookie } from '../../../utils/utils';
 import { fetchRequestData } from '../../utils';
 import { getPageDecodeState } from '../../state';
 import {
+  getEntryApprovalStatus,
+  getEntryApprovalStatusJsonPath,
+  isEntryApproved,
+} from '../lumaEntryUtils';
+import {
   MONAD_CALCULATIONS,
   TEMPLATE_ID_FOR_LUMA_MONAD,
 } from './constants';
@@ -40,9 +45,8 @@ function findApprovedMonadEventIndex(entries) {
   return entries.findIndex((entry) => {
     const lcEventName = entry?.event?.name?.toLowerCase?.() || '';
     return (
-      lcEventName.includes(MONAD_EVENT_NAME.toLowerCase()) 
-      &&
-      entry?.role?.approval_status === 'approved'
+      lcEventName.includes(MONAD_EVENT_NAME.toLowerCase()) &&
+      isEntryApproved(entry)
     );
   });
 }
@@ -56,8 +60,8 @@ function buildMonadEventFieldRecords(eventEntry, eventIdx, eventListUrl) {
     },
     approval_status: {
       key: 'approval_status',
-      value: eventEntry?.role?.approval_status,
-      jsonPath: `$.entries[${eventIdx}].role.approval_status`,
+      value: getEntryApprovalStatus(eventEntry),
+      jsonPath: getEntryApprovalStatusJsonPath(eventIdx, eventEntry),
     },
     eventListUrl: {
       key: 'eventListUrl',
