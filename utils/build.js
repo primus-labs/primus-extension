@@ -22,6 +22,7 @@ config.plugins = (config.plugins || []).concat(
   })
 );
 
-webpack(config, function (err) {
+webpack(config, function (err, stats) {
   if (err) throw err;
+  if (stats.hasErrors()) process.exitCode = 1;
 });
