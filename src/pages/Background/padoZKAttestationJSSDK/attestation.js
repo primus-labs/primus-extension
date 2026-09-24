@@ -38,6 +38,7 @@ import {
 } from './sessionStorage.js';
 import { createTabMessageSender } from '../utils/msgTransfer.js';
 import { cleanupPageDecodeWithoutCancel } from '../pageDecode/closeDataSourceTab.js';
+import { buildAggregateSubcondition } from './buildAggregateSubcondition.js';
 
 const ACTIVE_REQUEST_STALE_GRACE_MS = 60 * 1000;
 
@@ -376,38 +377,58 @@ export async function handleStartAttestation(
             ) {
               handleNoneComputeFn();
             } else if (subItemCondition) {
-              const { op, value, field, type } = subItemCondition;
-              subconditionItem.op = op;
-              if (
-                ['>', '>=', '=', '!=', '<', '<=', 'STREQ', 'STRNEQ','STRCASEEQ', 'STRCASENEQ'].includes(op)
-              ) {
-                subconditionItem.type = 'FIELD_RANGE';
-                subconditionItem.value = value;
-              } else if (['SHA256'].includes(op)) {
-                subconditionItem.type = 'FIELD_VALUE';
-                subconditionItem.reveal_id = key;
-              } else if (['SHA256_EX', 'REVEAL_HEX_STRING'].includes(op)) {
-                subconditionItem.type = 'FIELD_REVEAL';
-                subconditionItem.op = 'REVEAL_HEX_STRING';
-                subconditionItem.reveal_id = key;
-                subconditionItem.field = {
-                  type: 'FIELD_ARITHMETIC',
-                  op: 'SHA256',
-                  field: subconditionItem.field,
-                };
-              }  else if (['SHA256_WITH_SALT'].includes(op)) {
-                subconditionItem.type = 'FIELD_REVEAL';
-                subconditionItem.op = 'REVEAL_SALTTED_HASH';
-                subconditionItem.reveal_id = key;
-                subconditionItem.field = {
-                  type: 'FIELD_ARITHMETIC',
-                  op,
-                  field: subconditionItem.field,
-                };
-              } else if (op === 'REVEAL_STRING') {
-                handleREVEALFn();
-              } else if (op === 'MATCH_ONE') {
-                subconditionItem = { type, op, field, subconditions: value };
+              const hasAggregateOp =
+                subItemCondition.aggregateOp != null &&
+                subItemCondition.aggregateOp !== '';
+              if (hasAggregateOp) {
+                const built = buildAggregateSubcondition(
+                  subItemCondition,
+                  expression,
+                  key
+                );
+                if (built) {
+                  subconditionItem = built;
+                } else {
+                  console.log(
+                    '[attestation] invalid aggregateOp, fallback REVEAL_STRING',
+                    subItemCondition.aggregateOp
+                  );
+                  handleREVEALFn();
+                }
+              } else {
+                const { op, value, field, type } = subItemCondition;
+                subconditionItem.op = op;
+                if (
+                  ['>', '>=', '=', '!=', '<', '<=', 'STREQ', 'STRNEQ','STRCASEEQ', 'STRCASENEQ'].includes(op)
+                ) {
+                  subconditionItem.type = 'FIELD_RANGE';
+                  subconditionItem.value = value;
+                } else if (['SHA256'].includes(op)) {
+                  subconditionItem.type = 'FIELD_VALUE';
+                  subconditionItem.reveal_id = key;
+                } else if (['SHA256_EX', 'REVEAL_HEX_STRING'].includes(op)) {
+                  subconditionItem.type = 'FIELD_REVEAL';
+                  subconditionItem.op = 'REVEAL_HEX_STRING';
+                  subconditionItem.reveal_id = key;
+                  subconditionItem.field = {
+                    type: 'FIELD_ARITHMETIC',
+                    op: 'SHA256',
+                    field: subconditionItem.field,
+                  };
+                }  else if (['SHA256_WITH_SALT'].includes(op)) {
+                  subconditionItem.type = 'FIELD_REVEAL';
+                  subconditionItem.op = 'REVEAL_SALTTED_HASH';
+                  subconditionItem.reveal_id = key;
+                  subconditionItem.field = {
+                    type: 'FIELD_ARITHMETIC',
+                    op,
+                    field: subconditionItem.field,
+                  };
+                } else if (op === 'REVEAL_STRING') {
+                  handleREVEALFn();
+                } else if (op === 'MATCH_ONE') {
+                  subconditionItem = { type, op, field, subconditions: value };
+                }
               }
             } else {
               handleREVEALFn();

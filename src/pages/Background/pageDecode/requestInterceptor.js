@@ -43,6 +43,7 @@ import {
 import { getPageDecodeState, PAGE_DECODE_PHASES } from './state';
 import { formatAlgorithmParamsFn } from './templateMatcher';
 import { sendMsgToDataSourcePage } from './sdkBridge';
+import { resolveJsonPathForValidation } from '../padoZKAttestationJSSDK/buildAggregateSubcondition.js';
 import { trySendSecondRequestWithFirstHeaders } from './specialTemplates/specialTemplateSendSecondRequest';
 import {
   tryApplyJumpConfigFromResponse,
@@ -170,7 +171,10 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
     const jsonPathArr = shouldValidateReplayOnly
       ? []
       : thisResponseObj.conditions.subconditions.map((i) => {
-          if (i?.op === 'MATCH_ONE') return i;
+          const resolved = resolveJsonPathForValidation(i);
+          if (resolved != null) {
+            return resolved;
+          }
           return isObject(i.field) && i.field?.field ? i.field.field : i.field;
         });
 

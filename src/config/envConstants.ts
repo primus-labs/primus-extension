@@ -4,6 +4,7 @@ import { safeStorageGet } from '@/utils/safeStorage';
 type ENVTYPE = 'development' | 'test' | 'production';
 
 export const CURENV = process.env.NODE_ENV as ENVTYPE;
+// export const CURENV = 'production';
 
 const PADOURLMAP: Record<ENVTYPE, string> = {
   development: 'wss://api-dev.padolabs.org/algorithm',
