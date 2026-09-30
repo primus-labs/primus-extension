@@ -6,6 +6,7 @@ import {
   isObject,
   mergeBodyParams,
   mergeQueryParamsIntoUrl,
+  sanitizeRequestHeaders,
 } from '../utils/utils';
 import { assembleAlgorithmParamsForSDK } from '../exData';
 import { PADOSERVERURL } from '@/config/envConstants';
@@ -73,7 +74,7 @@ export async function formatAlgorithmParamsFn() {
     ) || null;
   })();
   const referenceHeaders = referenceRequestEntry?.headers
-    ? { ...referenceRequestEntry.headers }
+    ? sanitizeRequestHeaders({ ...referenceRequestEntry.headers })
     : {};
 
   const additionParamsObj = activeTemplate?.additionParamsObj || {};
@@ -150,7 +151,9 @@ export async function formatAlgorithmParamsFn() {
     );
 
     Object.assign(r, {
-      headers: { ...curRequestHeader },
+      headers: sanitizeRequestHeaders(
+        curRequestHeader ? { ...curRequestHeader } : {}
+      ),
       body: resolvedBody,
       url: resolvedUrl,
     });
@@ -170,6 +173,7 @@ export async function formatAlgorithmParamsFn() {
   const formatResponse = JSON.parse(JSON.stringify(responses));
   for (const fr of formatRequests) {
     if (fr.headers) {
+      fr.headers = sanitizeRequestHeaders(fr.headers);
       fr.headers['Accept-Encoding'] = 'identity';
     }
     if (typeof fr.url === 'string') {

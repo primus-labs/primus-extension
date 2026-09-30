@@ -3,6 +3,7 @@
  * Centralized state for the page decode / attestation flow.
  * Replaces module-level mutable variables for testability and clear lifecycle.
  */
+import { sanitizeRequestHeaders } from '../utils/utils';
 export const DEFAULT_PRE_ATTEST_PROMPT_V2 = [
   {
     text: ['Processing request...'],
@@ -179,6 +180,12 @@ export function createPageDecodeState() {
 
   function storeInRequestsMap(requestId, urlInfo) {
     const last = state.requestsMap[requestId] || {};
+    if (urlInfo?.headers != null) {
+      urlInfo = {
+        ...urlInfo,
+        headers: sanitizeRequestHeaders(urlInfo.headers),
+      };
+    }
     const urlInfoHeaders = urlInfo?.headers;
     if (
       urlInfoHeaders &&

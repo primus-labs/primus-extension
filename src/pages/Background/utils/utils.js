@@ -17,6 +17,25 @@ export function isObject(obj) {
   // return typeof obj === 'object' && obj !== null && !Array.isArray(obj);
 }
 
+/**
+ * Remove header keys whose values are null, undefined, or empty string.
+ * @param {Record<string, unknown> | null | undefined} headers
+ * @returns {Record<string, string>}
+ */
+export function sanitizeRequestHeaders(headers) {
+  if (!headers || typeof headers !== 'object' || Array.isArray(headers)) {
+    return {};
+  }
+  const sanitized = {};
+  for (const [key, value] of Object.entries(headers)) {
+    if (value === null || value === undefined || value === '') {
+      continue;
+    }
+    sanitized[key] = typeof value === 'string' ? value : String(value);
+  }
+  return sanitized;
+}
+
 export const parseCookie = (str) => {
   str = str || '';
   return str

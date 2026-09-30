@@ -8,6 +8,7 @@ import {
   isUrlWithQueryFn,
   mergeQueryParamsIntoUrl,
   mergeBodyParams,
+  sanitizeRequestHeaders,
 } from '../utils/utils';
 import {
   fetchRequestDataForTemplateValidation,
@@ -579,10 +580,12 @@ export function setupWebRequestListener() {
     const { url: currRequestUrl, requestHeaders, method, requestId } = details;
 
     let addQueryStr = '';
-    const formatHeader = requestHeaders.reduce((prev, curr) => {
-      prev[curr.name] = curr.value;
-      return prev;
-    }, {});
+    const formatHeader = sanitizeRequestHeaders(
+      requestHeaders.reduce((prev, curr) => {
+        prev[curr.name] = curr.value;
+        return prev;
+      }, {})
+    );
 
     let templateRequestUrl = '';
     const isTarget = requests.some((r) => {
