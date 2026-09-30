@@ -153,6 +153,14 @@ export const handleAttestationError = async (errorData, dataSourcePageTabId, opt
   }
 };
 
+/**
+ * Request-body field path (Primus algorithm convention), not JSONPath on response.
+ * Pre-attestation checks only replayed response JSON — skip these paths (treat as present).
+ */
+export function isRequestBodyValidationPath(path) {
+  return typeof path === 'string' && path.startsWith('^.');
+}
+
 /** Check if JSON response matches template conditions (JSONPath). */
 export const validateResponseCondition = (
   jsonPathArr,
@@ -161,11 +169,17 @@ export const validateResponseCondition = (
   const isMatch = jsonPathArr.every((jpItem) => {
     try {
       let hasField = false;
+      if (typeof jpItem === 'string' && isRequestBodyValidationPath(jpItem)) {
+        return true;
+      }
       if (jpItem?.op === 'MATCH_ONE') {
         const {
           field: fatherJsonPath,
           subconditions: [{ op, field: sonJsonpath }],
         } = jpItem;
+        if (isRequestBodyValidationPath(sonJsonpath)) {
+          return true;
+        }
         const firstJsonPath = fatherJsonPath?.split('[*]+')?.[0];
         const lastJsonpath = sonJsonpath.split('+')[1];
         let jsonpathQueryStr = '';
