@@ -38,7 +38,10 @@ import {
 } from './sessionStorage.js';
 import { createTabMessageSender } from '../utils/msgTransfer.js';
 import { cleanupPageDecodeWithoutCancel } from '../pageDecode/closeDataSourceTab.js';
-import { buildAggregateSubcondition } from './buildAggregateSubcondition.js';
+import {
+  buildAggregateSubcondition,
+  VALIDATION_JSON_PATH_KEY,
+} from './buildAggregateSubcondition.js';
 
 const ACTIVE_REQUEST_STALE_GRACE_MS = 60 * 1000;
 
@@ -345,9 +348,32 @@ export async function handleStartAttestation(
           const subconditions = responseTemplate.reduce((prevS, currS) => {
             const {
               resolver: { expression },
-              feilds: [{ key }],
+              feilds,
               plaintext,
             } = currS;
+            const feildsList = Array.isArray(feilds) ? feilds : [];
+            const defaultFeild = feildsList[0];
+            const subItemCondition = params.attRequest?.attConditions?.[
+              currIdx
+            ]?.find((i) => {
+              if (i.op === 'MATCH_ONE') {
+                return feildsList.some((f) => f.key === i.key);
+              }
+              return feildsList.some((f) => f.key === i.field);
+            });
+            const matchKey = subItemCondition
+              ? subItemCondition.op === 'MATCH_ONE'
+                ? subItemCondition.key
+                : subItemCondition.field
+              : undefined;
+            const feildEntry =
+              matchKey != null
+                ? feildsList.find((f) => f.key === matchKey) ?? defaultFeild
+                : defaultFeild;
+            const key = feildEntry?.key ?? defaultFeild?.key;
+            if (!key) {
+              return prevS;
+            }
             if (plaintext === 'true') {
               plaintext_outputs.push({
                 id: `${String(key)}_plain`,
@@ -355,12 +381,6 @@ export async function handleStartAttestation(
               });
             }
             let subconditionItem = { field: expression };
-            const subItemCondition = params.attRequest?.attConditions?.[currIdx]?.find(
-              (i) => {
-                if (i.op === 'MATCH_ONE') return i.key === key;
-                return i.field === key;
-              }
-            );
             const handleREVEALFn = () => {
               subconditionItem.op = 'REVEAL_STRING';
               subconditionItem.type = 'FIELD_REVEAL';
@@ -383,7 +403,7 @@ export async function handleStartAttestation(
               if (hasAggregateOp) {
                 const built = buildAggregateSubcondition(
                   subItemCondition,
-                  expression,
+                  { expression, feildEntry },
                   key
                 );
                 if (built) {
@@ -432,6 +452,16 @@ export async function handleStartAttestation(
               }
             } else {
               handleREVEALFn();
+            }
+            const hasTemplateAggregation = feildsList.some(
+              (f) => f?.aggregation && typeof f.aggregation === 'object'
+            );
+            if (
+              hasTemplateAggregation &&
+              typeof expression === 'string' &&
+              expression.trim()
+            ) {
+              subconditionItem[VALIDATION_JSON_PATH_KEY] = expression.trim();
             }
             prevS.push(subconditionItem);
             return prevS;

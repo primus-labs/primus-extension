@@ -9,6 +9,7 @@ import {
   sanitizeRequestHeaders,
 } from '../utils/utils';
 import { assembleAlgorithmParamsForSDK } from '../exData';
+import { stripValidationJsonPathFromResponses } from '../padoZKAttestationJSSDK/buildAggregateSubcondition.js';
 import { PADOSERVERURL } from '@/config/envConstants';
 import { padoExtensionVersion } from '@/config/constants';
 import { getPageDecodeState } from './state';
@@ -222,6 +223,8 @@ export async function formatAlgorithmParamsFn() {
       ...patchedReputationPhalaFormatParams.formatResponse
     );
   }
+
+  stripValidationJsonPathFromResponses(formatResponse);
 
   Object.assign(aligorithmParams, {
     reqType: 'web',
