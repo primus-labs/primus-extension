@@ -62,6 +62,7 @@ export function formatJsonArrFnForChannelSubscription(
   matchRequestUrlResult
 ) {
   let checkRes = false;
+  let negativeIndexResolutionFailed = false;
   changeChannelSubscriptionField('reset');
   const newJsonArr = JSON.parse(JSON.stringify(jsonArr));
   const curRequestParams = parseRequestBodyForMatch(requestMetaInfo);
@@ -91,7 +92,12 @@ export function formatJsonArrFnForChannelSubscription(
       newJsonArr[complexJsonpathIdx].field = newJsonArr[
         complexJsonpathIdx
       ].field.replace('$[0]', `$[${targetRequestParamItemIdx}]`);
-      const isMatch = validateResponseCondition(newJsonArr, matchRequestUrlResult);
+      const { isMatch, negativeIndexResolutionFailed: negIndexFailed } =
+        validateResponseCondition(newJsonArr, matchRequestUrlResult);
+      if (negIndexFailed) {
+        negativeIndexResolutionFailed = true;
+        break;
+      }
       if (isMatch) {
         checkRes = true;
         changeChannelSubscriptionField(
@@ -102,6 +108,9 @@ export function formatJsonArrFnForChannelSubscription(
         break;
       }
     }
+  }
+  if (negativeIndexResolutionFailed) {
+    return { checkRes: false, negativeIndexResolutionFailed: true };
   }
   return checkRes ? { checkRes, newJsonArr } : false;
 }

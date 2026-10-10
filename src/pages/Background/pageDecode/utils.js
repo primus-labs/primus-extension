@@ -161,14 +161,92 @@ export function isRequestBodyValidationPath(path) {
   return typeof path === 'string' && path.startsWith('^.');
 }
 
+/** Matches `[-1]` style indices, not slice syntax like `[-1:]`. */
+const NEGATIVE_ARRAY_INDEX_RE = /\[(-\d+)\](?!:)/;
+
+export const pathHasNegativeArrayIndex = (pathExpr) =>
+  typeof pathExpr === 'string' && NEGATIVE_ARRAY_INDEX_RE.test(pathExpr);
+
+export const resolveNegativeJsonPathIndices = (pathExpr, rootData) => {
+  if (typeof pathExpr !== 'string' || !pathHasNegativeArrayIndex(pathExpr)) {
+    return { ok: true, path: pathExpr };
+  }
+
+  let path = pathExpr;
+  let guard = 0;
+  const maxIterations = 50;
+
+  while (NEGATIVE_ARRAY_INDEX_RE.test(path)) {
+    if (guard >= maxIterations) {
+      return { ok: false, reason: 'OUT_OF_RANGE' };
+    }
+    guard += 1;
+
+    const match = path.match(NEGATIVE_ARRAY_INDEX_RE);
+    const negativeIndex = parseInt(match[1], 10);
+    const bracketStart = match.index;
+    const prefix = path.slice(0, bracketStart);
+    const suffix = path.slice(bracketStart + match[0].length);
+
+    let nodes;
+    try {
+      nodes = jp.query(rootData, prefix);
+    } catch {
+      return { ok: false, reason: 'PREFIX_NOT_FOUND' };
+    }
+
+    if (!nodes.length) {
+      return { ok: false, reason: 'PREFIX_NOT_FOUND' };
+    }
+
+    const target = nodes[0];
+    if (target == null) {
+      return { ok: false, reason: 'EMPTY_OR_NULL' };
+    }
+    if (!Array.isArray(target)) {
+      return { ok: false, reason: 'NOT_ARRAY' };
+    }
+    if (target.length === 0) {
+      return { ok: false, reason: 'EMPTY_ARRAY' };
+    }
+
+    const positiveIndex = target.length + negativeIndex;
+    if (positiveIndex < 0 || positiveIndex >= target.length) {
+      return { ok: false, reason: 'OUT_OF_RANGE' };
+    }
+
+    path = `${prefix}[${positiveIndex}]${suffix}`;
+  }
+
+  return { ok: true, path };
+};
+
+export const queryJsonPathWithNegativeIndices = (pathExpr, rootData) => {
+  const resolved = resolveNegativeJsonPathIndices(pathExpr, rootData);
+  if (!resolved.ok) {
+    return {
+      matched: false,
+      resolutionFailed: true,
+      reason: resolved.reason,
+    };
+  }
+  try {
+    const matched = jp.query(rootData, resolved.path).length > 0;
+    return { matched, resolutionFailed: false };
+  } catch {
+    return { matched: false, resolutionFailed: false };
+  }
+};
+
 /** Check if JSON response matches template conditions (JSONPath). */
 export const validateResponseCondition = (
   jsonPathArr,
   matchRequestUrlResult
 ) => {
+  let negativeIndexResolutionFailed = false;
+
   const isMatch = jsonPathArr.every((jpItem) => {
     try {
-      let hasField = false;
       if (typeof jpItem === 'string' && isRequestBodyValidationPath(jpItem)) {
         return true;
       }
@@ -182,34 +260,61 @@ export const validateResponseCondition = (
         }
         const firstJsonPath = fatherJsonPath?.split('[*]+')?.[0];
         const lastJsonpath = sonJsonpath.split('+')[1];
-        let jsonpathQueryStr = '';
 
-        if (['>', '>=', '=', '!=', '<', '<=', 'STREQ', 'STRNEQ', 'STRCASEEQ', 'STRCASENEQ'].includes(op)) {
-          // let formatOp = op;
-          // if (['=', 'STREQ'].includes(op)) {
-          //   formatOp = '==';
-          // }
-          // if (['STRNEQ'].includes(op)) {
-          //   formatOp = '!=';
-          // }
-          // const formatValue = ['STREQ', 'STRNEQ'].includes(op)
-          //   ? `"${value}"`
-          //   : value; // TODO
-          // jsonpathQueryStr = `${firstJsonPath}[?(@${lastJsonpath} ${formatOp} ${formatValue})]`;
-
-          jsonpathQueryStr = `${firstJsonPath}[0]${lastJsonpath}`;
-          hasField =
-            jp.query(matchRequestUrlResult, jsonpathQueryStr).length > 0;
+        if (
+          !['>', '>=', '=', '!=', '<', '<=', 'STREQ', 'STRNEQ', 'STRCASEEQ', 'STRCASENEQ'].includes(
+            op
+          )
+        ) {
+          return false;
         }
-      } else {
-        hasField = jp.query(matchRequestUrlResult, jpItem).length > 0;
+
+        const resolvedFather = resolveNegativeJsonPathIndices(
+          firstJsonPath,
+          matchRequestUrlResult
+        );
+        if (!resolvedFather.ok) {
+          negativeIndexResolutionFailed = true;
+          return false;
+        }
+
+        const jsonpathQueryStr = `${resolvedFather.path}[0]${lastJsonpath}`;
+        const queryRes = queryJsonPathWithNegativeIndices(
+          jsonpathQueryStr,
+          matchRequestUrlResult
+        );
+        if (queryRes.resolutionFailed) {
+          negativeIndexResolutionFailed = true;
+        }
+        return queryRes.matched;
       }
-      return hasField;
+
+      const pathExpr =
+        typeof jpItem === 'string'
+          ? jpItem
+          : jpItem?.field?.field ?? jpItem?.field;
+
+      if (typeof pathExpr !== 'string') {
+        return false;
+      }
+      if (isRequestBodyValidationPath(pathExpr)) {
+        return true;
+      }
+
+      const queryRes = queryJsonPathWithNegativeIndices(
+        pathExpr,
+        matchRequestUrlResult
+      );
+      if (queryRes.resolutionFailed) {
+        negativeIndexResolutionFailed = true;
+      }
+      return queryRes.matched;
     } catch {
       return false;
     }
   });
-  return isMatch;
+
+  return { isMatch, negativeIndexResolutionFailed };
 };
 export const validateXPathWithLibs = (html, xpath) => {
   try {

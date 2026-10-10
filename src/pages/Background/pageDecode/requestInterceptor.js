@@ -209,8 +209,20 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
 
     let matchRequestUrlResult;
     let isTargetUrl = false;
+    let negativeIndexCheckFailed = false;
     let fetchedContentType = '';
     let fetchedResponseUrl = '';
+
+    const rejectNegativeIndexCondition = async () => {
+      await handleAttestationError(
+        {
+          desc: 'Attestation condition not met.',
+          code: '00104',
+        },
+        state.dataSourcePageTabId,
+        {}
+      );
+    };
 
     let effectiveRequestUrl = mergedUrl;
     if (isReputationPhalaBinanceEarnBalanceTemplate(activeTemplate)) {
@@ -421,12 +433,23 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
           thisRequestObj.matchReqBodyKey,
           matchRequestUrlResult
         );
-        isTargetUrl = !!(formatRes && formatRes.checkRes);
-      } else {
-        isTargetUrl = validateResponseCondition(
+        if (formatRes?.negativeIndexResolutionFailed) {
+          negativeIndexCheckFailed = true;
+          await rejectNegativeIndexCondition();
+        } else {
+          isTargetUrl = !!(formatRes && formatRes.checkRes);
+        }
+      } else if (matchRequestUrlResult) {
+        const checkResult = validateResponseCondition(
           jsonPathArr,
           matchRequestUrlResult
         );
+        if (checkResult.negativeIndexResolutionFailed) {
+          negativeIndexCheckFailed = true;
+          await rejectNegativeIndexCondition();
+        } else {
+          isTargetUrl = checkResult.isMatch;
+        }
       }
       if (
         isTargetUrl &&
@@ -439,16 +462,28 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
           method: requestsMap[matchRequestId]?.method,
         });
       }
+      if (negativeIndexCheckFailed) {
+        break;
+      }
       if (isTargetUrl) {
-        storeInRequestsMap(matchRequestId, {
+        const targetPayload = {
           isTarget: 1,
           url: effectiveRequestUrl,
           body: mergedBody,
-        });
+        };
+        if (
+          matchRequestUrlResult &&
+          typeof matchRequestUrlResult === 'object'
+        ) {
+          targetPayload.responseData = matchRequestUrlResult;
+        }
+        storeInRequestsMap(matchRequestId, targetPayload);
         break;
       }
     }
-    storeInRequestsMap(matchRequestId, { isTarget: 2 });
+    if (!negativeIndexCheckFailed) {
+      storeInRequestsMap(matchRequestId, { isTarget: 2 });
+    }
   }
 }
 
