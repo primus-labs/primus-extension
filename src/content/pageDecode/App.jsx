@@ -17,6 +17,7 @@ import {
 import { CONTAINER_ID, EXTENSION_VERSION, STATUS, TIMING } from './constants';
 import { detectHostTheme } from './utils';
 import { shouldUseDarkModalForDataSourceUrl } from '@/pages/Background/pageDecode/specialTemplates/dataSourceDarkModalOrigins';
+import { shouldUseBottomRightModalForTemplate } from '@/pages/Background/pageDecode/specialTemplates/modalBottomRightTemplateIds';
 import { DEFAULT_PRE_ATTEST_PROMPT_V2 } from '@/pages/Background/pageDecode/state';
 
 const MODAL_CARD_WIDTH = 294;
@@ -158,6 +159,7 @@ function joinPreAttestPromotText(entry) {
 function PadoCard({ activeRequest }) {
   const dataSourceHref =
     typeof window !== 'undefined' ? window.location.href : '';
+  const useBottomRightModal = shouldUseBottomRightModalForTemplate(activeRequest);
 
   useLayoutEffect(() => {
     const root = document.getElementById(CONTAINER_ID);
@@ -352,7 +354,10 @@ function PadoCard({ activeRequest }) {
     <div className="pado-extension-shell">
       {/* Backdrop overlay disabled for now */}
       {/* <div className="pado-modal-backdrop" aria-hidden="true" /> */}
-      <div className="pado-extension-root" ref={rootRef}>
+      <div
+        className={`pado-extension-root${useBottomRightModal ? ' pado-extension-root--bottom-right' : ''}`}
+        ref={rootRef}
+      >
         <div
           ref={groupRef}
           className={groupClassName}

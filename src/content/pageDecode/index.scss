@@ -137,6 +137,12 @@
     box-sizing: border-box;
   }
 
+  .pado-extension-root--bottom-right {
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding: 24px;
+  }
+
   .pado-modal-group {
     position: relative;
     display: flex;
