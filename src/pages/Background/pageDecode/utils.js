@@ -154,11 +154,110 @@ export const handleAttestationError = async (errorData, dataSourcePageTabId, opt
 };
 
 /**
- * Request-body field path (Primus algorithm convention), not JSONPath on response.
- * Pre-attestation checks only replayed response JSON — skip these paths (treat as present).
+ * Request-body field path (Primus algorithm convention). Algorithm keeps `^.…` in params;
+ * extension pre-attestation validates against captured request body (`^.` → `$.` for jp.query).
  */
 export function isRequestBodyValidationPath(path) {
   return typeof path === 'string' && path.startsWith('^.');
+}
+
+export function requestBodyValidationPathToJsonPath(pathExpr) {
+  if (!isRequestBodyValidationPath(pathExpr)) {
+    return pathExpr;
+  }
+  return `$.${pathExpr.slice(2)}`;
+}
+
+/** Parse captured webRequest body for JSONPath validation. Non-JSON → null. */
+export function parseRequestBodyForJsonPathValidation(body) {
+  if (body == null) {
+    return null;
+  }
+  if (typeof body === 'string') {
+    try {
+      const parsed = JSON.parse(body);
+      if (parsed !== null && typeof parsed === 'object') {
+        return parsed;
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+  if (typeof body === 'object') {
+    if (body.formData != null) {
+      return null;
+    }
+    return body;
+  }
+  return null;
+}
+
+/** Query request body; failures (incl. negative index) do not trigger 00104. */
+export function queryJsonPathOnRequestBody(pathExpr, bodyRaw) {
+  if (!isRequestBodyValidationPath(pathExpr)) {
+    return { matched: false };
+  }
+  const root = parseRequestBodyForJsonPathValidation(bodyRaw);
+  if (root == null) {
+    return { matched: false };
+  }
+  const jsonPath = requestBodyValidationPathToJsonPath(pathExpr);
+  const queryRes = queryJsonPathWithNegativeIndices(jsonPath, root);
+  return { matched: !!queryRes.matched };
+}
+
+function extractPathExprFromJpItem(jpItem) {
+  if (typeof jpItem === 'string') {
+    return jpItem;
+  }
+  if (jpItem?.op === 'MATCH_ONE') {
+    return jpItem.subconditions?.[0]?.field;
+  }
+  const field = jpItem?.field;
+  if (typeof field === 'string') {
+    return field;
+  }
+  if (field?.field && typeof field.field === 'string') {
+    return field.field;
+  }
+  return null;
+}
+
+/** True if any condition path is validated against replayed response JSON. */
+export function conditionSetNeedsResponse(jsonPathArr) {
+  if (!Array.isArray(jsonPathArr) || jsonPathArr.length === 0) {
+    return false;
+  }
+  return jsonPathArr.some((jpItem) => {
+    if (jpItem?.op === 'MATCH_ONE') {
+      const son = jpItem.subconditions?.[0]?.field;
+      if (typeof son === 'string' && isRequestBodyValidationPath(son)) {
+        return false;
+      }
+      return true;
+    }
+    const pathExpr = extractPathExprFromJpItem(jpItem);
+    if (typeof pathExpr !== 'string') {
+      return true;
+    }
+    return !isRequestBodyValidationPath(pathExpr);
+  });
+}
+
+/** True if any condition path is validated against captured request body. */
+export function conditionSetNeedsRequestBody(jsonPathArr) {
+  if (!Array.isArray(jsonPathArr) || jsonPathArr.length === 0) {
+    return false;
+  }
+  return jsonPathArr.some((jpItem) => {
+    if (jpItem?.op === 'MATCH_ONE') {
+      const son = jpItem.subconditions?.[0]?.field;
+      return typeof son === 'string' && isRequestBodyValidationPath(son);
+    }
+    const pathExpr = extractPathExprFromJpItem(jpItem);
+    return typeof pathExpr === 'string' && isRequestBodyValidationPath(pathExpr);
+  });
 }
 
 /** Matches `[-1]` style indices, not slice syntax like `[-1:]`. */
@@ -238,17 +337,18 @@ export const queryJsonPathWithNegativeIndices = (pathExpr, rootData) => {
   }
 };
 
-/** Check if JSON response matches template conditions (JSONPath). */
+/** Check template conditions: `$.…` on response JSON, `^.…` on captured request body. */
 export const validateResponseCondition = (
   jsonPathArr,
-  matchRequestUrlResult
+  matchRequestUrlResult,
+  requestBodyRaw
 ) => {
   let negativeIndexResolutionFailed = false;
 
   const isMatch = jsonPathArr.every((jpItem) => {
     try {
       if (typeof jpItem === 'string' && isRequestBodyValidationPath(jpItem)) {
-        return true;
+        return queryJsonPathOnRequestBody(jpItem, requestBodyRaw).matched;
       }
       if (jpItem?.op === 'MATCH_ONE') {
         const {
@@ -256,7 +356,7 @@ export const validateResponseCondition = (
           subconditions: [{ op, field: sonJsonpath }],
         } = jpItem;
         if (isRequestBodyValidationPath(sonJsonpath)) {
-          return true;
+          return queryJsonPathOnRequestBody(sonJsonpath, requestBodyRaw).matched;
         }
         const firstJsonPath = fatherJsonPath?.split('[*]+')?.[0];
         const lastJsonpath = sonJsonpath.split('+')[1];
@@ -298,7 +398,7 @@ export const validateResponseCondition = (
         return false;
       }
       if (isRequestBodyValidationPath(pathExpr)) {
-        return true;
+        return queryJsonPathOnRequestBody(pathExpr, requestBodyRaw).matched;
       }
 
       const queryRes = queryJsonPathWithNegativeIndices(

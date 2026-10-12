@@ -93,7 +93,11 @@ export function formatJsonArrFnForChannelSubscription(
         complexJsonpathIdx
       ].field.replace('$[0]', `$[${targetRequestParamItemIdx}]`);
       const { isMatch, negativeIndexResolutionFailed: negIndexFailed } =
-        validateResponseCondition(newJsonArr, matchRequestUrlResult);
+        validateResponseCondition(
+          newJsonArr,
+          matchRequestUrlResult,
+          requestMetaInfo.body
+        );
       if (negIndexFailed) {
         negativeIndexResolutionFailed = true;
         break;

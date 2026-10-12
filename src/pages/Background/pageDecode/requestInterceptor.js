@@ -17,6 +17,8 @@ import {
   validateHtmlResponseCondition,
   handleAttestationError,
   shouldTreatFetchedBodyAsHtmlForValidation,
+  conditionSetNeedsResponse,
+  conditionSetNeedsRequestBody,
 } from './utils';
 import {
   eventListUrlForMonad,
@@ -439,16 +441,25 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
         } else {
           isTargetUrl = !!(formatRes && formatRes.checkRes);
         }
-      } else if (matchRequestUrlResult) {
-        const checkResult = validateResponseCondition(
-          jsonPathArr,
-          matchRequestUrlResult
-        );
-        if (checkResult.negativeIndexResolutionFailed) {
-          negativeIndexCheckFailed = true;
-          await rejectNegativeIndexCondition();
-        } else {
-          isTargetUrl = checkResult.isMatch;
+      } else {
+        const needsResponse = conditionSetNeedsResponse(jsonPathArr);
+        const needsBody = conditionSetNeedsRequestBody(jsonPathArr);
+        const canValidate =
+          jsonPathArr.length > 0 &&
+          (!needsResponse || matchRequestUrlResult != null) &&
+          (!needsBody || mergedBody != null);
+        if (canValidate) {
+          const checkResult = validateResponseCondition(
+            jsonPathArr,
+            matchRequestUrlResult,
+            mergedBody
+          );
+          if (checkResult.negativeIndexResolutionFailed) {
+            negativeIndexCheckFailed = true;
+            await rejectNegativeIndexCondition();
+          } else {
+            isTargetUrl = checkResult.isMatch;
+          }
         }
       }
       if (
