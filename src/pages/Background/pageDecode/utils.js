@@ -18,6 +18,14 @@ import {
 } from '../padoZKAttestationJSSDK/sessionStorage.js';
 import { createTabMessageSender } from '../utils/msgTransfer.js';
 import { getPageDecodeState } from './state';
+import {
+  evaluateFieldRangeAny,
+  isRangeOperator,
+} from './fieldRangeEvaluate';
+import {
+  VALIDATION_JSON_PATH_KEY,
+  resolveJsonPathForValidation,
+} from '../padoZKAttestationJSSDK/buildAggregateSubcondition.js';
 
 /** Fetch request data (JSON/object) for template matching. Re-sends captured request. */
 export const fetchRequestData = async (params) => {
@@ -193,18 +201,77 @@ export function parseRequestBodyForJsonPathValidation(body) {
   return null;
 }
 
-/** Query request body; failures (incl. negative index) do not trigger 00104. */
-export function queryJsonPathOnRequestBody(pathExpr, bodyRaw) {
+/** Query request body values; failures (incl. negative index) do not trigger 00104. */
+export function queryJsonPathValuesOnRequestBody(pathExpr, bodyRaw) {
   if (!isRequestBodyValidationPath(pathExpr)) {
-    return { matched: false };
+    return { matched: false, values: [] };
   }
   const root = parseRequestBodyForJsonPathValidation(bodyRaw);
   if (root == null) {
-    return { matched: false };
+    return { matched: false, values: [] };
   }
   const jsonPath = requestBodyValidationPathToJsonPath(pathExpr);
-  const queryRes = queryJsonPathWithNegativeIndices(jsonPath, root);
-  return { matched: !!queryRes.matched };
+  const resolved = resolveNegativeJsonPathIndices(jsonPath, root);
+  if (!resolved.ok) {
+    return { matched: false, values: [] };
+  }
+  try {
+    const values = jp.query(root, resolved.path);
+    return {
+      matched: values.length > 0,
+      values,
+    };
+  } catch {
+    return { matched: false, values: [] };
+  }
+}
+
+/** Query request body; failures (incl. negative index) do not trigger 00104. */
+export function queryJsonPathOnRequestBody(pathExpr, bodyRaw) {
+  const res = queryJsonPathValuesOnRequestBody(pathExpr, bodyRaw);
+  return { matched: !!res.matched };
+}
+
+/**
+ * @param {Record<string, unknown> | null | undefined} sub
+ * @returns {string | null}
+ */
+export function getRequestBodyValidationPathFromSubcondition(sub) {
+  if (sub == null || typeof sub !== 'object') {
+    return null;
+  }
+  const anchor = sub[VALIDATION_JSON_PATH_KEY];
+  if (typeof anchor === 'string' && anchor.trim()) {
+    const trimmed = anchor.trim();
+    if (isRequestBodyValidationPath(trimmed)) {
+      return trimmed;
+    }
+  }
+  const resolved = resolveJsonPathForValidation(sub);
+  if (typeof resolved === 'string' && isRequestBodyValidationPath(resolved)) {
+    return resolved;
+  }
+  if (typeof sub.field === 'string' && isRequestBodyValidationPath(sub.field)) {
+    return sub.field;
+  }
+  return null;
+}
+
+/**
+ * @param {unknown} jpItem
+ * @returns {boolean}
+ */
+export function isRequestBodyRangeSubcondition(jpItem) {
+  if (jpItem == null || typeof jpItem !== 'object') {
+    return false;
+  }
+  if (jpItem.op === 'MATCH_ONE') {
+    return false;
+  }
+  if (!isRangeOperator(jpItem.op)) {
+    return false;
+  }
+  return getRequestBodyValidationPathFromSubcondition(jpItem) != null;
 }
 
 function extractPathExprFromJpItem(jpItem) {
@@ -213,6 +280,12 @@ function extractPathExprFromJpItem(jpItem) {
   }
   if (jpItem?.op === 'MATCH_ONE') {
     return jpItem.subconditions?.[0]?.field;
+  }
+  if (jpItem && typeof jpItem === 'object') {
+    const anchor = jpItem[VALIDATION_JSON_PATH_KEY];
+    if (typeof anchor === 'string' && anchor.trim()) {
+      return anchor.trim();
+    }
   }
   const field = jpItem?.field;
   if (typeof field === 'string') {
@@ -347,6 +420,14 @@ export const validateResponseCondition = (
 
   const isMatch = jsonPathArr.every((jpItem) => {
     try {
+      if (isRequestBodyRangeSubcondition(jpItem)) {
+        const path = getRequestBodyValidationPathFromSubcondition(jpItem);
+        const { values } = queryJsonPathValuesOnRequestBody(
+          path,
+          requestBodyRaw
+        );
+        return evaluateFieldRangeAny(values, jpItem.op, jpItem.value);
+      }
       if (typeof jpItem === 'string' && isRequestBodyValidationPath(jpItem)) {
         return queryJsonPathOnRequestBody(jpItem, requestBodyRaw).matched;
       }
@@ -361,11 +442,7 @@ export const validateResponseCondition = (
         const firstJsonPath = fatherJsonPath?.split('[*]+')?.[0];
         const lastJsonpath = sonJsonpath.split('+')[1];
 
-        if (
-          !['>', '>=', '=', '!=', '<', '<=', 'STREQ', 'STRNEQ', 'STRCASEEQ', 'STRCASENEQ'].includes(
-            op
-          )
-        ) {
+        if (!isRangeOperator(op)) {
           return false;
         }
 
@@ -477,7 +554,11 @@ export const validateXPathWithLibs = (html, xpath) => {
 };
 /** Check if HTML response matches template conditions (XPath). */
 export const validateHtmlResponseCondition = (jsonPathArr, html) => {
-  const isMatch = jsonPathArr.every((jpItem) => {
+  const xpathItems = jsonPathArr.filter((jpItem) => typeof jpItem === 'string');
+  if (xpathItems.length === 0) {
+    return false;
+  }
+  const isMatch = xpathItems.every((jpItem) => {
     try {
       const itemMatch = validateXPathWithLibs(html, jpItem);
       return itemMatch && itemMatch.length > 0;

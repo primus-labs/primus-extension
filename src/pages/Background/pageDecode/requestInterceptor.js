@@ -19,6 +19,7 @@ import {
   shouldTreatFetchedBodyAsHtmlForValidation,
   conditionSetNeedsResponse,
   conditionSetNeedsRequestBody,
+  isRequestBodyRangeSubcondition,
 } from './utils';
 import {
   eventListUrlForMonad,
@@ -174,6 +175,9 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
     const jsonPathArr = shouldValidateReplayOnly
       ? []
       : thisResponseObj.conditions.subconditions.map((i) => {
+          if (isRequestBodyRangeSubcondition(i)) {
+            return i;
+          }
           const resolved = resolveJsonPathForValidation(i);
           if (resolved != null) {
             return resolved;

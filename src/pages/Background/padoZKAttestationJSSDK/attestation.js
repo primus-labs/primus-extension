@@ -40,6 +40,7 @@ import { createTabMessageSender } from '../utils/msgTransfer.js';
 import { cleanupPageDecodeWithoutCancel } from '../pageDecode/closeDataSourceTab.js';
 import {
   buildAggregateSubcondition,
+  RANGE_OPERATORS,
   VALIDATION_JSON_PATH_KEY,
 } from './buildAggregateSubcondition.js';
 
@@ -418,9 +419,7 @@ export async function handleStartAttestation(
               } else {
                 const { op, value, field, type } = subItemCondition;
                 subconditionItem.op = op;
-                if (
-                  ['>', '>=', '=', '!=', '<', '<=', 'STREQ', 'STRNEQ','STRCASEEQ', 'STRCASENEQ'].includes(op)
-                ) {
+                if (RANGE_OPERATORS.includes(op)) {
                   subconditionItem.type = 'FIELD_RANGE';
                   subconditionItem.value = value;
                 } else if (['SHA256'].includes(op)) {
