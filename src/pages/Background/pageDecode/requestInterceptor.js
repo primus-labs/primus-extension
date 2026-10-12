@@ -49,6 +49,7 @@ import { formatAlgorithmParamsFn } from './templateMatcher';
 import { sendMsgToDataSourcePage } from './sdkBridge';
 import { resolveJsonPathForValidation } from '../padoZKAttestationJSSDK/buildAggregateSubcondition.js';
 import { trySendSecondRequestWithFirstHeaders } from './specialTemplates/specialTemplateSendSecondRequest';
+import { getJsonPathEvaluationOptionsForTemplate } from './specialTemplates/pageDecodePnlHooks';
 import {
   tryApplyJumpConfigFromResponse,
   tryJumpConfigStandaloneIntercept,
@@ -93,6 +94,8 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
   const { state, storeInRequestsMap } = pageDecodeState;
   const { requestsMap } = state;
   const activeTemplate = state.activeTemplate;
+  const jsonPathEvaluationOptions =
+    getJsonPathEvaluationOptionsForTemplate(activeTemplate);
   const template = getActiveDatasourceTemplate(state, 'checkSDKTargetRequest');
   if (!template) return;
   const { requests, responses } = template;
@@ -456,7 +459,8 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
           const checkResult = validateResponseCondition(
             jsonPathArr,
             matchRequestUrlResult,
-            mergedBody
+            mergedBody,
+            jsonPathEvaluationOptions
           );
           if (checkResult.negativeIndexResolutionFailed) {
             negativeIndexCheckFailed = true;

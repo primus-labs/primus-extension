@@ -17,7 +17,10 @@ import {
 import { CONTAINER_ID, EXTENSION_VERSION, STATUS, TIMING } from './constants';
 import { detectHostTheme } from './utils';
 import { shouldUseDarkModalForDataSourceUrl } from '@/pages/Background/pageDecode/specialTemplates/dataSourceDarkModalOrigins';
-import { shouldUseBottomRightModalForTemplate } from '@/pages/Background/pageDecode/specialTemplates/modalBottomRightTemplateIds';
+import {
+  shouldUseDarkModalForTemplate,
+  shouldUseBottomRightModalForTemplate,
+} from '@/pages/Background/pageDecode/specialTemplates/pageDecodePnlHooks';
 import { DEFAULT_PRE_ATTEST_PROMPT_V2 } from '@/pages/Background/pageDecode/state';
 
 const MODAL_CARD_WIDTH = 294;
@@ -165,14 +168,15 @@ function PadoCard({ activeRequest }) {
     const root = document.getElementById(CONTAINER_ID);
     if (!root) return undefined;
     const shouldForceBlackModal =
-      shouldUseDarkModalForDataSourceUrl(dataSourceHref);
+      shouldUseDarkModalForDataSourceUrl(dataSourceHref) ||
+      shouldUseDarkModalForTemplate(activeRequest);
     const resolvedTheme = shouldForceBlackModal ? 'dark' : detectHostTheme();
     if (resolvedTheme === 'dark') {
       root.classList.add('pado-page-decode-theme--black');
     }
     else root.classList.remove('pado-page-decode-theme--black');
     return () => root.classList.remove('pado-page-decode-theme--black');
-  }, [dataSourceHref]);
+  }, [dataSourceHref, activeRequest]);
 
   const {
     status,

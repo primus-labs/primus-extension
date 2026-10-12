@@ -26,6 +26,7 @@ import {
   VALIDATION_JSON_PATH_KEY,
   resolveJsonPathForValidation,
 } from '../padoZKAttestationJSSDK/buildAggregateSubcondition.js';
+import { resolveJsonPathWithEmptyArrayTruncate } from './specialTemplates/emptyArrayJsonPathTruncate/truncateAtEmptyArray.js';
 
 /** Fetch request data (JSON/object) for template matching. Re-sends captured request. */
 export const fetchRequestData = async (params) => {
@@ -393,8 +394,17 @@ export const resolveNegativeJsonPathIndices = (pathExpr, rootData) => {
   return { ok: true, path };
 };
 
-export const queryJsonPathWithNegativeIndices = (pathExpr, rootData) => {
-  const resolved = resolveNegativeJsonPathIndices(pathExpr, rootData);
+/**
+ * @param {string} pathExpr
+ * @param {unknown} rootData
+ * @param {{ truncateAtEmptyArray?: boolean } | undefined} [options]
+ */
+export const queryJsonPathWithNegativeIndices = (pathExpr, rootData, options) => {
+  let pathForResolve = pathExpr;
+  if (options?.truncateAtEmptyArray && typeof pathExpr === 'string') {
+    pathForResolve = resolveJsonPathWithEmptyArrayTruncate(pathExpr, rootData);
+  }
+  const resolved = resolveNegativeJsonPathIndices(pathForResolve, rootData);
   if (!resolved.ok) {
     return {
       matched: false,
@@ -414,7 +424,8 @@ export const queryJsonPathWithNegativeIndices = (pathExpr, rootData) => {
 export const validateResponseCondition = (
   jsonPathArr,
   matchRequestUrlResult,
-  requestBodyRaw
+  requestBodyRaw,
+  jsonPathEvaluationOptions
 ) => {
   let negativeIndexResolutionFailed = false;
 
@@ -458,7 +469,8 @@ export const validateResponseCondition = (
         const jsonpathQueryStr = `${resolvedFather.path}[0]${lastJsonpath}`;
         const queryRes = queryJsonPathWithNegativeIndices(
           jsonpathQueryStr,
-          matchRequestUrlResult
+          matchRequestUrlResult,
+          jsonPathEvaluationOptions
         );
         if (queryRes.resolutionFailed) {
           negativeIndexResolutionFailed = true;
@@ -480,7 +492,8 @@ export const validateResponseCondition = (
 
       const queryRes = queryJsonPathWithNegativeIndices(
         pathExpr,
-        matchRequestUrlResult
+        matchRequestUrlResult,
+        jsonPathEvaluationOptions
       );
       if (queryRes.resolutionFailed) {
         negativeIndexResolutionFailed = true;

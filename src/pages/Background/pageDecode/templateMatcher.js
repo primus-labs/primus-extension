@@ -27,6 +27,7 @@ import {
 import { getPatchedFormatResponseForSpecialTemplateReputationPhalaBinanceEarnBalance } from './specialTemplates/specialTemplateReputationPhalaBinanceEarnBalance';
 import { tryPatchFormatResponseForSpecialTemplateChannelSubscription } from './specialTemplates/specialTemplateChannelSubscription';
 import { getPatchedFormatParamsForSpecialTemplateReputationPhala } from './specialTemplates/specialTemplateReputationPhala';
+import { tryPatchFormatResponseForEmptyArrayJsonPathTruncate } from './specialTemplates/pageDecodePnlHooks';
 
 export async function formatAlgorithmParamsFn() {
   const pageDecodeState = getPageDecodeState();
@@ -223,6 +224,12 @@ export async function formatAlgorithmParamsFn() {
       ...patchedReputationPhalaFormatParams.formatResponse
     );
   }
+
+  tryPatchFormatResponseForEmptyArrayJsonPathTruncate(
+    formatResponse,
+    activeTemplate,
+    requestsMap
+  );
 
   stripValidationJsonPathFromResponses(formatResponse);
 
