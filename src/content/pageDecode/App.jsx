@@ -249,65 +249,110 @@ function PadoCard({ activeRequest }) {
   // --- Drag / host-modal anchor ---
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [anchorPosition, setAnchorPosition] = useState(null);
-  const [isDragging, setIsDragging] = useState(false);
   const [hasDragged, setHasDragged] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const modalRef = useRef(null);
   const groupRef = useRef(null);
   const rootRef = useRef(null);
   const observedHostRef = useRef(null);
+  const isDraggingRef = useRef(false);
+  const dragStartRef = useRef({ x: 0, y: 0 });
 
-  const handleMouseDown = useCallback((e) => {
-    const group = groupRef.current;
+  const updateDragPosition = useCallback((clientX, clientY) => {
     const root = rootRef.current;
-    if (!group || !root) return;
+    const group = groupRef.current;
+    if (!root || !group) return;
     const rootRect = root.getBoundingClientRect();
-    const groupRect = group.getBoundingClientRect();
-    setIsDragging(true);
-    if (!hasDragged) {
-      setHasDragged(true);
-      setPosition({
-        x: groupRect.left - rootRect.left,
-        y: groupRect.top - rootRect.top,
-      });
+    const w = group.offsetWidth || MODAL_CARD_WIDTH;
+    const h = group.offsetHeight || 400;
+    const maxX = Math.max(0, rootRect.width - w);
+    const maxY = Math.max(0, rootRect.height - h);
+    const { x: offsetX, y: offsetY } = dragStartRef.current;
+    let x = clientX - rootRect.left - offsetX;
+    let y = clientY - rootRect.top - offsetY;
+    x = Math.min(Math.max(0, x), maxX);
+    y = Math.min(Math.max(0, y), maxY);
+    setPosition({ x, y });
+  }, []);
+
+  const endDrag = useCallback((pointerId) => {
+    if (!isDraggingRef.current) return;
+    isDraggingRef.current = false;
+    const modal = modalRef.current;
+    if (modal && pointerId != null) {
+      try {
+        if (modal.hasPointerCapture(pointerId)) {
+          modal.releasePointerCapture(pointerId);
+        }
+      } catch {
+        /* pointer already released */
+      }
     }
-    setDragStart({
-      x: e.clientX - groupRect.left,
-      y: e.clientY - groupRect.top,
-    });
-  }, [hasDragged]);
+  }, []);
 
-  useEffect(() => {
-    if (!isDragging) return;
+  const handleModalPointerDown = useCallback(
+    (e) => {
+      if (e.button !== 0) return;
+      e.stopPropagation();
+      e.preventDefault();
 
-    const handleMouseMove = (e) => {
-      const root = rootRef.current;
       const group = groupRef.current;
-      if (!root || !group) return;
+      const root = rootRef.current;
+      const modal = modalRef.current;
+      if (!group || !root || !modal) return;
+
       const rootRect = root.getBoundingClientRect();
-      const w = group.offsetWidth || MODAL_CARD_WIDTH;
-      const h = group.offsetHeight || 400;
-      const maxX = Math.max(0, rootRect.width - w);
-      const maxY = Math.max(0, rootRect.height - h);
-      let x = e.clientX - rootRect.left - dragStart.x;
-      let y = e.clientY - rootRect.top - dragStart.y;
-      x = Math.min(Math.max(0, x), maxX);
-      y = Math.min(Math.max(0, y), maxY);
-      setPosition({ x, y });
-    };
+      const groupRect = group.getBoundingClientRect();
 
-    const handleMouseUp = () => {
-      setIsDragging(false);
-    };
+      isDraggingRef.current = true;
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+      if (!hasDragged) {
+        setHasDragged(true);
+        setPosition({
+          x: groupRect.left - rootRect.left,
+          y: groupRect.top - rootRect.top,
+        });
+      }
 
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDragging, dragStart]);
+      const start = {
+        x: e.clientX - groupRect.left,
+        y: e.clientY - groupRect.top,
+      };
+      dragStartRef.current = start;
+
+      try {
+        modal.setPointerCapture(e.pointerId);
+      } catch {
+        /* ignore */
+      }
+    },
+    [hasDragged]
+  );
+
+  const handleModalPointerMove = useCallback((e) => {
+    if (!isDraggingRef.current) return;
+    e.stopPropagation();
+    updateDragPosition(e.clientX, e.clientY);
+  }, [updateDragPosition]);
+
+  const handleModalPointerUp = useCallback(
+    (e) => {
+      e.stopPropagation();
+      endDrag(e.pointerId);
+    },
+    [endDrag]
+  );
+
+  const handleModalPointerCancel = useCallback(
+    (e) => {
+      e.stopPropagation();
+      endDrag(e.pointerId);
+    },
+    [endDrag]
+  );
+
+  const handleModalClick = useCallback((e) => {
+    e.stopPropagation();
+  }, []);
 
   const isLoading = [
     STATUS.UNINITIALIZED,
@@ -477,7 +522,11 @@ function PadoCard({ activeRequest }) {
           <div
             ref={modalRef}
             className="pado-modal-card"
-            onMouseDown={handleMouseDown}
+            onPointerDown={handleModalPointerDown}
+            onPointerMove={handleModalPointerMove}
+            onPointerUp={handleModalPointerUp}
+            onPointerCancel={handleModalPointerCancel}
+            onClick={handleModalClick}
           >
             <div className="modal-drag-handle">
               <div className="handle-dots">
