@@ -18,14 +18,14 @@ export const hooks = {
   pageDecodeModal: {
     darkTheme: false,
     placement: 'center',
-    hostModalAnchor: {
-      gap: 16,
-      selectors: [
-        '[role="dialog"][data-state="open"][data-slot="modal-content"]',
-        '[role="dialog"][data-state="open"]',
-      ],
-      matchText: ['欢迎来到 Polymarket', 'Welcome to Polymarket'],
-    },
+    // hostModalAnchor: {
+    //   gap: 16,
+    //   selectors: [
+    //     '[role="dialog"][data-state="open"][data-slot="modal-content"]',
+    //     '[role="dialog"][data-state="open"]',
+    //   ],
+    //   matchText: ['欢迎来到 Polymarket', 'Welcome to Polymarket'],
+    // },
   },
   jsonPath: { truncateAtEmptyArray: true },
 };
