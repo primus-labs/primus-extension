@@ -1,5 +1,5 @@
 import { VALIDATION_JSON_PATH_KEY } from '../../../padoZKAttestationJSSDK/buildAggregateSubcondition.js';
-import { resolveJsonPathWithEmptyArrayTruncate } from './truncateAtEmptyArray.js';
+import { truncateJsonPathAtEmptyArray } from './truncateAtEmptyArray.js';
 
 /**
  * @param {string} pathExpr
@@ -22,7 +22,8 @@ function patchPath(pathExpr, rootData) {
   if (!isResponseJsonPathString(pathExpr)) {
     return pathExpr;
   }
-  return resolveJsonPathWithEmptyArrayTruncate(pathExpr, rootData);
+  const { path, truncated } = truncateJsonPathAtEmptyArray(pathExpr, rootData);
+  return truncated ? path : pathExpr;
 }
 
 /**
@@ -117,35 +118,87 @@ function patchSubcondition(sub, rootData) {
 }
 
 /**
- * Patch algorithm response subconditions so JSONPaths end at the last reachable node
- * when the next array index would hit an empty array.
- *
- * @param {unknown[]} formatResponse
- * @param {unknown} responseRoot Parsed JSON response for the target request
+ * @param {unknown} resp
+ * @param {unknown} responseRoot
  */
-export function patchFormatResponseJsonPathsForEmptyArrayTruncate(
-  formatResponse,
-  responseRoot
-) {
-  if (!Array.isArray(formatResponse) || responseRoot == null) {
+function patchOneFormatResponseEntry(resp, responseRoot) {
+  if (responseRoot == null || resp == null) {
     return;
   }
-  for (const resp of formatResponse) {
-    const subs = resp?.conditions?.subconditions;
-    if (!Array.isArray(subs)) {
-      continue;
-    }
+  const subs = resp?.conditions?.subconditions;
+  if (Array.isArray(subs)) {
     for (const sub of subs) {
       patchSubcondition(sub, responseRoot);
     }
-    const plaintextOutputs = resp?.plaintext_outputs;
-    if (Array.isArray(plaintextOutputs)) {
-      for (const out of plaintextOutputs) {
-        if (typeof out?.field === 'string') {
-          out.field = patchPath(out.field, responseRoot);
-        }
+  }
+  const plaintextOutputs = resp?.plaintext_outputs;
+  if (Array.isArray(plaintextOutputs)) {
+    for (const out of plaintextOutputs) {
+      if (typeof out?.field === 'string') {
+        out.field = patchPath(out.field, responseRoot);
       }
     }
+  }
+}
+
+/**
+ * Replay body for a datasource template request row (same slot as responses[i]).
+ *
+ * @param {Record<string, unknown>} requestsMap
+ * @param {string | undefined} templateRequestUrl
+ * @returns {unknown | null}
+ */
+export function getResponseDataForTemplateRequestUrl(
+  requestsMap,
+  templateRequestUrl
+) {
+  if (
+    !requestsMap ||
+    typeof requestsMap !== 'object' ||
+    typeof templateRequestUrl !== 'string' ||
+    !templateRequestUrl
+  ) {
+    return null;
+  }
+  const entry = Object.values(requestsMap).find(
+    (s) =>
+      s?.templateRequestUrl === templateRequestUrl &&
+      s?.isTarget === 1 &&
+      s?.responseData != null
+  );
+  return entry?.responseData ?? null;
+}
+
+/**
+ * Patch algorithm response subconditions so JSONPaths end at the last reachable node
+ * when the next array index would hit an empty array.
+ *
+ * Each formatResponse[i] uses the replay JSON for datasource requests[i] when available.
+ *
+ * @param {unknown[]} formatResponse
+ * @param {Record<string, unknown>} requestsMap
+ * @param {Array<{ url?: string }> | undefined} templateRequests
+ */
+export function patchFormatResponseJsonPathsForEmptyArrayTruncate(
+  formatResponse,
+  requestsMap,
+  templateRequests
+) {
+  if (!Array.isArray(formatResponse)) {
+    return;
+  }
+  for (let i = 0; i < formatResponse.length; i += 1) {
+    const templateUrl = Array.isArray(templateRequests)
+      ? templateRequests[i]?.url
+      : undefined;
+    const responseRoot = getResponseDataForTemplateRequestUrl(
+      requestsMap,
+      templateUrl
+    );
+    if (responseRoot == null) {
+      continue;
+    }
+    patchOneFormatResponseEntry(formatResponse[i], responseRoot);
   }
 }
 

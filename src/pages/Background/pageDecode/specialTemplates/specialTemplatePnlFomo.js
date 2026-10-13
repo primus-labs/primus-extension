@@ -12,6 +12,6 @@ export function matches(activeTemplate) {
 }
 
 export const hooks = {
-  pageDecodeModal: { darkTheme: true, bottomRight: false },
+  pageDecodeModal: { darkTheme: true, placement: 'center' },
   jsonPath: { truncateAtEmptyArray: false },
 };

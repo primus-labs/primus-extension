@@ -400,11 +400,20 @@ export const resolveNegativeJsonPathIndices = (pathExpr, rootData) => {
  * @param {{ truncateAtEmptyArray?: boolean } | undefined} [options]
  */
 export const queryJsonPathWithNegativeIndices = (pathExpr, rootData, options) => {
-  let pathForResolve = pathExpr;
-  if (options?.truncateAtEmptyArray && typeof pathExpr === 'string') {
-    pathForResolve = resolveJsonPathWithEmptyArrayTruncate(pathExpr, rootData);
+  let pathForTruncate = pathExpr;
+  if (typeof pathExpr === 'string') {
+    const resolvedForTruncate = resolveNegativeJsonPathIndices(pathExpr, rootData);
+    if (resolvedForTruncate.ok) {
+      pathForTruncate = resolvedForTruncate.path;
+    }
   }
-  const resolved = resolveNegativeJsonPathIndices(pathForResolve, rootData);
+  if (options?.truncateAtEmptyArray && typeof pathForTruncate === 'string') {
+    pathForTruncate = resolveJsonPathWithEmptyArrayTruncate(
+      pathForTruncate,
+      rootData
+    );
+  }
+  const resolved = resolveNegativeJsonPathIndices(pathForTruncate, rootData);
   if (!resolved.ok) {
     return {
       matched: false,

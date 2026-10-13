@@ -143,6 +143,20 @@
     padding: 24px;
   }
 
+  .pado-extension-root--center-right {
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 16px;
+    padding-left: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .pado-extension-root--host-anchor {
+    align-items: center;
+    justify-content: center;
+  }
+
   .pado-modal-group {
     position: relative;
     display: flex;
@@ -152,7 +166,8 @@
     z-index: 2;
   }
 
-  .pado-modal-group--dragging {
+  .pado-modal-group--dragging,
+  .pado-modal-group--anchored {
     position: absolute;
     margin: 0;
     align-items: center;

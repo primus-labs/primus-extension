@@ -1,7 +1,7 @@
 import jp from 'jsonpath';
 
 /**
- * @typedef {{ type: 'index', index: number } | { type: 'prop', name: string }} JsonPathStep
+ * @typedef {{ type: 'index', index: number, raw: string } | { type: 'prop', name: string }} JsonPathStep
  */
 
 /**
@@ -28,7 +28,7 @@ export function parseJsonPathStepsAfterRoot(pathExpr) {
       if (!m) {
         return null;
       }
-      steps.push({ type: 'index', index: parseInt(m[1], 10) });
+      steps.push({ type: 'index', index: parseInt(m[1], 10), raw: m[1] });
       i += m[0].length;
     } else {
       return null;
@@ -56,22 +56,26 @@ export function truncateJsonPathAtEmptyArray(pathExpr, rootData) {
     return { path: trimmed, truncated: false };
   }
 
-  let currentPath = '$';
+  /** @type {string} Query path with positive indices only (for jp.query). */
+  let queryPath = '$';
+  /** @type {string} Path preserving configured bracket notation (e.g. [-1]). */
+  let originalPath = '$';
 
   for (const step of steps) {
     if (step.type === 'prop') {
-      currentPath += `.${step.name}`;
+      queryPath += `.${step.name}`;
+      originalPath += `.${step.name}`;
       continue;
     }
 
     let nodes;
     try {
-      nodes = jp.query(rootData, currentPath);
+      nodes = jp.query(rootData, queryPath);
     } catch {
-      return { path: currentPath, truncated: true };
+      return { path: originalPath, truncated: true };
     }
     if (!nodes.length) {
-      return { path: currentPath, truncated: true };
+      return { path: originalPath, truncated: true };
     }
 
     const container = nodes[0];
@@ -79,7 +83,7 @@ export function truncateJsonPathAtEmptyArray(pathExpr, rootData) {
       return { path: trimmed, truncated: false };
     }
     if (container.length === 0) {
-      return { path: currentPath, truncated: true };
+      return { path: originalPath, truncated: true };
     }
 
     let idx = step.index;
@@ -87,10 +91,11 @@ export function truncateJsonPathAtEmptyArray(pathExpr, rootData) {
       idx = container.length + idx;
     }
     if (idx < 0 || idx >= container.length) {
-      return { path: currentPath, truncated: true };
+      return { path: originalPath, truncated: true };
     }
 
-    currentPath += `[${step.index}]`;
+    queryPath += `[${idx}]`;
+    originalPath += `[${step.raw}]`;
   }
 
   return { path: trimmed, truncated: false };

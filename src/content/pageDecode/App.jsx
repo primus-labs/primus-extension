@@ -18,9 +18,14 @@ import { CONTAINER_ID, EXTENSION_VERSION, STATUS, TIMING } from './constants';
 import { detectHostTheme } from './utils';
 import { shouldUseDarkModalForDataSourceUrl } from '@/pages/Background/pageDecode/specialTemplates/dataSourceDarkModalOrigins';
 import {
+  getPageDecodeModalPlacement,
+  getPageDecodeHostModalAnchor,
   shouldUseDarkModalForTemplate,
-  shouldUseBottomRightModalForTemplate,
 } from '@/pages/Background/pageDecode/specialTemplates/pageDecodePnlHooks';
+import {
+  findHostModalElement,
+  computePositionBesideHostModal,
+} from './hostModalAnchor';
 import { DEFAULT_PRE_ATTEST_PROMPT_V2 } from '@/pages/Background/pageDecode/state';
 
 const MODAL_CARD_WIDTH = 294;
@@ -162,7 +167,17 @@ function joinPreAttestPromotText(entry) {
 function PadoCard({ activeRequest }) {
   const dataSourceHref =
     typeof window !== 'undefined' ? window.location.href : '';
-  const useBottomRightModal = shouldUseBottomRightModalForTemplate(activeRequest);
+  const modalPlacement = getPageDecodeModalPlacement(activeRequest);
+  const hostModalAnchor = getPageDecodeHostModalAnchor(activeRequest);
+  const useHostModalAnchor = Boolean(hostModalAnchor);
+  const rootPlacementClass =
+    modalPlacement === 'bottomRight'
+      ? ' pado-extension-root--bottom-right'
+      : modalPlacement === 'centerRight'
+        ? ' pado-extension-root--center-right'
+        : useHostModalAnchor
+          ? ' pado-extension-root--host-anchor'
+          : '';
 
   useLayoutEffect(() => {
     const root = document.getElementById(CONTAINER_ID);
@@ -231,14 +246,16 @@ function PadoCard({ activeRequest }) {
     activeRequest?.pageDecodePhase
   );
 
-  // --- Drag logic ---
+  // --- Drag / host-modal anchor ---
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [anchorPosition, setAnchorPosition] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [hasDragged, setHasDragged] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const modalRef = useRef(null);
   const groupRef = useRef(null);
   const rootRef = useRef(null);
+  const observedHostRef = useRef(null);
 
   const handleMouseDown = useCallback((e) => {
     const group = groupRef.current;
@@ -349,17 +366,101 @@ function PadoCard({ activeRequest }) {
       : `Redirecting in ${countdown}s`;
   }
 
-  const groupClassName = `pado-modal-group${hasDragged ? ' pado-modal-group--dragging' : ''}`;
+  useLayoutEffect(() => {
+    if (!useHostModalAnchor || hasDragged) {
+      if (!useHostModalAnchor) setAnchorPosition(null);
+      return undefined;
+    }
+
+    const updateAnchorPosition = () => {
+      const root = rootRef.current;
+      const group = groupRef.current;
+      if (!root || !group) return;
+
+      const host = findHostModalElement(hostModalAnchor, CONTAINER_ID);
+      if (!host) {
+        setAnchorPosition(null);
+        observedHostRef.current = null;
+        return;
+      }
+
+      if (host !== observedHostRef.current) {
+        observedHostRef.current = host;
+        resizeObserver.observe(host);
+      }
+
+      const next = computePositionBesideHostModal({
+        root,
+        group,
+        host,
+        gap: hostModalAnchor?.gap ?? 16,
+        cardWidth: MODAL_CARD_WIDTH,
+      });
+      setAnchorPosition(next);
+    };
+
+    const resizeObserver = new ResizeObserver(updateAnchorPosition);
+    resizeObserver.observe(document.documentElement);
+
+    const mutationObserver = new MutationObserver(updateAnchorPosition);
+    mutationObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['data-state', 'class', 'style'],
+    });
+
+    window.addEventListener('resize', updateAnchorPosition);
+
+    updateAnchorPosition();
+
+    let pollId = null;
+    let pollAttempts = 0;
+    const pollForHost = () => {
+      if (pollAttempts >= 20) return;
+      pollAttempts += 1;
+      updateAnchorPosition();
+      if (!findHostModalElement(hostModalAnchor, CONTAINER_ID)) {
+        pollId = window.setTimeout(pollForHost, 100);
+      }
+    };
+    pollForHost();
+
+    return () => {
+      resizeObserver.disconnect();
+      mutationObserver.disconnect();
+      window.removeEventListener('resize', updateAnchorPosition);
+      if (pollId != null) clearTimeout(pollId);
+      observedHostRef.current = null;
+    };
+  }, [
+    useHostModalAnchor,
+    hostModalAnchor,
+    hasDragged,
+    status,
+    title,
+    subtitle,
+    errorMsg,
+  ]);
+
+  const isAnchored =
+    useHostModalAnchor && anchorPosition && !hasDragged;
+  const isAbsoluteGroup = hasDragged || isAnchored;
+  const groupClassName = `pado-modal-group${
+    isAbsoluteGroup ? ' pado-modal-group--anchored' : ''
+  }`;
   const groupStyle = hasDragged
     ? { left: position.x, top: position.y }
-    : undefined;
+    : isAnchored
+      ? { left: anchorPosition.x, top: anchorPosition.y }
+      : undefined;
 
   return (
     <div className="pado-extension-shell">
       {/* Backdrop overlay disabled for now */}
       {/* <div className="pado-modal-backdrop" aria-hidden="true" /> */}
       <div
-        className={`pado-extension-root${useBottomRightModal ? ' pado-extension-root--bottom-right' : ''}`}
+        className={`pado-extension-root${rootPlacementClass}`}
         ref={rootRef}
       >
         <div
