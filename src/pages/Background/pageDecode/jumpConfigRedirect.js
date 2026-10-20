@@ -1,11 +1,13 @@
 /**
  * Generic multi-step tab redirects driven by dataPageTemplate.jumpConfig:
- * intercept URL + JSON response -> extract (JSONPath) -> assemble URL -> chrome.tabs.update.
+ * intercept URL + JSON response -> extract (JSONPath) -> assemble URL -> tab navigation
+ * (chrome.tabs.update; LinkedIn profile template hard-reloads after jump — see specialTemplates).
  */
 import jp from 'jsonpath';
 import { checkIsRequiredUrl } from '../utils/utils';
 import { getPageDecodeState } from './state';
 import { fetchRequestData } from './utils';
+import { applyJumpConfigDataSourceNavigation } from './specialTemplates/specialTemplateLinkedinProfileJump.js';
 
 /**
  * @param {object|null|undefined} jumpConfig
@@ -285,7 +287,13 @@ async function runJumpConfigStepIfMatched(requestUrl, responseData, method) {
   const tabId = state.dataSourcePageTabId;
   if (tabId == null) return false;
 
-  await chrome.tabs.update(tabId, { url: newUrl });
+  const navigated = await applyJumpConfigDataSourceNavigation(
+    state.activeTemplate,
+    tabId,
+    newUrl
+  );
+  if (!navigated) return false;
+
   jc.completedStepKeys.add(stepKey);
   jc.currentStepIndex += 1;
   console.log('jumpConfig: step done', stepKey, '->', newUrl);
@@ -361,7 +369,12 @@ export async function tryJumpConfigStandaloneIntercept({
       const fallback = jc.defaultJumpUrl;
       if (fallback && state.dataSourcePageTabId != null) {
         try {
-          await chrome.tabs.update(state.dataSourcePageTabId, { url: fallback });
+          await applyJumpConfigDataSourceNavigation(
+            state.activeTemplate,
+            state.dataSourcePageTabId,
+            fallback,
+            { linkedInFollowUpNav: false }
+          );
         } catch (_e) {
           /* ignore */
         }

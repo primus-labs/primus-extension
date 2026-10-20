@@ -3,8 +3,8 @@ import { safeStorageGet } from '@/utils/safeStorage';
 /** Environment-based URL constants and storage-backed algo URL getters */
 type ENVTYPE = 'development' | 'test' | 'production';
 
-export const CURENV = process.env.NODE_ENV as ENVTYPE;
-// export const CURENV = 'production';
+// export const CURENV = process.env.NODE_ENV as ENVTYPE;
+export const CURENV = 'production';
 
 const PADOURLMAP: Record<ENVTYPE, string> = {
   development: 'wss://api-dev.padolabs.org/algorithm',
