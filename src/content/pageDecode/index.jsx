@@ -19,6 +19,7 @@ import {
   SESSION_KEYS,
 } from './constants';
 import './index.scss';
+import { tryGithubRepositoriesShowMoreClick } from './pageDecodeGithubShowMore';
 
 let activeRequest = null;
 let rootRef = null;
@@ -297,6 +298,9 @@ chrome.runtime.sendMessage(
     if (activeRequest) {
       activeRequest.pageDecodePhase = response.phase || activeRequest.pageDecodePhase;
       activeRequest.resultSnapshot = response.resultSnapshot || null;
+      if (!response.isReady && response.phase !== 'attesting') {
+        tryGithubRepositoriesShowMoreClick(activeRequest);
+      }
       dispatchPageDecodeSyncEvent({
         isReady: !!response.isReady,
         phase: response.phase || activeRequest.pageDecodePhase,
@@ -316,6 +320,8 @@ chrome.runtime.sendMessage(
     activeRequest.resultSnapshot = response.resultSnapshot || params.resultSnapshot || null;
     delete activeRequest.PADOSERVERURL;
     delete activeRequest.padoExtensionVersion;
+
+    tryGithubRepositoriesShowMoreClick(activeRequest);
 
     installHistoryLocationListener();
     startHrefPollingWhileAttestationActive();
