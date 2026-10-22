@@ -25,6 +25,15 @@ import {
 } from './specialTemplates/amazon';
 import { applyAdditionParamsJumpUrlToJumpTo } from './additionParamsJumpUrl';
 import { initJumpConfigState } from './jumpConfigRedirect';
+import {
+  startDiscordAccountClick,
+  stopDiscordAccountClick,
+  isFirstConfiguredRequestCaptured,
+} from './specialTemplates/discordInvite/index.js';
+import {
+  armPartialReadyTimer,
+  clearPartialReadyTimer,
+} from './specialTemplates/githubOrganizationsPartial/index.js';
 import { resolveNoteV2MapFromConfigParsed } from '@/utils/attestationProcessNoteV2';
 import { ensureExtensionUserIdentity } from '../identityBootstrap.js';
 import { getSdkAttestationSession } from '../padoZKAttestationJSSDK/sessionStorage.js';
@@ -122,6 +131,8 @@ async function handleClose(params, processAlgorithmReq) {
     console.log('chrome.tabs.update error:', error);
   }
   removeWebRequestListener();
+  clearPartialReadyTimer();
+  stopDiscordAccountClick(state.dataSourcePageTabId);
   pageDecodeState.reset();
   await handlerForSdk(processAlgorithmReq, 'cancel');
 }
@@ -154,6 +165,8 @@ export async function pageDecodeMsgListener(
 
   try {
   if (name === 'init') {
+    clearPartialReadyTimer();
+    stopDiscordAccountClick(state.dataSourcePageTabId);
     pageDecodeState.reset();
     state.activeTemplate = params || {};
     state.phase = PAGE_DECODE_PHASES.CAPTURING;
@@ -200,6 +213,11 @@ export async function pageDecodeMsgListener(
         url: state.activeTemplate.jumpTo,
       });
       state.dataSourcePageTabId = tabCreatedByPado.id;
+      startDiscordAccountClick(
+        state.dataSourcePageTabId,
+        state.activeTemplate
+      );
+      armPartialReadyTimer();
       console.log('pageDecode dataSourcePageTabId:', state.dataSourcePageTabId);
 
       const injectFn = async () => {
@@ -234,6 +252,8 @@ export async function pageDecodeMsgListener(
 
       state.tabRemovedListener = async (tabId) => {
         if (tabId === state.dataSourcePageTabId) {
+          clearPartialReadyTimer();
+          stopDiscordAccountClick(tabId);
           const skipCancel = state.skipCancelOnNextDataSourceTabRemoved;
           state.skipCancelOnNextDataSourceTabRemoved = false;
           state.dataSourcePageTabId = null;
@@ -275,6 +295,7 @@ export async function pageDecodeMsgListener(
         phase: state.phase,
         operation: state.operationType,
         resultSnapshot: uiResultSnapshot,
+        firstTemplateRequestCaptured: isFirstConfiguredRequestCaptured(state),
       });
       await checkWebRequestIsReady();
     }

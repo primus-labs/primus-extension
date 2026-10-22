@@ -20,8 +20,11 @@ import {
 } from './constants';
 import './index.scss';
 import { tryGithubRepositoriesShowMoreClick } from './pageDecodeGithubShowMore';
+import { shouldDeferModalUntilFirstCapture } from '@/pages/Background/pageDecode/specialTemplates/discordInvite/templateId.js';
 
 let activeRequest = null;
+/** Discord invite: hide verification card until first configured request is captured. */
+let deferredModalPending = false;
 let rootRef = null;
 let historyLocationListenerInstalled = false;
 /** Polling id: content scripts run in an isolated world, so patching history.* may not see the page's navigations. */
@@ -81,6 +84,28 @@ function scheduleDeferredPageDecodeSync(delayMs) {
   deferredPageDecodeSyncTimeouts.push(id);
 }
 
+function shouldDeferModalForAppend(response, templateParams) {
+  if (response?.resultSnapshot || response?.phase === 'attesting') {
+    return false;
+  }
+  if (!shouldDeferModalUntilFirstCapture(templateParams)) {
+    return false;
+  }
+  return !response?.firstTemplateRequestCaptured;
+}
+
+function releaseDeferredModalIfPending() {
+  if (!deferredModalPending) return;
+  deferredModalPending = false;
+  scheduleRenderPageDecodeCardIfAllowed();
+}
+
+function maybeReleaseDeferredModalFromAppend(response, templateParams) {
+  if (!deferredModalPending) return;
+  if (shouldDeferModalForAppend(response, templateParams)) return;
+  releaseDeferredModalIfPending();
+}
+
 function syncPageDecodeStateOnce() {
   if (!activeRequest || pageDecodeStateSyncInFlight) return;
   pageDecodeStateSyncInFlight = true;
@@ -95,6 +120,7 @@ function syncPageDecodeStateOnce() {
         return;
       }
       if (!response || response.name !== 'append') return;
+      maybeReleaseDeferredModalFromAppend(response, activeRequest);
       if (
         response.isReady ||
         response.phase === 'attesting' ||
@@ -167,6 +193,9 @@ function hidePageDecodeUi() {
  */
 function renderPageDecodeCardIfAllowedInner() {
   if (!activeRequest) {
+    return;
+  }
+  if (deferredModalPending) {
     return;
   }
   if (isDisabledPath()) {
@@ -269,69 +298,87 @@ function ensurePageDecodeContainer() {
   return container;
 }
 
+function applyInitCompletedAppend(response) {
+  if (!response || response.name !== 'append') return;
+  if (isDisabledPath()) return;
+
+  if (response.resultSnapshot) {
+    applyResultSnapshotToSession(response.resultSnapshot);
+  } else {
+    clearPersistedResultState();
+  }
+
+  if (response.isReady) {
+    sessionStorage.setItem(SESSION_KEYS.READY, '1');
+  } else {
+    sessionStorage.removeItem(SESSION_KEYS.READY);
+  }
+  if (!response.resultSnapshot && response.phase === 'attesting') {
+    sessionStorage.setItem(SESSION_KEYS.STATUS, STATUS.VERIFYING);
+  }
+
+  if (activeRequest) {
+    activeRequest.pageDecodePhase = response.phase || activeRequest.pageDecodePhase;
+    activeRequest.resultSnapshot = response.resultSnapshot || null;
+    if (!response.isReady && response.phase !== 'attesting') {
+      tryGithubRepositoriesShowMoreClick(activeRequest);
+    }
+    maybeReleaseDeferredModalFromAppend(response, activeRequest);
+    dispatchPageDecodeSyncEvent({
+      isReady: !!response.isReady,
+      phase: response.phase || activeRequest.pageDecodePhase,
+      resultSnapshot: response.resultSnapshot || null,
+    });
+    clearDeferredPageDecodeSyncs();
+    if (!response.isReady) {
+      scheduleDeferredPageDecodeSync(400);
+      scheduleDeferredPageDecodeSync(1600);
+    }
+    return;
+  }
+
+  const params = response.params || {};
+  activeRequest = { ...params };
+  activeRequest.pageDecodePhase = response.phase || params.pageDecodePhase;
+  activeRequest.resultSnapshot = response.resultSnapshot || params.resultSnapshot || null;
+  delete activeRequest.PADOSERVERURL;
+  delete activeRequest.padoExtensionVersion;
+
+  tryGithubRepositoriesShowMoreClick(activeRequest);
+
+  deferredModalPending = shouldDeferModalForAppend(response, activeRequest);
+
+  installHistoryLocationListener();
+  startHrefPollingWhileAttestationActive();
+  if (!deferredModalPending) {
+    scheduleRenderPageDecodeCardIfAllowed();
+  }
+  clearDeferredPageDecodeSyncs();
+  if (!response.isReady) {
+    scheduleDeferredPageDecodeSync(400);
+    scheduleDeferredPageDecodeSync(1600);
+  }
+}
+
 ensurePageDecodeContainer();
+
+chrome.runtime.onMessage.addListener((message) => {
+  if (
+    message?.type !== 'pageDecode' ||
+    message?.name !== 'firstTemplateRequestCaptured'
+  ) {
+    return;
+  }
+  if (!activeRequest || !deferredModalPending) return;
+  releaseDeferredModalIfPending();
+});
 
 chrome.runtime.sendMessage(
   {
     type: 'pageDecode',
     name: 'initCompleted',
   },
-  (response) => {
-    if (!response || response.name !== 'append') return;
-    if (isDisabledPath()) return;
-
-    if (response.resultSnapshot) {
-      applyResultSnapshotToSession(response.resultSnapshot);
-    } else {
-      clearPersistedResultState();
-    }
-
-    if (response.isReady) {
-      sessionStorage.setItem(SESSION_KEYS.READY, '1');
-    } else {
-      sessionStorage.removeItem(SESSION_KEYS.READY);
-    }
-    if (!response.resultSnapshot && response.phase === 'attesting') {
-      sessionStorage.setItem(SESSION_KEYS.STATUS, STATUS.VERIFYING);
-    }
-
-    if (activeRequest) {
-      activeRequest.pageDecodePhase = response.phase || activeRequest.pageDecodePhase;
-      activeRequest.resultSnapshot = response.resultSnapshot || null;
-      if (!response.isReady && response.phase !== 'attesting') {
-        tryGithubRepositoriesShowMoreClick(activeRequest);
-      }
-      dispatchPageDecodeSyncEvent({
-        isReady: !!response.isReady,
-        phase: response.phase || activeRequest.pageDecodePhase,
-        resultSnapshot: response.resultSnapshot || null,
-      });
-      clearDeferredPageDecodeSyncs();
-      if (!response.isReady) {
-        scheduleDeferredPageDecodeSync(400);
-        scheduleDeferredPageDecodeSync(1600);
-      }
-      return;
-    }
-
-    const params = response.params || {};
-    activeRequest = { ...params };
-    activeRequest.pageDecodePhase = response.phase || params.pageDecodePhase;
-    activeRequest.resultSnapshot = response.resultSnapshot || params.resultSnapshot || null;
-    delete activeRequest.PADOSERVERURL;
-    delete activeRequest.padoExtensionVersion;
-
-    tryGithubRepositoriesShowMoreClick(activeRequest);
-
-    installHistoryLocationListener();
-    startHrefPollingWhileAttestationActive();
-    scheduleRenderPageDecodeCardIfAllowed();
-    clearDeferredPageDecodeSyncs();
-    if (!response.isReady) {
-      scheduleDeferredPageDecodeSync(400);
-      scheduleDeferredPageDecodeSync(1600);
-    }
-  }
+  applyInitCompletedAppend
 );
 
 installHistoryLocationListener();

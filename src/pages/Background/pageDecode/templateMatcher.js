@@ -28,6 +28,7 @@ import { getPatchedFormatResponseForSpecialTemplateReputationPhalaBinanceEarnBal
 import { tryPatchFormatResponseForSpecialTemplateChannelSubscription } from './specialTemplates/specialTemplateChannelSubscription';
 import { getPatchedFormatParamsForSpecialTemplateReputationPhala } from './specialTemplates/specialTemplateReputationPhala';
 import { tryPatchFormatResponseForEmptyArrayJsonPathTruncate } from './specialTemplates/pageDecodePnlHooks';
+import { isPartialCaptureActive } from './specialTemplates/githubOrganizationsPartial/index.js';
 
 export async function formatAlgorithmParamsFn() {
   const pageDecodeState = getPageDecodeState();
@@ -84,8 +85,15 @@ export async function formatAlgorithmParamsFn() {
   const hasNeedUpdateRequests =
     Array.isArray(needUpdateRequests) && needUpdateRequests.length > 0;
 
+  const partialIndices = isPartialCaptureActive(state)
+    ? state.partialCaptureIndices
+    : null;
+
   const requestsCloned = JSON.parse(JSON.stringify(requests));
   for (let reqIdx = 0; reqIdx < requestsCloned.length; reqIdx++) {
+    if (partialIndices && !partialIndices.includes(reqIdx)) {
+      continue;
+    }
     const r = requestsCloned[reqIdx];
     if (r.queryDetail) continue;
 
@@ -135,6 +143,9 @@ export async function formatAlgorithmParamsFn() {
       Object.values(requestsMap).find(
         (sInfo) => sInfo.templateRequestUrl === r.url && sInfo.isTarget === 1
       )?.requestId || '';
+    if (partialIndices && !targetRequestId) {
+      continue;
+    }
     const currRequestInfoObj = requestsMap[targetRequestId] || {};
     const {
       headers: curRequestHeader,
@@ -172,7 +183,13 @@ export async function formatAlgorithmParamsFn() {
     activeTemplate
   );
 
-  const formatResponse = JSON.parse(JSON.stringify(responses));
+  const formatResponse = JSON.parse(
+    JSON.stringify(
+      partialIndices
+        ? partialIndices.map((idx) => responses[idx])
+        : responses
+    )
+  );
   for (const fr of formatRequests) {
     if (fr.headers) {
       fr.headers = sanitizeRequestHeaders(fr.headers);

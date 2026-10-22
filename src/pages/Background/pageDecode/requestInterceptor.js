@@ -55,6 +55,7 @@ import {
   tryJumpConfigStandaloneIntercept,
   shouldStoreBodyForJumpConfig,
 } from './jumpConfigRedirect';
+import { markFirstConfiguredRequestCapturedIfNeeded } from './specialTemplates/discordInvite/index.js';
 
 function getActiveDatasourceTemplate(state, logTag) {
   const template = state?.activeTemplate?.datasourceTemplate;
@@ -510,6 +511,17 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
 const WEB_REQUEST_READY_NOTIFY_ATTEMPTS = 8;
 const WEB_REQUEST_READY_RETRY_DELAY_MS = 250;
 
+export async function finalizeWebRequestReady(state) {
+  state.isReadyRequest = true;
+  state.phase = PAGE_DECODE_PHASES.READY;
+  if (!state.readyNotified) {
+    const sent = await notifyDataSourcePageWebRequestReady();
+    if (sent) {
+      state.readyNotified = true;
+    }
+  }
+}
+
 async function notifyDataSourcePageWebRequestReady() {
   const msg = {
     type: 'pageDecode',
@@ -589,15 +601,13 @@ export async function checkWebRequestIsReady() {
   }
 
   if (fl) {
-    state.isReadyRequest = true;
-    state.phase = PAGE_DECODE_PHASES.READY;
+    const { clearPartialReadyTimer } = await import(
+      './specialTemplates/githubOrganizationsPartial/index.js'
+    );
+    clearPartialReadyTimer();
+    state.partialCaptureIndices = null;
     console.log('all web requests are captured', requestsMap);
-    if (!state.readyNotified) {
-      const sent = await notifyDataSourcePageWebRequestReady();
-      if (sent) {
-        state.readyNotified = true;
-      }
-    }
+    await finalizeWebRequestReady(state);
   }
   return fl;
 }
@@ -674,6 +684,7 @@ export function setupWebRequestListener() {
       };
       if (addQueryStr) newCapturedInfo.queryString = addQueryStr;
       storeInRequestsMap(requestId, newCapturedInfo);
+      await markFirstConfiguredRequestCapturedIfNeeded();
       await trySendSecondRequestWithFirstHeaders();
       await checkSDKTargetRequest(requestId, templateRequestUrl);
       debouncedCheckWebRequestIsReady();
