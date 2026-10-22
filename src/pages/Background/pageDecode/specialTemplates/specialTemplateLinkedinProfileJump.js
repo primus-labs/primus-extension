@@ -10,7 +10,18 @@ export const TEMPLATE_ID = 'a87deb8c-32c7-41c7-ac69-60bad0e35a38';
 export const displayName = 'LinkedIn profile jump';
 
 const TAB_COMPLETE_WAIT_MS = 30000;
+const RELOAD_DELAY_MS = 200;
 const LINKEDIN_PROFILE_URL_RE = /linkedin\.com\/in\//i;
+
+/**
+ * @param {number} ms
+ * @returns {Promise<void>}
+ */
+function delay(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
 
 /**
  * @param {{ attTemplateID?: string; templateId?: string; id?: string } | null | undefined} activeTemplate
@@ -148,6 +159,7 @@ async function linkedInTabsUpdateThenHardReload(tabId, href) {
     await waitForTabLoadComplete(tabId);
   }
 
+  await delay(RELOAD_DELAY_MS);
   await chrome.tabs.reload(tabId);
   console.log('linkedinProfileJump: tabs.update + hard reload', href);
 }
