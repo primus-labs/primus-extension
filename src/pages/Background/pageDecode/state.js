@@ -65,8 +65,6 @@ export function createPageDecodeState() {
     lumaPagedApprovedHits: null,
     /** Discord invite: first datasourceTemplate.requests URL match captured */
     firstConfiguredRequestCaptured: false,
-    /** GitHub partial ready: datasourceTemplate request indices included in params */
-    partialCaptureIndices: null,
   };
 
   function resetMonadFields() {
@@ -177,7 +175,6 @@ export function createPageDecodeState() {
     resetReputationPhalaFields();
     resetLumaPagedApprovedHits();
     state.firstConfiguredRequestCaptured = false;
-    state.partialCaptureIndices = null;
   }
 
   function removeFromRequestsMap(requestId) {

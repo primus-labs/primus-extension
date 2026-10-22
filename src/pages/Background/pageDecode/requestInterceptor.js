@@ -601,11 +601,6 @@ export async function checkWebRequestIsReady() {
   }
 
   if (fl) {
-    const { clearPartialReadyTimer } = await import(
-      './specialTemplates/githubOrganizationsPartial/index.js'
-    );
-    clearPartialReadyTimer();
-    state.partialCaptureIndices = null;
     console.log('all web requests are captured', requestsMap);
     await finalizeWebRequestReady(state);
   }
