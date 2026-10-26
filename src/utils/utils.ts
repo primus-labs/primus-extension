@@ -104,7 +104,7 @@ export function formatTime(timestamp: number) {
 export function formatFullTime(timestamp: number) {
   var date = new Date(timestamp),
     Y = date.getFullYear(),
-    M = (date.getMonth() + '').padStart(2, '0'),
+    M = (date.getMonth() + 1 + '').padStart(2, '0'),
     D = (date.getDate() + '').padStart(2, '0'),
     h = (date.getHours() + '').padStart(2, '0'),
     m = (date.getMinutes() + '').padStart(2, '0');
@@ -187,7 +187,7 @@ export function strToHexSha256(str: string) {
 }
 export function base64ToHex(base64Str: string) {
   const value = Buffer.from(base64Str, 'base64');
-  const returnValue = '0x' + value.toString();
+  const returnValue = '0x' + value.toString('hex');
   return returnValue;
 }
 
