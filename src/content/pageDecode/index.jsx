@@ -15,6 +15,7 @@ import {
   DISABLED_STEAM_URL_REGEX,
   DISABLED_NAVER_URL_REGEX,
   DISABLED_X_FLOW_URL_REGEX,
+  DISABLED_GITHUB_TWO_FACTOR_URL_REGEX,
   STATUS,
   SESSION_KEYS,
 } from './constants';
@@ -169,7 +170,8 @@ function isDisabledPath() {
     DISABLED_AMAZON_URL_REGEX.test(href) ||
     DISABLED_STEAM_URL_REGEX.test(href) ||
     DISABLED_NAVER_URL_REGEX.test(href) ||
-    DISABLED_X_FLOW_URL_REGEX.test(href)
+    DISABLED_X_FLOW_URL_REGEX.test(href) ||
+    DISABLED_GITHUB_TWO_FACTOR_URL_REGEX.test(href)
   );
 }
 

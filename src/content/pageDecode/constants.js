@@ -50,6 +50,13 @@ export const DISABLED_NAVER_URL_REGEX =
 export const DISABLED_X_FLOW_URL_REGEX =
   /^https:\/\/(?:www\.)?x\.com(?:\/.+)?\/single_sign_on(?:\/|[?#]|$)/i;
 
+/**
+ * GitHub: 2FA app verification during login (hide card on data-source tab).
+ * e.g. https://github.com/sessions/two-factor/app
+ */
+export const DISABLED_GITHUB_TWO_FACTOR_URL_REGEX =
+  /^https:\/\/github\.com\/sessions\/two-factor\/app(?:\?.*|#.*|\/|$)/i;
+
 /** Attestation UI status values */
 export const STATUS = {
   UNINITIALIZED: 'uninitialized',
