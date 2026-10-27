@@ -12,50 +12,17 @@ export const CONTAINER_ID = 'pado-extension-content';
 export const PAGE_DECODE_BLACK_MODAL_TEMPLATE_ID =
   '2de562e4-d1b0-49c2-8cff-2fd229818392';
 
-/**
- * Generic: path/query/hash contains these tokens as segments (after /, ?, or #).
- * Case-insensitive (href lowercased in index.jsx).
- */
-export const DISABLED_PATH_SEGMENT_REGEX =
-  /(?:^|[/?#])(?:login|register|signin|signup|signon|signout|loginout|forgotpassword|password_reset)(?:[/=?#]|$)/i;
-
-/**
- * Amazon-only: full URL prefixes www.amazon.{host} or amazon.{host} (optional www).
- * Covers claim, CVF, account recovery, and /ap/accountfixup paths.
- * Host TLD not hard-coded. Prefix match so query/hash after path still counts.
- */
-export const DISABLED_AMAZON_URL_REGEX =
-  /^https:\/\/(?:www\.)?amazon\.[^/]+\/(?:ax\/claim|ap\/cvf\/(?:transactionapproval|approval|verify|request|accountrecovery\/collectnewpassword)|ap\/accountfixup)/i;
-/**
- * Steam-only: login help wizard + store mobile + store join. Prefix match (query/hash OK). href lowercased in index.jsx.
- */
-export const DISABLED_STEAM_URL_REGEX =
-  /^https:\/\/help\.steampowered\.com\/[^/]+\/wizard\/HelpWithLogin|^https:\/\/store\.steampowered\.com\/(?:mobile|join)/i;
-
-/**
- * Special data-source entry URLs where the attestation card should be hidden (query is wildcard).
- * - Naver: https://nid.naver.com/nidlogin.login?...
- * - Apple Account / Sign in: https://appleid.apple.com/auth/authorize?client_id=...
- */
-export const DISABLED_NAVER_URL_REGEX =
-  /^https:\/\/(?:nid\.naver\.com\/nidlogin\.login|appleid\.apple\.com\/auth\/authorize)(?:\?.*|#.*|\/|$)/i;
-
-/**
- * X (Twitter): hide card on SSO path ending with segment single_sign_on.
- * Prefix path is flexible (/i/flow/... optional): https://x.com/single_sign_on,
- * https://x.com/i/flow/single_sign_on, https://x.com/a/b/single_sign_on?...
- * Must match path segment single_sign_on exactly (not single_sign_on_foo).
- * href is lowercased before matching in index.jsx.
- */
-export const DISABLED_X_FLOW_URL_REGEX =
-  /^https:\/\/(?:www\.)?x\.com(?:\/.+)?\/single_sign_on(?:\/|[?#]|$)/i;
-
-/**
- * GitHub: 2FA app verification during login (hide card on data-source tab).
- * e.g. https://github.com/sessions/two-factor/app
- */
-export const DISABLED_GITHUB_TWO_FACTOR_URL_REGEX =
-  /^https:\/\/github\.com\/sessions\/two-factor\/app(?:\?.*|#.*|\/|$)/i;
+export {
+  DISABLED_PATH_SEGMENT_REGEX,
+  DISABLED_AMAZON_URL_REGEX,
+  DISABLED_STEAM_URL_REGEX,
+  DISABLED_NAVER_URL_REGEX,
+  DISABLED_X_FLOW_URL_REGEX,
+  DISABLED_GITHUB_TWO_FACTOR_URL_REGEX,
+  DISABLED_LINKEDIN_MFA_URL_REGEX,
+  DISABLED_OPENAI_MFA_URL_REGEX,
+  DISABLED_X_MFA_URL_REGEX,
+} from './disabledUrlRegex.js';
 
 /** Attestation UI status values */
 export const STATUS = {

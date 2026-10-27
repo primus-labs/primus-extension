@@ -12,7 +12,8 @@
     "build:test": "node utils/buildtest.js",
     "start": "node utils/webserver.js",
     "dev": "node utils/webserver.js",
-    "prettier": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
+    "prettier": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
+    "test:unit": "node --test src/pages/Background/pageDecode/streamTemplate.test.js src/content/pageDecode/disabledPath.test.js"
   },
   "dependencies": {
     "@metamask/eth-sig-util": "6.0.1",
