@@ -20,6 +20,7 @@ function isMfaDisabledHref(href) {
 describe('disabledPath MFA URL regexes', () => {
   const shouldDisable = [
     'https://github.com/sessions/two-factor/app',
+    'https://github.com/sessions/trusted-device',
     'https://www.linkedin.com/mypreferences/d/two-factor-authentication/enroll',
     'https://www.linkedin.com/checkpoint/challenge/AQHIraNkTHSa2QAAAaF79CqJPXeRULArtes5X7Vc-ZdcHtbwMNeirqoBaFBvkpEhMkpXlTgr3v7VKuLRV5YH9HNjnyk0kw/?ut=05SMi0okka0sw1',
     'https://auth.openai.com/mfa-challenge/6ae04591b61c8191a90418bae4762869',
