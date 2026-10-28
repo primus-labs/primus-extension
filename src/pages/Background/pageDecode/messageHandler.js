@@ -30,6 +30,10 @@ import {
   stopDiscordAccountClick,
   isFirstConfiguredRequestCaptured,
 } from './specialTemplates/discordInvite/index.js';
+import {
+  matches as matchesHyperliquidPnlTemplate,
+  reloadDataSourceTabAfterOpen,
+} from './specialTemplates/specialTemplatePnlHyperliquid.js';
 import { resolveNoteV2MapFromConfigParsed } from '@/utils/attestationProcessNoteV2';
 import { ensureExtensionUserIdentity } from '../identityBootstrap.js';
 import { getSdkAttestationSession } from '../padoZKAttestationJSSDK/sessionStorage.js';
@@ -207,6 +211,9 @@ export async function pageDecodeMsgListener(
         url: state.activeTemplate.jumpTo,
       });
       state.dataSourcePageTabId = tabCreatedByPado.id;
+      if (matchesHyperliquidPnlTemplate(state.activeTemplate)) {
+        await reloadDataSourceTabAfterOpen(state.dataSourcePageTabId);
+      }
       startDiscordAccountClick(
         state.dataSourcePageTabId,
         state.activeTemplate
