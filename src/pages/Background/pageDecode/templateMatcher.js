@@ -245,6 +245,11 @@ export async function formatAlgorithmParamsFn() {
     padoExtensionVersion,
   });
 
+  const isStreamAttestation = requests.some((r) => r.isStream === true);
+  if (isStreamAttestation) {
+    aligorithmParams.stream = true;
+  }
+
   await tryPatchAlgorithmParamsForSpecialTemplateLinkedinConnections(aligorithmParams, activeTemplate);
   tryPatchAlgorithmParamsForSpecialTemplateLumaMonad(aligorithmParams, activeTemplate);
   tryPatchAlgorithmParamsForSpecialTemplateLumaPagedApproved(aligorithmParams, activeTemplate);

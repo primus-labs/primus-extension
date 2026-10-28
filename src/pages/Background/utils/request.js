@@ -5,8 +5,22 @@
  */
 import { isJSONString, encodeFormData } from './utils';
 
-function normalizeCustomFetchParams({ url, method, body, header, isFormData }) {
-  return { url, method, body, header: header || {}, isFormData };
+function normalizeCustomFetchParams({
+  url,
+  method,
+  body,
+  header,
+  isFormData,
+  skipBodyRead,
+}) {
+  return {
+    url,
+    method,
+    body,
+    header: header || {},
+    isFormData,
+    skipBodyRead,
+  };
 }
 
 function buildCustomFetchOptions({ url, method, body, header, isFormData }) {
@@ -43,12 +57,21 @@ function buildCustomFetchOptions({ url, method, body, header, isFormData }) {
   return { finalOptions, url };
 }
 
-async function executeCustomFetch2(finalOptions, url) {
+async function executeCustomFetch2(finalOptions, url, fetchOptions = {}) {
   const response = await fetch(url, finalOptions);
+  const contentType = response.headers.get('Content-Type') || '';
+  const finalUrl = response.url;
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
-  const contentType = response.headers.get('Content-Type') || '';
+  if (fetchOptions.skipBodyRead) {
+    try {
+      await response.body?.cancel?.();
+    } catch (_e) {
+      /* ignore cancel errors */
+    }
+    return { data: null, contentType, finalUrl };
+  }
 
   let data;
   if (contentType.includes('application/json') || contentType.includes('+json')) {
@@ -60,7 +83,7 @@ async function executeCustomFetch2(finalOptions, url) {
   } else {
     data = await response.text();
   }
-  return { data, contentType, finalUrl: response.url };
+  return { data, contentType, finalUrl };
 }
 
 export async function customFetch2(params) {
@@ -73,7 +96,7 @@ export async function customFetch2(params) {
     header,
     isFormData,
   });
-  const { data } = await executeCustomFetch2(finalOptions, url);
+  const { data } = await executeCustomFetch2(finalOptions, url, {});
   return data;
 }
 
@@ -82,7 +105,7 @@ export async function customFetch2(params) {
  * @returns {{ data: unknown, contentType: string, finalUrl: string }}
  */
 export async function customFetch2WithMeta(params) {
-  const { url, method, body, header, isFormData } =
+  const { url, method, body, header, isFormData, skipBodyRead } =
     normalizeCustomFetchParams(params);
   const { finalOptions } = buildCustomFetchOptions({
     url,
@@ -91,5 +114,7 @@ export async function customFetch2WithMeta(params) {
     header,
     isFormData,
   });
-  return executeCustomFetch2(finalOptions, url);
+  return executeCustomFetch2(finalOptions, url, {
+    skipBodyRead: skipBodyRead === true,
+  });
 }

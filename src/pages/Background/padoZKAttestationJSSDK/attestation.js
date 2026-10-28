@@ -43,6 +43,13 @@ import {
   RANGE_OPERATORS,
   VALIDATION_JSON_PATH_KEY,
 } from './buildAggregateSubcondition.js';
+import {
+  DEFAULT_REVEAL_TYPE,
+  getDefaultRevealOpForResponseValueType,
+  isStreamResponseValueType,
+  responseTemplateIndicatesStream,
+  STREAM_REVEAL_OP,
+} from '../pageDecode/streamTemplate.js';
 
 const ACTIVE_REQUEST_STALE_GRACE_MS = 60 * 1000;
 
@@ -329,7 +336,9 @@ export async function handleStartAttestation(
               requireReplayValidation,
               needCapture,
             },
+            responseTemplate,
           } = curr;
+          const isStream = responseTemplateIndicatesStream(responseTemplate);
           prev.push({
             name: `sdk-${idx}`,
             url: targetUrlExpression,
@@ -339,6 +348,7 @@ export async function handleStartAttestation(
             ignoreResponse,
             requireReplayValidation,
             needCapture,
+            ...(isStream ? { isStream: true } : {}),
           });
           return prev;
         }, []);
@@ -351,7 +361,9 @@ export async function handleStartAttestation(
               resolver: { expression },
               feilds,
               plaintext,
+              valueType,
             } = currS;
+            const isStreamResponse = isStreamResponseValueType(valueType);
             const feildsList = Array.isArray(feilds) ? feilds : [];
             const defaultFeild = feildsList[0];
             const subItemCondition = params.attRequest?.attConditions?.[
@@ -383,8 +395,9 @@ export async function handleStartAttestation(
             }
             let subconditionItem = { field: expression };
             const handleREVEALFn = () => {
-              subconditionItem.op = 'REVEAL_STRING';
-              subconditionItem.type = 'FIELD_REVEAL';
+              subconditionItem.op =
+                getDefaultRevealOpForResponseValueType(valueType);
+              subconditionItem.type = DEFAULT_REVEAL_TYPE;
               subconditionItem.reveal_id = key;
             };
             const handleNoneComputeFn = () => {
@@ -456,11 +469,19 @@ export async function handleStartAttestation(
               (f) => f?.aggregation && typeof f.aggregation === 'object'
             );
             if (
+              !isStreamResponse &&
               hasTemplateAggregation &&
               typeof expression === 'string' &&
               expression.trim()
             ) {
               subconditionItem[VALIDATION_JSON_PATH_KEY] = expression.trim();
+            }
+            if (isStreamResponse) {
+              subconditionItem.type = DEFAULT_REVEAL_TYPE;
+              subconditionItem.op = STREAM_REVEAL_OP;
+              if (key != null && key !== '') {
+                subconditionItem.reveal_id = key;
+              }
             }
             prevS.push(subconditionItem);
             return prevS;

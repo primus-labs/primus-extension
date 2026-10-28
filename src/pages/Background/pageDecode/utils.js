@@ -52,6 +52,20 @@ export async function fetchRequestDataForTemplateValidation(params) {
   }
 }
 
+/** Re-send captured request; validate HTTP success only (stream templates). */
+export async function fetchRequestDataForStreamTemplateValidation(params) {
+  try {
+    const { ...requestParams } = params;
+    return await customFetch2WithMeta({
+      ...requestParams,
+      skipBodyRead: true,
+    });
+  } catch (e) {
+    console.log('fetchRequestDataForStreamTemplateValidation error', e);
+    return null;
+  }
+}
+
 /**
  * Prefer XPath/HTML validation when the replayed response is HTML, even if webRequest type is not main_frame
  * (e.g. fetch/XHR that returns text/html).

@@ -18,6 +18,34 @@ const CLIENT_VERSION = '1.4.33';
 const LEGACY_NETWORK_VERSION = '1.4.33';
 const SDK_ATTESTATION_SESSION_KEY = 'padoZKAttestationJSSDKSession';
 
+/** @type {{ paramsObj?: Record<string, unknown> } | undefined} */
+let currentStreamContext;
+
+function processStream(payload) {
+  const streamResult = {
+    content: payload,
+    status: 'streaming',
+    retcode: '0',
+    retdesc: '',
+    isUserClick: 'false',
+  };
+  chrome.runtime.sendMessage({
+    resType: 'algorithm',
+    resMethodName: 'getAttestationResult',
+    res: JSON.stringify(streamResult),
+    requestid: currentStreamContext?.paramsObj?.requestid,
+  });
+}
+
+function registerStreamCallback(paramsObj) {
+  globalThis._onStream = undefined;
+  const streamEnabled =
+    paramsObj?.stream === true || paramsObj?.stream === 'true';
+  if (streamEnabled) {
+    globalThis._onStream = processStream;
+  }
+}
+
 /**
  * Returns effective algorithm version based on clientType.
  * clientType.toLowerCase().includes('network') -> 1.1.1, otherwise main version.
@@ -91,7 +119,14 @@ class AlgorithmClient {
         retdesc: 'Algorithm not initialized',
       });
     }
+    const streamEnabled = params?.stream === true || params?.stream === 'true';
+    currentStreamContext = streamEnabled ? { paramsObj: params } : undefined;
+    registerStreamCallback(params);
     const res = this._call('getAttestation', params, effectiveVersion);
+    if (!streamEnabled) {
+      currentStreamContext = undefined;
+      registerStreamCallback({});
+    }
     console.log('getAttestation typeof res', typeof res, 'res', res);
     return res;
   }

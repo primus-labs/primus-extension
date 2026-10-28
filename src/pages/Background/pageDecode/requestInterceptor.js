@@ -12,6 +12,7 @@ import {
 } from '../utils/utils';
 import {
   fetchRequestDataForTemplateValidation,
+  fetchRequestDataForStreamTemplateValidation,
   fetchHtmlContent,
   validateResponseCondition,
   validateHtmlResponseCondition,
@@ -128,6 +129,7 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
   }
   const thisRequestObj = requests[thisRequestUrlIdx];
   const thisResponseObj = responses[thisRequestUrlIdx];
+  const isStreamRequest = thisRequestObj?.isStream === true;
   const requireReplayValidation =
     thisRequestObj?.requireReplayValidation === true;
   const shouldValidateReplayOnly = thisRequestObj?.ignoreResponse === true &&
@@ -300,7 +302,10 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
         }
       }
     } else {
-      const fetched = await fetchRequestDataForTemplateValidation({
+      const fetchForValidation = isStreamRequest
+        ? fetchRequestDataForStreamTemplateValidation
+        : fetchRequestDataForTemplateValidation;
+      const fetched = await fetchForValidation({
         ...requestsMap[matchRequestId],
         header: requestsMap[matchRequestId].headers,
         url: urlForFetch,
