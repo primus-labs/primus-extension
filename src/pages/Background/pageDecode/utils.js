@@ -27,6 +27,7 @@ import {
   resolveJsonPathForValidation,
 } from '../padoZKAttestationJSSDK/buildAggregateSubcondition.js';
 import { resolveJsonPathWithEmptyArrayTruncate } from './specialTemplates/emptyArrayJsonPathTruncate/truncateAtEmptyArray.js';
+import { resolveJsonPathWithUnreachableTruncate } from './specialTemplates/cursorDashboard/truncateJsonPathAtUnreachable.js';
 
 /** Fetch request data (JSON/object) for template matching. Re-sends captured request. */
 export const fetchRequestData = async (params) => {
@@ -411,7 +412,7 @@ export const resolveNegativeJsonPathIndices = (pathExpr, rootData) => {
 /**
  * @param {string} pathExpr
  * @param {unknown} rootData
- * @param {{ truncateAtEmptyArray?: boolean } | undefined} [options]
+ * @param {{ truncateAtEmptyArray?: boolean; truncateUnreachable?: boolean } | undefined} [options]
  */
 export const queryJsonPathWithNegativeIndices = (pathExpr, rootData, options) => {
   let pathForTruncate = pathExpr;
@@ -421,7 +422,12 @@ export const queryJsonPathWithNegativeIndices = (pathExpr, rootData, options) =>
       pathForTruncate = resolvedForTruncate.path;
     }
   }
-  if (options?.truncateAtEmptyArray && typeof pathForTruncate === 'string') {
+  if (options?.truncateUnreachable && typeof pathForTruncate === 'string') {
+    pathForTruncate = resolveJsonPathWithUnreachableTruncate(
+      pathForTruncate,
+      rootData
+    );
+  } else if (options?.truncateAtEmptyArray && typeof pathForTruncate === 'string') {
     pathForTruncate = resolveJsonPathWithEmptyArrayTruncate(
       pathForTruncate,
       rootData

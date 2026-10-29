@@ -50,7 +50,7 @@ import { formatAlgorithmParamsFn } from './templateMatcher';
 import { sendMsgToDataSourcePage } from './sdkBridge';
 import { resolveJsonPathForValidation } from '../padoZKAttestationJSSDK/buildAggregateSubcondition.js';
 import { trySendSecondRequestWithFirstHeaders } from './specialTemplates/specialTemplateSendSecondRequest';
-import { getJsonPathEvaluationOptionsForTemplate } from './specialTemplates/pageDecodePnlHooks';
+import { getJsonPathEvaluationOptionsForTemplate } from './specialTemplates/templateJsonPathHooks';
 import {
   tryApplyJumpConfigFromResponse,
   tryJumpConfigStandaloneIntercept,
