@@ -54,6 +54,7 @@ import { getJsonPathEvaluationOptionsForTemplate } from './specialTemplates/temp
 import {
   tryApplyJumpConfigFromResponse,
   tryJumpConfigStandaloneIntercept,
+  tryJumpConfigPresenceStep,
   shouldStoreBodyForJumpConfig,
 } from './jumpConfigRedirect';
 import { markFirstConfiguredRequestCapturedIfNeeded } from './specialTemplates/discordInvite/index.js';
@@ -682,6 +683,8 @@ export function setupWebRequestListener() {
       if (checkRes) templateRequestUrl = r.url;
       return checkRes;
     });
+
+    await tryJumpConfigPresenceStep({ currRequestUrl, method });
 
     if (isTarget) {
       console.log('captured request', currRequestUrl,JSON.stringify(details));

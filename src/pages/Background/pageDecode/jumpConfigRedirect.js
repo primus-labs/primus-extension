@@ -2,12 +2,82 @@
  * Generic multi-step tab redirects driven by dataPageTemplate.jumpConfig:
  * intercept URL + JSON response -> extract (JSONPath) -> assemble URL -> tab navigation
  * (chrome.tabs.update; LinkedIn profile template hard-reloads after jump — see specialTemplates).
+ *
+ * Optional per-step: navigate=false (collect only), matchMode=presence (webRequest seen, no replay).
+ * Optional root assemble + requireParams: navigate once after all steps complete.
+ * Optional stepOrder=any: steps are unordered gates (complete in any order).
  */
-import jp from 'jsonpath';
 import { checkIsRequiredUrl } from '../utils/utils';
 import { getPageDecodeState } from './state';
 import { fetchRequestData } from './utils';
 import { applyJumpConfigDataSourceNavigation } from './specialTemplates/specialTemplateLinkedinProfileJump.js';
+import {
+  extractJumpParams,
+  assembleJumpUrl,
+  jumpConfigRequireParamsSatisfied,
+  jumpConfigAllStepsComplete,
+  jumpConfigStepKey,
+} from './jumpConfigRedirectPure.js';
+
+export { extractJumpParams, assembleJumpUrl } from './jumpConfigRedirectPure.js';
+
+/** Verbose diagnostics for Fomo-style jumpConfig URLs in service worker console. */
+function isJumpConfigDiagUrl(url) {
+  if (typeof url !== 'string') return false;
+  return (
+    url.includes('/v2/users') ||
+    url.includes('/referral/useReferralCode')
+  );
+}
+
+/**
+ * @param {string} event
+ * @param {object} [detail]
+ */
+function logJumpConfigDiag(event, detail) {
+  console.log('[jumpConfig]', event, detail ?? '');
+}
+
+/**
+ * @param {string} currRequestUrl
+ * @param {string|undefined} method
+ * @param {string} source
+ */
+function logJumpConfigRequestContext(currRequestUrl, method, source) {
+  if (!isJumpConfigDiagUrl(currRequestUrl)) return;
+  const { state } = getPageDecodeState();
+  const jc = state.jumpConfigState;
+  if (!jc?.steps?.length) {
+    logJumpConfigDiag(`${source}: no jumpConfigState`, { url: currRequestUrl });
+    return;
+  }
+  const matchedSteps = jc.steps
+    .map((step, idx) =>
+      interceptMatchesStep(step, currRequestUrl, method)
+        ? {
+            idx,
+            stepId: step.stepId ?? `idx_${idx}`,
+            matchMode: stepMatchMode(step),
+          }
+        : null
+    )
+    .filter(Boolean);
+  if (matchedSteps.length === 0) return;
+
+  const current = jc.steps[jc.currentStepIndex];
+  logJumpConfigDiag(`${source}: request`, {
+    url: currRequestUrl,
+    method: method || 'GET',
+    stepOrder: jc.stepOrder,
+    currentStepIndex: jc.currentStepIndex,
+    currentStepId: current?.stepId ?? `idx_${jc.currentStepIndex}`,
+    currentMatchMode: current ? stepMatchMode(current) : null,
+    matchedSteps,
+    isApplying: jc.isApplying,
+    finalized: jc.finalized,
+    extractedParams: { ...jc.extractedParams },
+  });
+}
 
 /**
  * @param {object|null|undefined} jumpConfig
@@ -21,16 +91,116 @@ export function initJumpConfigState(jumpConfig) {
     jumpConfig.steps.length === 0
   ) {
     state.jumpConfigState = null;
+    logJumpConfigDiag('init skipped', { reason: 'missing or empty jumpConfig' });
     return;
   }
   state.jumpConfigState = {
     defaultJumpUrl: jumpConfig.defaultJumpUrl || '',
+    assemble: jumpConfig.assemble ?? null,
+    requireParams: Array.isArray(jumpConfig.requireParams)
+      ? jumpConfig.requireParams
+      : [],
+    stepOrder: jumpConfig.stepOrder === 'any' ? 'any' : 'sequential',
     steps: jumpConfig.steps,
     currentStepIndex: 0,
     extractedParams: {},
     completedStepKeys: new Set(),
     isApplying: false,
+    finalized: false,
   };
+  logJumpConfigDiag('init ok', {
+    stepCount: jumpConfig.steps.length,
+    stepIds: jumpConfig.steps.map(
+      (s, i) => s.stepId ?? `idx_${i}`
+    ),
+    stepOrder: state.jumpConfigState.stepOrder,
+    hasRootAssemble: !!jumpConfig.assemble,
+    requireParams: state.jumpConfigState.requireParams,
+  });
+}
+
+/**
+ * @param {object} step
+ */
+function stepNavigateEnabled(step) {
+  return step?.navigate !== false;
+}
+
+/**
+ * @param {object} step
+ * @returns {'presence' | 'replay'}
+ */
+function stepMatchMode(step) {
+  return step?.matchMode === 'presence' ? 'presence' : 'replay';
+}
+
+/**
+ * @param {object} jc
+ */
+function isUnorderedGates(jc) {
+  return jc?.stepOrder === 'any';
+}
+
+/**
+ * @param {object} jc
+ */
+function jcAllStepsComplete(jc) {
+  return jumpConfigAllStepsComplete({
+    stepOrder: jc.stepOrder,
+    steps: jc.steps,
+    currentStepIndex: jc.currentStepIndex,
+    completedStepKeys: jc.completedStepKeys,
+  });
+}
+
+/**
+ * @param {object} jc
+ * @param {string} requestUrl
+ * @param {string} [method]
+ * @returns {{ step: object, stepIndex: number, stepKey: string } | null}
+ */
+function findPendingReplayGate(jc, requestUrl, method) {
+  if (!jc?.steps?.length) return null;
+  for (let i = 0; i < jc.steps.length; i++) {
+    const step = jc.steps[i];
+    if (stepMatchMode(step) === 'presence') continue;
+    const stepKey = jumpConfigStepKey(step, i);
+    if (step.once !== false && jc.completedStepKeys.has(stepKey)) continue;
+    if (!interceptMatchesStep(step, requestUrl, method)) continue;
+    return { step, stepIndex: i, stepKey };
+  }
+  return null;
+}
+
+/**
+ * @param {object} jc
+ * @param {string} stepKey
+ */
+function markJumpConfigStepComplete(jc, stepKey) {
+  jc.completedStepKeys.add(stepKey);
+  if (!isUnorderedGates(jc)) {
+    jc.currentStepIndex += 1;
+  }
+}
+
+/**
+ * @param {object} jc
+ * @param {string} requestUrl
+ * @param {string} [method]
+ * @returns {{ step: object, stepIndex: number, stepKey: string } | null}
+ */
+function resolveReplayStepForRequest(jc, requestUrl, method) {
+  if (isUnorderedGates(jc)) {
+    return findPendingReplayGate(jc, requestUrl, method);
+  }
+  if (jc.currentStepIndex >= jc.steps.length) return null;
+  const step = jc.steps[jc.currentStepIndex];
+  if (stepMatchMode(step) === 'presence') return null;
+  const stepIndex = jc.currentStepIndex;
+  const stepKey = jumpConfigStepKey(step, stepIndex);
+  if (step.once !== false && jc.completedStepKeys.has(stepKey)) return null;
+  if (!interceptMatchesStep(step, requestUrl, method)) return null;
+  return { step, stepIndex, stepKey };
 }
 
 /**
@@ -61,148 +231,78 @@ function interceptMatchesStep(step, requestUrl, method) {
 }
 
 /**
- * @param {object} responseData
- * @param {object[]} extractRules
- * @param {object} existingParams
+ * @param {object} jc
+ * @param {object} step
  */
-function extractJumpParams(responseData, extractRules, existingParams) {
-  const prev = existingParams && typeof existingParams === 'object' ? existingParams : {};
-  const out = {};
-  if (!Array.isArray(extractRules)) return { ...prev };
-
-  for (const rule of extractRules) {
-    const key = rule?.paramKey;
-    if (!key) continue;
-    const from = rule.from || 'responseJson';
-    let raw;
-    if (from === 'responseJson' && rule.jsonPath) {
-      try {
-        const found = jp.query(responseData, rule.jsonPath);
-        raw = found.length ? found[0] : undefined;
-      } catch (_e) {
-        raw = undefined;
-      }
-    }
-    if (raw === undefined || raw === null) {
-      out[key] =
-        rule.defaultValue !== undefined && rule.defaultValue !== null
-          ? rule.defaultValue
-          : '';
-    } else {
-      out[key] = typeof raw === 'object' ? JSON.stringify(raw) : String(raw);
-    }
-  }
-  return { ...prev, ...out };
+function resolveStepAssemble(jc, step) {
+  return step?.assemble ?? jc?.assemble ?? null;
 }
 
 /**
- * @param {*} paramValue
- * @param {string} operator
- * @param {*} compareValue
+ * Navigate once using root assemble after all steps complete.
+ * @returns {Promise<boolean>}
  */
-function evaluateCondition(paramValue, operator, compareValue) {
-  const a = paramValue == null ? '' : String(paramValue);
-  const op = String(operator || 'eq').toLowerCase();
-  if (op === 'eq') return a === String(compareValue);
-  if (op === 'ne') return a !== String(compareValue);
-  if (op === 'contains') return a.includes(String(compareValue));
-  if (op === 'in') {
-    if (Array.isArray(compareValue)) {
-      return compareValue.map(String).includes(a);
-    }
-    return String(compareValue)
-      .split(',')
-      .map((s) => s.trim())
-      .includes(a);
+async function maybeFinalizeJumpConfigNavigation() {
+  const { state } = getPageDecodeState();
+  const jc = state.jumpConfigState;
+  if (!jc?.steps?.length || jc.finalized) return false;
+  if (!jcAllStepsComplete(jc)) return false;
+  if (!jc.assemble || typeof jc.assemble !== 'object') return false;
+
+  if (!jumpConfigRequireParamsSatisfied(jc.requireParams, jc.extractedParams)) {
+    logJumpConfigDiag('finalize skipped', {
+      reason: 'requireParams',
+      requireParams: jc.requireParams,
+      extractedParams: { ...jc.extractedParams },
+    });
+    return false;
   }
-  return false;
+
+  const jumpTo = state.activeTemplate?.jumpTo;
+  let newUrl = assembleJumpUrl(
+    jc.assemble,
+    jc.extractedParams,
+    jc.defaultJumpUrl,
+    jumpTo
+  );
+  if (!newUrl || !/^https?:\/\//i.test(newUrl)) {
+    newUrl =
+      jc.defaultJumpUrl ||
+      (typeof jumpTo === 'string' ? jumpTo : '') ||
+      '';
+  }
+  if (!newUrl) {
+    console.warn('jumpConfig: finalize assembled URL empty, skip tab update');
+    return false;
+  }
+
+  const tabId = state.dataSourcePageTabId;
+  if (tabId == null) return false;
+
+  const navigated = await applyJumpConfigDataSourceNavigation(
+    state.activeTemplate,
+    tabId,
+    newUrl
+  );
+  if (!navigated) return false;
+
+  jc.finalized = true;
+  console.log('jumpConfig: finalized ->', newUrl);
+  return true;
 }
 
 /**
- * Replace `{paramKey}` in template string using params.
- * @param {string} template
- * @param {object} params
+ * Mark current step complete and advance index (no replay).
+ * @returns {Promise<boolean>}
  */
-function interpolateUrlTemplate(template, params) {
-  if (typeof template !== 'string') return '';
-  return template.replace(/\{(\w+)\}/g, (_, k) => {
-    const v = params[k];
-    return v != null && v !== '' ? encodeURIComponent(String(v)) : '';
-  });
-}
+async function completeJumpConfigStepWithoutReplay(stepKey) {
+  const { state } = getPageDecodeState();
+  const jc = state.jumpConfigState;
+  if (!jc) return false;
 
-/**
- * @param {object} assemble
- * @param {object} params
- * @param {string} defaultJumpUrl
- * @param {string} [jumpToFallback]
- */
-function assembleJumpUrl(assemble, params, defaultJumpUrl, jumpToFallback) {
-  if (!assemble || typeof assemble !== 'object') {
-    return defaultJumpUrl || jumpToFallback || '';
-  }
-
-  const { condition, paramMode, params: assembleParams } = assemble;
-  let baseUrl = assemble.baseUrl || '';
-
-  if (condition && condition.paramKey) {
-    const pv = params[condition.paramKey];
-    const ok = evaluateCondition(
-      pv,
-      condition.operator,
-      condition.value
-    );
-    if (ok && condition.trueUrl) return interpolateUrlTemplate(condition.trueUrl, params);
-    if (!ok && condition.falseUrl) {
-      return interpolateUrlTemplate(condition.falseUrl, params);
-    }
-  }
-
-  baseUrl = interpolateUrlTemplate(baseUrl, params);
-  if (!baseUrl) {
-    return defaultJumpUrl || jumpToFallback || '';
-  }
-
-  const mode = paramMode || 'query';
-  const list = Array.isArray(assembleParams) ? assembleParams : [];
-
-  if (mode === 'query') {
-    const sp = new URLSearchParams();
-    for (const item of list) {
-      if (!item?.key) continue;
-      const val =
-        item.valueType === 'dynamic' && item.value != null
-          ? params[item.value]
-          : item.value;
-      if (val !== undefined && val !== null && String(val) !== '') {
-        sp.append(item.key, String(val));
-      }
-    }
-    const q = sp.toString();
-    return q ? `${baseUrl.split('#')[0]}?${q}` : baseUrl.split('#')[0];
-  }
-
-  if (mode === 'path') {
-    let url = baseUrl.split('#')[0];
-    for (const item of list) {
-      if (!item?.key) continue;
-      const val =
-        item.valueType === 'dynamic' && item.value != null
-          ? params[item.value]
-          : item.value;
-      const seg =
-        val != null && val !== ''
-          ? encodeURIComponent(String(val))
-          : '';
-      url = url.replace(
-        new RegExp(`\\{${item.key}\\}`, 'g'),
-        seg
-      );
-    }
-    return url;
-  }
-
-  return baseUrl.split('#')[0] || defaultJumpUrl || jumpToFallback || '';
+  markJumpConfigStepComplete(jc, stepKey);
+  await maybeFinalizeJumpConfigNavigation();
+  return true;
 }
 
 /**
@@ -210,7 +310,11 @@ function assembleJumpUrl(assemble, params, defaultJumpUrl, jumpToFallback) {
  */
 export function currentJumpStepMatchesUrl(state, requestUrl, method) {
   const jc = state.jumpConfigState;
-  if (!jc || jc.currentStepIndex >= jc.steps.length) return false;
+  if (!jc?.steps?.length) return false;
+  if (isUnorderedGates(jc)) {
+    return !!findPendingReplayGate(jc, requestUrl, method);
+  }
+  if (jc.currentStepIndex >= jc.steps.length) return false;
   const step = jc.steps[jc.currentStepIndex];
   return interceptMatchesStep(step, requestUrl, method);
 }
@@ -219,7 +323,20 @@ export function currentJumpStepMatchesUrl(state, requestUrl, method) {
  * When request is not a template capture target but matches jumpConfig current step, store POST body.
  */
 export function shouldStoreBodyForJumpConfig(state, currRequestUrl, method) {
-  if (!currentJumpStepMatchesUrl(state, currRequestUrl, method)) return false;
+  const jc = state.jumpConfigState;
+  if (!jc) return false;
+
+  let step;
+  if (isUnorderedGates(jc)) {
+    const gate = findPendingReplayGate(jc, currRequestUrl, method);
+    if (!gate) return false;
+    step = gate.step;
+  } else {
+    if (!currentJumpStepMatchesUrl(state, currRequestUrl, method)) return false;
+    step = jc.steps[jc.currentStepIndex];
+  }
+
+  if (step && stepMatchMode(step) === 'presence') return false;
   const m = (method || 'GET').toUpperCase();
   return ['POST', 'PUT', 'PATCH'].includes(m);
 }
@@ -234,21 +351,40 @@ export function shouldStoreBodyForJumpConfig(state, currRequestUrl, method) {
 async function runJumpConfigStepIfMatched(requestUrl, responseData, method) {
   const { state } = getPageDecodeState();
   const jc = state.jumpConfigState;
-  if (!jc?.steps?.length || jc.currentStepIndex >= jc.steps.length) {
+  if (!jc?.steps?.length || jc.finalized) return false;
+  if (
+    !isUnorderedGates(jc) &&
+    jc.currentStepIndex >= jc.steps.length
+  ) {
     return false;
   }
 
-  const step = jc.steps[jc.currentStepIndex];
-  const stepKey = step.stepId ?? `idx_${jc.currentStepIndex}`;
-  const once = step.once !== false;
-  if (once && jc.completedStepKeys.has(stepKey)) return false;
+  const resolved = resolveReplayStepForRequest(jc, requestUrl, method);
+  if (!resolved) return false;
 
-  if (!interceptMatchesStep(step, requestUrl, method)) return false;
+  const { step, stepKey } = resolved;
+
+  if (isJumpConfigDiagUrl(requestUrl)) {
+    logJumpConfigDiag('replay step intercept', {
+      stepKey,
+      stepOrder: jc.stepOrder,
+      url: requestUrl,
+      method: method || 'GET',
+      hasResponse: responseData != null,
+    });
+  }
 
   if (
     responseData == null ||
     (typeof responseData !== 'object' && typeof responseData !== 'string')
   ) {
+    if (isJumpConfigDiagUrl(requestUrl)) {
+      logJumpConfigDiag('replay step skipped', {
+        stepKey,
+        reason: 'empty responseData',
+        url: requestUrl,
+      });
+    }
     return false;
   }
 
@@ -266,9 +402,24 @@ async function runJumpConfigStepIfMatched(requestUrl, responseData, method) {
     step.extract,
     jc.extractedParams
   );
+
+  if (!stepNavigateEnabled(step)) {
+    markJumpConfigStepComplete(jc, stepKey);
+    logJumpConfigDiag('step done (no navigate)', {
+      stepKey,
+      stepOrder: jc.stepOrder,
+      nextStepIndex: jc.currentStepIndex,
+      allStepsComplete: jcAllStepsComplete(jc),
+      extractedParams: { ...jc.extractedParams },
+    });
+    await maybeFinalizeJumpConfigNavigation();
+    return true;
+  }
+
   const jumpTo = state.activeTemplate?.jumpTo;
+  const stepAssemble = resolveStepAssemble(jc, step);
   let newUrl = assembleJumpUrl(
-    step.assemble,
+    stepAssemble,
     jc.extractedParams,
     jc.defaultJumpUrl,
     jumpTo
@@ -294,10 +445,122 @@ async function runJumpConfigStepIfMatched(requestUrl, responseData, method) {
   );
   if (!navigated) return false;
 
-  jc.completedStepKeys.add(stepKey);
-  jc.currentStepIndex += 1;
+  markJumpConfigStepComplete(jc, stepKey);
   console.log('jumpConfig: step done', stepKey, '->', newUrl);
+  if (jcAllStepsComplete(jc) && jc.assemble) {
+    jc.finalized = true;
+  }
   return true;
+}
+
+/**
+ * Presence-only step: request observed on data source tab (no replay).
+ * @param {{ currRequestUrl: string, method?: string }} args
+ */
+export async function tryJumpConfigPresenceStep({ currRequestUrl, method }) {
+  logJumpConfigRequestContext(currRequestUrl, method, 'presence');
+
+  const { state } = getPageDecodeState();
+  const jc = state.jumpConfigState;
+  if (!jc?.steps?.length || jc.finalized) {
+    if (isJumpConfigDiagUrl(currRequestUrl)) {
+      logJumpConfigDiag('presence skipped', {
+        reason: 'no steps or finalized',
+        url: currRequestUrl,
+        currentStepIndex: jc?.currentStepIndex,
+      });
+    }
+    return;
+  }
+
+  if (isUnorderedGates(jc)) {
+    for (let i = 0; i < jc.steps.length; i++) {
+      const step = jc.steps[i];
+      if (stepMatchMode(step) !== 'presence') continue;
+      const stepKey = jumpConfigStepKey(step, i);
+      if (step.once !== false && jc.completedStepKeys.has(stepKey)) continue;
+      if (!interceptMatchesStep(step, currRequestUrl, method)) continue;
+
+      logJumpConfigDiag('presence intercept matched', {
+        stepKey,
+        stepOrder: jc.stepOrder,
+        url: currRequestUrl,
+        method: method || 'GET',
+      });
+
+      try {
+        await completeJumpConfigStepWithoutReplay(stepKey);
+        logJumpConfigDiag('presence step done', {
+          stepKey,
+          stepOrder: jc.stepOrder,
+          allStepsComplete: jcAllStepsComplete(jc),
+        });
+      } catch (e) {
+        console.warn('jumpConfig: presence step failed', e);
+      }
+      return;
+    }
+    return;
+  }
+
+  if (jc.currentStepIndex >= jc.steps.length) {
+    if (isJumpConfigDiagUrl(currRequestUrl)) {
+      logJumpConfigDiag('presence skipped', {
+        reason: 'all steps done',
+        url: currRequestUrl,
+        currentStepIndex: jc.currentStepIndex,
+      });
+    }
+    return;
+  }
+  if (jc.isApplying) {
+    if (isJumpConfigDiagUrl(currRequestUrl)) {
+      logJumpConfigDiag('presence skipped', {
+        reason: 'isApplying (replay in progress)',
+        url: currRequestUrl,
+        currentStepIndex: jc.currentStepIndex,
+      });
+    }
+    return;
+  }
+
+  const step = jc.steps[jc.currentStepIndex];
+  if (stepMatchMode(step) !== 'presence') {
+    if (
+      isJumpConfigDiagUrl(currRequestUrl) &&
+      interceptMatchesStep(step, currRequestUrl, method)
+    ) {
+      logJumpConfigDiag('presence skipped', {
+        reason: 'current step is replay not presence',
+        url: currRequestUrl,
+        currentStepId: step.stepId ?? `idx_${jc.currentStepIndex}`,
+      });
+    }
+    return;
+  }
+
+  const stepKey = jumpConfigStepKey(step, jc.currentStepIndex);
+  if (step.once !== false && jc.completedStepKeys.has(stepKey)) return;
+  if (!interceptMatchesStep(step, currRequestUrl, method)) return;
+
+  logJumpConfigDiag('presence intercept matched', {
+    stepKey,
+    url: currRequestUrl,
+    method: method || 'GET',
+  });
+
+  jc.isApplying = true;
+  try {
+    await completeJumpConfigStepWithoutReplay(stepKey);
+    logJumpConfigDiag('presence step done', {
+      stepKey,
+      nextStepIndex: jc.currentStepIndex,
+    });
+  } catch (e) {
+    console.warn('jumpConfig: presence step failed', e);
+  } finally {
+    jc.isApplying = false;
+  }
 }
 
 /**
@@ -311,8 +574,24 @@ export async function tryApplyJumpConfigFromResponse({
 }) {
   const { state } = getPageDecodeState();
   const jc = state.jumpConfigState;
-  if (!jc?.steps?.length || jc.currentStepIndex >= jc.steps.length) return;
+  if (!jc?.steps?.length || jc.finalized) return;
+  if (
+    !isUnorderedGates(jc) &&
+    jc.currentStepIndex >= jc.steps.length
+  ) {
+    return;
+  }
   if (jc.isApplying) return;
+  if (
+    isUnorderedGates(jc) &&
+    !resolveReplayStepForRequest(jc, requestUrl, method)
+  ) {
+    return;
+  }
+
+  if (isJumpConfigDiagUrl(requestUrl)) {
+    logJumpConfigRequestContext(requestUrl, method, 'templateTarget');
+  }
 
   jc.isApplying = true;
   try {
@@ -335,15 +614,41 @@ export async function tryJumpConfigStandaloneIntercept({
   type,
   storeInRequestsMap,
 }) {
+  logJumpConfigRequestContext(currRequestUrl, method, 'standalone');
+
   const { state } = getPageDecodeState();
   if (type === 'main_frame') return;
-  if (!currentJumpStepMatchesUrl(state, currRequestUrl, method)) return;
 
   const jc = state.jumpConfigState;
-  const step = jc.steps[jc.currentStepIndex];
-  const stepKey = step.stepId ?? `idx_${jc.currentStepIndex}`;
+  if (!jc?.steps?.length || jc.finalized) return;
+
+  const gate = isUnorderedGates(jc)
+    ? findPendingReplayGate(jc, currRequestUrl, method)
+    : null;
+  if (isUnorderedGates(jc)) {
+    if (!gate) return;
+  } else if (!currentJumpStepMatchesUrl(state, currRequestUrl, method)) {
+    return;
+  }
+
+  const step = isUnorderedGates(jc)
+    ? gate.step
+    : jc.steps[jc.currentStepIndex];
+  if (stepMatchMode(step) === 'presence') return;
+
+  const stepKey = isUnorderedGates(jc)
+    ? gate.stepKey
+    : jumpConfigStepKey(step, jc.currentStepIndex);
   if (step.once !== false && jc.completedStepKeys.has(stepKey)) return;
   if (jc.isApplying) return;
+
+  if (isJumpConfigDiagUrl(currRequestUrl)) {
+    logJumpConfigDiag('standalone replay start', {
+      stepKey,
+      url: currRequestUrl,
+      method: method || 'GET',
+    });
+  }
 
   jc.isApplying = true;
   try {
@@ -366,8 +671,18 @@ export async function tryJumpConfigStandaloneIntercept({
     });
 
     if (responseData == null) {
+      if (isJumpConfigDiagUrl(currRequestUrl)) {
+        logJumpConfigDiag('standalone replay failed', {
+          stepKey,
+          url: currRequestUrl,
+          allowDefaultJumpFallback:
+            stepNavigateEnabled(step) && !jc.assemble,
+        });
+      }
+      const allowFallback =
+        stepNavigateEnabled(step) && !jc.assemble;
       const fallback = jc.defaultJumpUrl;
-      if (fallback && state.dataSourcePageTabId != null) {
+      if (allowFallback && fallback && state.dataSourcePageTabId != null) {
         try {
           await applyJumpConfigDataSourceNavigation(
             state.activeTemplate,
@@ -382,6 +697,12 @@ export async function tryJumpConfigStandaloneIntercept({
       return;
     }
 
+    if (isJumpConfigDiagUrl(currRequestUrl)) {
+      logJumpConfigDiag('standalone replay ok', {
+        stepKey,
+        url: currRequestUrl,
+      });
+    }
     await runJumpConfigStepIfMatched(currRequestUrl, responseData, method);
   } catch (e) {
     console.warn('jumpConfig: standalone intercept failed', e);
