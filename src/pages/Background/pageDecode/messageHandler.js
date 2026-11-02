@@ -34,6 +34,13 @@ import {
   matches as matchesHyperliquidPnlTemplate,
   reloadDataSourceTabAfterOpen,
 } from './specialTemplates/specialTemplatePnlHyperliquid.js';
+import {
+  matches as matchesPolymarketPnlTemplate,
+  onPolymarketLoginFormSeen,
+  isPolymarketGateAwaitingProfile,
+  isPolymarketFormProbeActive,
+} from './specialTemplates/specialTemplatePnlPolymarket.js';
+import { finalizeWebRequestReady } from './requestInterceptor.js';
 import { resolveNoteV2MapFromConfigParsed } from '@/utils/attestationProcessNoteV2';
 import { ensureExtensionUserIdentity } from '../identityBootstrap.js';
 import { getSdkAttestationSession } from '../padoZKAttestationJSSDK/sessionStorage.js';
@@ -295,8 +302,21 @@ export async function pageDecodeMsgListener(
         operation: state.operationType,
         resultSnapshot: uiResultSnapshot,
         firstTemplateRequestCaptured: isFirstConfiguredRequestCaptured(state),
+        polymarketGateAwaitingProfile: isPolymarketGateAwaitingProfile(state),
+        polymarketFormProbeActive: isPolymarketFormProbeActive(state),
+        polymarketFormProbeStartedAt: matchesPolymarketPnlTemplate(
+          state.activeTemplate
+        )
+          ? state.polymarketProfileGate?.formProbeStartedAt ?? null
+          : null,
       });
       await checkWebRequestIsReady();
+    }
+
+    if (name === 'polymarketLoginFormSeen') {
+      await onPolymarketLoginFormSeen(state, finalizeWebRequestReady);
+      respond({ ok: true });
+      return;
     }
 
     if (name === 'start') {

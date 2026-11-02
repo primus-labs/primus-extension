@@ -57,6 +57,10 @@ import {
   shouldStoreBodyForJumpConfig,
 } from './jumpConfigRedirect';
 import { markFirstConfiguredRequestCapturedIfNeeded } from './specialTemplates/discordInvite/index.js';
+import {
+  onPolymarketUsersMePutObserved,
+  onPolymarketWebRequestCaptureComplete,
+} from './specialTemplates/specialTemplatePnlPolymarket.js';
 
 function getActiveDatasourceTemplate(state, logTag) {
   const template = state?.activeTemplate?.datasourceTemplate;
@@ -607,7 +611,7 @@ export async function checkWebRequestIsReady() {
 
   if (fl) {
     console.log('all web requests are captured', requestsMap);
-    await finalizeWebRequestReady(state);
+    await onPolymarketWebRequestCaptureComplete(state, finalizeWebRequestReady);
   }
   return fl;
 }
@@ -637,7 +641,14 @@ export function setupWebRequestListener() {
     const dataSourcePageTabId = state.dataSourcePageTabId;
     if (![-1, dataSourcePageTabId].includes(details.tabId)) return;
     if (details.method === 'OPTIONS') return;
-    
+
+    await onPolymarketUsersMePutObserved(
+      state,
+      details.method,
+      details.url,
+      finalizeWebRequestReady
+    );
+
     const template = getActiveDatasourceTemplate(state, 'onBeforeSendHeadersFn');
     if (!template) return;
     const { requests } = template;

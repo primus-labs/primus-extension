@@ -4,6 +4,7 @@
  * Replaces module-level mutable variables for testability and clear lifecycle.
  */
 import { sanitizeRequestHeaders } from '../utils/utils';
+import { resetPolymarketProfileGate } from './specialTemplates/specialTemplatePnlPolymarket.js';
 export const DEFAULT_PRE_ATTEST_PROMPT_V2 = [
   {
     text: ['Processing request...'],
@@ -175,6 +176,7 @@ export function createPageDecodeState() {
     resetReputationPhalaFields();
     resetLumaPagedApprovedHits();
     state.firstConfiguredRequestCaptured = false;
+    resetPolymarketProfileGate(state);
   }
 
   function removeFromRequestsMap(requestId) {

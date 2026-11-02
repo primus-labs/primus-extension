@@ -25,6 +25,10 @@ import {
 import './index.scss';
 import { tryGithubRepositoriesShowMoreClick } from './pageDecodeGithubShowMore';
 import { shouldDeferModalUntilFirstCapture } from '@/pages/Background/pageDecode/specialTemplates/discordInvite/templateId.js';
+import {
+  startPolymarketLoginFormPoll,
+  stopPolymarketLoginFormPoll,
+} from './polymarketProfileLoginPoll';
 
 let activeRequest = null;
 /** Discord invite: hide verification card until first configured request is captured. */
@@ -108,6 +112,25 @@ function maybeReleaseDeferredModalFromAppend(response, templateParams) {
   if (!deferredModalPending) return;
   if (shouldDeferModalForAppend(response, templateParams)) return;
   releaseDeferredModalIfPending();
+}
+
+function syncPolymarketLoginFormPoll(response, templateParams) {
+  if (response?.isReady) {
+    stopPolymarketLoginFormPoll();
+    return;
+  }
+  if (
+    response?.polymarketFormProbeActive &&
+    response.polymarketFormProbeStartedAt != null
+  ) {
+    startPolymarketLoginFormPoll(
+      templateParams,
+      response.polymarketFormProbeActive,
+      response.polymarketFormProbeStartedAt
+    );
+    return;
+  }
+  stopPolymarketLoginFormPoll();
 }
 
 function syncPageDecodeStateOnce() {
@@ -328,6 +351,11 @@ function applyInitCompletedAppend(response) {
   if (activeRequest) {
     activeRequest.pageDecodePhase = response.phase || activeRequest.pageDecodePhase;
     activeRequest.resultSnapshot = response.resultSnapshot || null;
+    if (response.polymarketGateAwaitingProfile != null) {
+      activeRequest.polymarketGateAwaitingProfile =
+        response.polymarketGateAwaitingProfile;
+    }
+    syncPolymarketLoginFormPoll(response, activeRequest);
     if (!response.isReady && response.phase !== 'attesting') {
       tryGithubRepositoriesShowMoreClick(activeRequest);
     }
@@ -349,10 +377,13 @@ function applyInitCompletedAppend(response) {
   activeRequest = { ...params };
   activeRequest.pageDecodePhase = response.phase || params.pageDecodePhase;
   activeRequest.resultSnapshot = response.resultSnapshot || params.resultSnapshot || null;
+  activeRequest.polymarketGateAwaitingProfile =
+    response.polymarketGateAwaitingProfile ?? false;
   delete activeRequest.PADOSERVERURL;
   delete activeRequest.padoExtensionVersion;
 
   tryGithubRepositoriesShowMoreClick(activeRequest);
+  syncPolymarketLoginFormPoll(response, activeRequest);
 
   deferredModalPending = shouldDeferModalForAppend(response, activeRequest);
 
