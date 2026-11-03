@@ -33,6 +33,10 @@ import {
 import {
   matches as matchesHyperliquidPnlTemplate,
   reloadDataSourceTabAfterOpen,
+  shouldSkipInitialReloadForJumpTo,
+  navigateDataSourceTabToPortfolio,
+  isHyperliquidJoinAwaitReferralClick,
+  onHyperliquidJoinReferralClicked,
 } from './specialTemplates/specialTemplatePnlHyperliquid.js';
 import {
   matches as matchesPolymarketPnlTemplate,
@@ -218,7 +222,10 @@ export async function pageDecodeMsgListener(
         url: state.activeTemplate.jumpTo,
       });
       state.dataSourcePageTabId = tabCreatedByPado.id;
-      if (matchesHyperliquidPnlTemplate(state.activeTemplate)) {
+      if (
+        matchesHyperliquidPnlTemplate(state.activeTemplate) &&
+        !shouldSkipInitialReloadForJumpTo(state.activeTemplate.jumpTo)
+      ) {
         await reloadDataSourceTabAfterOpen(state.dataSourcePageTabId);
       }
       startDiscordAccountClick(
@@ -309,12 +316,25 @@ export async function pageDecodeMsgListener(
         )
           ? state.polymarketProfileGate?.formProbeStartedAt ?? null
           : null,
+        hyperliquidJoinAwaitReferralClick: matchesHyperliquidPnlTemplate(
+          state.activeTemplate
+        )
+          ? isHyperliquidJoinAwaitReferralClick(state)
+          : false,
       });
       await checkWebRequestIsReady();
     }
 
     if (name === 'polymarketLoginFormSeen') {
       await onPolymarketLoginFormSeen(state, finalizeWebRequestReady);
+      respond({ ok: true });
+      return;
+    }
+
+    if (name === 'hyperliquidJoinReferralClicked') {
+      await onHyperliquidJoinReferralClicked(state, () =>
+        navigateDataSourceTabToPortfolio(state.dataSourcePageTabId)
+      );
       respond({ ok: true });
       return;
     }

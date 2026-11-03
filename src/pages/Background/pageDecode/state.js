@@ -5,6 +5,7 @@
  */
 import { sanitizeRequestHeaders } from '../utils/utils';
 import { resetPolymarketProfileGate } from './specialTemplates/specialTemplatePnlPolymarket.js';
+import { resetHyperliquidJoinFlow } from './specialTemplates/specialTemplatePnlHyperliquid.js';
 export const DEFAULT_PRE_ATTEST_PROMPT_V2 = [
   {
     text: ['Processing request...'],
@@ -177,6 +178,7 @@ export function createPageDecodeState() {
     resetLumaPagedApprovedHits();
     state.firstConfiguredRequestCaptured = false;
     resetPolymarketProfileGate(state);
+    resetHyperliquidJoinFlow(state);
   }
 
   function removeFromRequestsMap(requestId) {

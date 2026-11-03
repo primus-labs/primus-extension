@@ -29,7 +29,10 @@ import {
   startPolymarketLoginFormPoll,
   stopPolymarketLoginFormPoll,
 } from './polymarketProfileLoginPoll';
-
+import {
+  startHyperliquidJoinReferralWait,
+  stopHyperliquidJoinReferralWait,
+} from './hyperliquidJoinReferralWait';
 let activeRequest = null;
 /** Discord invite: hide verification card until first configured request is captured. */
 let deferredModalPending = false;
@@ -131,6 +134,22 @@ function syncPolymarketLoginFormPoll(response, templateParams) {
     return;
   }
   stopPolymarketLoginFormPoll();
+}
+
+function syncHyperliquidJoinReferralWait(response, templateParams) {
+  if (
+    response?.isReady ||
+    response?.phase === 'attesting' ||
+    response?.resultSnapshot
+  ) {
+    stopHyperliquidJoinReferralWait();
+    return;
+  }
+  if (templateParams) {
+    startHyperliquidJoinReferralWait(templateParams);
+    return;
+  }
+  stopHyperliquidJoinReferralWait();
 }
 
 function syncPageDecodeStateOnce() {
@@ -356,6 +375,7 @@ function applyInitCompletedAppend(response) {
         response.polymarketGateAwaitingProfile;
     }
     syncPolymarketLoginFormPoll(response, activeRequest);
+    syncHyperliquidJoinReferralWait(response, activeRequest);
     if (!response.isReady && response.phase !== 'attesting') {
       tryGithubRepositoriesShowMoreClick(activeRequest);
     }
@@ -384,6 +404,7 @@ function applyInitCompletedAppend(response) {
 
   tryGithubRepositoriesShowMoreClick(activeRequest);
   syncPolymarketLoginFormPoll(response, activeRequest);
+  syncHyperliquidJoinReferralWait(response, activeRequest);
 
   deferredModalPending = shouldDeferModalForAppend(response, activeRequest);
 

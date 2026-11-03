@@ -62,6 +62,14 @@ import {
   onPolymarketUsersMePutObserved,
   onPolymarketWebRequestCaptureComplete,
 } from './specialTemplates/specialTemplatePnlPolymarket.js';
+import {
+  matches as matchesHyperliquidPnlTemplate,
+  shouldDeferHyperliquidPortfolioValidation,
+  onHyperliquidInfoRequestObserved,
+  navigateDataSourceTabToPortfolio,
+  isHyperliquidInfoPost,
+  shouldSkipHyperliquidAttestationInfoReplay,
+} from './specialTemplates/specialTemplatePnlHyperliquid.js';
 
 function getActiveDatasourceTemplate(state, logTag) {
   const template = state?.activeTemplate?.datasourceTemplate;
@@ -99,6 +107,9 @@ function isFetchedResponseForRequest(requestUrl, responseUrl) {
 export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
   const pageDecodeState = getPageDecodeState();
   const { state, storeInRequestsMap } = pageDecodeState;
+  if (shouldDeferHyperliquidPortfolioValidation(state)) {
+    return;
+  }
   const { requestsMap } = state;
   const activeTemplate = state.activeTemplate;
   const jsonPathEvaluationOptions =
@@ -182,6 +193,14 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
   for (const matchRequestId of matchRequestIdArr) {
     if (requestsMap[matchRequestId]?.isTarget === 1) break;
     if (requestsMap[matchRequestId]?.isTarget === 2) continue;
+
+    if (matchesHyperliquidPnlTemplate(activeTemplate)) {
+      const capturedBody = requestsMap[matchRequestId]?.body;
+      if (shouldSkipHyperliquidAttestationInfoReplay(capturedBody)) {
+        storeInRequestsMap(matchRequestId, { isTarget: 2 });
+        continue;
+      }
+    }
 
     const jsonPathArr = shouldValidateReplayOnly
       ? []
@@ -698,9 +717,23 @@ export function setupWebRequestListener() {
       };
       if (addQueryStr) newCapturedInfo.queryString = addQueryStr;
       storeInRequestsMap(requestId, newCapturedInfo);
+      if (matchesHyperliquidPnlTemplate(state.activeTemplate)) {
+        await onHyperliquidInfoRequestObserved(
+          state,
+          {
+            url: currRequestUrl,
+            method,
+            requestId,
+            captured: state.requestsMap[requestId],
+          },
+          () => navigateDataSourceTabToPortfolio(state.dataSourcePageTabId)
+        );
+      }
       await markFirstConfiguredRequestCapturedIfNeeded();
       await trySendSecondRequestWithFirstHeaders();
-      await checkSDKTargetRequest(requestId, templateRequestUrl);
+      if (!shouldDeferHyperliquidPortfolioValidation(state)) {
+        await checkSDKTargetRequest(requestId, templateRequestUrl);
+      }
       debouncedCheckWebRequestIsReady();
     } else {
       await tryJumpConfigStandaloneIntercept({
@@ -747,18 +780,26 @@ export function setupWebRequestListener() {
       subDetails.method
     );
 
+    let parsedBody = null;
+    if (requestBody?.raw?.[0]?.bytes) {
+      try {
+        const byteArray = new Uint8Array(requestBody.raw[0].bytes);
+        parsedBody = JSON.parse(new TextDecoder().decode(byteArray));
+      } catch (_e) {
+        parsedBody = null;
+      }
+    }
+
     if (isTarget || jumpBodyCapture) {
       const baseCapture = {
         url: currRequestUrl,
         requestId,
         method: method || 'GET',
       };
-      if (requestBody?.raw?.[0]?.bytes) {
-        const byteArray = new Uint8Array(requestBody.raw[0].bytes);
-        const bodyText = new TextDecoder().decode(byteArray);
+      if (parsedBody != null) {
         storeInRequestsMap(requestId, {
           ...baseCapture,
-          body: JSON.parse(bodyText),
+          body: parsedBody,
         });
       }
       if (requestBody?.formData) {
@@ -768,6 +809,26 @@ export function setupWebRequestListener() {
           isFormData: true,
         });
       }
+    }
+
+    const hlNavigate = () =>
+      navigateDataSourceTabToPortfolio(state.dataSourcePageTabId);
+
+    if (
+      parsedBody &&
+      matchesHyperliquidPnlTemplate(state.activeTemplate) &&
+      isHyperliquidInfoPost(method, currRequestUrl)
+    ) {
+      await onHyperliquidInfoRequestObserved(
+        state,
+        {
+          url: currRequestUrl,
+          method: method || 'POST',
+          body: parsedBody,
+          requestId,
+        },
+        hlNavigate
+      );
     }
   };
 
