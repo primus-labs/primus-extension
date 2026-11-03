@@ -2,13 +2,28 @@
 import jp from 'jsonpath';
 import { matchesTemplateId } from './templateIdUtils.js';
 
+/**
+ * @param {string} raw
+ * @returns {string|null}
+ */
+function trimValidJumpUrlBase(raw) {
+  if (typeof raw !== 'string') return null;
+  const t = raw.trim();
+  if (!t) return null;
+  try {
+    const parsed = new URL(t);
+    return parsed.href.replace(/\/+$/, '');
+  } catch (_e) {
+    return null;
+  }
+}
+
 export const TEMPLATE_ID = '801a0cae-c21d-4063-91c6-fb58687c9d30';
 export const displayName = 'Hyperliquid';
 
 export const HYPERLIQUID_PORTFOLIO_URL =
   'https://app.hyperliquid.xyz/portfolio';
 export const HYPERLIQUID_INFO_URL = 'https://api-ui.hyperliquid.xyz/info';
-export const DEFAULT_JOIN_REFERRAL_SUFFIX = 'PRIMUSLABS';
 
 export const INFO_TYPE_LEGAL_CHECK = 'legalCheck';
 export const INFO_TYPE_ACCEPT_TERMS2 = 'acceptTerms2';
@@ -252,6 +267,7 @@ function ensureJoinFlow(state) {
 
 export function resetHyperliquidJoinFlow(state) {
   delete state.hyperliquidJoinFlow;
+  delete state.hyperliquidJoinReferralLastCorrectedUrl;
 }
 
 /**
@@ -332,7 +348,49 @@ function referralSuffixFromJumpTo(jumpTo) {
 }
 
 /**
- * @param {{ additionParamsObj?: { hyperliquidJoinReferralSuffix?: string }; jumpTo?: string } | null | undefined} activeTemplate
+ * @param {{ dataPageTemplate?: object | string } | null | undefined} activeTemplate
+ * @returns {Record<string, unknown> | null}
+ */
+function parseDataPageTemplate(activeTemplate) {
+  const raw = activeTemplate?.dataPageTemplate;
+  if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
+    return raw;
+  }
+  if (typeof raw === 'string' && raw.trim()) {
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        return parsed;
+      }
+    } catch (_e) {
+      /* ignore */
+    }
+  }
+  return null;
+}
+
+/**
+ * Template-configured join URL (dataPageTemplate.baseUrl), not launch_page jumpTo.
+ * @param {{ dataPageTemplate?: object | string; jumpTo?: string } | null | undefined} activeTemplate
+ * @returns {string}
+ */
+export function getHyperliquidTemplateJoinBaseUrl(activeTemplate) {
+  const dataPage = parseDataPageTemplate(activeTemplate);
+  const fromBase = trimValidJumpUrlBase(
+    typeof dataPage?.baseUrl === 'string' ? dataPage.baseUrl : ''
+  );
+  if (fromBase && isHyperliquidJoinPageUrl(fromBase)) {
+    return fromBase;
+  }
+  const fromJump = trimValidJumpUrlBase(activeTemplate?.jumpTo ?? '');
+  if (fromJump && isHyperliquidJoinPageUrl(fromJump)) {
+    return fromJump;
+  }
+  return '';
+}
+
+/**
+ * @param {{ additionParamsObj?: { hyperliquidJoinReferralSuffix?: string }; dataPageTemplate?: object | string; jumpTo?: string } | null | undefined} activeTemplate
  * @returns {string}
  */
 export function getHyperliquidJoinReferralSuffix(activeTemplate) {
@@ -340,9 +398,102 @@ export function getHyperliquidJoinReferralSuffix(activeTemplate) {
   if (typeof fromParams === 'string' && fromParams.trim()) {
     return fromParams.trim();
   }
+  const configuredJoinUrl = getHyperliquidTemplateJoinBaseUrl(activeTemplate);
+  const fromBase = getJoinReferralSegmentFromUrl(configuredJoinUrl);
+  if (fromBase) return fromBase;
   const fromJump = referralSuffixFromJumpTo(activeTemplate?.jumpTo ?? '');
   if (fromJump) return fromJump;
-  return DEFAULT_JOIN_REFERRAL_SUFFIX;
+  return '';
+}
+
+/**
+ * @param {string} href
+ * @returns {string | null} join referral segment, empty string if /join/ only, null if not join
+ */
+export function getJoinReferralSegmentFromUrl(href) {
+  try {
+    const parsed = new URL(href);
+    if (!/\/join(\/|$)/i.test(parsed.pathname)) {
+      return null;
+    }
+    const segment = parsed.pathname.replace(/\/+$/, '').split('/').pop();
+    if (!segment || segment.toLowerCase() === 'join') {
+      return '';
+    }
+    return segment.trim();
+  } catch (_e) {
+    return null;
+  }
+}
+
+/**
+ * @param {string} href
+ * @param {string} configuredBaseUrl
+ * @returns {boolean}
+ */
+export function needsHyperliquidJoinUrlCorrection(href, configuredBaseUrl) {
+  if (!isHyperliquidJoinPageUrl(href)) return false;
+  const expected = trimValidJumpUrlBase(configuredBaseUrl ?? '');
+  if (!expected) return false;
+  return normalizeJoinUrlForCompare(href) !== normalizeJoinUrlForCompare(expected);
+}
+
+/**
+ * @param {string} href
+ * @returns {string}
+ */
+export function normalizeJoinUrlForCompare(href) {
+  try {
+    const parsed = new URL(href);
+    return `${parsed.origin}${parsed.pathname}`.replace(/\/+$/, '');
+  } catch (_e) {
+    return '';
+  }
+}
+
+/**
+ * Redirect data-source tab to the template expected join referral code (e.g. MetaMask wrong code).
+ * @param {object} state
+ * @param {number | null | undefined} tabId
+ * @param {string} [urlHint]
+ */
+export async function maybeCorrectHyperliquidJoinReferralUrl(state, tabId, urlHint) {
+  if (!matches(state.activeTemplate) || tabId == null) return;
+  if (state.phase === 'idle') return;
+  if (state.hyperliquidJoinFlow?.phase === 'completed') return;
+
+  let currentUrl = typeof urlHint === 'string' ? urlHint : '';
+  if (!currentUrl) {
+    try {
+      const tab = await chrome.tabs.get(tabId);
+      currentUrl = tab?.url ?? '';
+    } catch (_e) {
+      return;
+    }
+  }
+
+  const configuredBaseUrl = getHyperliquidTemplateJoinBaseUrl(
+    state.activeTemplate
+  );
+  if (!needsHyperliquidJoinUrlCorrection(currentUrl, configuredBaseUrl)) {
+    return;
+  }
+
+  const targetUrl = configuredBaseUrl;
+  if (normalizeJoinUrlForCompare(currentUrl) === normalizeJoinUrlForCompare(targetUrl)) {
+    return;
+  }
+  if (state.hyperliquidJoinReferralLastCorrectedUrl === targetUrl) {
+    return;
+  }
+
+  state.hyperliquidJoinReferralLastCorrectedUrl = targetUrl;
+  try {
+    await chrome.tabs.update(tabId, { url: targetUrl });
+    console.log('hyperliquidPnl: corrected join referral URL', targetUrl);
+  } catch (e) {
+    console.warn('hyperliquidPnl: join referral URL correction failed', e);
+  }
 }
 
 /**

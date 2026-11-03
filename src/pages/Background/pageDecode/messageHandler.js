@@ -37,6 +37,7 @@ import {
   navigateDataSourceTabToPortfolio,
   isHyperliquidJoinAwaitReferralClick,
   onHyperliquidJoinReferralClicked,
+  maybeCorrectHyperliquidJoinReferralUrl,
 } from './specialTemplates/specialTemplatePnlHyperliquid.js';
 import {
   matches as matchesPolymarketPnlTemplate,
@@ -223,6 +224,12 @@ export async function pageDecodeMsgListener(
         url: state.activeTemplate.jumpTo,
       });
       state.dataSourcePageTabId = tabCreatedByPado.id;
+      if (matchesHyperliquidPnlTemplate(state.activeTemplate)) {
+        await maybeCorrectHyperliquidJoinReferralUrl(
+          state,
+          state.dataSourcePageTabId
+        );
+      }
       if (
         matchesHyperliquidPnlTemplate(state.activeTemplate) &&
         !shouldSkipInitialReloadForJumpTo(state.activeTemplate.jumpTo)
@@ -252,6 +259,18 @@ export async function pageDecodeMsgListener(
           tabId === state.dataSourcePageTabId &&
           (changeInfo.url || changeInfo.title || changeInfo.status === 'complete')
         ) {
+          if (
+            changeInfo.url &&
+            matchesHyperliquidPnlTemplate(state.activeTemplate)
+          ) {
+            maybeCorrectHyperliquidJoinReferralUrl(
+              state,
+              tabId,
+              changeInfo.url
+            ).catch((e) => {
+              console.warn('hyperliquidPnl: join URL correction on update', e);
+            });
+          }
           if (state.injectDebounceTimer) {
             clearTimeout(state.injectDebounceTimer);
           }

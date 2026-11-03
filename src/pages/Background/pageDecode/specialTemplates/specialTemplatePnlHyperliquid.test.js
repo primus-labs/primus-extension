@@ -1,10 +1,12 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  DEFAULT_JOIN_REFERRAL_SUFFIX,
   TEMPLATE_ID,
   buttonLabelEndsWithReferral,
   getHyperliquidJoinReferralSuffix,
+  getHyperliquidTemplateJoinBaseUrl,
+  getJoinReferralSegmentFromUrl,
+  needsHyperliquidJoinUrlCorrection,
   isHyperliquidJoinPageUrl,
   shouldSkipInitialReloadForJumpTo,
   isHyperliquidInfoUrl,
@@ -24,6 +26,9 @@ import {
 
 const HL_TEMPLATE = { attTemplateID: TEMPLATE_ID };
 const JOIN_JUMP = 'https://app.hyperliquid.xyz/join/PRIMUSLABS';
+const HL_DATA_PAGE_JOIN = {
+  dataPageTemplate: { baseUrl: JOIN_JUMP },
+};
 
 function hlState(jumpTo = JOIN_JUMP, flow) {
   const state = {
@@ -79,7 +84,17 @@ describe('getHyperliquidJoinReferralSuffix', () => {
     );
   });
 
-  it('falls back to jumpTo path segment', () => {
+  it('reads suffix from dataPageTemplate.baseUrl', () => {
+    assert.equal(
+      getHyperliquidJoinReferralSuffix({
+        ...HL_DATA_PAGE_JOIN,
+        jumpTo: 'https://app.hyperliquid.xyz/join/OTHER',
+      }),
+      'PRIMUSLABS'
+    );
+  });
+
+  it('falls back to jumpTo path segment when baseUrl missing', () => {
     assert.equal(
       getHyperliquidJoinReferralSuffix({
         jumpTo: 'https://app.hyperliquid.xyz/join/CUSTOMCODE',
@@ -88,12 +103,67 @@ describe('getHyperliquidJoinReferralSuffix', () => {
     );
   });
 
-  it('falls back to default suffix', () => {
+  it('returns empty when no join baseUrl or jumpTo segment', () => {
     assert.equal(
       getHyperliquidJoinReferralSuffix({
         jumpTo: 'https://app.hyperliquid.xyz/portfolio',
       }),
-      DEFAULT_JOIN_REFERRAL_SUFFIX
+      ''
+    );
+  });
+});
+
+describe('Hyperliquid join referral URL correction', () => {
+  it('getJoinReferralSegmentFromUrl parses join path segment', () => {
+    assert.equal(
+      getJoinReferralSegmentFromUrl('https://app.hyperliquid.xyz/join/PRIMUSLABS'),
+      'PRIMUSLABS'
+    );
+    assert.equal(
+      getJoinReferralSegmentFromUrl('https://app.hyperliquid.xyz/join/MMREFCSI'),
+      'MMREFCSI'
+    );
+    assert.equal(
+      getJoinReferralSegmentFromUrl('https://app.hyperliquid.xyz/join/'),
+      ''
+    );
+    assert.equal(
+      getJoinReferralSegmentFromUrl('https://app.hyperliquid.xyz/portfolio'),
+      null
+    );
+  });
+
+  it('getHyperliquidTemplateJoinBaseUrl reads dataPageTemplate.baseUrl', () => {
+    assert.equal(
+      getHyperliquidTemplateJoinBaseUrl({
+        ...HL_DATA_PAGE_JOIN,
+        jumpTo: 'https://app.hyperliquid.xyz/join/MMREFCSI',
+      }),
+      JOIN_JUMP
+    );
+  });
+
+  it('needsHyperliquidJoinUrlCorrection compares full join URL to baseUrl', () => {
+    assert.equal(
+      needsHyperliquidJoinUrlCorrection(
+        'https://app.hyperliquid.xyz/join/MMREFCSI',
+        JOIN_JUMP
+      ),
+      true
+    );
+    assert.equal(
+      needsHyperliquidJoinUrlCorrection(
+        'https://app.hyperliquid.xyz/join/PRIMUSLABS',
+        JOIN_JUMP
+      ),
+      false
+    );
+    assert.equal(
+      needsHyperliquidJoinUrlCorrection(
+        'https://app.hyperliquid.xyz/join/',
+        JOIN_JUMP
+      ),
+      true
     );
   });
 });
