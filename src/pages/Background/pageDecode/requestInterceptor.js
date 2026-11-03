@@ -676,7 +676,9 @@ export async function checkWebRequestIsReady() {
 
   if (fl) {
     console.log('all web requests are captured', requestsMap);
-    await onPolymarketWebRequestCaptureComplete(state, finalizeWebRequestReady);
+    await onPolymarketWebRequestCaptureComplete(state, finalizeWebRequestReady, {
+      notifyGateUiSync: () => notifyPolymarketGateUiSync(state),
+    });
     await notifyPolymarketFormProbeStarted(state);
     await notifyPolymarketGateUiSync(state);
   }
@@ -715,6 +717,7 @@ export function setupWebRequestListener() {
       details.url,
       finalizeWebRequestReady
     );
+    await notifyPolymarketGateUiSync(state);
 
     const template = getActiveDatasourceTemplate(state, 'onBeforeSendHeadersFn');
     if (!template) return;

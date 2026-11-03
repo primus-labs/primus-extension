@@ -67,6 +67,12 @@
   --pado-modal-overlay: rgba(255, 255, 255, 0.2);
 }
 
+/* Polymarket profile step: keep React mounted but invisible and non-interactive */
+#pado-extension-content.pado-page-decode-modal--profile-hidden {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 #pado-extension-content {
   --text-tokens-text-correct: #24a148;
   --text-tokens-text-error: #c62828;

@@ -229,6 +229,20 @@ export function isPolymarketShowVerifyingSubtitle(state) {
 }
 
 /**
+ * Hide Data Verification modal on the data source tab (content unmounts PadoCard).
+ * @param {{ activeTemplate?: object; polymarketProfileGate?: ReturnType<typeof ensureGate> } | null | undefined} state
+ * @returns {boolean}
+ */
+export function isPolymarketHideDataVerificationModal(state) {
+  if (!matches(state?.activeTemplate)) return false;
+  const gate = state?.polymarketProfileGate;
+  if (!gate?.paramsReady) return true;
+  if (gate.released) return false;
+  if (gate.loginFormSeen && !gate.usersMePutSeen) return true;
+  return false;
+}
+
+/**
  * @param {{ activeTemplate?: object; polymarketProfileGate?: ReturnType<typeof ensureGate> } | null | undefined} state
  */
 export function getPolymarketGateUiPayload(state) {
@@ -237,12 +251,18 @@ export function getPolymarketGateUiPayload(state) {
       polymarketProfileGateHolding: false,
       polymarketShowVerifyingSubtitle: false,
       polymarketGateAwaitingProfile: false,
+      polymarketHideDataVerificationModal: false,
+      isReady: false,
     };
   }
   return {
     polymarketProfileGateHolding: isPolymarketProfileGateHolding(state),
     polymarketShowVerifyingSubtitle: isPolymarketShowVerifyingSubtitle(state),
     polymarketGateAwaitingProfile: isPolymarketGateAwaitingProfile(state),
+    polymarketHideDataVerificationModal:
+      isPolymarketHideDataVerificationModal(state),
+    isReady: !!state?.isReadyRequest,
+    phase: state?.phase,
   };
 }
 
@@ -314,11 +334,14 @@ export async function tryReleasePolymarketAttestation(state, finalizeWebRequestR
 /**
  * @param {object} state
  * @param {() => Promise<void>} finalizeWebRequestReady
+ * @param {{ notifyGateUiSync?: () => Promise<void> }} [options]
  */
 export async function onPolymarketWebRequestCaptureComplete(
   state,
-  finalizeWebRequestReady
+  finalizeWebRequestReady,
+  options = {}
 ) {
+  const { notifyGateUiSync } = options;
   if (!matches(state.activeTemplate)) {
     await finalizeWebRequestReady(state);
     return;
@@ -337,17 +360,24 @@ export async function onPolymarketWebRequestCaptureComplete(
   });
   clearFormProbeTimer(gate);
   gate.timerId = setTimeout(() => {
-    logPolymarketPnl('formProbeTimerFired', {
-      formProbeDurationMs: gate.formProbeDurationMs,
-      loginFormSeen: gate.loginFormSeen,
-      usersMePutSeen: gate.usersMePutSeen,
-    });
     gate.timerId = null;
-    tryReleasePolymarketAttestation(state, finalizeWebRequestReady).catch(
-      (e) => {
+    void (async () => {
+      logPolymarketPnl('formProbeTimerFired', {
+        formProbeDurationMs: gate.formProbeDurationMs,
+        loginFormSeen: gate.loginFormSeen,
+        usersMePutSeen: gate.usersMePutSeen,
+      });
+      try {
+        await notifyGateUiSync?.();
+      } catch (e) {
+        console.warn('[polymarketProfileGate] gate UI sync failed', e);
+      }
+      try {
+        await tryReleasePolymarketAttestation(state, finalizeWebRequestReady);
+      } catch (e) {
         console.warn('[polymarketProfileGate] form probe deadline failed', e);
       }
-    );
+    })();
   }, gate.formProbeDurationMs);
 }
 

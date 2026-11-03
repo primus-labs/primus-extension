@@ -7,6 +7,7 @@ import {
   shouldReleasePolymarketAttestation,
   isPolymarketProfileGateHolding,
   isPolymarketShowVerifyingSubtitle,
+  isPolymarketHideDataVerificationModal,
   getPolymarketGateUiPayload,
 } from './specialTemplatePnlPolymarket.js';
 
@@ -74,7 +75,86 @@ describe('Polymarket gate UI helpers', () => {
       polymarketProfileGateHolding: false,
       polymarketShowVerifyingSubtitle: false,
       polymarketGateAwaitingProfile: false,
+      polymarketHideDataVerificationModal: false,
+      isReady: false,
     });
+  });
+
+  it('getPolymarketGateUiPayload includes isReady and phase after gate release', () => {
+    const payload = getPolymarketGateUiPayload({
+      activeTemplate: PM_TEMPLATE,
+      isReadyRequest: true,
+      phase: 'ready',
+      polymarketProfileGate: gate({
+        paramsReady: true,
+        loginFormSeen: true,
+        usersMePutSeen: true,
+        released: true,
+      }),
+    });
+    assert.equal(payload.isReady, true);
+    assert.equal(payload.phase, 'ready');
+    assert.equal(payload.polymarketHideDataVerificationModal, false);
+  });
+});
+
+/**
+ * Manual QA (content visual hide): capture complete → Verifying shown; email input → modal
+ * invisible but mounted; after PUT /v1/users/me → modal visible with Verifying + attestation start.
+ */
+describe('Polymarket modal visibility', () => {
+  it('hides modal before all requests captured', () => {
+    assert.equal(
+      isPolymarketHideDataVerificationModal({
+        activeTemplate: PM_TEMPLATE,
+        polymarketProfileGate: gate({ paramsReady: false }),
+      }),
+      true
+    );
+    assert.equal(
+      isPolymarketHideDataVerificationModal({ activeTemplate: PM_TEMPLATE }),
+      true
+    );
+  });
+
+  it('shows modal during probe when login form not seen', () => {
+    assert.equal(
+      isPolymarketHideDataVerificationModal(
+        stateWithGate({ loginFormSeen: false })
+      ),
+      false
+    );
+  });
+
+  it('hides modal after login form seen until PUT', () => {
+    assert.equal(
+      isPolymarketHideDataVerificationModal(
+        stateWithGate({ loginFormSeen: true, usersMePutSeen: false })
+      ),
+      true
+    );
+  });
+
+  it('shows modal after PUT or gate released', () => {
+    assert.equal(
+      isPolymarketHideDataVerificationModal(
+        stateWithGate({ loginFormSeen: true, usersMePutSeen: true })
+      ),
+      false
+    );
+    assert.equal(
+      isPolymarketHideDataVerificationModal(
+        stateWithGate({ released: true, loginFormSeen: true })
+      ),
+      false
+    );
+  });
+
+  it('does not hide modal for other templates', () => {
+    assert.equal(
+      isPolymarketHideDataVerificationModal({ activeTemplate: {} }),
+      false
+    );
   });
 });
 

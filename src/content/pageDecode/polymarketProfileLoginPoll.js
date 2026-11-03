@@ -10,6 +10,9 @@ import {
 
 const POLL_INTERVAL_MS = 400;
 const PROBE_DEADLINE_SLACK_MS = 500;
+/** Dispatched on document; index.jsx hides modal before background gateUiSync. */
+export const POLYMARKET_HIDE_MODAL_FOR_PROFILE_EVENT =
+  'pado-polymarket-hide-modal-for-profile';
 
 let pollIntervalId = null;
 let loginFormReported = false;
@@ -62,6 +65,7 @@ function reportLoginFormSeenOnce() {
     href: window.location.href,
   });
   clearPollInterval();
+  window.dispatchEvent(new CustomEvent(POLYMARKET_HIDE_MODAL_FOR_PROFILE_EVENT));
   chrome.runtime.sendMessage({
     type: 'pageDecode',
     name: 'polymarketLoginFormSeen',

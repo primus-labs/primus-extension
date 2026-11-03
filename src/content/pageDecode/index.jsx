@@ -30,6 +30,7 @@ import { shouldDeferModalUntilFirstCapture } from '@/pages/Background/pageDecode
 import {
   startPolymarketLoginFormPoll,
   stopPolymarketLoginFormPoll,
+  POLYMARKET_HIDE_MODAL_FOR_PROFILE_EVENT,
 } from './polymarketProfileLoginPoll';
 import {
   startHyperliquidJoinReferralWait,
@@ -44,6 +45,7 @@ let historyLocationListenerInstalled = false;
 let hrefPollIntervalId = null;
 let lastPolledHref = '';
 const PAGE_DECODE_SYNC_EVENT = 'pado-page-decode-sync';
+const POLYMARKET_PROFILE_HIDDEN_CLASS = 'pado-page-decode-modal--profile-hidden';
 let pageDecodeStateSyncInFlight = false;
 /** One-shot follow-up pulls after inject: avoids 1s polling while tolerating delayed ready. */
 const deferredPageDecodeSyncTimeouts = [];
@@ -133,6 +135,35 @@ function mergePolymarketGateUiFields(source) {
     activeRequest.polymarketGateAwaitingProfile =
       source.polymarketGateAwaitingProfile;
   }
+  if (source.polymarketHideDataVerificationModal != null) {
+    activeRequest.polymarketHideDataVerificationModal =
+      source.polymarketHideDataVerificationModal;
+  }
+  if (source.phase != null) {
+    activeRequest.pageDecodePhase = source.phase;
+  }
+}
+
+/** When modal becomes visible again after gate release, sync ready without remounting App. */
+function applyPolymarketGateReadyResume(source) {
+  if (!source || !activeRequest) return;
+  if (source.polymarketHideDataVerificationModal === true) return;
+  if (source.isReady !== true) return;
+
+  const lastStatus = sessionStorage.getItem(SESSION_KEYS.STATUS);
+  if (lastStatus === STATUS.RESULT) return;
+
+  sessionStorage.setItem(SESSION_KEYS.READY, '1');
+  dispatchPageDecodeSyncEvent({
+    isReady: true,
+    phase: source.phase || activeRequest.pageDecodePhase,
+  });
+}
+
+function setPolymarketModalVisuallyHidden(hidden) {
+  const container = document.getElementById(CONTAINER_ID);
+  if (!container) return;
+  container.classList.toggle(POLYMARKET_PROFILE_HIDDEN_CLASS, !!hidden);
 }
 
 function syncPolymarketLoginFormPoll(response, templateParams) {
@@ -276,10 +307,16 @@ function renderPageDecodeCardIfAllowedInner() {
     hidePageDecodeUi();
     return;
   }
+  const polymarketHide =
+    activeRequest.polymarketHideDataVerificationModal === true;
+  if (polymarketHide && !rootRef) {
+    return;
+  }
   const container = ensurePageDecodeContainer();
   if (!rootRef) {
     rootRef = createRoot(container);
   }
+  setPolymarketModalVisuallyHidden(polymarketHide);
   flushSync(() => {
     rootRef.render(<PadoCard activeRequest={activeRequest} />);
   });
@@ -429,6 +466,8 @@ function applyInitCompletedAppend(response) {
     response.polymarketShowVerifyingSubtitle ?? false;
   activeRequest.polymarketGateAwaitingProfile =
     response.polymarketGateAwaitingProfile ?? false;
+  activeRequest.polymarketHideDataVerificationModal =
+    response.polymarketHideDataVerificationModal ?? false;
   delete activeRequest.PADOSERVERURL;
   delete activeRequest.padoExtensionVersion;
 
@@ -478,6 +517,7 @@ chrome.runtime.onMessage.addListener((message) => {
   if (message.name === 'polymarketGateUiSync') {
     if (!activeRequest) return;
     mergePolymarketGateUiFields(message);
+    applyPolymarketGateReadyResume(message);
     scheduleRenderPageDecodeCardIfAllowed();
   }
 });
@@ -491,6 +531,12 @@ chrome.runtime.sendMessage(
 );
 
 installHistoryLocationListener();
+
+window.addEventListener(POLYMARKET_HIDE_MODAL_FOR_PROFILE_EVENT, () => {
+  if (!activeRequest) return;
+  activeRequest.polymarketHideDataVerificationModal = true;
+  scheduleRenderPageDecodeCardIfAllowed();
+});
 
 // Defer font load to avoid blocking first paint
 if (typeof requestIdleCallback !== 'undefined') {
