@@ -20,6 +20,7 @@ import {
   DISABLED_OPENAI_MFA_URL_REGEX,
   DISABLED_X_MFA_URL_REGEX,
   DISABLED_HYPERLIQUID_JOIN_URL_REGEX,
+  DISABLED_FOMO_REFERRAL_URL_REGEX,
   STATUS,
   SESSION_KEYS,
 } from './constants';
@@ -252,7 +253,8 @@ function renderPageDecodeCardIfAllowedInner() {
   }
   if (
     isDisabledPath() ||
-    DISABLED_HYPERLIQUID_JOIN_URL_REGEX.test(window.location.href.toLowerCase())
+    DISABLED_HYPERLIQUID_JOIN_URL_REGEX.test(window.location.href.toLowerCase()) ||
+    DISABLED_FOMO_REFERRAL_URL_REGEX.test(window.location.href.toLowerCase())
   ) {
     hidePageDecodeUi();
     return;

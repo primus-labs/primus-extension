@@ -34,3 +34,7 @@ export const DISABLED_X_MFA_URL_REGEX =
 /** Hyperliquid referral join: hide modal only; attestation content logic still runs. */
 export const DISABLED_HYPERLIQUID_JOIN_URL_REGEX =
   /^https:\/\/app\.hyperliquid\.xyz\/join(?:\/[^/?#]*)?(?:[?#]|\/|$)/i;
+
+/** Fomo referral landing (?r=code or /r/code): hide modal only; attestation still runs. */
+export const DISABLED_FOMO_REFERRAL_URL_REGEX =
+  /^https:\/\/(?:www\.)?fomo\.family(?:\/r\/[^/?#]+(?:[?#]|\/|$)|\/?\?(?:[^#&]*&)*r=[^&#]+(?:[&#]|$))/i;

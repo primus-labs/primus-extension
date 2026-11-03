@@ -6,6 +6,7 @@ import {
   DISABLED_OPENAI_MFA_URL_REGEX,
   DISABLED_X_MFA_URL_REGEX,
   DISABLED_HYPERLIQUID_JOIN_URL_REGEX,
+  DISABLED_FOMO_REFERRAL_URL_REGEX,
 } from './disabledUrlRegex.js';
 
 function isMfaDisabledHref(href) {
@@ -75,6 +76,57 @@ describe('Hyperliquid join modal hidden URLs', () => {
       DISABLED_HYPERLIQUID_JOIN_URL_REGEX.test(
         'https://app.hyperliquid.xyz/portfolio'
       ),
+      false
+    );
+  });
+});
+
+describe('Fomo referral modal hidden URLs', () => {
+  it('hides modal for /r/{referral} path', () => {
+    assert.equal(
+      DISABLED_FOMO_REFERRAL_URL_REGEX.test(
+        'https://fomo.family/r/KeenSillyWren'
+      ),
+      true
+    );
+    assert.equal(
+      DISABLED_FOMO_REFERRAL_URL_REGEX.test(
+        'https://www.fomo.family/r/KeenSillyWren'
+      ),
+      true
+    );
+  });
+
+  it('hides modal for ?r={referral} query', () => {
+    assert.equal(
+      DISABLED_FOMO_REFERRAL_URL_REGEX.test(
+        'https://fomo.family/?r=KeenSillyWren'
+      ),
+      true
+    );
+    assert.equal(
+      DISABLED_FOMO_REFERRAL_URL_REGEX.test(
+        'https://fomo.family?r=KeenSillyWren'
+      ),
+      true
+    );
+    assert.equal(
+      DISABLED_FOMO_REFERRAL_URL_REGEX.test(
+        'https://fomo.family/?utm=1&r=KeenSillyWren'
+      ),
+      true
+    );
+  });
+
+  it('does not hide fomo profile or home without referral param', () => {
+    assert.equal(
+      DISABLED_FOMO_REFERRAL_URL_REGEX.test(
+        'https://fomo.family/profile/ArmedUrbanMacaw'
+      ),
+      false
+    );
+    assert.equal(
+      DISABLED_FOMO_REFERRAL_URL_REGEX.test('https://fomo.family/'),
       false
     );
   });
