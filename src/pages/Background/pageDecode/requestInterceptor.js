@@ -61,6 +61,9 @@ import { markFirstConfiguredRequestCapturedIfNeeded } from './specialTemplates/d
 import {
   onPolymarketUsersMePutObserved,
   onPolymarketWebRequestCaptureComplete,
+  matches as matchesPolymarketPnlTemplate,
+  logPolymarketPnl,
+  buildPolymarketFormProbeStartedMessage,
 } from './specialTemplates/specialTemplatePnlPolymarket.js';
 import {
   matches as matchesHyperliquidPnlTemplate,
@@ -540,6 +543,29 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
 const WEB_REQUEST_READY_NOTIFY_ATTEMPTS = 8;
 const WEB_REQUEST_READY_RETRY_DELAY_MS = 250;
 
+const POLYMARKET_FORM_PROBE_NOTIFY_ATTEMPTS = 8;
+const POLYMARKET_FORM_PROBE_NOTIFY_DELAY_MS = 250;
+
+async function notifyPolymarketFormProbeStarted(state) {
+  if (!matchesPolymarketPnlTemplate(state.activeTemplate)) return;
+  const gate = state.polymarketProfileGate;
+  if (gate?.formProbeStartedAt == null) return;
+  const msg = buildPolymarketFormProbeStartedMessage(gate);
+  for (let attempt = 0; attempt < POLYMARKET_FORM_PROBE_NOTIFY_ATTEMPTS; attempt++) {
+    const sent = await sendMsgToDataSourcePage(msg);
+    if (sent) {
+      logPolymarketPnl('formProbeNotifyContent', { sent: true, attempt });
+      return;
+    }
+    if (attempt < POLYMARKET_FORM_PROBE_NOTIFY_ATTEMPTS - 1) {
+      await new Promise((r) =>
+        setTimeout(r, POLYMARKET_FORM_PROBE_NOTIFY_DELAY_MS)
+      );
+    }
+  }
+  logPolymarketPnl('formProbeNotifyContent', { sent: false });
+}
+
 export async function finalizeWebRequestReady(state) {
   state.isReadyRequest = true;
   state.phase = PAGE_DECODE_PHASES.READY;
@@ -632,6 +658,7 @@ export async function checkWebRequestIsReady() {
   if (fl) {
     console.log('all web requests are captured', requestsMap);
     await onPolymarketWebRequestCaptureComplete(state, finalizeWebRequestReady);
+    await notifyPolymarketFormProbeStarted(state);
   }
   return fl;
 }
@@ -707,6 +734,14 @@ export function setupWebRequestListener() {
 
     if (isTarget) {
       console.log('captured request', currRequestUrl,JSON.stringify(details));
+      if (matchesPolymarketPnlTemplate(state.activeTemplate)) {
+        logPolymarketPnl('templateTargetRequestCaptured', {
+          url: currRequestUrl,
+          method,
+          templateRequestUrl,
+          requestId,
+        });
+      }
       const newCapturedInfo = {
         headers: formatHeader,
         method,

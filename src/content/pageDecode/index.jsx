@@ -169,6 +169,7 @@ function syncPageDecodeStateOnce() {
         return;
       }
       if (!response || response.name !== 'append') return;
+      syncPolymarketLoginFormPoll(response, activeRequest);
       maybeReleaseDeferredModalFromAppend(response, activeRequest);
       if (
         response.isReady ||
@@ -430,14 +431,26 @@ function applyInitCompletedAppend(response) {
 ensurePageDecodeContainer();
 
 chrome.runtime.onMessage.addListener((message) => {
-  if (
-    message?.type !== 'pageDecode' ||
-    message?.name !== 'firstTemplateRequestCaptured'
-  ) {
+  if (message?.type !== 'pageDecode') return;
+
+  if (message.name === 'firstTemplateRequestCaptured') {
+    if (!activeRequest || !deferredModalPending) return;
+    releaseDeferredModalIfPending();
     return;
   }
-  if (!activeRequest || !deferredModalPending) return;
-  releaseDeferredModalIfPending();
+
+  if (message.name === 'polymarketFormProbeStarted') {
+    if (!activeRequest) return;
+    syncPolymarketLoginFormPoll(
+      {
+        isReady: false,
+        polymarketFormProbeActive: true,
+        polymarketFormProbeStartedAt: message.formProbeStartedAt,
+        polymarketFormProbeDurationMs: message.formProbeDurationMs,
+      },
+      activeRequest
+    );
+  }
 });
 
 chrome.runtime.sendMessage(

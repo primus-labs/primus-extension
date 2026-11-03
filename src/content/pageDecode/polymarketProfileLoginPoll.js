@@ -1,8 +1,12 @@
 import {
   matches,
   POLYMARKET_FORM_PROBE_MS,
-  isPolymarketLoginFormVisibleInDocument,
+  logPolymarketPnl,
 } from '@/pages/Background/pageDecode/specialTemplates/specialTemplatePnlPolymarket.js';
+import {
+  isPolymarketLoginFormVisibleInDocument,
+  POLYMARKET_LOGIN_FORM_SELECTOR,
+} from './polymarketLoginFormDom.js';
 
 const POLL_INTERVAL_MS = 400;
 const PROBE_DEADLINE_SLACK_MS = 500;
@@ -36,9 +40,27 @@ function formProbeDeadlineMs(formProbeStartedAt, formProbeDurationMs) {
   return formProbeStartedAt + durationMs + PROBE_DEADLINE_SLACK_MS;
 }
 
+function describeVisibleLoginInput() {
+  try {
+    const input = document.querySelector(POLYMARKET_LOGIN_FORM_SELECTOR);
+    if (!input) return null;
+    return {
+      name: input.getAttribute('name'),
+      type: input.getAttribute('type'),
+      id: input.id || null,
+    };
+  } catch (_e) {
+    return null;
+  }
+}
+
 function reportLoginFormSeenOnce() {
   if (loginFormReported) return;
   loginFormReported = true;
+  logPolymarketPnl('loginFormInputFound', {
+    input: describeVisibleLoginInput(),
+    href: window.location.href,
+  });
   clearPollInterval();
   chrome.runtime.sendMessage({
     type: 'pageDecode',
@@ -81,6 +103,11 @@ export function startPolymarketLoginFormPoll(
     formProbeStartedAt,
     formProbeDurationMs
   );
+  logPolymarketPnl('loginFormPollStarted', {
+    formProbeStartedAt,
+    formProbeDurationMs: resolveFormProbeDurationMs(formProbeDurationMs),
+    pollDeadlineMs: deadlineMs,
+  });
   tickPolymarketLoginFormPoll(deadlineMs);
   pollIntervalId = setInterval(
     () => tickPolymarketLoginFormPoll(deadlineMs),

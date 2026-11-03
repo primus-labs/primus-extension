@@ -1,24 +1,23 @@
 /* global clearTimeout, setTimeout */
 import { matchesTemplateId } from './templateIdUtils.js';
 
-/** Login / register profile fields on Polymarket onboarding modals. */
-export const POLYMARKET_LOGIN_FORM_SELECTOR =
-  'input[name="username"], input[name="email"]';
-
-/**
- * @param {Document} [doc]
- * @returns {boolean}
- */
-export function isPolymarketLoginFormVisibleInDocument(doc = document) {
-  try {
-    return doc.querySelector(POLYMARKET_LOGIN_FORM_SELECTOR) != null;
-  } catch (_e) {
-    return false;
-  }
-}
-
 export const TEMPLATE_ID = '9a93aeeb-99b0-4d5e-a49a-e71c7ddbd5bd';
 export const displayName = 'Polymarket';
+
+/** Filter console with this tag when debugging Polymarket PnL profile gate. */
+export const POLYMARKET_PNL_LOG_TAG = 'PolymarketPnl';
+
+/**
+ * @param {string} event
+ * @param {Record<string, unknown>} [detail]
+ */
+export function logPolymarketPnl(event, detail = {}) {
+  console.log(POLYMARKET_PNL_LOG_TAG, event, {
+    templateId: TEMPLATE_ID,
+    at: Date.now(),
+    ...detail,
+  });
+}
 
 /** Default form probe window after algorithm params are ready (ms). */
 export const POLYMARKET_FORM_PROBE_MS = 10_000;
@@ -218,12 +217,44 @@ function clearFormProbeTimer(gate) {
  * @param {object} state pageDecode state
  * @param {() => Promise<void>} finalizeWebRequestReady
  */
+function polymarketReleaseReason(gate) {
+  if (!gate.loginFormSeen) {
+    return 'formProbeDeadlineWithoutLoginForm';
+  }
+  if (gate.usersMePutSeen) {
+    return 'usersMePutAfterLoginForm';
+  }
+  return 'unexpected';
+}
+
 export async function tryReleasePolymarketAttestation(state, finalizeWebRequestReady) {
   if (!matches(state.activeTemplate)) return;
   const gate = ensureGate(state);
   if (!shouldReleasePolymarketAttestation(gate)) {
+    logPolymarketPnl('attestationReleaseSkipped', {
+      paramsReady: gate.paramsReady,
+      released: gate.released,
+      loginFormSeen: gate.loginFormSeen,
+      usersMePutSeen: gate.usersMePutSeen,
+      formProbeStartedAt: gate.formProbeStartedAt,
+      formProbeDurationMs: formProbeDurationMsForGate(gate),
+      msSinceProbeStart:
+        gate.formProbeStartedAt != null
+          ? Date.now() - gate.formProbeStartedAt
+          : null,
+    });
     return;
   }
+  logPolymarketPnl('attestationRelease', {
+    reason: polymarketReleaseReason(gate),
+    loginFormSeen: gate.loginFormSeen,
+    usersMePutSeen: gate.usersMePutSeen,
+    formProbeDurationMs: formProbeDurationMsForGate(gate),
+    msSinceProbeStart:
+      gate.formProbeStartedAt != null
+        ? Date.now() - gate.formProbeStartedAt
+        : null,
+  });
   gate.released = true;
   clearFormProbeTimer(gate);
   await finalizeWebRequestReady(state);
@@ -245,11 +276,21 @@ export async function onPolymarketWebRequestCaptureComplete(
   if (gate.paramsReady) {
     return;
   }
+  logPolymarketPnl('allTemplateRequestsCaptured');
   gate.paramsReady = true;
   gate.formProbeDurationMs = getPolymarketFormProbeMs(state.activeTemplate);
   gate.formProbeStartedAt = Date.now();
+  logPolymarketPnl('formProbeStarted', {
+    polymarketPnlWaitForUsernameInputMs: gate.formProbeDurationMs,
+    formProbeStartedAt: gate.formProbeStartedAt,
+  });
   clearFormProbeTimer(gate);
   gate.timerId = setTimeout(() => {
+    logPolymarketPnl('formProbeTimerFired', {
+      formProbeDurationMs: gate.formProbeDurationMs,
+      loginFormSeen: gate.loginFormSeen,
+      usersMePutSeen: gate.usersMePutSeen,
+    });
     gate.timerId = null;
     tryReleasePolymarketAttestation(state, finalizeWebRequestReady).catch(
       (e) => {
@@ -257,6 +298,18 @@ export async function onPolymarketWebRequestCaptureComplete(
       }
     );
   }, gate.formProbeDurationMs);
+}
+
+/**
+ * @param {ReturnType<typeof ensureGate>} gate
+ */
+export function buildPolymarketFormProbeStartedMessage(gate) {
+  return {
+    type: 'pageDecode',
+    name: 'polymarketFormProbeStarted',
+    formProbeStartedAt: gate.formProbeStartedAt,
+    formProbeDurationMs: gate.formProbeDurationMs,
+  };
 }
 
 /**
@@ -269,6 +322,12 @@ export async function onPolymarketLoginFormSeen(state, finalizeWebRequestReady) 
   if (!gate.paramsReady || gate.loginFormSeen) return;
   if (!isWithinFormProbeWindow(gate)) return;
   gate.loginFormSeen = true;
+  logPolymarketPnl('loginFormSeenBackground', {
+    msSinceProbeStart:
+      gate.formProbeStartedAt != null
+        ? Date.now() - gate.formProbeStartedAt
+        : null,
+  });
   clearFormProbeTimer(gate);
   await tryReleasePolymarketAttestation(state, finalizeWebRequestReady);
 }
@@ -289,5 +348,15 @@ export async function onPolymarketUsersMePutObserved(
   if (!isPolymarketUsersMePutRequest(method, url)) return;
   const gate = ensureGate(state);
   gate.usersMePutSeen = true;
+  logPolymarketPnl('usersMePutIntercepted', {
+    method,
+    url,
+    loginFormSeen: gate.loginFormSeen,
+    paramsReady: gate.paramsReady,
+    msSinceProbeStart:
+      gate.formProbeStartedAt != null
+        ? Date.now() - gate.formProbeStartedAt
+        : null,
+  });
   await tryReleasePolymarketAttestation(state, finalizeWebRequestReady);
 }
