@@ -19,6 +19,7 @@ import {
   DISABLED_LINKEDIN_MFA_URL_REGEX,
   DISABLED_OPENAI_MFA_URL_REGEX,
   DISABLED_X_MFA_URL_REGEX,
+  DISABLED_HYPERLIQUID_JOIN_URL_REGEX,
   STATUS,
   SESSION_KEYS,
 } from './constants';
@@ -129,7 +130,8 @@ function syncPolymarketLoginFormPoll(response, templateParams) {
     startPolymarketLoginFormPoll(
       templateParams,
       response.polymarketFormProbeActive,
-      response.polymarketFormProbeStartedAt
+      response.polymarketFormProbeStartedAt,
+      response.polymarketFormProbeDurationMs
     );
     return;
   }
@@ -248,7 +250,10 @@ function renderPageDecodeCardIfAllowedInner() {
   if (deferredModalPending) {
     return;
   }
-  if (isDisabledPath()) {
+  if (
+    isDisabledPath() ||
+    DISABLED_HYPERLIQUID_JOIN_URL_REGEX.test(window.location.href.toLowerCase())
+  ) {
     hidePageDecodeUi();
     return;
   }

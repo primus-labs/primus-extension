@@ -5,6 +5,7 @@ import {
   DISABLED_LINKEDIN_MFA_URL_REGEX,
   DISABLED_OPENAI_MFA_URL_REGEX,
   DISABLED_X_MFA_URL_REGEX,
+  DISABLED_HYPERLIQUID_JOIN_URL_REGEX,
 } from './disabledUrlRegex.js';
 
 function isMfaDisabledHref(href) {
@@ -48,4 +49,33 @@ describe('disabledPath MFA URL regexes', () => {
       assert.equal(isMfaDisabledHref(url), false);
     });
   }
+});
+
+describe('Hyperliquid join modal hidden URLs', () => {
+  it('hides modal path for join with referral code', () => {
+    assert.equal(
+      DISABLED_HYPERLIQUID_JOIN_URL_REGEX.test(
+        'https://app.hyperliquid.xyz/join/PRIMUSLABS'
+      ),
+      true
+    );
+  });
+
+  it('hides modal path for join root', () => {
+    assert.equal(
+      DISABLED_HYPERLIQUID_JOIN_URL_REGEX.test(
+        'https://app.hyperliquid.xyz/join/'
+      ),
+      true
+    );
+  });
+
+  it('does not hide portfolio', () => {
+    assert.equal(
+      DISABLED_HYPERLIQUID_JOIN_URL_REGEX.test(
+        'https://app.hyperliquid.xyz/portfolio'
+      ),
+      false
+    );
+  });
 });

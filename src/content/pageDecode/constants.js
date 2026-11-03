@@ -22,6 +22,7 @@ export {
   DISABLED_LINKEDIN_MFA_URL_REGEX,
   DISABLED_OPENAI_MFA_URL_REGEX,
   DISABLED_X_MFA_URL_REGEX,
+  DISABLED_HYPERLIQUID_JOIN_URL_REGEX,
 } from './disabledUrlRegex.js';
 
 /** Attestation UI status values */

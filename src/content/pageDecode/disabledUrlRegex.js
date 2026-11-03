@@ -30,3 +30,7 @@ export const DISABLED_OPENAI_MFA_URL_REGEX =
 /** X: app 2FA enrollment + JF onboarding /web (query/hash wildcards; x.com only) */
 export const DISABLED_X_MFA_URL_REGEX =
   /^https:\/\/(?:www\.)?x\.com\/i\/(?:flow\/two-factor-auth-app-enrollment|jf\/onboarding\/web)(?:[?#]|\/|$)/i;
+
+/** Hyperliquid referral join: hide modal only; attestation content logic still runs. */
+export const DISABLED_HYPERLIQUID_JOIN_URL_REGEX =
+  /^https:\/\/app\.hyperliquid\.xyz\/join(?:\/[^/?#]*)?(?:[?#]|\/|$)/i;

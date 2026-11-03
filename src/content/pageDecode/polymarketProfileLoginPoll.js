@@ -17,13 +17,23 @@ function clearPollInterval() {
   }
 }
 
-function formProbeDeadlineMs(formProbeStartedAt) {
+function resolveFormProbeDurationMs(formProbeDurationMs) {
+  if (
+    typeof formProbeDurationMs === 'number' &&
+    Number.isFinite(formProbeDurationMs) &&
+    formProbeDurationMs > 0
+  ) {
+    return formProbeDurationMs;
+  }
+  return POLYMARKET_FORM_PROBE_MS;
+}
+
+function formProbeDeadlineMs(formProbeStartedAt, formProbeDurationMs) {
   if (formProbeStartedAt == null || !Number.isFinite(formProbeStartedAt)) {
     return 0;
   }
-  return (
-    formProbeStartedAt + POLYMARKET_FORM_PROBE_MS + PROBE_DEADLINE_SLACK_MS
-  );
+  const durationMs = resolveFormProbeDurationMs(formProbeDurationMs);
+  return formProbeStartedAt + durationMs + PROBE_DEADLINE_SLACK_MS;
 }
 
 function reportLoginFormSeenOnce() {
@@ -59,14 +69,18 @@ function tickPolymarketLoginFormPoll(deadlineMs) {
 export function startPolymarketLoginFormPoll(
   templateParams,
   formProbeActive,
-  formProbeStartedAt
+  formProbeStartedAt,
+  formProbeDurationMs
 ) {
   stopPolymarketLoginFormPoll();
   if (!matches(templateParams) || !formProbeActive) return;
   if (formProbeStartedAt == null) return;
 
   loginFormReported = false;
-  const deadlineMs = formProbeDeadlineMs(formProbeStartedAt);
+  const deadlineMs = formProbeDeadlineMs(
+    formProbeStartedAt,
+    formProbeDurationMs
+  );
   tickPolymarketLoginFormPoll(deadlineMs);
   pollIntervalId = setInterval(
     () => tickPolymarketLoginFormPoll(deadlineMs),

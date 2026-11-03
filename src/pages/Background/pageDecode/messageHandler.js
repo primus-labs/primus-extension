@@ -43,6 +43,7 @@ import {
   onPolymarketLoginFormSeen,
   isPolymarketGateAwaitingProfile,
   isPolymarketFormProbeActive,
+  getPolymarketFormProbeMs,
 } from './specialTemplates/specialTemplatePnlPolymarket.js';
 import { finalizeWebRequestReady } from './requestInterceptor.js';
 import { resolveNoteV2MapFromConfigParsed } from '@/utils/attestationProcessNoteV2';
@@ -315,6 +316,12 @@ export async function pageDecodeMsgListener(
           state.activeTemplate
         )
           ? state.polymarketProfileGate?.formProbeStartedAt ?? null
+          : null,
+        polymarketFormProbeDurationMs: matchesPolymarketPnlTemplate(
+          state.activeTemplate
+        )
+          ? state.polymarketProfileGate?.formProbeDurationMs ??
+            getPolymarketFormProbeMs(state.activeTemplate)
           : null,
         hyperliquidJoinAwaitReferralClick: matchesHyperliquidPnlTemplate(
           state.activeTemplate

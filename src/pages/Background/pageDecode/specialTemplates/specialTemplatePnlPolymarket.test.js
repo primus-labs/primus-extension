@@ -2,6 +2,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   POLYMARKET_FORM_PROBE_MS,
+  getPolymarketFormProbeMs,
   shouldReleasePolymarketAttestation,
 } from './specialTemplatePnlPolymarket.js';
 
@@ -16,6 +17,32 @@ function gate(overrides = {}) {
     ...overrides,
   };
 }
+
+describe('getPolymarketFormProbeMs', () => {
+  it('defaults when extendedParams omits polymarketPnlWaitForUsernameInput', () => {
+    assert.equal(getPolymarketFormProbeMs({}), POLYMARKET_FORM_PROBE_MS);
+  });
+
+  it('reads polymarketPnlWaitForUsernameInput from extendedParams JSON string', () => {
+    assert.equal(
+      getPolymarketFormProbeMs({
+        extendedParams: JSON.stringify({
+          polymarketPnlWaitForUsernameInput: 15_000,
+        }),
+      }),
+      15_000
+    );
+  });
+
+  it('reads polymarketPnlWaitForUsernameInput from extendedParams object', () => {
+    assert.equal(
+      getPolymarketFormProbeMs({
+        extendedParams: { polymarketPnlWaitForUsernameInput: 8000 },
+      }),
+      8000
+    );
+  });
+});
 
 describe('shouldReleasePolymarketAttestation', () => {
   it('does not release without paramsReady', () => {
@@ -53,6 +80,22 @@ describe('shouldReleasePolymarketAttestation', () => {
     assert.equal(
       shouldReleasePolymarketAttestation(
         gate({ paramsReady: true, formProbeStartedAt, loginFormSeen: false })
+      ),
+      true
+    );
+  });
+
+  it('uses gate formProbeDurationMs for release deadline', () => {
+    const duration = 5000;
+    const formProbeStartedAt = Date.now() - duration - 1;
+    assert.equal(
+      shouldReleasePolymarketAttestation(
+        gate({
+          paramsReady: true,
+          formProbeStartedAt,
+          formProbeDurationMs: duration,
+          loginFormSeen: false,
+        })
       ),
       true
     );

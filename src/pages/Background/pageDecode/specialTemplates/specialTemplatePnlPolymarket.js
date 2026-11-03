@@ -20,8 +20,78 @@ export function isPolymarketLoginFormVisibleInDocument(doc = document) {
 export const TEMPLATE_ID = '9a93aeeb-99b0-4d5e-a49a-e71c7ddbd5bd';
 export const displayName = 'Polymarket';
 
-/** Form probe window after algorithm params are ready. */
+/** Default form probe window after algorithm params are ready (ms). */
 export const POLYMARKET_FORM_PROBE_MS = 10_000;
+export const POLYMARKET_EXTENDED_PARAM_WAIT_FOR_USERNAME_INPUT =
+  'polymarketPnlWaitForUsernameInput';
+
+/**
+ * @param {{ extendedParams?: string | object; extendedParamsObj?: object } | null | undefined} activeTemplate
+ * @returns {Record<string, unknown>}
+ */
+function getExtendedParamsObj(activeTemplate) {
+  if (!activeTemplate) return {};
+  if (
+    activeTemplate.extendedParamsObj &&
+    typeof activeTemplate.extendedParamsObj === 'object' &&
+    !Array.isArray(activeTemplate.extendedParamsObj)
+  ) {
+    return activeTemplate.extendedParamsObj;
+  }
+  const raw = activeTemplate.extendedParams;
+  if (typeof raw === 'string' && raw.trim()) {
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        return parsed;
+      }
+    } catch (_e) {
+      /* ignore */
+    }
+    return {};
+  }
+  if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
+    return raw;
+  }
+  return {};
+}
+
+/**
+ * SDK extendedParams.polymarketPnlWaitForUsernameInput (ms); falls back to POLYMARKET_FORM_PROBE_MS.
+ * @param {{ extendedParams?: string | object; extendedParamsObj?: object } | null | undefined} activeTemplate
+ * @returns {number}
+ */
+export function getPolymarketFormProbeMs(activeTemplate) {
+  const ms = getExtendedParamsObj(activeTemplate)[
+    POLYMARKET_EXTENDED_PARAM_WAIT_FOR_USERNAME_INPUT
+  ];
+  if (typeof ms === 'number' && Number.isFinite(ms) && ms > 0) {
+    return ms;
+  }
+  if (typeof ms === 'string' && ms.trim()) {
+    const parsed = Number(ms);
+    if (Number.isFinite(parsed) && parsed > 0) {
+      return parsed;
+    }
+  }
+  return POLYMARKET_FORM_PROBE_MS;
+}
+
+/**
+ * @param {ReturnType<typeof ensureGate>} gate
+ * @returns {number}
+ */
+function formProbeDurationMsForGate(gate) {
+  if (
+    typeof gate.formProbeDurationMs === 'number' &&
+    Number.isFinite(gate.formProbeDurationMs) &&
+    gate.formProbeDurationMs > 0
+  ) {
+    return gate.formProbeDurationMs;
+  }
+  return POLYMARKET_FORM_PROBE_MS;
+}
+
 export const POLYMARKET_USERS_ME_PUT_URL =
   'https://gamma-api.polymarket.com/v1/users/me';
 
@@ -88,7 +158,10 @@ export function isPolymarketUsersMePutRequest(method, url) {
  */
 function isWithinFormProbeWindow(gate) {
   if (gate.formProbeStartedAt == null) return false;
-  return Date.now() <= gate.formProbeStartedAt + POLYMARKET_FORM_PROBE_MS;
+  return (
+    Date.now() <=
+    gate.formProbeStartedAt + formProbeDurationMsForGate(gate)
+  );
 }
 
 /**
@@ -105,7 +178,10 @@ export function shouldReleasePolymarketAttestation(gate) {
   if (gate.formProbeStartedAt == null) {
     return false;
   }
-  return Date.now() >= gate.formProbeStartedAt + POLYMARKET_FORM_PROBE_MS;
+  return (
+    Date.now() >=
+    gate.formProbeStartedAt + formProbeDurationMsForGate(gate)
+  );
 }
 
 /**
@@ -170,6 +246,7 @@ export async function onPolymarketWebRequestCaptureComplete(
     return;
   }
   gate.paramsReady = true;
+  gate.formProbeDurationMs = getPolymarketFormProbeMs(state.activeTemplate);
   gate.formProbeStartedAt = Date.now();
   clearFormProbeTimer(gate);
   gate.timerId = setTimeout(() => {
@@ -179,7 +256,7 @@ export async function onPolymarketWebRequestCaptureComplete(
         console.warn('[polymarketProfileGate] form probe deadline failed', e);
       }
     );
-  }, POLYMARKET_FORM_PROBE_MS);
+  }, gate.formProbeDurationMs);
 }
 
 /**
