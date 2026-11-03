@@ -1,10 +1,23 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  TEMPLATE_ID,
   POLYMARKET_FORM_PROBE_MS,
   getPolymarketFormProbeMs,
   shouldReleasePolymarketAttestation,
+  isPolymarketProfileGateHolding,
+  isPolymarketShowVerifyingSubtitle,
+  getPolymarketGateUiPayload,
 } from './specialTemplatePnlPolymarket.js';
+
+const PM_TEMPLATE = { attTemplateID: TEMPLATE_ID };
+
+function stateWithGate(gateOverrides = {}) {
+  return {
+    activeTemplate: PM_TEMPLATE,
+    polymarketProfileGate: gate({ paramsReady: true, ...gateOverrides }),
+  };
+}
 
 function gate(overrides = {}) {
   return {
@@ -17,6 +30,53 @@ function gate(overrides = {}) {
     ...overrides,
   };
 }
+
+describe('Polymarket gate UI helpers', () => {
+  it('profile gate holding when paramsReady and not released', () => {
+    assert.equal(isPolymarketProfileGateHolding(stateWithGate()), true);
+  });
+
+  it('not holding when released or params not ready', () => {
+    assert.equal(
+      isPolymarketProfileGateHolding(stateWithGate({ released: true })),
+      false
+    );
+    assert.equal(
+      isPolymarketProfileGateHolding({
+        activeTemplate: PM_TEMPLATE,
+        polymarketProfileGate: gate({ paramsReady: false }),
+      }),
+      false
+    );
+    assert.equal(isPolymarketProfileGateHolding({ activeTemplate: {} }), false);
+  });
+
+  it('show Verifying subtitle during probe before login form', () => {
+    assert.equal(
+      isPolymarketShowVerifyingSubtitle(
+        stateWithGate({ loginFormSeen: false })
+      ),
+      true
+    );
+  });
+
+  it('hide Verifying subtitle when awaiting profile PUT', () => {
+    assert.equal(
+      isPolymarketShowVerifyingSubtitle(
+        stateWithGate({ loginFormSeen: true, usersMePutSeen: false })
+      ),
+      false
+    );
+  });
+
+  it('getPolymarketGateUiPayload bundles flags for non-Polymarket template', () => {
+    assert.deepEqual(getPolymarketGateUiPayload({ activeTemplate: {} }), {
+      polymarketProfileGateHolding: false,
+      polymarketShowVerifyingSubtitle: false,
+      polymarketGateAwaitingProfile: false,
+    });
+  });
+});
 
 describe('getPolymarketFormProbeMs', () => {
   it('defaults when extendedParams omits polymarketPnlWaitForUsernameInput', () => {

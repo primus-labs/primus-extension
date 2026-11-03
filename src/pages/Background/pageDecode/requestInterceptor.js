@@ -64,6 +64,7 @@ import {
   matches as matchesPolymarketPnlTemplate,
   logPolymarketPnl,
   buildPolymarketFormProbeStartedMessage,
+  buildPolymarketGateUiSyncMessage,
 } from './specialTemplates/specialTemplatePnlPolymarket.js';
 import {
   matches as matchesHyperliquidPnlTemplate,
@@ -566,6 +567,24 @@ async function notifyPolymarketFormProbeStarted(state) {
   logPolymarketPnl('formProbeNotifyContent', { sent: false });
 }
 
+export async function notifyPolymarketGateUiSync(state) {
+  if (!matchesPolymarketPnlTemplate(state.activeTemplate)) return;
+  const msg = buildPolymarketGateUiSyncMessage(state);
+  for (let attempt = 0; attempt < POLYMARKET_FORM_PROBE_NOTIFY_ATTEMPTS; attempt++) {
+    const sent = await sendMsgToDataSourcePage(msg);
+    if (sent) {
+      logPolymarketPnl('gateUiNotifyContent', { sent: true, attempt, ...msg });
+      return;
+    }
+    if (attempt < POLYMARKET_FORM_PROBE_NOTIFY_ATTEMPTS - 1) {
+      await new Promise((r) =>
+        setTimeout(r, POLYMARKET_FORM_PROBE_NOTIFY_DELAY_MS)
+      );
+    }
+  }
+  logPolymarketPnl('gateUiNotifyContent', { sent: false });
+}
+
 export async function finalizeWebRequestReady(state) {
   state.isReadyRequest = true;
   state.phase = PAGE_DECODE_PHASES.READY;
@@ -659,6 +678,7 @@ export async function checkWebRequestIsReady() {
     console.log('all web requests are captured', requestsMap);
     await onPolymarketWebRequestCaptureComplete(state, finalizeWebRequestReady);
     await notifyPolymarketFormProbeStarted(state);
+    await notifyPolymarketGateUiSync(state);
   }
   return fl;
 }

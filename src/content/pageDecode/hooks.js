@@ -172,7 +172,10 @@ export function useTimeoutManager(activeRequest, status, statusRef, setters) {
     let timer2;
     let timer3;
 
-    if (status === STATUS.INITIALIZED) {
+    if (
+      status === STATUS.INITIALIZED &&
+      !activeRequest?.polymarketProfileGateHolding
+    ) {
       timer2 = setTimeout(() => {
         if (![STATUS.VERIFYING, STATUS.RESULT].includes(statusRef.current)) {
           const errorObj = {
@@ -221,6 +224,7 @@ export function useTimeoutManager(activeRequest, status, statusRef, setters) {
     initializedShowTime,
     noteV2,
     verifyingTimeoutMs,
+    activeRequest?.polymarketProfileGateHolding,
     setters.setStatus,
     setters.setResultStatus,
     setters.setErrorTxt,

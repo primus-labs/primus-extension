@@ -42,11 +42,14 @@ import {
 import {
   matches as matchesPolymarketPnlTemplate,
   onPolymarketLoginFormSeen,
-  isPolymarketGateAwaitingProfile,
   isPolymarketFormProbeActive,
   getPolymarketFormProbeMs,
+  getPolymarketGateUiPayload,
 } from './specialTemplates/specialTemplatePnlPolymarket.js';
-import { finalizeWebRequestReady } from './requestInterceptor.js';
+import {
+  finalizeWebRequestReady,
+  notifyPolymarketGateUiSync,
+} from './requestInterceptor.js';
 import { resolveNoteV2MapFromConfigParsed } from '@/utils/attestationProcessNoteV2';
 import { ensureExtensionUserIdentity } from '../identityBootstrap.js';
 import { getSdkAttestationSession } from '../padoZKAttestationJSSDK/sessionStorage.js';
@@ -329,7 +332,7 @@ export async function pageDecodeMsgListener(
         operation: state.operationType,
         resultSnapshot: uiResultSnapshot,
         firstTemplateRequestCaptured: isFirstConfiguredRequestCaptured(state),
-        polymarketGateAwaitingProfile: isPolymarketGateAwaitingProfile(state),
+        ...getPolymarketGateUiPayload(state),
         polymarketFormProbeActive: isPolymarketFormProbeActive(state),
         polymarketFormProbeStartedAt: matchesPolymarketPnlTemplate(
           state.activeTemplate
@@ -353,7 +356,8 @@ export async function pageDecodeMsgListener(
 
     if (name === 'polymarketLoginFormSeen') {
       await onPolymarketLoginFormSeen(state, finalizeWebRequestReady);
-      respond({ ok: true });
+      await notifyPolymarketGateUiSync(state);
+      respond({ ok: true, ...getPolymarketGateUiPayload(state) });
       return;
     }
 

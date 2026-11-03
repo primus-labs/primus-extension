@@ -206,6 +206,57 @@ export function isPolymarketGateAwaitingProfile(state) {
   return gate.loginFormSeen === true && gate.usersMePutSeen !== true;
 }
 
+/**
+ * Algorithm not released yet after all template requests are captured.
+ * @param {{ activeTemplate?: object; polymarketProfileGate?: ReturnType<typeof ensureGate> } | null | undefined} state
+ * @returns {boolean}
+ */
+export function isPolymarketProfileGateHolding(state) {
+  if (!matches(state?.activeTemplate)) return false;
+  const gate = state?.polymarketProfileGate;
+  if (!gate?.paramsReady || gate.released) return false;
+  return true;
+}
+
+/**
+ * Show "Verifying …" subtitle while gate holds and profile form not yet seen.
+ * @param {{ activeTemplate?: object; polymarketProfileGate?: ReturnType<typeof ensureGate> } | null | undefined} state
+ * @returns {boolean}
+ */
+export function isPolymarketShowVerifyingSubtitle(state) {
+  if (!isPolymarketProfileGateHolding(state)) return false;
+  return !isPolymarketGateAwaitingProfile(state);
+}
+
+/**
+ * @param {{ activeTemplate?: object; polymarketProfileGate?: ReturnType<typeof ensureGate> } | null | undefined} state
+ */
+export function getPolymarketGateUiPayload(state) {
+  if (!matches(state?.activeTemplate)) {
+    return {
+      polymarketProfileGateHolding: false,
+      polymarketShowVerifyingSubtitle: false,
+      polymarketGateAwaitingProfile: false,
+    };
+  }
+  return {
+    polymarketProfileGateHolding: isPolymarketProfileGateHolding(state),
+    polymarketShowVerifyingSubtitle: isPolymarketShowVerifyingSubtitle(state),
+    polymarketGateAwaitingProfile: isPolymarketGateAwaitingProfile(state),
+  };
+}
+
+/**
+ * @param {{ activeTemplate?: object; polymarketProfileGate?: ReturnType<typeof ensureGate> } | null | undefined} state
+ */
+export function buildPolymarketGateUiSyncMessage(state) {
+  return {
+    type: 'pageDecode',
+    name: 'polymarketGateUiSync',
+    ...getPolymarketGateUiPayload(state),
+  };
+}
+
 function clearFormProbeTimer(gate) {
   if (gate.timerId != null) {
     clearTimeout(gate.timerId);

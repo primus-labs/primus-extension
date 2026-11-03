@@ -119,6 +119,22 @@ function maybeReleaseDeferredModalFromAppend(response, templateParams) {
   releaseDeferredModalIfPending();
 }
 
+function mergePolymarketGateUiFields(source) {
+  if (!source || !activeRequest) return;
+  if (source.polymarketProfileGateHolding != null) {
+    activeRequest.polymarketProfileGateHolding =
+      source.polymarketProfileGateHolding;
+  }
+  if (source.polymarketShowVerifyingSubtitle != null) {
+    activeRequest.polymarketShowVerifyingSubtitle =
+      source.polymarketShowVerifyingSubtitle;
+  }
+  if (source.polymarketGateAwaitingProfile != null) {
+    activeRequest.polymarketGateAwaitingProfile =
+      source.polymarketGateAwaitingProfile;
+  }
+}
+
 function syncPolymarketLoginFormPoll(response, templateParams) {
   if (response?.isReady) {
     stopPolymarketLoginFormPoll();
@@ -368,6 +384,10 @@ function applyInitCompletedAppend(response) {
 
   if (response.isReady) {
     sessionStorage.setItem(SESSION_KEYS.READY, '1');
+    if (activeRequest) {
+      activeRequest.polymarketProfileGateHolding = false;
+      activeRequest.polymarketShowVerifyingSubtitle = false;
+    }
   } else {
     sessionStorage.removeItem(SESSION_KEYS.READY);
   }
@@ -378,16 +398,14 @@ function applyInitCompletedAppend(response) {
   if (activeRequest) {
     activeRequest.pageDecodePhase = response.phase || activeRequest.pageDecodePhase;
     activeRequest.resultSnapshot = response.resultSnapshot || null;
-    if (response.polymarketGateAwaitingProfile != null) {
-      activeRequest.polymarketGateAwaitingProfile =
-        response.polymarketGateAwaitingProfile;
-    }
+    mergePolymarketGateUiFields(response);
     syncPolymarketLoginFormPoll(response, activeRequest);
     syncHyperliquidJoinReferralWait(response, activeRequest);
     if (!response.isReady && response.phase !== 'attesting') {
       tryGithubRepositoriesShowMoreClick(activeRequest);
     }
     maybeReleaseDeferredModalFromAppend(response, activeRequest);
+    scheduleRenderPageDecodeCardIfAllowed();
     dispatchPageDecodeSyncEvent({
       isReady: !!response.isReady,
       phase: response.phase || activeRequest.pageDecodePhase,
@@ -405,6 +423,10 @@ function applyInitCompletedAppend(response) {
   activeRequest = { ...params };
   activeRequest.pageDecodePhase = response.phase || params.pageDecodePhase;
   activeRequest.resultSnapshot = response.resultSnapshot || params.resultSnapshot || null;
+  activeRequest.polymarketProfileGateHolding =
+    response.polymarketProfileGateHolding ?? false;
+  activeRequest.polymarketShowVerifyingSubtitle =
+    response.polymarketShowVerifyingSubtitle ?? false;
   activeRequest.polymarketGateAwaitingProfile =
     response.polymarketGateAwaitingProfile ?? false;
   delete activeRequest.PADOSERVERURL;
@@ -450,6 +472,13 @@ chrome.runtime.onMessage.addListener((message) => {
       },
       activeRequest
     );
+    return;
+  }
+
+  if (message.name === 'polymarketGateUiSync') {
+    if (!activeRequest) return;
+    mergePolymarketGateUiFields(message);
+    scheduleRenderPageDecodeCardIfAllowed();
   }
 });
 

@@ -395,9 +395,14 @@ function PadoCard({ activeRequest }) {
   let errorMsg = null;
 
   if (status === STATUS.INITIALIZED) {
-    subtitle = activeRequest?.polymarketGateAwaitingProfile
-      ? 'Complete your profile on Polymarket, then we will continue verification.'
-      : subtitleFromPromot1;
+    if (activeRequest?.polymarketGateAwaitingProfile) {
+      subtitle =
+        'Complete your profile on Polymarket, then we will continue verification.';
+    } else if (activeRequest?.polymarketShowVerifyingSubtitle) {
+      subtitle = `Verifying ${targetItem}...`;
+    } else {
+      subtitle = subtitleFromPromot1;
+    }
   } else if (status === STATUS.VERIFYING) {
     subtitle = `Verifying ${targetItem}...`;
   } else if (isSuccess) {
