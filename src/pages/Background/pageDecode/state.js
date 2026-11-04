@@ -67,6 +67,10 @@ export function createPageDecodeState() {
     lumaPagedApprovedHits: null,
     /** Discord invite: first datasourceTemplate.requests URL match captured */
     firstConfiguredRequestCaptured: false,
+    /** LinkedIn Nomad: content UI sync after capture (post-reload inject race). */
+    linkedinNomadUiNotified: false,
+    /** All templates: content UI sync after capture (post-inject / missed webRequestIsReady). */
+    pageDecodeReadyUiNotified: false,
   };
 
   function resetMonadFields() {
@@ -177,6 +181,8 @@ export function createPageDecodeState() {
     resetReputationPhalaFields();
     resetLumaPagedApprovedHits();
     state.firstConfiguredRequestCaptured = false;
+    state.linkedinNomadUiNotified = false;
+    state.pageDecodeReadyUiNotified = false;
     resetPolymarketProfileGate(state);
     resetHyperliquidJoinFlow(state);
   }

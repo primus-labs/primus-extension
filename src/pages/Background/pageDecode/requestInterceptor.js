@@ -46,6 +46,10 @@ import {
   formatJsonArrFnForChannelSubscription,
 } from './specialTemplates/specialTemplateChannelSubscription';
 import { getPageDecodeState, PAGE_DECODE_PHASES } from './state';
+import { safeStorageGet, safeStorageSet } from '@/utils/safeStorage';
+import { startKeepAlive } from '../utils/keepAlive.js';
+import { ensureExtensionUserIdentity } from '../identityBootstrap.js';
+import { getSdkAttestationSession } from '../padoZKAttestationJSSDK/sessionStorage.js';
 import { formatAlgorithmParamsFn } from './templateMatcher';
 import { sendMsgToDataSourcePage } from './sdkBridge';
 import { resolveJsonPathForValidation } from '../padoZKAttestationJSSDK/buildAggregateSubcondition.js';
@@ -74,6 +78,62 @@ import {
   isHyperliquidInfoPost,
   shouldSkipHyperliquidAttestationInfoReplay,
 } from './specialTemplates/specialTemplatePnlHyperliquid.js';
+import {
+  matches as matchesLinkedInNomadTemplate,
+  logLinkedInNomad,
+  summarizeLinkedInNomadCapture,
+  previewXPathValidationOnHtml,
+} from './specialTemplates/specialTemplateLinkedinNomad.js';
+import { notifyPageDecodeReadyUi } from './pageDecodeReadyUiNotify.js';
+import {
+  matches as matchesGithubHomeTemplate,
+  logGitHubHome,
+  summarizeGithubHomeCapture,
+  describeUrlMatchForRequests as describeGithubUrlMatchForRequests,
+} from './specialTemplates/specialTemplateGithubHome.js';
+import {
+  matches as matchesGoogleEmailTemplate,
+  logGoogleEmail,
+  summarizeGoogleEmailCapture,
+  describeUrlMatchForRequests as describeGoogleUrlMatchForRequests,
+  shouldLogUrlProbeForRequest,
+} from './specialTemplates/specialTemplateGoogleEmail.js';
+
+function matchesHtmlTemplateDebug(activeTemplate) {
+  return (
+    matchesLinkedInNomadTemplate(activeTemplate) ||
+    matchesGithubHomeTemplate(activeTemplate) ||
+    matchesGoogleEmailTemplate(activeTemplate)
+  );
+}
+
+/** @param {Record<string, unknown>} detail */
+function logHtmlTemplateDebug(activeTemplate, event, detail = {}) {
+  if (matchesLinkedInNomadTemplate(activeTemplate)) {
+    logLinkedInNomad(event, detail);
+  } else if (matchesGithubHomeTemplate(activeTemplate)) {
+    logGitHubHome(event, detail);
+  } else if (matchesGoogleEmailTemplate(activeTemplate)) {
+    logGoogleEmail(event, detail);
+  }
+}
+
+function describeUrlMatchForRequests(activeTemplate, requestUrl, requests) {
+  if (matchesGoogleEmailTemplate(activeTemplate)) {
+    return describeGoogleUrlMatchForRequests(requestUrl, requests);
+  }
+  return describeGithubUrlMatchForRequests(requestUrl, requests);
+}
+
+function summarizeHtmlTemplateCapture(activeTemplate, requests, requestsMap) {
+  if (matchesGithubHomeTemplate(activeTemplate)) {
+    return summarizeGithubHomeCapture(requests, requestsMap);
+  }
+  if (matchesGoogleEmailTemplate(activeTemplate)) {
+    return summarizeGoogleEmailCapture(requests, requestsMap);
+  }
+  return summarizeLinkedInNomadCapture(requests, requestsMap);
+}
 
 function getActiveDatasourceTemplate(state, logTag) {
   const template = state?.activeTemplate?.datasourceTemplate;
@@ -116,6 +176,7 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
   }
   const { requestsMap } = state;
   const activeTemplate = state.activeTemplate;
+  const htmlTemplateDebug = matchesHtmlTemplateDebug(activeTemplate);
   const jsonPathEvaluationOptions =
     getJsonPathEvaluationOptionsForTemplate(activeTemplate);
   const template = getActiveDatasourceTemplate(state, 'checkSDKTargetRequest');
@@ -145,6 +206,13 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
       templateRequestUrl,
       requestId,
     });
+    if (htmlTemplateDebug) {
+      logHtmlTemplateDebug(activeTemplate, 'checkSDKTargetRequest:noDatasourceRow', {
+        templateRequestUrl,
+        requestId,
+        capturedUrl: capturedBrowseUrlEarly,
+      });
+    }
     return;
   }
   const thisRequestObj = requests[thisRequestUrlIdx];
@@ -164,6 +232,16 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
       '[checkSDKTargetRequest] missing template slot or response.subconditions',
       { templateRequestUrl, requestId }
     );
+    if (htmlTemplateDebug) {
+      logHtmlTemplateDebug(activeTemplate, 'checkSDKTargetRequest:missingSubconditions', {
+        templateRequestUrl,
+        requestId,
+        slotIndex: thisRequestUrlIdx,
+        shouldValidateReplayOnly,
+        subconditionCount:
+          thisResponseObj?.conditions?.subconditions?.length ?? 0,
+      });
+    }
     return;
   }
   const { url, urlType, queryParams, ignoreResponse } = thisRequestObj;
@@ -172,17 +250,43 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
     (v) => v.templateRequestUrl === url && v.isTarget === 1
   );
 
-  if (thisRequestUrlFoundFlag) return;
+  if (thisRequestUrlFoundFlag) {
+    if (htmlTemplateDebug) {
+      logHtmlTemplateDebug(activeTemplate, 'checkSDKTargetRequest:alreadyValidated', {
+        templateRequestUrl,
+        requestId,
+      });
+    }
+    return;
+  }
 
   if (ignoreResponse && !requireReplayValidation) {
     const done = Object.entries(requestsMap).some(([rid, sInfo]) => {
       if (sInfo.templateRequestUrl === url && sInfo.headers) {
         storeInRequestsMap(rid, { isTarget: 1 });
+        if (htmlTemplateDebug) {
+          logHtmlTemplateDebug(activeTemplate, 'checkSDKTargetRequest:ignoreResponseMarked', {
+            requestId: rid,
+            templateRequestUrl,
+            capturedUrl: sInfo.url,
+            ignoreResponse,
+            ignoreResponseStrictTrue: ignoreResponse === true,
+          });
+        }
         return true;
       }
       return false;
     });
     if (done) return;
+    if (htmlTemplateDebug) {
+      logHtmlTemplateDebug(activeTemplate, 'checkSDKTargetRequest:ignoreResponseNotMarked', {
+        templateRequestUrl,
+        slotUrl: url,
+        ignoreResponse,
+        ignoreResponseStrictTrue: ignoreResponse === true,
+        requireReplayValidation,
+      });
+    }
   }
 
   const matchRequestIdArr = Object.keys(requestsMap).filter((key) =>
@@ -193,6 +297,36 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
       queryParams,
     })
   );
+
+  if (htmlTemplateDebug) {
+    logHtmlTemplateDebug(activeTemplate, 'checkSDKTargetRequest:entry', {
+      requestId,
+      templateRequestUrl,
+      slotIndex: thisRequestUrlIdx,
+      templateSlotUrl: url,
+      urlType: urlType || 'REGX',
+      matchRequestIdArr,
+      validationExpressions: shouldValidateReplayOnly
+        ? []
+        : (thisResponseObj.conditions?.subconditions || []).map((i) =>
+            resolveJsonPathForValidation(i)
+          ),
+    });
+    if (matchRequestIdArr.length === 0) {
+      logHtmlTemplateDebug(activeTemplate, 'checkSDKTargetRequest:noCaptureForSlot', {
+        templateRequestUrl,
+        requiredUrl: url,
+        urlType: urlType || 'REGX',
+        requestsMapSummary: Object.entries(requestsMap).map(([rid, info]) => ({
+          requestId: rid,
+          url: info?.url,
+          templateRequestUrl: info?.templateRequestUrl,
+          isTarget: info?.isTarget,
+          type: info?.type,
+        })),
+      });
+    }
+  }
 
   for (const matchRequestId of matchRequestIdArr) {
     if (requestsMap[matchRequestId]?.isTarget === 1) break;
@@ -218,6 +352,19 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
           }
           return isObject(i.field) && i.field?.field ? i.field.field : i.field;
         });
+
+    if (htmlTemplateDebug) {
+      logHtmlTemplateDebug(activeTemplate, 'checkSDKTargetRequest:slot', {
+        requestId: matchRequestId,
+        templateRequestUrl,
+        slotIndex: thisRequestUrlIdx,
+        capturedUrl: requestsMap[matchRequestId]?.url,
+        webRequestType: requestsMap[matchRequestId]?.type,
+        shouldValidateReplayOnly,
+        ignoreResponse: thisRequestObj?.ignoreResponse,
+        validationExpressions: jsonPathArr,
+      });
+    }
 
     const baseRequestUrl = requestsMap[matchRequestId].url;
     const additionParamsObj = activeTemplate?.additionParamsObj || {};
@@ -287,19 +434,56 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
         : effectiveRequestUrl;
 
     if (requestsMap[matchRequestId].type === 'main_frame') {
-      const fetched = await fetchHtmlContent({
-        ...requestsMap[matchRequestId],
-        header: requestsMap[matchRequestId].headers,
-        url: mergedUrl,
-        body: mergedBody,
-      });
+      let fetched = null;
+      try {
+        fetched = await fetchHtmlContent({
+          ...requestsMap[matchRequestId],
+          header: requestsMap[matchRequestId].headers,
+          url: mergedUrl,
+          body: mergedBody,
+        });
+      } catch (fetchErr) {
+        if (htmlTemplateDebug) {
+          logHtmlTemplateDebug(activeTemplate, 'main_frame:fetchFailed', {
+            requestId: matchRequestId,
+            mergedUrl,
+            error: fetchErr?.message || String(fetchErr),
+          });
+        }
+      }
       if (fetched) {
         matchRequestUrlResult = fetched.data;
         fetchedResponseUrl = fetched.finalUrl;
+        if (htmlTemplateDebug) {
+          logHtmlTemplateDebug(activeTemplate, 'main_frame:fetchOk', {
+            requestId: matchRequestId,
+            mergedUrl,
+            fetchedResponseUrl,
+            bodyLength:
+              typeof matchRequestUrlResult === 'string'
+                ? matchRequestUrlResult.length
+                : 0,
+            hasUserLoginMeta:
+              typeof matchRequestUrlResult === 'string' &&
+              matchRequestUrlResult.includes('name="user-login"'),
+          });
+        }
+      } else if (htmlTemplateDebug) {
+        logHtmlTemplateDebug(activeTemplate, 'main_frame:fetchEmpty', {
+          requestId: matchRequestId,
+          mergedUrl,
+        });
       }
       if (
         !isFetchedResponseForRequest(mergedUrl, fetchedResponseUrl)
       ) {
+        if (htmlTemplateDebug) {
+          logHtmlTemplateDebug(activeTemplate, 'main_frame:urlMismatch', {
+            requestId: matchRequestId,
+            mergedUrl,
+            fetchedResponseUrl,
+          });
+        }
         storeInRequestsMap(matchRequestId, { isTarget: 2 });
         continue;
       }
@@ -320,6 +504,19 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
           jsonPathArr,
           matchRequestUrlResult
         );
+        if (htmlTemplateDebug) {
+          logHtmlTemplateDebug(activeTemplate, 'main_frame:xpathValidation', {
+            requestId: matchRequestId,
+            mergedUrl,
+            fetchedResponseUrl,
+            bodyLength: matchRequestUrlResult.length,
+            isTargetUrl,
+            xpathPreview: previewXPathValidationOnHtml(
+              matchRequestUrlResult,
+              jsonPathArr
+            ),
+          });
+        }
         if (isTargetUrl) {
           storeInRequestsMap(matchRequestId, {
             isTarget: 1,
@@ -350,6 +547,14 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
       if (
         !isFetchedResponseForRequest(urlForFetch, fetchedResponseUrl)
       ) {
+        if (htmlTemplateDebug) {
+          logHtmlTemplateDebug(activeTemplate, 'replay:urlMismatch', {
+            requestId: matchRequestId,
+            urlForFetch,
+            fetchedResponseUrl,
+            contentType: fetchedContentType,
+          });
+        }
         storeInRequestsMap(matchRequestId, { isTarget: 2 });
         continue;
       }
@@ -380,6 +585,21 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
           jsonPathArr,
           matchRequestUrlResult
         );
+        if (htmlTemplateDebug) {
+          logHtmlTemplateDebug(activeTemplate, 'replayHtml:xpathValidation', {
+            requestId: matchRequestId,
+            urlForFetch,
+            effectiveRequestUrl,
+            fetchedResponseUrl,
+            contentType: fetchedContentType,
+            bodyLength: matchRequestUrlResult.length,
+            isTargetUrl,
+            xpathPreview: previewXPathValidationOnHtml(
+              matchRequestUrlResult,
+              jsonPathArr
+            ),
+          });
+        }
       } else if (isLumaMonadTemplate(activeTemplate) && matchRequestUrlResult) {
         const notMetHandler = async () => {
           await handleAttestationError(
@@ -502,6 +722,25 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
           } else {
             isTargetUrl = checkResult.isMatch;
           }
+          if (htmlTemplateDebug) {
+            logHtmlTemplateDebug(activeTemplate, 'replayJson:validation', {
+              requestId: matchRequestId,
+              urlForFetch,
+              fetchedResponseUrl,
+              contentType: fetchedContentType,
+              replayLooksLikeHtml,
+              isTargetUrl,
+              canValidate,
+              negativeIndexResolutionFailed:
+                checkResult?.negativeIndexResolutionFailed,
+              responsePreview:
+                typeof matchRequestUrlResult === 'string'
+                  ? matchRequestUrlResult.slice(0, 200)
+                  : matchRequestUrlResult != null
+                    ? '[non-string body]'
+                    : null,
+            });
+          }
         }
       }
       if (
@@ -535,6 +774,14 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
       }
     }
     if (!negativeIndexCheckFailed) {
+      if (htmlTemplateDebug) {
+        logHtmlTemplateDebug(activeTemplate, 'checkSDKTargetRequest:rejected', {
+          requestId: matchRequestId,
+          templateRequestUrl,
+          slotIndex: thisRequestUrlIdx,
+          isTargetUrl,
+        });
+      }
       storeInRequestsMap(matchRequestId, { isTarget: 2 });
     }
   }
@@ -586,6 +833,9 @@ export async function notifyPolymarketGateUiSync(state) {
 }
 
 export async function finalizeWebRequestReady(state) {
+  if (state.startHandled || state.phase === PAGE_DECODE_PHASES.ATTESTING) {
+    return;
+  }
   state.isReadyRequest = true;
   state.phase = PAGE_DECODE_PHASES.READY;
   if (!state.readyNotified) {
@@ -594,6 +844,15 @@ export async function finalizeWebRequestReady(state) {
       state.readyNotified = true;
     }
   }
+  await notifyPageDecodeReadyUi(state);
+  if (matchesGoogleEmailTemplate(state.activeTemplate)) {
+    logGoogleEmail('finalizeWebRequestReady', {
+      dataSourcePageTabId: state.dataSourcePageTabId,
+      readyNotified: state.readyNotified,
+      pageDecodeReadyUiNotified: state.pageDecodeReadyUiNotified,
+    });
+  }
+  await beginPageDecodeAttestation(state);
 }
 
 async function notifyDataSourcePageWebRequestReady() {
@@ -609,6 +868,7 @@ async function notifyDataSourcePageWebRequestReady() {
       await new Promise((r) => setTimeout(r, WEB_REQUEST_READY_RETRY_DELAY_MS));
     }
   }
+  console.warn('[pageDecode] webRequestIsReady notify failed');
   return false;
 }
 
@@ -618,8 +878,11 @@ async function notifyDataSourcePageWebRequestReady() {
 export async function checkWebRequestIsReady() {
   const pageDecodeState = getPageDecodeState();
   const { state } = pageDecodeState;
-  if (state.phase === PAGE_DECODE_PHASES.ATTESTING) {
+  if (state.startHandled || state.phase === PAGE_DECODE_PHASES.ATTESTING) {
     return state.isReadyRequest;
+  }
+  if (state.isReadyRequest && state.phase === PAGE_DECODE_PHASES.READY) {
+    return true;
   }
   const { requestsMap, formatAlgorithmParams } = state;
   const template = getActiveDatasourceTemplate(state, 'checkWebRequestIsReady');
@@ -670,15 +933,46 @@ export async function checkWebRequestIsReady() {
   );
   const fl = f && allRequestUrlFoundFlag;
 
+  if (matchesHtmlTemplateDebug(state.activeTemplate)) {
+    logHtmlTemplateDebug(state.activeTemplate, 'checkWebRequestIsReady', {
+      captureNum,
+      requiredCaptureSlots: interceptorRequests.length,
+      headersAndBodyComplete: f,
+      allRequestUrlFoundFlag,
+      ready: fl,
+      phase: state.phase,
+      summary: summarizeHtmlTemplateCapture(
+        state.activeTemplate,
+        interceptorRequests,
+        requestsMap
+      ),
+    });
+  }
+
   if (fl && !formatAlgorithmParams) {
     await formatAlgorithmParamsFn();
   }
 
   if (fl) {
-    console.log('all web requests are captured', requestsMap);
+    if (state.startHandled || state.phase === PAGE_DECODE_PHASES.ATTESTING) {
+      return fl;
+    }
+    if (state.isReadyRequest) {
+      if (!state.pageDecodeReadyUiNotified) {
+        await notifyPageDecodeReadyUi(state);
+      }
+      return fl;
+    }
+    const firstCaptureComplete = !state.isReadyRequest;
+    if (firstCaptureComplete) {
+      console.log('all web requests are captured', requestsMap);
+    }
     await onPolymarketWebRequestCaptureComplete(state, finalizeWebRequestReady, {
       notifyGateUiSync: () => notifyPolymarketGateUiSync(state),
     });
+    if (state.isReadyRequest && !state.pageDecodeReadyUiNotified) {
+      await notifyPageDecodeReadyUi(state);
+    }
     await notifyPolymarketFormProbeStarted(state);
     await notifyPolymarketGateUiSync(state);
   }
@@ -757,6 +1051,32 @@ export function setupWebRequestListener() {
 
     if (isTarget) {
       console.log('captured request', currRequestUrl,JSON.stringify(details));
+      if (matchesGithubHomeTemplate(state.activeTemplate)) {
+        logGitHubHome('capture:matched', {
+          currRequestUrl,
+          method,
+          templateRequestUrl,
+          requestId,
+          type: details.type,
+          tabId: details.tabId,
+        });
+      }
+      if (matchesGoogleEmailTemplate(state.activeTemplate)) {
+        logGoogleEmail('capture:matched', {
+          currRequestUrl,
+          method,
+          templateRequestUrl,
+          requestId,
+          type: details.type,
+          tabId: details.tabId,
+          dataSourcePageTabId: state.dataSourcePageTabId,
+          slots: describeUrlMatchForRequests(
+            state.activeTemplate,
+            currRequestUrl,
+            requests
+          ),
+        });
+      }
       if (matchesPolymarketPnlTemplate(state.activeTemplate)) {
         logPolymarketPnl('templateTargetRequestCaptured', {
           url: currRequestUrl,
@@ -794,6 +1114,39 @@ export function setupWebRequestListener() {
       }
       debouncedCheckWebRequestIsReady();
     } else {
+      if (matchesGithubHomeTemplate(state.activeTemplate)) {
+        logGitHubHome('capture:urlNotMatched', {
+          currRequestUrl,
+          method,
+          type: details.type,
+          requestId,
+          tabId: details.tabId,
+          slots: describeUrlMatchForRequests(
+            state.activeTemplate,
+            currRequestUrl,
+            requests
+          ),
+        });
+      }
+      if (
+        matchesGoogleEmailTemplate(state.activeTemplate) &&
+        shouldLogUrlProbeForRequest(currRequestUrl)
+      ) {
+        logGoogleEmail('capture:urlProbe', {
+          currRequestUrl,
+          method,
+          type: details.type,
+          requestId,
+          tabId: details.tabId,
+          dataSourcePageTabId: state.dataSourcePageTabId,
+          tabIdMatchesDataSource: details.tabId === state.dataSourcePageTabId,
+          slots: describeUrlMatchForRequests(
+            state.activeTemplate,
+            currRequestUrl,
+            requests
+          ),
+        });
+      }
       await tryJumpConfigStandaloneIntercept({
         currRequestUrl,
         method,
@@ -918,4 +1271,55 @@ export function removeWebRequestListener() {
     chrome.webRequest.onBeforeRequest.removeListener(state.onBeforeRequestFn);
     state.onBeforeRequestFn = () => {};
   }
+}
+
+/**
+ * Start attestation after capture ready (primary path; content `start` is fallback).
+ * @param {import('./state.js').PageDecodeState['state']} state
+ * @returns {Promise<boolean>}
+ */
+export async function beginPageDecodeAttestation(state) {
+  if (!state || state.startHandled) {
+    return false;
+  }
+  if (!state.formatAlgorithmParams) {
+    console.warn('[pageDecode] beginPageDecodeAttestation: missing formatAlgorithmParams');
+    return false;
+  }
+
+  state.startHandled = true;
+  state.isReadyRequest = true;
+  state.phase = PAGE_DECODE_PHASES.ATTESTING;
+
+  removeWebRequestListener();
+  startKeepAlive();
+
+  const { userInfo } = await safeStorageGet(['userInfo']);
+  if (!userInfo) {
+    ensureExtensionUserIdentity().catch((err) => {
+      console.log('ensureExtensionUserIdentity non-blocking error', err);
+    });
+  }
+
+  const aligorithmParams = Object.assign(
+    { isUserClick: 'true' },
+    state.formatAlgorithmParams
+  );
+  const session = await getSdkAttestationSession();
+  const getAttestationParams = {
+    ...aligorithmParams,
+    clientType: session?.clientType || '',
+  };
+  await safeStorageSet({
+    activeRequestAttestation: JSON.stringify(aligorithmParams),
+  });
+  console.log('pageDecode-algorithmParams', aligorithmParams);
+  chrome.runtime.sendMessage({
+    type: 'algorithm',
+    method: 'getAttestation',
+    params: getAttestationParams,
+  });
+
+  await notifyPageDecodeReadyUi(state, { force: true });
+  return true;
 }

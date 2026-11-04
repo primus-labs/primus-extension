@@ -247,9 +247,10 @@ export function useAutoStartWhenReady(
     if (pageDecodePhase === 'attesting') {
       return;
     }
-    if (lastStatus !== STATUS.VERIFYING) {
-      handleConfirm();
+    if (lastStatus === STATUS.VERIFYING) {
+      return;
     }
+    handleConfirm();
   }, [isReadyFetch, handleConfirm, setters, pageDecodePhase]);
 }
 

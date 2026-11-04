@@ -5,6 +5,7 @@
  */
 /* global chrome, console */
 import { matchesTemplateId } from './templateIdUtils.js';
+import { logLinkedInNomad } from './specialTemplateLinkedinNomad.js';
 
 export const TEMPLATE_ID = 'a87deb8c-32c7-41c7-ac69-60bad0e35a38';
 export const displayName = 'LinkedIn profile jump';
@@ -161,7 +162,11 @@ async function linkedInTabsUpdateThenHardReload(tabId, href) {
 
   await delay(RELOAD_DELAY_MS);
   await chrome.tabs.reload(tabId);
-  console.log('linkedinProfileJump: tabs.update + hard reload', href);
+  logLinkedInNomad('profileJump:hardReloadDone', {
+    tabId,
+    href,
+    tabUrlAfterNav: currentUrl,
+  });
 }
 
 /**
@@ -188,10 +193,15 @@ export async function applyJumpConfigDataSourceNavigation(
 
   if (useLinkedInFollowUpNav) {
     try {
+      logLinkedInNomad('profileJump:start', { tabId, href });
       await linkedInTabsUpdateThenHardReload(tabId, href);
       return true;
     } catch (e) {
-      console.warn('linkedinProfileJump: tabs.update + hard reload failed', e);
+      logLinkedInNomad('profileJump:failed', {
+        tabId,
+        href,
+        error: e?.message || String(e),
+      });
       return false;
     }
   }

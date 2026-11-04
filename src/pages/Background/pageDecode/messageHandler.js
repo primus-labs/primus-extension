@@ -9,16 +9,18 @@ import {
   setupWebRequestListener,
   removeWebRequestListener,
   checkWebRequestIsReady,
+  beginPageDecodeAttestation,
 } from './requestInterceptor';
+import { shouldInjectPageDecodeOnTabUpdate } from './pageDecodeInject.js';
+import { injectPageDecodeIntoTab } from './injectPageDecodeScript.js';
 import {
   sendMsgToDataSourcePage,
   handlerForSdk,
   handleTargetDataMissing,
   handleDataSourcePageDialogTimeout,
 } from './sdkBridge';
-import { safeStorageGet, safeStorageSet } from '@/utils/safeStorage';
+import { safeStorageGet } from '@/utils/safeStorage';
 import { safeJsonParse } from '@/utils/utils';
-import { startKeepAlive } from '../utils/keepAlive.js';
 import {
   applyAmazonSiteJumpToIfNeeded,
   isAmazonAccountManageTemplate,
@@ -46,12 +48,17 @@ import {
   getPolymarketFormProbeMs,
   getPolymarketGateUiPayload,
 } from './specialTemplates/specialTemplatePnlPolymarket.js';
+import { notifyPageDecodeReadyUi } from './pageDecodeReadyUiNotify.js';
+import {
+  matches as matchesGoogleEmailTemplate,
+  logGoogleEmail,
+  summarizeGoogleEmailCapture,
+} from './specialTemplates/specialTemplateGoogleEmail.js';
 import {
   finalizeWebRequestReady,
   notifyPolymarketGateUiSync,
 } from './requestInterceptor.js';
 import { resolveNoteV2MapFromConfigParsed } from '@/utils/attestationProcessNoteV2';
-import { ensureExtensionUserIdentity } from '../identityBootstrap.js';
 import { getSdkAttestationSession } from '../padoZKAttestationJSSDK/sessionStorage.js';
 import { closeSdkDataSourceTabWithoutCancel } from './closeDataSourceTab.js';
 
@@ -244,46 +251,46 @@ export async function pageDecodeMsgListener(
         state.activeTemplate
       );
       console.log('pageDecode dataSourcePageTabId:', state.dataSourcePageTabId);
+      if (matchesGoogleEmailTemplate(state.activeTemplate)) {
+        logGoogleEmail('init:dataSourceTabOpened', {
+          dataSourcePageTabId: state.dataSourcePageTabId,
+          jumpTo: state.activeTemplate?.jumpTo,
+          phase: state.phase,
+        });
+      }
 
-      const injectFn = async () => {
-        await chrome.scripting.executeScript({
-          target: { tabId: state.dataSourcePageTabId },
-          files: ['pageDecode.bundle.js'],
-        });
-        await chrome.scripting.insertCSS({
-          target: { tabId: state.dataSourcePageTabId },
-          files: ['static/css/pageDecode.css'],
-        });
-      };
+      const injectFn = (options = {}) =>
+        injectPageDecodeIntoTab(state.dataSourcePageTabId, options);
 
       await checkWebRequestIsReady();
       state.tabUpdatedListener = (tabId, changeInfo) => {
-        if (
-          tabId === state.dataSourcePageTabId &&
-          (changeInfo.url || changeInfo.title || changeInfo.status === 'complete')
-        ) {
-          if (
-            changeInfo.url &&
-            matchesHyperliquidPnlTemplate(state.activeTemplate)
-          ) {
-            maybeCorrectHyperliquidJoinReferralUrl(
-              state,
-              tabId,
-              changeInfo.url
-            ).catch((e) => {
-              console.warn('hyperliquidPnl: join URL correction on update', e);
-            });
-          }
-          if (state.injectDebounceTimer) {
-            clearTimeout(state.injectDebounceTimer);
-          }
-          state.injectDebounceTimer = setTimeout(async () => {
-            await injectFn();
-            if (state.phase !== PAGE_DECODE_PHASES.ATTESTING) {
-              await checkWebRequestIsReady();
-            }
-          }, 300);
+        if (tabId !== state.dataSourcePageTabId) {
+          return;
         }
+        if (
+          changeInfo.url &&
+          matchesHyperliquidPnlTemplate(state.activeTemplate)
+        ) {
+          maybeCorrectHyperliquidJoinReferralUrl(
+            state,
+            tabId,
+            changeInfo.url
+          ).catch((e) => {
+            console.warn('hyperliquidPnl: join URL correction on update', e);
+          });
+        }
+        if (!shouldInjectPageDecodeOnTabUpdate(changeInfo)) {
+          return;
+        }
+        if (state.injectDebounceTimer) {
+          clearTimeout(state.injectDebounceTimer);
+        }
+        state.injectDebounceTimer = setTimeout(async () => {
+          await injectFn();
+          if (state.phase !== PAGE_DECODE_PHASES.ATTESTING) {
+            await checkWebRequestIsReady();
+          }
+        }, 300);
       };
       chrome.tabs.onUpdated.addListener(state.tabUpdatedListener);
 
@@ -303,7 +310,7 @@ export async function pageDecodeMsgListener(
       };
       chrome.tabs.onRemoved.addListener(state.tabRemovedListener);
 
-      await injectFn();
+      await injectFn({ force: true });
     }
 
     if (name === 'initCompleted') {
@@ -313,6 +320,21 @@ export async function pageDecodeMsgListener(
         await closeSdkDataSourceTabWithoutCancel();
         respond({ name: 'expired' });
         return;
+      }
+      await checkWebRequestIsReady();
+      if (matchesGoogleEmailTemplate(state.activeTemplate)) {
+        const ds = state.activeTemplate?.datasourceTemplate;
+        logGoogleEmail('initCompleted:append', {
+          dataSourcePageTabId: state.dataSourcePageTabId,
+          isReady: state.isReadyRequest,
+          phase: state.phase,
+          readyNotified: state.readyNotified,
+          pageDecodeReadyUiNotified: state.pageDecodeReadyUiNotified,
+          captureSummary: summarizeGoogleEmailCapture(
+            ds?.requests || [],
+            state.requestsMap
+          ),
+        });
       }
       respond({
         name: 'append',
@@ -351,7 +373,9 @@ export async function pageDecodeMsgListener(
           ? isHyperliquidJoinAwaitReferralClick(state)
           : false,
       });
-      await checkWebRequestIsReady();
+      if (state.isReadyRequest && !state.pageDecodeReadyUiNotified) {
+        void notifyPageDecodeReadyUi(state);
+      }
     }
 
     if (name === 'polymarketLoginFormSeen') {
@@ -370,38 +394,7 @@ export async function pageDecodeMsgListener(
     }
 
     if (name === 'start') {
-      if (state.startHandled) {
-        respond({ ok: true });
-        return;
-      }
-      state.startHandled = true;
-      state.phase = PAGE_DECODE_PHASES.ATTESTING;
-      removeWebRequestListener();
-      startKeepAlive();
-      const { userInfo } = await safeStorageGet(['userInfo']);
-      if (!userInfo) {
-        ensureExtensionUserIdentity().catch((err) => {
-          console.log('ensureExtensionUserIdentity non-blocking error', err);
-        });
-      }
-      const aligorithmParams = Object.assign(
-        { isUserClick: 'true' },
-        state.formatAlgorithmParams
-      );
-      const session = await getSdkAttestationSession();
-      const getAttestationParams = {
-        ...aligorithmParams,
-        clientType: session?.clientType || '',
-      };
-      await safeStorageSet({
-        activeRequestAttestation: JSON.stringify(aligorithmParams),
-      });
-      console.log('pageDecode-algorithmParams', aligorithmParams);
-      chrome.runtime.sendMessage({
-        type: 'algorithm',
-        method: 'getAttestation',
-        params: getAttestationParams,
-      });
+      await beginPageDecodeAttestation(state);
     }
 
     if (name === 'close' || name === 'cancel') {

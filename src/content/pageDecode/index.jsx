@@ -28,6 +28,11 @@ import './index.scss';
 import { tryGithubRepositoriesShowMoreClick } from './pageDecodeGithubShowMore';
 import { shouldDeferModalUntilFirstCapture } from '@/pages/Background/pageDecode/specialTemplates/discordInvite/templateId.js';
 import {
+  matches as matchesGoogleEmailTemplate,
+  logGoogleEmail,
+} from '@/pages/Background/pageDecode/specialTemplates/specialTemplateGoogleEmail.js';
+import { PAGE_DECODE_BOOT_GLOBAL } from '@/pages/Background/pageDecode/pageDecodeInject.js';
+import {
   startPolymarketLoginFormPoll,
   stopPolymarketLoginFormPoll,
   POLYMARKET_HIDE_MODAL_FOR_PROFILE_EVENT,
@@ -83,6 +88,17 @@ function dispatchPageDecodeSyncEvent(detail) {
       detail,
     })
   );
+}
+
+/** Sync VERIFYING UI when background already started attestation. */
+function applyAttestingPhaseToSessionAndUi(phase) {
+  const lastStatus = sessionStorage.getItem(SESSION_KEYS.STATUS);
+  if (lastStatus === STATUS.RESULT) return;
+  sessionStorage.setItem(SESSION_KEYS.STATUS, STATUS.VERIFYING);
+  dispatchPageDecodeSyncEvent({
+    isReady: true,
+    phase: phase || 'attesting',
+  });
 }
 
 function clearDeferredPageDecodeSyncs() {
@@ -144,20 +160,148 @@ function mergePolymarketGateUiFields(source) {
   }
 }
 
-/** When modal becomes visible again after gate release, sync ready without remounting App. */
-function applyPolymarketGateReadyResume(source) {
-  if (!source || !activeRequest) return;
-  if (source.polymarketHideDataVerificationModal === true) return;
-  if (source.isReady !== true) return;
+function logGoogleEmailUi(event, detail = {}, templateHint) {
+  const template = templateHint ?? activeRequest;
+  if (!matchesGoogleEmailTemplate(template)) return;
+  logGoogleEmail(`ui:${event}`, {
+    href: window.location.href,
+    sessionReady: sessionStorage.getItem(SESSION_KEYS.READY),
+    sessionStatus: sessionStorage.getItem(SESSION_KEYS.STATUS),
+    pageDecodePhase: activeRequest?.pageDecodePhase,
+    ...detail,
+  });
+}
 
+/**
+ * Background requests captured; sync READY to session + mounted App (survives late PadoCard mount).
+ * @param {{ isReady?: boolean; phase?: string }} source
+ * @param {{ postRenderSync?: boolean; skipRender?: boolean }} [options]
+ */
+function applyPageDecodeReadyFromBackground(source, options = {}) {
+  if (source?.phase === 'attesting') {
+    logGoogleEmailUi('readySyncAttesting', { source, options });
+    if (activeRequest) {
+      activeRequest.pageDecodePhase = 'attesting';
+    }
+    sessionStorage.setItem(SESSION_KEYS.READY, '1');
+    applyAttestingPhaseToSessionAndUi(source.phase);
+    scheduleRenderPageDecodeCardIfAllowed();
+    return;
+  }
+  if (!source?.isReady) {
+    logGoogleEmailUi('readySyncSkipped', { source, options });
+    return;
+  }
+  logGoogleEmailUi('readySyncApply', { source, options });
   const lastStatus = sessionStorage.getItem(SESSION_KEYS.STATUS);
   if (lastStatus === STATUS.RESULT) return;
 
   sessionStorage.setItem(SESSION_KEYS.READY, '1');
+  if (activeRequest) {
+    activeRequest.polymarketProfileGateHolding = false;
+    activeRequest.polymarketShowVerifyingSubtitle = false;
+    if (source.phase != null) {
+      activeRequest.pageDecodePhase = source.phase;
+    }
+  }
+  const phase = source.phase || activeRequest?.pageDecodePhase;
+  dispatchPageDecodeSyncEvent({ isReady: true, phase });
+  if (options.postRenderSync !== false) {
+    enqueuePageDecodeUi(() => {
+      dispatchPageDecodeSyncEvent({ isReady: true, phase });
+    });
+  }
+  if (!options.skipRender) {
+    scheduleRenderPageDecodeCardIfAllowed();
+  }
+  if (activeRequest) {
+    enqueuePageDecodeUi(() => {
+      maybeAutoStartAttestationFromContent();
+    });
+  }
+}
+
+/** When modal becomes visible again after gate release, sync ready without remounting App. */
+function applyPolymarketGateReadyResume(source) {
+  if (!source || !activeRequest) return;
+  if (source.polymarketHideDataVerificationModal === true) return;
+  applyPageDecodeReadyFromBackground(source, {
+    postRenderSync: false,
+    skipRender: true,
+  });
+}
+
+/** @deprecated alias — background sends pageDecodeReadyUiSync for all templates */
+function applyLinkedInNomadReadyUiSync(source) {
+  applyPageDecodeReadyFromBackground(source);
+}
+
+/**
+ * @param {boolean} isReady
+ * @param {string | undefined} phase
+ * @param {{ allowClearReady?: boolean }} [options] — only cold-start append should clear READY
+ */
+function applySessionReadyFromAppend(isReady, phase, options = {}) {
+  if (isReady) {
+    sessionStorage.setItem(SESSION_KEYS.READY, '1');
+    return;
+  }
+  if (phase === 'ready' || phase === 'attesting') {
+    return;
+  }
+  if (options.allowClearReady === true) {
+    sessionStorage.removeItem(SESSION_KEYS.READY);
+  }
+}
+
+/** Content-level auto-start when background is ready but React missed the sync event. */
+function maybeAutoStartAttestationFromContent() {
+  if (!activeRequest) {
+    logGoogleEmailUi('autoStartSkipped', { reason: 'noActiveRequest' });
+    return;
+  }
+  if (sessionStorage.getItem(SESSION_KEYS.READY) !== '1') {
+    logGoogleEmailUi('autoStartSkipped', { reason: 'sessionNotReady' });
+    return;
+  }
+
+  const lastStatus = sessionStorage.getItem(SESSION_KEYS.STATUS);
+  if (lastStatus === STATUS.RESULT) {
+    logGoogleEmailUi('autoStartSkipped', { reason: 'alreadyResult', lastStatus });
+    return;
+  }
+  if (
+    activeRequest.pageDecodePhase === 'attesting' ||
+    lastStatus === STATUS.VERIFYING
+  ) {
+    logGoogleEmailUi('autoStartSkipped', {
+      reason: 'alreadyAttestingOrVerifying',
+      phase: activeRequest.pageDecodePhase,
+      lastStatus,
+    });
+    return;
+  }
+
+  logGoogleEmailUi('autoStartSendStart', {});
+  sessionStorage.setItem(SESSION_KEYS.STATUS, STATUS.VERIFYING);
   dispatchPageDecodeSyncEvent({
     isReady: true,
-    phase: source.phase || activeRequest.pageDecodePhase,
+    phase: activeRequest.pageDecodePhase || 'ready',
   });
+  chrome.runtime.sendMessage({
+    type: 'pageDecode',
+    name: 'start',
+  });
+}
+
+function scheduleReadyFollowUpSyncs(isReady) {
+  clearDeferredPageDecodeSyncs();
+  scheduleDeferredPageDecodeSync(400);
+  scheduleDeferredPageDecodeSync(1600);
+  if (isReady) {
+    scheduleDeferredPageDecodeSync(80);
+    scheduleDeferredPageDecodeSync(320);
+  }
 }
 
 function setPolymarketModalVisuallyHidden(hidden) {
@@ -320,6 +464,15 @@ function renderPageDecodeCardIfAllowedInner() {
   flushSync(() => {
     rootRef.render(<PadoCard activeRequest={activeRequest} />);
   });
+  if (sessionStorage.getItem(SESSION_KEYS.READY) === '1') {
+    queueMicrotask(() => {
+      dispatchPageDecodeSyncEvent({
+        isReady: true,
+        phase: activeRequest?.pageDecodePhase,
+      });
+      maybeAutoStartAttestationFromContent();
+    });
+  }
 }
 
 function scheduleRenderPageDecodeCardIfAllowed() {
@@ -413,23 +566,33 @@ function applyInitCompletedAppend(response) {
   if (!response || response.name !== 'append') return;
   if (isDisabledPath()) return;
 
+  const hadActiveRequest = !!activeRequest;
+  logGoogleEmailUi(
+    'appendReceived',
+    {
+      isReady: !!response.isReady,
+      phase: response.phase,
+      hadActiveRequest,
+      dataSourcePageTabId: response.dataSourcePageTabId,
+      templateTabId: response.params?.tabId,
+    },
+    hadActiveRequest ? activeRequest : response.params
+  );
+
   if (response.resultSnapshot) {
     applyResultSnapshotToSession(response.resultSnapshot);
-  } else {
+  } else if (!hadActiveRequest) {
     clearPersistedResultState();
   }
 
-  if (response.isReady) {
-    sessionStorage.setItem(SESSION_KEYS.READY, '1');
-    if (activeRequest) {
-      activeRequest.polymarketProfileGateHolding = false;
-      activeRequest.polymarketShowVerifyingSubtitle = false;
-    }
-  } else {
-    sessionStorage.removeItem(SESSION_KEYS.READY);
-  }
+  applySessionReadyFromAppend(!!response.isReady, response.phase, {
+    allowClearReady: !hadActiveRequest,
+  });
   if (!response.resultSnapshot && response.phase === 'attesting') {
-    sessionStorage.setItem(SESSION_KEYS.STATUS, STATUS.VERIFYING);
+    if (activeRequest) {
+      activeRequest.pageDecodePhase = 'attesting';
+    }
+    applyAttestingPhaseToSessionAndUi(response.phase);
   }
 
   if (activeRequest) {
@@ -448,11 +611,17 @@ function applyInitCompletedAppend(response) {
       phase: response.phase || activeRequest.pageDecodePhase,
       resultSnapshot: response.resultSnapshot || null,
     });
-    clearDeferredPageDecodeSyncs();
-    if (!response.isReady) {
-      scheduleDeferredPageDecodeSync(400);
-      scheduleDeferredPageDecodeSync(1600);
+    if (response.isReady) {
+      applyPageDecodeReadyFromBackground(
+        { isReady: true, phase: response.phase },
+        { postRenderSync: true, skipRender: true }
+      );
+    } else if (sessionStorage.getItem(SESSION_KEYS.READY) === '1') {
+      enqueuePageDecodeUi(() => {
+        maybeAutoStartAttestationFromContent();
+      });
     }
+    scheduleReadyFollowUpSyncs(!!response.isReady);
     return;
   }
 
@@ -482,12 +651,24 @@ function applyInitCompletedAppend(response) {
   if (!deferredModalPending) {
     scheduleRenderPageDecodeCardIfAllowed();
   }
-  clearDeferredPageDecodeSyncs();
-  if (!response.isReady) {
-    scheduleDeferredPageDecodeSync(400);
-    scheduleDeferredPageDecodeSync(1600);
+  dispatchPageDecodeSyncEvent({
+    isReady: !!response.isReady,
+    phase: response.phase || activeRequest.pageDecodePhase,
+    resultSnapshot: response.resultSnapshot || null,
+  });
+  if (response.isReady) {
+    applyPageDecodeReadyFromBackground(
+      { isReady: true, phase: response.phase },
+      { postRenderSync: true, skipRender: true }
+    );
   }
+  scheduleReadyFollowUpSyncs(!!response.isReady);
 }
+
+if (globalThis[PAGE_DECODE_BOOT_GLOBAL]) {
+  // Duplicate bundle injection in the same document — skip listeners and initCompleted.
+} else {
+  globalThis[PAGE_DECODE_BOOT_GLOBAL] = true;
 
 ensurePageDecodeContainer();
 
@@ -519,8 +700,50 @@ chrome.runtime.onMessage.addListener((message) => {
     mergePolymarketGateUiFields(message);
     applyPolymarketGateReadyResume(message);
     scheduleRenderPageDecodeCardIfAllowed();
+    return;
+  }
+
+  if (message.name === 'linkedInNomadUiSync' || message.name === 'pageDecodeReadyUiSync') {
+    logGoogleEmailUi('message', { name: message.name, isReady: message.isReady });
+    applyPageDecodeReadyFromBackground(message);
+    return;
+  }
+
+  if (message.name === 'webRequestIsReady') {
+    logGoogleEmailUi('message', { name: message.name });
+    const phase = activeRequest?.pageDecodePhase;
+    if (phase === 'attesting') {
+      applyPageDecodeReadyFromBackground({ isReady: true, phase: 'attesting' });
+    } else {
+      applyPageDecodeReadyFromBackground({
+        isReady: true,
+        phase,
+      });
+    }
+    return;
+  }
+
+  if (message.name === 'end') {
+    applyEndFromBackground(message.params || {});
+    return;
   }
 });
+
+/** Module-level end handler so result UI updates even if PadoCard was unmounted. */
+function applyEndFromBackground(params) {
+  const { result, failReason, closeAt } = params;
+  const resultSnapshot = {
+    result: result ?? '',
+    failReason,
+    closeAt,
+  };
+  applyResultSnapshotToSession(resultSnapshot);
+  if (activeRequest) {
+    activeRequest.resultSnapshot = resultSnapshot;
+  }
+  dispatchPageDecodeSyncEvent({ resultSnapshot });
+  scheduleRenderPageDecodeCardIfAllowed();
+}
 
 chrome.runtime.sendMessage(
   {
@@ -543,4 +766,6 @@ if (typeof requestIdleCallback !== 'undefined') {
   requestIdleCallback(() => injectFont(), { timeout: 500 });
 } else {
   setTimeout(injectFont, 0);
+}
+
 }
