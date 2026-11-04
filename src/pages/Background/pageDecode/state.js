@@ -3,7 +3,7 @@
  * Centralized state for the page decode / attestation flow.
  * Replaces module-level mutable variables for testability and clear lifecycle.
  */
-import { sanitizeRequestHeaders } from '../utils/utils';
+import { sanitizeRequestHeaders } from '../utils/utils.js';
 import { resetPolymarketProfileGate } from './specialTemplates/specialTemplatePnlPolymarket.js';
 import { resetHyperliquidJoinFlow } from './specialTemplates/specialTemplatePnlHyperliquid.js';
 export const DEFAULT_PRE_ATTEST_PROMPT_V2 = [
@@ -33,6 +33,7 @@ export function createPageDecodeState() {
     phase: PAGE_DECODE_PHASES.IDLE,
     readyNotified: false,
     startHandled: false,
+    contentReady: false,
     operationType: null,
     formatAlgorithmParams: null,
     onBeforeSendHeadersFn: () => {},
@@ -163,6 +164,7 @@ export function createPageDecodeState() {
     state.phase = PAGE_DECODE_PHASES.IDLE;
     state.readyNotified = false;
     state.startHandled = false;
+    state.contentReady = false;
     state.operationType = null;
     state.formatAlgorithmParams = null;
     state.requestsMap = {};

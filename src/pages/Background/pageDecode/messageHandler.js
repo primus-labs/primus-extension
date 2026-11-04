@@ -269,7 +269,6 @@ export async function pageDecodeMsgListener(
       const injectFn = (options = {}) =>
         injectPageDecodeIntoTab(state.dataSourcePageTabId, options);
 
-      await checkWebRequestIsReady();
       state.tabUpdatedListener = (tabId, changeInfo) => {
         if (tabId !== state.dataSourcePageTabId) {
           return;
@@ -347,6 +346,11 @@ export async function pageDecodeMsgListener(
 
     if (name === 'initCompleted') {
       console.log('content_scripts-bg-decode receive:initCompleted');
+      if (sender?.tab?.id !== state.dataSourcePageTabId) {
+        respond({ name: 'stale' });
+        return;
+      }
+      state.contentReady = true;
       const uiResultSnapshot = getReplayableUiResultSnapshot(state);
       if (uiResultSnapshot && Date.now() >= uiResultSnapshot.closeAt) {
         await closeSdkDataSourceTabWithoutCancel();

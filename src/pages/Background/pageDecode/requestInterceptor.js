@@ -88,6 +88,10 @@ import {
 } from './specialTemplates/specialTemplateLinkedinNomad.js';
 import { notifyPageDecodeReadyUi } from './pageDecodeReadyUiNotify.js';
 import {
+  canFinalizePageDecodeReady,
+  shouldIgnorePageDecodeWebRequest,
+} from './requestPolicy.js';
+import {
   matches as matchesGithubHomeTemplate,
   logGitHubHome,
   summarizeGithubHomeCapture,
@@ -955,6 +959,10 @@ export async function checkWebRequestIsReady() {
     await formatAlgorithmParamsFn();
   }
 
+  if (fl && !canFinalizePageDecodeReady(state)) {
+    return fl;
+  }
+
   if (fl) {
     if (state.startHandled || state.phase === PAGE_DECODE_PHASES.ATTESTING) {
       return fl;
@@ -998,13 +1006,9 @@ export function setupWebRequestListener() {
   const { state, storeInRequestsMap, removeFromRequestsMap } = pageDecodeState;
 
   const onBeforeSendHeadersFn = async (details) => {
-    if (
-      details?.initiator?.startsWith(`chrome-extension://${chrome.runtime.id}`)
-    ) {
+    if (shouldIgnorePageDecodeWebRequest(details, state, chrome.runtime.id)) {
       return;
     }
-    const dataSourcePageTabId = state.dataSourcePageTabId;
-    if (![-1, dataSourcePageTabId].includes(details.tabId)) return;
     if (details.method === 'OPTIONS') return;
 
     await onPolymarketUsersMePutObserved(
@@ -1190,12 +1194,14 @@ export function setupWebRequestListener() {
 
   const onBeforeRequestFn = async (subDetails) => {
     if (
-      subDetails?.initiator?.startsWith(`chrome-extension://${chrome.runtime.id}`)
+      shouldIgnorePageDecodeWebRequest(
+        subDetails,
+        state,
+        chrome.runtime.id
+      )
     ) {
       return;
     }
-    const dataSourcePageTabId = state.dataSourcePageTabId;
-    if (![-1, dataSourcePageTabId].includes(subDetails.tabId)) return;
     if (subDetails.method === 'OPTIONS') return;
 
     const { url: currRequestUrl, requestBody, requestId, method } = subDetails;
