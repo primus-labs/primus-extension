@@ -1,6 +1,5 @@
 /**
- * GitHub home / user-login meta template (38396d71): debug logging for URL match, replay, XPath.
- * Filter DevTools console with: GitHubHome
+ * GitHub home / user-login meta template (38396d71): URL match and capture helpers.
  */
 /* global console */
 import { matchesTemplateId } from './templateIdUtils.js';
@@ -16,12 +15,8 @@ export const GITHUB_HOME_LOG_TAG = 'GitHubHome';
  * @param {string} event
  * @param {Record<string, unknown>} [detail]
  */
-export function logGitHubHome(event, detail = {}) {
-  console.log(GITHUB_HOME_LOG_TAG, event, {
-    templateId: TEMPLATE_ID,
-    at: Date.now(),
-    ...detail,
-  });
+export function logGitHubHome(_event, _detail = {}) {
+  /* debug logging disabled */
 }
 
 /**

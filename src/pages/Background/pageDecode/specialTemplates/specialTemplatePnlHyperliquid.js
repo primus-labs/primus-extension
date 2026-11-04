@@ -137,37 +137,6 @@ export function isHyperliquidInfoPost(method, url) {
 }
 
 /**
- * Fields logged when a Hyperliquid /info POST is seen, including parse failures.
- * @param {unknown} parsedBody
- * @param {{ raw?: Array<{ bytes?: unknown }>; error?: string } | null | undefined} requestBody
- * @param {unknown} parseError
- * @returns {{ type: string | null; bodyParsed: boolean; hasRaw: boolean; requestBodyError: string | null; parseError: string | null }}
- */
-export function describeHyperliquidInfoPostBody(parsedBody, requestBody, parseError) {
-  const type =
-    parsedBody &&
-    typeof parsedBody === 'object' &&
-    !Array.isArray(parsedBody) &&
-    typeof parsedBody.type === 'string'
-      ? parsedBody.type
-      : null;
-  const hasRaw = Boolean(requestBody?.raw?.[0]?.bytes);
-  let parseErrorText = null;
-  if (parseError) {
-    parseErrorText =
-      parseError instanceof Error ? parseError.message : String(parseError);
-  }
-  return {
-    type,
-    bodyParsed: parsedBody != null,
-    hasRaw,
-    requestBodyError:
-      typeof requestBody?.error === 'string' ? requestBody.error : null,
-    parseError: parseErrorText,
-  };
-}
-
-/**
  * @param {unknown} body
  * @returns {{ type: string; signature: string | null } | null}
  */
@@ -680,7 +649,6 @@ export async function maybeCorrectHyperliquidJoinReferralUrl(state, tabId, urlHi
   state.hyperliquidJoinReferralLastCorrectedUrl = targetUrl;
   try {
     await chrome.tabs.update(tabId, { url: targetUrl });
-    console.log('hyperliquidPnl: corrected join referral URL', targetUrl);
   } catch (e) {
     console.warn('hyperliquidPnl: join referral URL correction failed', e);
   }
@@ -784,10 +752,6 @@ export async function onHyperliquidInfoRequestObserved(
     });
 
     const acceptedTerms = readAcceptedTermsFromLegalCheckResponse(fetched?.data);
-    console.log('hyperliquidPnl: legalCheck replay result', {
-      acceptedTerms,
-      requestId: ctx.requestId ?? null,
-    });
     if (acceptedTerms === true) {
       flow.phase = 'awaitReferralClick';
       await notifyHyperliquidJoinReferralWaitUi(state);
@@ -916,7 +880,6 @@ export async function reloadDataSourceTabAfterOpen(tabId) {
     await delay(RELOAD_DELAY_MS);
     await chrome.tabs.reload(tabId);
     await waitForTabLoadComplete(tabId);
-    console.log('hyperliquidPnl: data source tab reload after initial load', tabId);
   } catch (e) {
     console.warn('hyperliquidPnl: data source tab reload failed', e);
   }
@@ -932,7 +895,6 @@ export async function navigateDataSourceTabToPortfolio(tabId) {
     await chrome.tabs.update(tabId, { url: HYPERLIQUID_PORTFOLIO_URL });
     await waitForTabLoadComplete(tabId);
     await reloadDataSourceTabAfterOpen(tabId);
-    console.log('hyperliquidPnl: navigated data source tab to portfolio', tabId);
   } catch (e) {
     console.warn('hyperliquidPnl: navigate to portfolio failed', e);
   }

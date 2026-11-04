@@ -77,7 +77,6 @@ import {
   ensureHyperliquidJoinLegalCheck,
   navigateDataSourceTabToPortfolio,
   isHyperliquidInfoPost,
-  describeHyperliquidInfoPostBody,
   rememberHyperliquidInfoUser,
   shouldSkipHyperliquidAttestationInfoReplay,
 } from './specialTemplates/specialTemplatePnlHyperliquid.js';
@@ -1210,14 +1209,12 @@ export function setupWebRequestListener() {
     );
 
     let parsedBody = null;
-    let infoBodyParseError = null;
     if (requestBody?.raw?.[0]?.bytes) {
       try {
         const byteArray = new Uint8Array(requestBody.raw[0].bytes);
         parsedBody = JSON.parse(new TextDecoder().decode(byteArray));
-      } catch (error) {
+      } catch (_error) {
         parsedBody = null;
-        infoBodyParseError = error;
       }
     }
 
@@ -1225,16 +1222,6 @@ export function setupWebRequestListener() {
       matchesHyperliquidPnlTemplate(state.activeTemplate) &&
       isHyperliquidInfoPost(method || 'POST', currRequestUrl)
     ) {
-      const bodyDetail = describeHyperliquidInfoPostBody(
-        parsedBody,
-        requestBody,
-        infoBodyParseError
-      );
-      console.log('hyperliquidPnl: info post body', {
-        requestId,
-        url: currRequestUrl,
-        ...bodyDetail,
-      });
       if (parsedBody != null) {
         rememberHyperliquidInfoUser(state, parsedBody);
         storeInRequestsMap(requestId, {

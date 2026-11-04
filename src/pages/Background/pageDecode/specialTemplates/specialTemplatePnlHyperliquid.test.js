@@ -13,7 +13,6 @@ import {
   shouldNavigateToPortfolioAfterLegalCheck,
   shouldSkipInitialReloadForJumpTo,
   isHyperliquidInfoUrl,
-  describeHyperliquidInfoPostBody,
   isLegalCheckBody,
   isAcceptTerms2WithSignatureBody,
   shouldSkipHyperliquidAttestationInfoReplay,
@@ -187,38 +186,6 @@ describe('Hyperliquid join referral URL correction', () => {
         JOIN_JUMP
       ),
       true
-    );
-  });
-});
-
-describe('describeHyperliquidInfoPostBody', () => {
-  it('reports legalCheck when the JSON body parses', () => {
-    assert.deepEqual(
-      describeHyperliquidInfoPostBody(
-        { type: 'legalCheck' },
-        { raw: [{ bytes: new Uint8Array([1]) }] },
-        null
-      ),
-      {
-        type: 'legalCheck',
-        bodyParsed: true,
-        hasRaw: true,
-        requestBodyError: null,
-        parseError: null,
-      }
-    );
-  });
-
-  it('reports missing raw and requestBody error when the body is unavailable', () => {
-    assert.deepEqual(
-      describeHyperliquidInfoPostBody(null, { error: 'Unknown error.' }, null),
-      {
-        type: null,
-        bodyParsed: false,
-        hasRaw: false,
-        requestBodyError: 'Unknown error.',
-        parseError: null,
-      }
     );
   });
 });

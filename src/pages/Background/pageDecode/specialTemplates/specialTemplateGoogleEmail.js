@@ -1,6 +1,5 @@
 /**
- * Google Account email (0385fbd1): debug logging for URL match, ignoreResponse, ready sync.
- * Filter DevTools: GoogleEmail — Service Worker for capture/ready; page console for ui:* events.
+ * Google Account email (0385fbd1): URL match helpers and capture summaries.
  */
 /* global console */
 import { matchesTemplateId } from './templateIdUtils.js';
@@ -15,12 +14,8 @@ export const GOOGLE_EMAIL_LOG_TAG = 'GoogleEmail';
  * @param {string} event
  * @param {Record<string, unknown>} [detail]
  */
-export function logGoogleEmail(event, detail = {}) {
-  console.log(GOOGLE_EMAIL_LOG_TAG, event, {
-    templateId: TEMPLATE_ID,
-    at: Date.now(),
-    ...detail,
-  });
+export function logGoogleEmail(_event, _detail = {}) {
+  /* debug logging disabled */
 }
 
 /**

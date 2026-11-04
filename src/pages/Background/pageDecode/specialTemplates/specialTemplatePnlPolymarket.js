@@ -11,12 +11,8 @@ export const POLYMARKET_PNL_LOG_TAG = 'PolymarketPnl';
  * @param {string} event
  * @param {Record<string, unknown>} [detail]
  */
-export function logPolymarketPnl(event, detail = {}) {
-  console.log(POLYMARKET_PNL_LOG_TAG, event, {
-    templateId: TEMPLATE_ID,
-    at: Date.now(),
-    ...detail,
-  });
+export function logPolymarketPnl(_event, _detail = {}) {
+  /* debug logging disabled */
 }
 
 /** Default form probe window after algorithm params are ready (ms). */

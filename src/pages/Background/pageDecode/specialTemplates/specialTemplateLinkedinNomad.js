@@ -1,6 +1,5 @@
 /**
- * LinkedIn Nomad / location template (a87deb8c): debug logging for capture + XPath validation.
- * Filter DevTools console with: LinkedInNomad
+ * LinkedIn Nomad / location template (a87deb8c): capture and XPath validation helpers.
  */
 /* global console, setTimeout, Promise */
 import { matchesTemplateId } from './templateIdUtils.js';
@@ -18,12 +17,8 @@ export const LINKEDIN_NOMAD_LOG_TAG = 'LinkedInNomad';
  * @param {string} event
  * @param {Record<string, unknown>} [detail]
  */
-export function logLinkedInNomad(event, detail = {}) {
-  console.log(LINKEDIN_NOMAD_LOG_TAG, event, {
-    templateId: TEMPLATE_ID,
-    at: Date.now(),
-    ...detail,
-  });
+export function logLinkedInNomad(_event, _detail = {}) {
+  /* debug logging disabled */
 }
 
 /**
