@@ -41,6 +41,10 @@ import {
   startHyperliquidJoinReferralWait,
   stopHyperliquidJoinReferralWait,
 } from './hyperliquidJoinReferralWait';
+import {
+  matches as matchesHyperliquidPnlTemplate,
+  isHyperliquidJoinPageUrl,
+} from '@/pages/Background/pageDecode/specialTemplates/specialTemplatePnlHyperliquid.js';
 let activeRequest = null;
 /** Discord invite: hide verification card until first configured request is captured. */
 let deferredModalPending = false;
@@ -339,8 +343,20 @@ function syncHyperliquidJoinReferralWait(response, templateParams) {
     stopHyperliquidJoinReferralWait();
     return;
   }
-  if (templateParams) {
-    startHyperliquidJoinReferralWait(templateParams);
+  if (!templateParams || !matchesHyperliquidPnlTemplate(templateParams)) {
+    stopHyperliquidJoinReferralWait();
+    return;
+  }
+  const onJoinPage = isHyperliquidJoinPageUrl(window.location.href);
+  if (
+    onJoinPage &&
+    (response?.hyperliquidJoinEarlyReferralBind === true ||
+      response?.hyperliquidJoinAwaitReferralClick === true)
+  ) {
+    startHyperliquidJoinReferralWait(templateParams, {
+      preventNativeNavigation:
+        response?.hyperliquidJoinAwaitReferralClick === true,
+    });
     return;
   }
   stopHyperliquidJoinReferralWait();
@@ -700,6 +716,12 @@ chrome.runtime.onMessage.addListener((message) => {
     mergePolymarketGateUiFields(message);
     applyPolymarketGateReadyResume(message);
     scheduleRenderPageDecodeCardIfAllowed();
+    return;
+  }
+
+  if (message.name === 'hyperliquidJoinReferralWait') {
+    if (!activeRequest) return;
+    syncHyperliquidJoinReferralWait(message, activeRequest);
     return;
   }
 

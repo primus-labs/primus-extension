@@ -1,5 +1,6 @@
 /* global chrome, console, clearTimeout, setTimeout */
 import jp from 'jsonpath';
+import { sendMsgToTab } from '../../utils/utils.js';
 import { matchesTemplateId } from './templateIdUtils.js';
 
 /**
@@ -39,6 +40,13 @@ const RELOAD_DELAY_MS = 200;
 const TAB_COMPLETE_WAIT_MS = 30000;
 
 /** @typedef {'awaitingLegalCheck' | 'awaitReferralClick' | 'awaitAcceptTerms2' | 'completed'} HyperliquidJoinPhase */
+
+/**
+ * @typedef {object} HyperliquidJoinFlowState
+ * @property {HyperliquidJoinPhase} phase
+ * @property {boolean} legalCheckHandled
+ * @property {boolean} [referralClickPending]
+ */
 
 /**
  * @param {number} ms
@@ -129,6 +137,37 @@ export function isHyperliquidInfoPost(method, url) {
 }
 
 /**
+ * Fields logged when a Hyperliquid /info POST is seen, including parse failures.
+ * @param {unknown} parsedBody
+ * @param {{ raw?: Array<{ bytes?: unknown }>; error?: string } | null | undefined} requestBody
+ * @param {unknown} parseError
+ * @returns {{ type: string | null; bodyParsed: boolean; hasRaw: boolean; requestBodyError: string | null; parseError: string | null }}
+ */
+export function describeHyperliquidInfoPostBody(parsedBody, requestBody, parseError) {
+  const type =
+    parsedBody &&
+    typeof parsedBody === 'object' &&
+    !Array.isArray(parsedBody) &&
+    typeof parsedBody.type === 'string'
+      ? parsedBody.type
+      : null;
+  const hasRaw = Boolean(requestBody?.raw?.[0]?.bytes);
+  let parseErrorText = null;
+  if (parseError) {
+    parseErrorText =
+      parseError instanceof Error ? parseError.message : String(parseError);
+  }
+  return {
+    type,
+    bodyParsed: parsedBody != null,
+    hasRaw,
+    requestBodyError:
+      typeof requestBody?.error === 'string' ? requestBody.error : null,
+    parseError: parseErrorText,
+  };
+}
+
+/**
  * @param {unknown} body
  * @returns {{ type: string; signature: string | null } | null}
  */
@@ -185,6 +224,104 @@ export function hasHyperliquidRequestSignature(body) {
 export function isLegalCheckBody(body) {
   const info = parseHyperliquidInfoBody(body);
   return info?.type === INFO_TYPE_LEGAL_CHECK;
+}
+
+/**
+ * @param {unknown} body
+ * @returns {unknown}
+ */
+function parseHyperliquidInfoBodyObject(body) {
+  let parsed = body;
+  if (typeof body === 'string') {
+    try {
+      parsed = JSON.parse(body);
+    } catch (_e) {
+      return null;
+    }
+  }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    return null;
+  }
+  return parsed;
+}
+
+/**
+ * @param {unknown} body
+ * @returns {unknown}
+ */
+export function readHyperliquidInfoUser(body) {
+  const parsed = parseHyperliquidInfoBodyObject(body);
+  if (!parsed || !('user' in parsed)) {
+    return undefined;
+  }
+  const user = parsed.user;
+  if (typeof user === 'string' && !user.trim()) {
+    return undefined;
+  }
+  return user;
+}
+
+/**
+ * Remember wallet/user from any intercepted /info POST for legalCheck replay.
+ * @param {object} state
+ * @param {unknown} body
+ */
+export function rememberHyperliquidInfoUser(state, body) {
+  if (!matches(state?.activeTemplate)) return;
+  const user = readHyperliquidInfoUser(body);
+  if (user !== undefined) {
+    state.hyperliquidJoinInfoUser = user;
+  }
+}
+
+/**
+ * @param {object} state
+ * @returns {unknown}
+ */
+function findHyperliquidInfoUserInRequestsMap(state) {
+  const map = state?.requestsMap;
+  if (!map || typeof map !== 'object') {
+    return undefined;
+  }
+  for (const entry of Object.values(map)) {
+    const user = readHyperliquidInfoUser(entry?.body);
+    if (user !== undefined) {
+      return user;
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Build the body used to replay legalCheck (must match page payload, including user).
+ * @param {object} state
+ * @param {unknown} sourceBody
+ * @returns {Record<string, unknown> | null}
+ */
+export function buildLegalCheckReplayBody(state, sourceBody) {
+  const parsed = parseHyperliquidInfoBodyObject(sourceBody);
+  const user =
+    readHyperliquidInfoUser(parsed) ??
+    state?.hyperliquidJoinInfoUser ??
+    findHyperliquidInfoUserInRequestsMap(state);
+
+  if (
+    parsed &&
+    typeof parsed.type === 'string' &&
+    parsed.type === INFO_TYPE_LEGAL_CHECK
+  ) {
+    const replay = { ...parsed };
+    if (user !== undefined && replay.user == null) {
+      replay.user = user;
+    }
+    return replay;
+  }
+
+  if (user === undefined) {
+    return null;
+  }
+
+  return { type: INFO_TYPE_LEGAL_CHECK, user };
 }
 
 /**
@@ -260,6 +397,8 @@ function ensureJoinFlow(state) {
         ? 'awaitingLegalCheck'
         : 'completed',
       legalCheckHandled: false,
+      legalCheckInFlight: false,
+      referralClickPending: false,
     };
   }
   return state.hyperliquidJoinFlow;
@@ -268,6 +407,7 @@ function ensureJoinFlow(state) {
 export function resetHyperliquidJoinFlow(state) {
   delete state.hyperliquidJoinFlow;
   delete state.hyperliquidJoinReferralLastCorrectedUrl;
+  delete state.hyperliquidJoinInfoUser;
 }
 
 /**
@@ -304,6 +444,17 @@ export function isHyperliquidJoinAwaitReferralClick(state) {
 }
 
 /**
+ * acceptedTerms=false must retain native behavior so acceptTerms2 is sent.
+ * @param {boolean} awaitReferralClick
+ * @returns {boolean}
+ */
+export function shouldPreventHyperliquidReferralNavigation(
+  awaitReferralClick
+) {
+  return awaitReferralClick === true;
+}
+
+/**
  * @param {string} text
  * @param {string} suffix
  * @returns {boolean}
@@ -328,6 +479,45 @@ export function isHyperliquidJoinPageUrl(href) {
     return /\/join(\/|$)/i.test(parsed.pathname);
   } catch (_e) {
     return false;
+  }
+}
+
+/**
+ * @param {string} href
+ * @returns {boolean}
+ */
+export function isHyperliquidTradePageUrl(href) {
+  try {
+    const parsed = new URL(href);
+    if (!/hyperliquid\.xyz/i.test(parsed.hostname)) return false;
+    return /\/trade(\/|$)/i.test(parsed.pathname);
+  } catch (_e) {
+    return false;
+  }
+}
+
+/**
+ * @param {{ referralClickPending?: boolean } | null | undefined} flow
+ * @param {string} tabHref
+ * @returns {boolean}
+ */
+export function shouldNavigateToPortfolioAfterLegalCheck(flow, tabHref) {
+  if (!flow) return false;
+  if (flow.referralClickPending === true) return true;
+  return isHyperliquidTradePageUrl(tabHref);
+}
+
+/**
+ * @param {number | null | undefined} tabId
+ * @returns {Promise<string>}
+ */
+async function getDataSourceTabHref(tabId) {
+  if (tabId == null) return '';
+  try {
+    const tab = await chrome.tabs.get(tabId);
+    return typeof tab?.url === 'string' ? tab.url : '';
+  } catch (_e) {
+    return '';
   }
 }
 
@@ -533,8 +723,14 @@ async function completeJoinFlowNavigate(state, navigateFn) {
  * @param {object} state
  * @param {{ url: string; method: string; body?: unknown; requestId?: string; captured?: { headers?: object; body?: unknown } }} ctx
  * @param {() => Promise<void>} navigateFn
+ * @param {{ fetchRequestData?: (params: object) => Promise<{ data?: unknown }> }} [options]
  */
-export async function onHyperliquidInfoRequestObserved(state, ctx, navigateFn) {
+export async function onHyperliquidInfoRequestObserved(
+  state,
+  ctx,
+  navigateFn,
+  options = {}
+) {
   if (!matches(state.activeTemplate)) return;
   const flow = ensureJoinFlow(state);
   if (!flow || flow.phase === 'completed') return;
@@ -547,7 +743,14 @@ export async function onHyperliquidInfoRequestObserved(state, ctx, navigateFn) {
     return;
   }
 
-  if (!isLegalCheckBody(body) || flow.legalCheckHandled) {
+  if (
+    !isLegalCheckBody(body) &&
+    !isLegalCheckBody(ctx.captured?.body)
+  ) {
+    return;
+  }
+
+  if (flow.legalCheckHandled || flow.legalCheckInFlight) {
     return;
   }
 
@@ -556,22 +759,135 @@ export async function onHyperliquidInfoRequestObserved(state, ctx, navigateFn) {
     return;
   }
 
+  const replayBody = buildLegalCheckReplayBody(state, captured.body ?? body);
+  if (!replayBody) {
+    return;
+  }
+
+  flow.legalCheckInFlight = true;
   flow.legalCheckHandled = true;
 
-  const { fetchRequestDataForTemplateValidation } = await import('../utils.js');
-  const fetched = await fetchRequestDataForTemplateValidation({
-    url: ctx.url,
-    method: 'POST',
-    header: captured.headers,
-    body: captured.body ?? body,
-  });
+  try {
+    const fetchRequestData = options.fetchRequestData;
+    if (typeof fetchRequestData !== 'function') {
+      console.warn(
+        'hyperliquidPnl: legalCheck replay skipped: missing replay function'
+      );
+      flow.legalCheckHandled = false;
+      return;
+    }
+    const fetched = await fetchRequestData({
+      url: ctx.url,
+      method: 'POST',
+      header: captured.headers,
+      body: replayBody,
+    });
 
-  const acceptedTerms = readAcceptedTermsFromLegalCheckResponse(fetched?.data);
-  if (acceptedTerms === true) {
-    flow.phase = 'awaitReferralClick';
-  } else {
-    flow.phase = 'awaitAcceptTerms2';
+    const acceptedTerms = readAcceptedTermsFromLegalCheckResponse(fetched?.data);
+    console.log('hyperliquidPnl: legalCheck replay result', {
+      acceptedTerms,
+      requestId: ctx.requestId ?? null,
+    });
+    if (acceptedTerms === true) {
+      flow.phase = 'awaitReferralClick';
+      await notifyHyperliquidJoinReferralWaitUi(state);
+      const tabHref = await getDataSourceTabHref(state.dataSourcePageTabId);
+      if (shouldNavigateToPortfolioAfterLegalCheck(flow, tabHref)) {
+        await completeJoinFlowNavigate(state, navigateFn);
+      }
+    } else {
+      flow.phase = 'awaitAcceptTerms2';
+    }
+  } finally {
+    flow.legalCheckInFlight = false;
   }
+}
+
+/**
+ * Logged-in join pages do not always issue legalCheck themselves. Reuse the
+ * first authenticated /info request headers to perform the same check once.
+ * @param {object} state
+ * @param {{ url: string; method: string; requestId?: string; captured?: { headers?: object } }} ctx
+ * @param {() => Promise<void>} navigateFn
+ * @param {{ fetchRequestData?: (params: object) => Promise<{ data?: unknown }> }} [options]
+ */
+export async function ensureHyperliquidJoinLegalCheck(
+  state,
+  ctx,
+  navigateFn,
+  options = {}
+) {
+  if (!matches(state?.activeTemplate)) return;
+  const flow = ensureJoinFlow(state);
+  if (
+    !flow ||
+    flow.phase !== 'awaitingLegalCheck' ||
+    flow.legalCheckHandled ||
+    flow.legalCheckInFlight ||
+    !ctx?.captured?.headers ||
+    !isHyperliquidInfoPost(ctx.method, ctx.url)
+  ) {
+    return;
+  }
+  const replayBody = buildLegalCheckReplayBody(state, ctx.captured?.body);
+  if (!replayBody) {
+    return;
+  }
+  await onHyperliquidInfoRequestObserved(
+    state,
+    {
+      ...ctx,
+      body: replayBody,
+      captured: {
+        ...ctx.captured,
+        body: replayBody,
+      },
+    },
+    navigateFn,
+    options
+  );
+}
+
+/**
+ * @param {object} state
+ * @param {Record<string, unknown>} payload
+ * @returns {Promise<void>}
+ */
+async function sendHyperliquidJoinReferralWaitMsg(state, payload) {
+  const tabId = state?.dataSourcePageTabId;
+  if (tabId == null) return;
+  await sendMsgToTab(tabId, {
+    type: 'pageDecode',
+    name: 'hyperliquidJoinReferralWait',
+    ...payload,
+  });
+}
+
+/**
+ * Tell content to bind the join referral button as soon as legalCheck allows clicks.
+ * @param {object} state
+ * @returns {Promise<void>}
+ */
+export async function notifyHyperliquidJoinReferralWaitUi(state) {
+  if (!matches(state.activeTemplate)) return;
+  await sendHyperliquidJoinReferralWaitMsg(state, {
+    hyperliquidJoinAwaitReferralClick: isHyperliquidJoinAwaitReferralClick(state),
+    hyperliquidJoinEarlyReferralBind: true,
+  });
+}
+
+/**
+ * Ask content on join URL to bind referral button before legalCheck completes.
+ * @param {object} state
+ * @returns {Promise<void>}
+ */
+export async function notifyHyperliquidJoinEarlyReferralBind(state) {
+  if (!matches(state.activeTemplate)) return;
+  const jumpTo = state.activeTemplate?.jumpTo ?? '';
+  if (!isHyperliquidJoinPageUrl(jumpTo)) return;
+  await sendHyperliquidJoinReferralWaitMsg(state, {
+    hyperliquidJoinEarlyReferralBind: true,
+  });
 }
 
 /**
@@ -582,7 +898,11 @@ export async function onHyperliquidJoinReferralClicked(state, navigateFn) {
   if (!matches(state.activeTemplate)) return;
   const flow = ensureJoinFlow(state);
   if (!flow || flow.phase === 'completed') return;
-  await completeJoinFlowNavigate(state, navigateFn);
+  if (flow.phase === 'awaitReferralClick') {
+    await completeJoinFlowNavigate(state, navigateFn);
+    return;
+  }
+  flow.referralClickPending = true;
 }
 
 /**

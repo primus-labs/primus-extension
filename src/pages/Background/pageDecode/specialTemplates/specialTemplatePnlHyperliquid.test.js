@@ -6,10 +6,14 @@ import {
   getHyperliquidJoinReferralSuffix,
   getHyperliquidTemplateJoinBaseUrl,
   getJoinReferralSegmentFromUrl,
+  findJoinReferralButton,
   needsHyperliquidJoinUrlCorrection,
   isHyperliquidJoinPageUrl,
+  isHyperliquidTradePageUrl,
+  shouldNavigateToPortfolioAfterLegalCheck,
   shouldSkipInitialReloadForJumpTo,
   isHyperliquidInfoUrl,
+  describeHyperliquidInfoPostBody,
   isLegalCheckBody,
   isAcceptTerms2WithSignatureBody,
   shouldSkipHyperliquidAttestationInfoReplay,
@@ -19,8 +23,12 @@ import {
   shouldDeferHyperliquidPortfolioValidation,
   parseHyperliquidInfoBody,
   onHyperliquidInfoRequestObserved,
+  ensureHyperliquidJoinLegalCheck,
+  buildLegalCheckReplayBody,
+  rememberHyperliquidInfoUser,
   onHyperliquidJoinReferralClicked,
   isHyperliquidJoinAwaitReferralClick,
+  shouldPreventHyperliquidReferralNavigation,
   resetHyperliquidJoinFlow,
 } from './specialTemplatePnlHyperliquid.js';
 
@@ -70,6 +78,21 @@ describe('buttonLabelEndsWithReferral', () => {
       buttonLabelEndsWithReferral('Join code:  PRIMUSLABS  ', 'PRIMUSLABS'),
       true
     );
+  });
+});
+
+describe('findJoinReferralButton', () => {
+  it('matches button[type="button"] whose label ends with referral suffix', () => {
+    let selector = '';
+    const expected = { textContent: 'Join PRIMUSLABS' };
+    const doc = {
+      querySelectorAll(value) {
+        selector = value;
+        return [{ textContent: 'Cancel' }, expected];
+      },
+    };
+    assert.equal(findJoinReferralButton(doc, 'PRIMUSLABS'), expected);
+    assert.equal(selector, 'button[type="button"]');
   });
 });
 
@@ -168,6 +191,38 @@ describe('Hyperliquid join referral URL correction', () => {
   });
 });
 
+describe('describeHyperliquidInfoPostBody', () => {
+  it('reports legalCheck when the JSON body parses', () => {
+    assert.deepEqual(
+      describeHyperliquidInfoPostBody(
+        { type: 'legalCheck' },
+        { raw: [{ bytes: new Uint8Array([1]) }] },
+        null
+      ),
+      {
+        type: 'legalCheck',
+        bodyParsed: true,
+        hasRaw: true,
+        requestBodyError: null,
+        parseError: null,
+      }
+    );
+  });
+
+  it('reports missing raw and requestBody error when the body is unavailable', () => {
+    assert.deepEqual(
+      describeHyperliquidInfoPostBody(null, { error: 'Unknown error.' }, null),
+      {
+        type: null,
+        bodyParsed: false,
+        hasRaw: false,
+        requestBodyError: 'Unknown error.',
+        parseError: null,
+      }
+    );
+  });
+});
+
 describe('shouldSkipInitialReloadForJumpTo', () => {
   it('skips reload for join jumpTo', () => {
     assert.equal(
@@ -183,6 +238,49 @@ describe('shouldSkipInitialReloadForJumpTo', () => {
       shouldSkipInitialReloadForJumpTo(
         'https://app.hyperliquid.xyz/portfolio'
       ),
+      false
+    );
+  });
+});
+
+describe('shouldNavigateToPortfolioAfterLegalCheck', () => {
+  it('navigates when referral click was pending', () => {
+    assert.equal(
+      shouldNavigateToPortfolioAfterLegalCheck(
+        { referralClickPending: true },
+        'https://app.hyperliquid.xyz/join/PRIMUSLABS'
+      ),
+      true
+    );
+  });
+
+  it('navigates when tab already on trade', () => {
+    assert.equal(
+      shouldNavigateToPortfolioAfterLegalCheck(
+        { referralClickPending: false },
+        'https://app.hyperliquid.xyz/trade'
+      ),
+      true
+    );
+  });
+
+  it('does not navigate on join without pending click', () => {
+    assert.equal(
+      shouldNavigateToPortfolioAfterLegalCheck(
+        { referralClickPending: false },
+        'https://app.hyperliquid.xyz/join/PRIMUSLABS'
+      ),
+      false
+    );
+  });
+
+  it('isHyperliquidTradePageUrl matches trade path', () => {
+    assert.equal(
+      isHyperliquidTradePageUrl('https://app.hyperliquid.xyz/trade'),
+      true
+    );
+    assert.equal(
+      isHyperliquidTradePageUrl('https://app.hyperliquid.xyz/join/X'),
       false
     );
   });
@@ -313,7 +411,111 @@ describe('shouldDeferHyperliquidPortfolioValidation', () => {
   });
 });
 
+describe('buildLegalCheckReplayBody', () => {
+  it('merges user from intercepted legalCheck body', () => {
+    const state = hlState(JOIN_JUMP);
+    assert.deepEqual(
+      buildLegalCheckReplayBody(state, {
+        type: 'legalCheck',
+        user: '0xabc',
+      }),
+      { type: 'legalCheck', user: '0xabc' }
+    );
+  });
+
+  it('builds legalCheck from remembered user when fallback runs', () => {
+    const state = hlState(JOIN_JUMP);
+    rememberHyperliquidInfoUser(state, {
+      type: 'spotMeta',
+      user: '0xwallet',
+    });
+    assert.deepEqual(buildLegalCheckReplayBody(state, { type: 'spotMeta' }), {
+      type: 'legalCheck',
+      user: '0xwallet',
+    });
+  });
+
+  it('returns null until user is known', () => {
+    const state = hlState(JOIN_JUMP);
+    assert.equal(buildLegalCheckReplayBody(state, { type: 'candleSnapshot' }), null);
+  });
+});
+
 describe('join flow handlers', () => {
+  it('replays a synthetic legalCheck once from the first authenticated info request', async () => {
+    const state = hlState(JOIN_JUMP, {
+      phase: 'awaitingLegalCheck',
+      legalCheckHandled: false,
+      legalCheckInFlight: false,
+      referralClickPending: false,
+    });
+    state.hyperliquidJoinInfoUser = '0xwallet';
+    const replayBodies = [];
+    const context = {
+      url: 'https://api-ui.hyperliquid.xyz/info',
+      method: 'POST',
+      requestId: 'first-info',
+      captured: {
+        headers: { 'content-type': 'application/json' },
+        body: { type: 'candleSnapshot', user: '0xwallet' },
+      },
+    };
+    const options = {
+      async fetchRequestData(params) {
+        replayBodies.push(params.body);
+        return { data: { acceptedTerms: false } };
+      },
+    };
+
+    await ensureHyperliquidJoinLegalCheck(state, context, async () => {}, options);
+    await ensureHyperliquidJoinLegalCheck(state, context, async () => {}, options);
+
+    assert.deepEqual(replayBodies, [{ type: 'legalCheck', user: '0xwallet' }]);
+    assert.equal(state.hyperliquidJoinFlow.phase, 'awaitAcceptTerms2');
+    assert.equal(state.hyperliquidJoinFlow.legalCheckHandled, true);
+  });
+
+  it('moves synthetic acceptedTerms=true result to awaitReferralClick', async () => {
+    const originalChrome = globalThis.chrome;
+    globalThis.chrome = {
+      tabs: {
+        async sendMessage() {},
+        async get() {
+          return { url: JOIN_JUMP };
+        },
+      },
+    };
+    try {
+      const state = hlState(JOIN_JUMP, {
+        phase: 'awaitingLegalCheck',
+        legalCheckHandled: false,
+        legalCheckInFlight: false,
+        referralClickPending: false,
+      });
+      state.hyperliquidJoinInfoUser = '0xwallet';
+      await ensureHyperliquidJoinLegalCheck(
+        state,
+        {
+          url: 'https://api-ui.hyperliquid.xyz/info',
+          method: 'POST',
+          captured: {
+            headers: { 'content-type': 'application/json' },
+            body: { type: 'userFillsByTime', user: '0xwallet' },
+          },
+        },
+        async () => {},
+        {
+          async fetchRequestData() {
+            return { data: { acceptedTerms: true } };
+          },
+        }
+      );
+      assert.equal(state.hyperliquidJoinFlow.phase, 'awaitReferralClick');
+    } finally {
+      globalThis.chrome = originalChrome;
+    }
+  });
+
   it('acceptTerms2 with signature navigates before legalCheck replay finishes', async () => {
     const state = hlState(JOIN_JUMP, {
       phase: 'awaitingLegalCheck',
@@ -338,10 +540,10 @@ describe('join flow handlers', () => {
     assert.equal(state.hyperliquidJoinFlow.phase, 'completed');
   });
 
-  it('referral click navigates while join flow is not completed', async () => {
+  it('referral click navigates when awaitReferralClick', async () => {
     const state = hlState(JOIN_JUMP, {
-      phase: 'awaitingLegalCheck',
-      legalCheckHandled: false,
+      phase: 'awaitReferralClick',
+      legalCheckHandled: true,
     });
     let navigated = false;
     await onHyperliquidJoinReferralClicked(state, async () => {
@@ -357,6 +559,20 @@ describe('join flow handlers', () => {
     assert.equal(navigated, false);
   });
 
+  it('referral click before awaitReferralClick sets pending only', async () => {
+    const state = hlState(JOIN_JUMP, {
+      phase: 'awaitingLegalCheck',
+      legalCheckHandled: false,
+      referralClickPending: false,
+    });
+    let navigated = false;
+    await onHyperliquidJoinReferralClicked(state, async () => {
+      navigated = true;
+    });
+    assert.equal(navigated, false);
+    assert.equal(state.hyperliquidJoinFlow.referralClickPending, true);
+  });
+
   it('isHyperliquidJoinAwaitReferralClick reflects phase', () => {
     const state = hlState(JOIN_JUMP, {
       phase: 'awaitReferralClick',
@@ -365,5 +581,11 @@ describe('join flow handlers', () => {
     assert.equal(isHyperliquidJoinAwaitReferralClick(state), true);
     resetHyperliquidJoinFlow(state);
     assert.equal(isHyperliquidJoinAwaitReferralClick(state), false);
+  });
+
+  it('only prevents native referral navigation after acceptedTerms=true', () => {
+    assert.equal(shouldPreventHyperliquidReferralNavigation(false), false);
+    assert.equal(shouldPreventHyperliquidReferralNavigation(undefined), false);
+    assert.equal(shouldPreventHyperliquidReferralNavigation(true), true);
   });
 });

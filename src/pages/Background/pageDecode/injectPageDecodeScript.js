@@ -34,16 +34,21 @@ export async function injectPageDecodeIntoTab(tabId, options = {}) {
     return false;
   }
   const { force = false } = options;
-  if (!force && (await isPageDecodeBootedInTab(tabId))) {
+  try {
+    if (!force && (await isPageDecodeBootedInTab(tabId))) {
+      return false;
+    }
+    await chrome.scripting.executeScript({
+      target: { tabId },
+      files: ['pageDecode.bundle.js'],
+    });
+    await chrome.scripting.insertCSS({
+      target: { tabId },
+      files: ['static/css/pageDecode.css'],
+    });
+    return true;
+  } catch (error) {
+    console.warn('pageDecode: inject skipped', tabId, error);
     return false;
   }
-  await chrome.scripting.executeScript({
-    target: { tabId },
-    files: ['pageDecode.bundle.js'],
-  });
-  await chrome.scripting.insertCSS({
-    target: { tabId },
-    files: ['static/css/pageDecode.css'],
-  });
-  return true;
 }

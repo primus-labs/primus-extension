@@ -74,8 +74,11 @@ import {
   matches as matchesHyperliquidPnlTemplate,
   shouldDeferHyperliquidPortfolioValidation,
   onHyperliquidInfoRequestObserved,
+  ensureHyperliquidJoinLegalCheck,
   navigateDataSourceTabToPortfolio,
   isHyperliquidInfoPost,
+  describeHyperliquidInfoPostBody,
+  rememberHyperliquidInfoUser,
   shouldSkipHyperliquidAttestationInfoReplay,
 } from './specialTemplates/specialTemplatePnlHyperliquid.js';
 import {
@@ -1013,9 +1016,6 @@ export function setupWebRequestListener() {
     );
     await notifyPolymarketGateUiSync(state);
 
-    const template = getActiveDatasourceTemplate(state, 'onBeforeSendHeadersFn');
-    if (!template) return;
-    const { requests } = template;
     const { url: currRequestUrl, requestHeaders, method, requestId } = details;
 
     let addQueryStr = '';
@@ -1025,6 +1025,48 @@ export function setupWebRequestListener() {
         return prev;
       }, {})
     );
+
+    if (
+      matchesHyperliquidPnlTemplate(state.activeTemplate) &&
+      isHyperliquidInfoPost(method, currRequestUrl)
+    ) {
+      storeInRequestsMap(requestId, {
+        headers: formatHeader,
+        method,
+        url: currRequestUrl,
+        requestId,
+      });
+      const mergedCapture = state.requestsMap[requestId];
+      const navigateToPortfolio = () =>
+        navigateDataSourceTabToPortfolio(state.dataSourcePageTabId);
+      await onHyperliquidInfoRequestObserved(
+        state,
+        {
+          url: currRequestUrl,
+          method,
+          requestId,
+          captured: mergedCapture,
+          body: mergedCapture?.body,
+        },
+        navigateToPortfolio,
+        { fetchRequestData: fetchRequestDataForTemplateValidation }
+      );
+      await ensureHyperliquidJoinLegalCheck(
+        state,
+        {
+          url: currRequestUrl,
+          method,
+          requestId,
+          captured: mergedCapture,
+        },
+        navigateToPortfolio,
+        { fetchRequestData: fetchRequestDataForTemplateValidation }
+      );
+    }
+
+    const template = getActiveDatasourceTemplate(state, 'onBeforeSendHeadersFn');
+    if (!template) return;
+    const { requests } = template;
 
     let templateRequestUrl = '';
     const isTarget = requests.some((r) => {
@@ -1095,18 +1137,6 @@ export function setupWebRequestListener() {
       };
       if (addQueryStr) newCapturedInfo.queryString = addQueryStr;
       storeInRequestsMap(requestId, newCapturedInfo);
-      if (matchesHyperliquidPnlTemplate(state.activeTemplate)) {
-        await onHyperliquidInfoRequestObserved(
-          state,
-          {
-            url: currRequestUrl,
-            method,
-            requestId,
-            captured: state.requestsMap[requestId],
-          },
-          () => navigateDataSourceTabToPortfolio(state.dataSourcePageTabId)
-        );
-      }
       await markFirstConfiguredRequestCapturedIfNeeded();
       await trySendSecondRequestWithFirstHeaders();
       if (!shouldDeferHyperliquidPortfolioValidation(state)) {
@@ -1169,12 +1199,57 @@ export function setupWebRequestListener() {
     if (![-1, dataSourcePageTabId].includes(subDetails.tabId)) return;
     if (subDetails.method === 'OPTIONS') return;
 
-    const template = getActiveDatasourceTemplate(state, 'onBeforeRequestFn');
-    if (!template) return;
-    const { requests } = template;
     const { url: currRequestUrl, requestBody, requestId, method } = subDetails;
 
     removeFromRequestsMap(requestId);
+
+    const jumpBodyCapture = shouldStoreBodyForJumpConfig(
+      state,
+      currRequestUrl,
+      subDetails.method
+    );
+
+    let parsedBody = null;
+    let infoBodyParseError = null;
+    if (requestBody?.raw?.[0]?.bytes) {
+      try {
+        const byteArray = new Uint8Array(requestBody.raw[0].bytes);
+        parsedBody = JSON.parse(new TextDecoder().decode(byteArray));
+      } catch (error) {
+        parsedBody = null;
+        infoBodyParseError = error;
+      }
+    }
+
+    if (
+      matchesHyperliquidPnlTemplate(state.activeTemplate) &&
+      isHyperliquidInfoPost(method || 'POST', currRequestUrl)
+    ) {
+      const bodyDetail = describeHyperliquidInfoPostBody(
+        parsedBody,
+        requestBody,
+        infoBodyParseError
+      );
+      console.log('hyperliquidPnl: info post body', {
+        requestId,
+        url: currRequestUrl,
+        ...bodyDetail,
+      });
+      if (parsedBody != null) {
+        rememberHyperliquidInfoUser(state, parsedBody);
+        storeInRequestsMap(requestId, {
+          url: currRequestUrl,
+          requestId,
+          method: method || 'POST',
+          body: parsedBody,
+        });
+      }
+    }
+
+    const template = getActiveDatasourceTemplate(state, 'onBeforeRequestFn');
+    if (!template) return;
+    const { requests } = template;
+
     const isTarget = requests.some((r) => {
       if (r.needCapture === false) return false;
       return checkIsRequiredUrl({
@@ -1184,22 +1259,6 @@ export function setupWebRequestListener() {
         queryParams: r.queryParams,
       });
     });
-
-    const jumpBodyCapture = shouldStoreBodyForJumpConfig(
-      state,
-      currRequestUrl,
-      subDetails.method
-    );
-
-    let parsedBody = null;
-    if (requestBody?.raw?.[0]?.bytes) {
-      try {
-        const byteArray = new Uint8Array(requestBody.raw[0].bytes);
-        parsedBody = JSON.parse(new TextDecoder().decode(byteArray));
-      } catch (_e) {
-        parsedBody = null;
-      }
-    }
 
     if (isTarget || jumpBodyCapture) {
       const baseCapture = {
@@ -1222,25 +1281,6 @@ export function setupWebRequestListener() {
       }
     }
 
-    const hlNavigate = () =>
-      navigateDataSourceTabToPortfolio(state.dataSourcePageTabId);
-
-    if (
-      parsedBody &&
-      matchesHyperliquidPnlTemplate(state.activeTemplate) &&
-      isHyperliquidInfoPost(method, currRequestUrl)
-    ) {
-      await onHyperliquidInfoRequestObserved(
-        state,
-        {
-          url: currRequestUrl,
-          method: method || 'POST',
-          body: parsedBody,
-          requestId,
-        },
-        hlNavigate
-      );
-    }
   };
 
   state.onBeforeSendHeadersFn = onBeforeSendHeadersFn;

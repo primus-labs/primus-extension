@@ -3,6 +3,7 @@ import {
   isHyperliquidJoinPageUrl,
   getHyperliquidJoinReferralSuffix,
   findJoinReferralButton,
+  shouldPreventHyperliquidReferralNavigation,
 } from '@/pages/Background/pageDecode/specialTemplates/specialTemplatePnlHyperliquid.js';
 
 const POLL_MS = 400;
@@ -13,6 +14,7 @@ let boundButton = null;
 let clickHandler = null;
 let waitCompleted = false;
 let lastAttestationKey = '';
+let preventReferralNavigation = false;
 
 /**
  * @param {{ attTemplateID?: string; templateId?: string; id?: string; requestid?: string } | null | undefined} activeRequest
@@ -51,6 +53,7 @@ export function stopHyperliquidJoinReferralWait() {
 export function resetHyperliquidJoinReferralWaitState() {
   waitCompleted = false;
   lastAttestationKey = '';
+  preventReferralNavigation = false;
   stopHyperliquidJoinReferralWait();
 }
 
@@ -69,8 +72,10 @@ function bindJoinReferralButton(button) {
   detachButtonListener();
   boundButton = button;
   clickHandler = (event) => {
-    event.preventDefault();
-    event.stopPropagation();
+    if (preventReferralNavigation) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
     reportJoinReferralClicked();
   };
   button.addEventListener('click', clickHandler, { capture: true, once: true });
@@ -79,8 +84,9 @@ function bindJoinReferralButton(button) {
 /**
  * Poll the join referral button on the Hyperliquid join URL.
  * @param {object | null | undefined} activeRequest
+ * @param {{ preventNativeNavigation?: boolean }} [options]
  */
-export function startHyperliquidJoinReferralWait(activeRequest) {
+export function startHyperliquidJoinReferralWait(activeRequest, options = {}) {
   if (!matches(activeRequest)) {
     stopHyperliquidJoinReferralWait();
     return;
@@ -95,6 +101,12 @@ export function startHyperliquidJoinReferralWait(activeRequest) {
     resetHyperliquidJoinReferralWaitState();
     lastAttestationKey = sessionKey;
   }
+
+  preventReferralNavigation =
+    preventReferralNavigation ||
+    shouldPreventHyperliquidReferralNavigation(
+      options.preventNativeNavigation
+    );
 
   if (waitCompleted || pollTimeoutId != null || boundButton) {
     return;

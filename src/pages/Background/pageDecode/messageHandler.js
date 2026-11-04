@@ -12,6 +12,7 @@ import {
   beginPageDecodeAttestation,
 } from './requestInterceptor';
 import { shouldInjectPageDecodeOnTabUpdate } from './pageDecodeInject.js';
+import { openDataSourceTabAssignIdThenNavigate } from './openDataSourceTab.js';
 import { injectPageDecodeIntoTab } from './injectPageDecodeScript.js';
 import {
   sendMsgToDataSourcePage,
@@ -40,6 +41,9 @@ import {
   isHyperliquidJoinAwaitReferralClick,
   onHyperliquidJoinReferralClicked,
   maybeCorrectHyperliquidJoinReferralUrl,
+  notifyHyperliquidJoinEarlyReferralBind,
+  isHyperliquidJoinPageUrl,
+  isHyperliquidTradePageUrl,
 } from './specialTemplates/specialTemplatePnlHyperliquid.js';
 import {
   matches as matchesPolymarketPnlTemplate,
@@ -230,10 +234,13 @@ export async function pageDecodeMsgListener(
       state.dataSourcePageTabId = null;
       setupWebRequestListener();
 
-      const tabCreatedByPado = await chrome.tabs.create({
-        url: state.activeTemplate.jumpTo,
-      });
-      state.dataSourcePageTabId = tabCreatedByPado.id;
+      await openDataSourceTabAssignIdThenNavigate(
+        state.activeTemplate.jumpTo,
+        (tabId) => {
+          state.dataSourcePageTabId = tabId;
+        },
+        chrome.tabs
+      );
       if (matchesHyperliquidPnlTemplate(state.activeTemplate)) {
         await maybeCorrectHyperliquidJoinReferralUrl(
           state,
@@ -271,6 +278,19 @@ export async function pageDecodeMsgListener(
           changeInfo.url &&
           matchesHyperliquidPnlTemplate(state.activeTemplate)
         ) {
+          if (
+            isHyperliquidTradePageUrl(changeInfo.url) &&
+            isHyperliquidJoinAwaitReferralClick(state)
+          ) {
+            void onHyperliquidJoinReferralClicked(state, () =>
+              navigateDataSourceTabToPortfolio(state.dataSourcePageTabId)
+            ).catch((e) => {
+              console.warn(
+                'hyperliquidPnl: trade fallback navigation failed',
+                e
+              );
+            });
+          }
           maybeCorrectHyperliquidJoinReferralUrl(
             state,
             tabId,
@@ -287,6 +307,12 @@ export async function pageDecodeMsgListener(
         }
         state.injectDebounceTimer = setTimeout(async () => {
           await injectFn();
+          if (
+            matchesHyperliquidPnlTemplate(state.activeTemplate) &&
+            isHyperliquidJoinPageUrl(state.activeTemplate.jumpTo ?? '')
+          ) {
+            await notifyHyperliquidJoinEarlyReferralBind(state);
+          }
           if (state.phase !== PAGE_DECODE_PHASES.ATTESTING) {
             await checkWebRequestIsReady();
           }
@@ -311,6 +337,12 @@ export async function pageDecodeMsgListener(
       chrome.tabs.onRemoved.addListener(state.tabRemovedListener);
 
       await injectFn({ force: true });
+      if (
+        matchesHyperliquidPnlTemplate(state.activeTemplate) &&
+        isHyperliquidJoinPageUrl(state.activeTemplate.jumpTo ?? '')
+      ) {
+        await notifyHyperliquidJoinEarlyReferralBind(state);
+      }
     }
 
     if (name === 'initCompleted') {
@@ -372,6 +404,9 @@ export async function pageDecodeMsgListener(
         )
           ? isHyperliquidJoinAwaitReferralClick(state)
           : false,
+        hyperliquidJoinEarlyReferralBind:
+          matchesHyperliquidPnlTemplate(state.activeTemplate) &&
+          isHyperliquidJoinPageUrl(state.activeTemplate.jumpTo ?? ''),
       });
       if (state.isReadyRequest && !state.pageDecodeReadyUiNotified) {
         void notifyPageDecodeReadyUi(state);
