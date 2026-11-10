@@ -56,6 +56,10 @@ import { resolveJsonPathForValidation } from '../padoZKAttestationJSSDK/buildAgg
 import { trySendSecondRequestWithFirstHeaders } from './specialTemplates/specialTemplateSendSecondRequest';
 import { getJsonPathEvaluationOptionsForTemplate } from './specialTemplates/templateJsonPathHooks';
 import {
+  isHailuoCreationTemplate,
+  tryCheckHailuoCreationEmptyFeedsTarget,
+} from './specialTemplates/hailuoCreationEmptyFeeds';
+import {
   tryApplyJumpConfigFromResponse,
   tryJumpConfigStandaloneIntercept,
   tryJumpConfigPresenceStep,
@@ -691,6 +695,40 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
           matchRequestUrlResult,
           notMetHandler
         );
+      } else if (
+        isHailuoCreationTemplate(activeTemplate) &&
+        matchRequestUrlResult
+      ) {
+        const hailuoCheck = await tryCheckHailuoCreationEmptyFeedsTarget({
+          state,
+          requestsMap,
+          templateRequestUrl,
+          matchRequestUrlResult,
+        });
+        if (hailuoCheck.handled) {
+          isTargetUrl = hailuoCheck.isMatch === true;
+        } else {
+          const needsResponse = conditionSetNeedsResponse(jsonPathArr);
+          const needsBody = conditionSetNeedsRequestBody(jsonPathArr);
+          const canValidate =
+            jsonPathArr.length > 0 &&
+            (!needsResponse || matchRequestUrlResult != null) &&
+            (!needsBody || mergedBody != null);
+          if (canValidate) {
+            const checkResult = validateResponseCondition(
+              jsonPathArr,
+              matchRequestUrlResult,
+              mergedBody,
+              jsonPathEvaluationOptions
+            );
+            if (checkResult.negativeIndexResolutionFailed) {
+              negativeIndexCheckFailed = true;
+              await rejectNegativeIndexCondition();
+            } else {
+              isTargetUrl = checkResult.isMatch;
+            }
+          }
+        }
       } else if (
         isChannelSubscriptionTemplate(activeTemplate) &&
         matchRequestUrlResult

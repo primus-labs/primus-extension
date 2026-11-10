@@ -28,6 +28,7 @@ import { getPatchedFormatResponseForSpecialTemplateReputationPhalaBinanceEarnBal
 import { tryPatchFormatResponseForSpecialTemplateChannelSubscription } from './specialTemplates/specialTemplateChannelSubscription';
 import { getPatchedFormatParamsForSpecialTemplateReputationPhala } from './specialTemplates/specialTemplateReputationPhala';
 import { tryPatchFormatResponseJsonPathsForTemplate } from './specialTemplates/templateJsonPathHooks';
+import { tryPatchAlgorithmParamsForHailuoCreationEmptyFeeds } from './specialTemplates/hailuoCreationEmptyFeeds';
 export async function formatAlgorithmParamsFn() {
   const pageDecodeState = getPageDecodeState();
   const { state } = pageDecodeState;
@@ -253,6 +254,11 @@ export async function formatAlgorithmParamsFn() {
   await tryPatchAlgorithmParamsForSpecialTemplateLinkedinConnections(aligorithmParams, activeTemplate);
   tryPatchAlgorithmParamsForSpecialTemplateLumaMonad(aligorithmParams, activeTemplate);
   tryPatchAlgorithmParamsForSpecialTemplateLumaPagedApproved(aligorithmParams, activeTemplate);
+  tryPatchAlgorithmParamsForHailuoCreationEmptyFeeds(
+    aligorithmParams,
+    activeTemplate,
+    state
+  );
 
   state.formatAlgorithmParams = aligorithmParams;
   console.log('formatAlgorithmParams', aligorithmParams, activeTemplate);

@@ -6,6 +6,7 @@
 import { sanitizeRequestHeaders } from '../utils/utils.js';
 import { resetPolymarketProfileGate } from './specialTemplates/specialTemplatePnlPolymarket.js';
 import { resetHyperliquidJoinFlow } from './specialTemplates/specialTemplatePnlHyperliquid.js';
+import { resetHailuoCreationEmptyFeedsMode } from './specialTemplates/hailuoCreationEmptyFeeds';
 export const DEFAULT_PRE_ATTEST_PROMPT_V2 = [
   {
     text: ['Processing request...'],
@@ -72,6 +73,9 @@ export function createPageDecodeState() {
     linkedinNomadUiNotified: false,
     /** All templates: content UI sync after capture (post-inject / missed webRequestIsReady). */
     pageDecodeReadyUiNotified: false,
+    /** Hailuo creation (b67a9894): empty feeds → identity lookup proof */
+    hailuoCreationEmptyFeedsMode: false,
+    hailuoIdentityLookupRequestId: null,
   };
 
   function resetMonadFields() {
@@ -187,6 +191,7 @@ export function createPageDecodeState() {
     state.pageDecodeReadyUiNotified = false;
     resetPolymarketProfileGate(state);
     resetHyperliquidJoinFlow(state);
+    resetHailuoCreationEmptyFeedsMode(state);
   }
 
   function removeFromRequestsMap(requestId) {
