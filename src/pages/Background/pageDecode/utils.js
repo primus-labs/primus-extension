@@ -24,6 +24,7 @@ import {
 } from './fieldRangeEvaluate';
 import {
   VALIDATION_JSON_PATH_KEY,
+  resolveJsonPathEvaluationOptions,
   resolveJsonPathForValidation,
 } from '../padoZKAttestationJSSDK/buildAggregateSubcondition.js';
 import { resolveJsonPathWithEmptyArrayTruncate } from './specialTemplates/emptyArrayJsonPathTruncate/truncateAtEmptyArray.js';
@@ -499,7 +500,7 @@ export const validateResponseCondition = (
         const queryRes = queryJsonPathWithNegativeIndices(
           jsonpathQueryStr,
           matchRequestUrlResult,
-          jsonPathEvaluationOptions
+          resolveJsonPathEvaluationOptions(jpItem, jsonPathEvaluationOptions)
         );
         if (queryRes.resolutionFailed) {
           negativeIndexResolutionFailed = true;
@@ -507,10 +508,16 @@ export const validateResponseCondition = (
         return queryRes.matched;
       }
 
-      const pathExpr =
+      let pathExpr =
         typeof jpItem === 'string'
           ? jpItem
-          : jpItem?.field?.field ?? jpItem?.field;
+          : resolveJsonPathForValidation(jpItem);
+      if (typeof pathExpr !== 'string') {
+        pathExpr =
+          typeof jpItem === 'string'
+            ? jpItem
+            : jpItem?.field?.field ?? jpItem?.field;
+      }
 
       if (typeof pathExpr !== 'string') {
         return false;
@@ -522,7 +529,7 @@ export const validateResponseCondition = (
       const queryRes = queryJsonPathWithNegativeIndices(
         pathExpr,
         matchRequestUrlResult,
-        jsonPathEvaluationOptions
+        resolveJsonPathEvaluationOptions(jpItem, jsonPathEvaluationOptions)
       );
       if (queryRes.resolutionFailed) {
         negativeIndexResolutionFailed = true;

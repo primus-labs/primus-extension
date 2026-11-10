@@ -240,6 +240,26 @@ function buildArithmeticFieldFromExpression(expression, aggregateOp) {
  */
 export const VALIDATION_JSON_PATH_KEY = 'validationJsonPath';
 
+/** Extension-only; from template feilds[].jsonPathEvaluation — stripped before algorithm params are sent. */
+export const JSON_PATH_EVALUATION_KEY = 'jsonPathEvaluation';
+
+/**
+ * @param {Record<string, unknown> | string | null | undefined} jpItem
+ * @param {{ truncateAtEmptyArray?: boolean; truncateUnreachable?: boolean } | undefined} templateOptions
+ * @returns {{ truncateAtEmptyArray?: boolean; truncateUnreachable?: boolean } | undefined}
+ */
+export function resolveJsonPathEvaluationOptions(jpItem, templateOptions) {
+  const fieldFlag =
+    jpItem &&
+    typeof jpItem === 'object' &&
+    jpItem[JSON_PATH_EVALUATION_KEY]?.truncateUnreachable === true;
+  const fieldOpts = fieldFlag ? { truncateUnreachable: true } : undefined;
+  if (!templateOptions && !fieldOpts) {
+    return undefined;
+  }
+  return { ...templateOptions, ...fieldOpts };
+}
+
 /**
  * @param {Array<{ conditions?: { subconditions?: unknown[] } }>} responses
  */
@@ -255,6 +275,7 @@ export function stripValidationJsonPathFromResponses(responses) {
     for (const sub of subs) {
       if (sub && typeof sub === 'object') {
         delete sub[VALIDATION_JSON_PATH_KEY];
+        delete sub[JSON_PATH_EVALUATION_KEY];
       }
     }
   }

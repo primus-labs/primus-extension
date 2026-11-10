@@ -1,7 +1,7 @@
 import jp from 'jsonpath';
 
 /**
- * @typedef {{ type: 'index', index: number, raw: string } | { type: 'prop', name: string }} JsonPathStep
+ * @typedef {{ type: 'index', index: number, raw: string } | { type: 'prop', name: string } | { type: 'wildcard' }} JsonPathStep
  */
 
 /**
@@ -24,12 +24,18 @@ export function parseJsonPathStepsAfterRoot(pathExpr) {
       steps.push({ type: 'prop', name: m[1] });
       i += m[0].length;
     } else if (s[i] === '[') {
-      const m = s.slice(i).match(/^\[(-?\d+)\]/);
-      if (!m) {
-        return null;
+      const wildcard = s.slice(i).match(/^\[\*\]/);
+      if (wildcard) {
+        steps.push({ type: 'wildcard' });
+        i += wildcard[0].length;
+      } else {
+        const m = s.slice(i).match(/^\[(-?\d+)\]/);
+        if (!m) {
+          return null;
+        }
+        steps.push({ type: 'index', index: parseInt(m[1], 10), raw: m[1] });
+        i += m[0].length;
       }
-      steps.push({ type: 'index', index: parseInt(m[1], 10), raw: m[1] });
-      i += m[0].length;
     } else {
       return null;
     }

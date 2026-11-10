@@ -58,6 +58,21 @@ export function truncateJsonPathAtUnreachable(pathExpr, rootData) {
       continue;
     }
 
+    if (step.type === 'wildcard') {
+      if (current === null) {
+        return { path: originalPath, truncated: true };
+      }
+      if (!Array.isArray(current)) {
+        return { path: originalPath, truncated: true };
+      }
+      if (current.length === 0) {
+        return { path: originalPath, truncated: true };
+      }
+      queryPath += '[0]';
+      originalPath += '[*]';
+      continue;
+    }
+
     if (!Array.isArray(current)) {
       return { path: originalPath, truncated: true };
     }

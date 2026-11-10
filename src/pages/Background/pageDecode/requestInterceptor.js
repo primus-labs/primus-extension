@@ -352,11 +352,10 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
           if (isRequestBodyRangeSubcondition(i)) {
             return i;
           }
-          const resolved = resolveJsonPathForValidation(i);
-          if (resolved != null) {
-            return resolved;
+          if (i?.op === 'MATCH_ONE') {
+            return i;
           }
-          return isObject(i.field) && i.field?.field ? i.field.field : i.field;
+          return i;
         });
 
     if (htmlTemplateDebug) {

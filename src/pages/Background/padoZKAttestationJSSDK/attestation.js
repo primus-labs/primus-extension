@@ -40,6 +40,7 @@ import { createTabMessageSender } from '../utils/msgTransfer.js';
 import { cleanupPageDecodeWithoutCancel } from '../pageDecode/closeDataSourceTab.js';
 import {
   buildAggregateSubcondition,
+  JSON_PATH_EVALUATION_KEY,
   RANGE_OPERATORS,
   VALIDATION_JSON_PATH_KEY,
 } from './buildAggregateSubcondition.js';
@@ -482,6 +483,12 @@ export async function handleStartAttestation(
               if (key != null && key !== '') {
                 subconditionItem.reveal_id = key;
               }
+            }
+            const fieldJsonPathEval = feildEntry?.jsonPathEvaluation;
+            if (fieldJsonPathEval?.truncateUnreachable === true) {
+              subconditionItem[JSON_PATH_EVALUATION_KEY] = {
+                truncateUnreachable: true,
+              };
             }
             prevS.push(subconditionItem);
             return prevS;

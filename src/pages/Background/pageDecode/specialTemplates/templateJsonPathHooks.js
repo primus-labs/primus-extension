@@ -4,6 +4,7 @@ import {
   tryPatchFormatResponseForEmptyArrayJsonPathTruncate,
 } from './pageDecodePnlHooks.js';
 import { patchCursorDashboardFormatResponse } from './cursorDashboard/patchCursorDashboardFormatResponse.js';
+import { patchFormatResponseJsonPathsForTemplateFieldTruncate } from '../jsonPathEvaluation/patchTemplateFieldTruncate.js';
 
 /** @typedef {{ truncateAtEmptyArray?: boolean; truncateUnreachable?: boolean }} JsonPathEvaluationOptions */
 
@@ -47,6 +48,11 @@ export function tryPatchFormatResponseJsonPathsForTemplate(
   }
   const templateRequests = activeTemplate?.datasourceTemplate?.requests;
   patchCursorDashboardFormatResponse(
+    formatResponse,
+    requestsMap,
+    templateRequests
+  );
+  patchFormatResponseJsonPathsForTemplateFieldTruncate(
     formatResponse,
     requestsMap,
     templateRequests
