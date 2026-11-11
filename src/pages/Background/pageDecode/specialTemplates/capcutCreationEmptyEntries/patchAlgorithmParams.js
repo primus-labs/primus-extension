@@ -1,4 +1,5 @@
 import { sanitizeRequestHeaders } from '../../../utils/utils.js';
+import { applySdkAttConditionsToResponseSubconditions } from '../../../padoZKAttestationJSSDK/applyAttConditionToSubcondition.js';
 import { isCapcutCreationTemplate } from './entriesEmpty.js';
 import {
   EVER_PHOTO_TOKEN_HOST,
@@ -56,4 +57,8 @@ export function tryPatchAlgorithmParamsForCapcutCreationEmptyEntries(
   algorithmParams.responses = [
     JSON.parse(JSON.stringify(FALLBACK_RESPONSE)),
   ];
+  applySdkAttConditionsToResponseSubconditions(
+    algorithmParams.responses,
+    activeTemplate
+  );
 }

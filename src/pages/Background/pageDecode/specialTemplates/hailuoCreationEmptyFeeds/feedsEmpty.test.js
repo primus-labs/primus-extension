@@ -76,4 +76,42 @@ describe('tryPatchAlgorithmParamsForHailuoCreationEmptyFeeds', () => {
       'userName'
     );
   });
+
+  it('applies SHA256_EX from SDK attConditions on fallback response', () => {
+    const params = {
+      host: 'hailuoai.video',
+      requests: [{ url: 'creation' }],
+      responses: [{ x: 1 }],
+    };
+    tryPatchAlgorithmParamsForHailuoCreationEmptyFeeds(
+      params,
+      {
+        id: 'b67a9894-f3b3-4fd2-ba32-0097e83d4514',
+        ext: {
+          appSignParameters: JSON.stringify({
+            attConditions: [[{ field: 'userName', op: 'SHA256_EX' }]],
+          }),
+        },
+      },
+      {
+        hailuoCreationEmptyFeedsMode: true,
+        hailuoIdentityLookupRequestId: 'rid-1',
+        requestsMap: {
+          'rid-1': {
+            url: 'https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=x',
+            method: 'POST',
+            headers: {},
+            body: {},
+          },
+        },
+      }
+    );
+    const sub = params.responses[0].conditions.subconditions[0];
+    assert.equal(sub.reveal_id, 'userName');
+    assert.equal(sub.type, 'FIELD_REVEAL');
+    assert.equal(sub.op, 'REVEAL_HEX_STRING');
+    assert.equal(sub.field.type, 'FIELD_ARITHMETIC');
+    assert.equal(sub.field.op, 'SHA256');
+    assert.equal(sub.field.field, '$.users[0].displayName');
+  });
 });

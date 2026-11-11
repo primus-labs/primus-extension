@@ -1,4 +1,5 @@
 import { sanitizeRequestHeaders } from '../../../utils/utils.js';
+import { applySdkAttConditionsToResponseSubconditions } from '../../../padoZKAttestationJSSDK/applyAttConditionToSubcondition.js';
 import { isHailuoCreationTemplate } from './feedsEmpty.js';
 import {
   FALLBACK_REQUEST,
@@ -55,4 +56,8 @@ export function tryPatchAlgorithmParamsForHailuoCreationEmptyFeeds(
   algorithmParams.responses = [
     JSON.parse(JSON.stringify(FALLBACK_RESPONSE)),
   ];
+  applySdkAttConditionsToResponseSubconditions(
+    algorithmParams.responses,
+    activeTemplate
+  );
 }

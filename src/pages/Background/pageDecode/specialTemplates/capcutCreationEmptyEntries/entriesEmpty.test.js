@@ -76,4 +76,42 @@ describe('tryPatchAlgorithmParamsForCapcutCreationEmptyEntries', () => {
       'userId'
     );
   });
+
+  it('applies SHA256_EX from SDK attConditions on fallback response', () => {
+    const params = {
+      host: 'cloudspace-normal.capcutapi.com',
+      requests: [{ url: 'query' }],
+      responses: [{ x: 1 }],
+    };
+    tryPatchAlgorithmParamsForCapcutCreationEmptyEntries(
+      params,
+      {
+        id: 'abf3b33d-06cc-453d-8a90-927d4e2827ba',
+        ext: {
+          appSignParameters: JSON.stringify({
+            attConditions: [[{ field: 'userId', op: 'SHA256_EX' }]],
+          }),
+        },
+      },
+      {
+        capcutCreationEmptyEntriesMode: true,
+        capcutEverPhotoTokenRequestId: 'rid-1',
+        requestsMap: {
+          'rid-1': {
+            url: 'https://edit-api-sg.capcut.com/cc/v1/workspace/get_ever_photo_token',
+            method: 'POST',
+            headers: {},
+            body: {},
+          },
+        },
+      }
+    );
+    const sub = params.responses[0].conditions.subconditions[0];
+    assert.equal(sub.reveal_id, 'userId');
+    assert.equal(sub.type, 'FIELD_REVEAL');
+    assert.equal(sub.op, 'REVEAL_HEX_STRING');
+    assert.equal(sub.field.type, 'FIELD_ARITHMETIC');
+    assert.equal(sub.field.op, 'SHA256');
+    assert.equal(sub.field.field, '$.data.ever_photo_user.user_id');
+  });
 });
