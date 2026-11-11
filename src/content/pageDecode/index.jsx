@@ -42,6 +42,11 @@ import {
   stopHyperliquidJoinReferralWait,
 } from './hyperliquidJoinReferralWait';
 import {
+  matchesHostOverlayHideTemplate,
+  startHostOverlayHidePoll,
+  stopHostOverlayHidePoll,
+} from './hostOverlayHide/index.js';
+import {
   matches as matchesHyperliquidPnlTemplate,
   isHyperliquidJoinPageUrl,
 } from '@/pages/Background/pageDecode/specialTemplates/specialTemplatePnlHyperliquid.js';
@@ -54,7 +59,8 @@ let historyLocationListenerInstalled = false;
 let hrefPollIntervalId = null;
 let lastPolledHref = '';
 const PAGE_DECODE_SYNC_EVENT = 'pado-page-decode-sync';
-const POLYMARKET_PROFILE_HIDDEN_CLASS = 'pado-page-decode-modal--profile-hidden';
+const PAGE_DECODE_MODAL_VISUALLY_HIDDEN_CLASS =
+  'pado-page-decode-modal--profile-hidden';
 let pageDecodeStateSyncInFlight = false;
 /** One-shot follow-up pulls after inject: avoids 1s polling while tolerating delayed ready. */
 const deferredPageDecodeSyncTimeouts = [];
@@ -308,10 +314,40 @@ function scheduleReadyFollowUpSyncs(isReady) {
   }
 }
 
-function setPolymarketModalVisuallyHidden(hidden) {
+function setPageDecodeModalVisuallyHidden(hidden) {
   const container = document.getElementById(CONTAINER_ID);
   if (!container) return;
-  container.classList.toggle(POLYMARKET_PROFILE_HIDDEN_CLASS, !!hidden);
+  container.classList.toggle(PAGE_DECODE_MODAL_VISUALLY_HIDDEN_CLASS, !!hidden);
+}
+
+function isPageDecodeModalVisuallyHidden() {
+  if (!activeRequest) return false;
+  return (
+    activeRequest.polymarketHideDataVerificationModal === true ||
+    activeRequest.hostOverlayHideModal === true
+  );
+}
+
+function syncHostOverlayHidePoll(templateParams) {
+  if (!templateParams || !matchesHostOverlayHideTemplate(templateParams)) {
+    stopHostOverlayHidePoll();
+    if (activeRequest) {
+      activeRequest.hostOverlayHideModal = false;
+    }
+    return;
+  }
+  startHostOverlayHidePoll(templateParams, (hidden) => {
+    if (!activeRequest) return;
+    if (activeRequest.hostOverlayHideModal === hidden) return;
+    activeRequest.hostOverlayHideModal = hidden;
+    if (rootRef) {
+      setPageDecodeModalVisuallyHidden(isPageDecodeModalVisuallyHidden());
+      return;
+    }
+    if (!hidden) {
+      scheduleRenderPageDecodeCardIfAllowed();
+    }
+  });
 }
 
 function syncPolymarketLoginFormPoll(response, templateParams) {
@@ -435,6 +471,7 @@ function isDisabledPath() {
 }
 
 function hidePageDecodeUi() {
+  stopHostOverlayHidePoll();
   const container = document.getElementById(CONTAINER_ID);
   try {
     if (rootRef) {
@@ -444,6 +481,9 @@ function hidePageDecodeUi() {
     /* ignore */
   }
   rootRef = null;
+  if (activeRequest) {
+    activeRequest.hostOverlayHideModal = false;
+  }
   deferRemoveDomNode(container);
 }
 
@@ -467,16 +507,15 @@ function renderPageDecodeCardIfAllowedInner() {
     hidePageDecodeUi();
     return;
   }
-  const polymarketHide =
-    activeRequest.polymarketHideDataVerificationModal === true;
-  if (polymarketHide && !rootRef) {
+  const visuallyHidden = isPageDecodeModalVisuallyHidden();
+  if (visuallyHidden && !rootRef) {
     return;
   }
   const container = ensurePageDecodeContainer();
   if (!rootRef) {
     rootRef = createRoot(container);
   }
-  setPolymarketModalVisuallyHidden(polymarketHide);
+  setPageDecodeModalVisuallyHidden(visuallyHidden);
   flushSync(() => {
     rootRef.render(<PadoCard activeRequest={activeRequest} />);
   });
@@ -617,6 +656,7 @@ function applyInitCompletedAppend(response) {
     mergePolymarketGateUiFields(response);
     syncPolymarketLoginFormPoll(response, activeRequest);
     syncHyperliquidJoinReferralWait(response, activeRequest);
+    syncHostOverlayHidePoll(activeRequest);
     if (!response.isReady && response.phase !== 'attesting') {
       tryGithubRepositoriesShowMoreClick(activeRequest);
     }
@@ -653,12 +693,14 @@ function applyInitCompletedAppend(response) {
     response.polymarketGateAwaitingProfile ?? false;
   activeRequest.polymarketHideDataVerificationModal =
     response.polymarketHideDataVerificationModal ?? false;
+  activeRequest.hostOverlayHideModal = false;
   delete activeRequest.PADOSERVERURL;
   delete activeRequest.padoExtensionVersion;
 
   tryGithubRepositoriesShowMoreClick(activeRequest);
   syncPolymarketLoginFormPoll(response, activeRequest);
   syncHyperliquidJoinReferralWait(response, activeRequest);
+  syncHostOverlayHidePoll(activeRequest);
 
   deferredModalPending = shouldDeferModalForAppend(response, activeRequest);
 
@@ -753,6 +795,10 @@ chrome.runtime.onMessage.addListener((message) => {
 
 /** Module-level end handler so result UI updates even if PadoCard was unmounted. */
 function applyEndFromBackground(params) {
+  stopHostOverlayHidePoll();
+  if (activeRequest) {
+    activeRequest.hostOverlayHideModal = false;
+  }
   const { result, failReason, closeAt } = params;
   const resultSnapshot = {
     result: result ?? '',
