@@ -3,7 +3,7 @@
 ## Special behavior
 
 1. **Deferred verification modal** — Do not mount the page-decode card until the first `datasourceTemplate.requests` URL match is stored (`firstTemplateRequestCaptured`).
-2. **Account popout clicks** — While requests are not fully ready, poll and click visible account UI targets (`accountPopoutButton__*`, `wrapper__*` + `avatar__*`, `nameTag__*`, etc.) in the page MAIN world.
+2. **Account popout clicks** — While requests are not fully ready, poll and click visible account UI targets whose class names start with `accountPopoutButtonWrapper`, `accountPopoutButton`, `wrapper`+`avatar`, or `nameTag` (Discord hashed modules, e.g. `*_g6VwXp`) in the page MAIN world. Clicks the matched element directly (not limited to `<button>`).
 
 ## Wiring
 

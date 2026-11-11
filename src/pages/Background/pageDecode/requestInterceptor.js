@@ -18,10 +18,12 @@ import {
   validateHtmlResponseCondition,
   handleAttestationError,
   shouldTreatFetchedBodyAsHtmlForValidation,
+  shouldTreatFetchedBodyAsHtmlForValidationWithOptions,
   conditionSetNeedsResponse,
   conditionSetNeedsRequestBody,
   isRequestBodyRangeSubcondition,
 } from './utils';
+import { collectXPathExpressionsForHtmlValidation } from './htmlXPathValidation.js';
 import {
   eventListUrlForMonad,
   checkTargetRequestFnForMonad,
@@ -96,6 +98,10 @@ import {
   summarizeLinkedInNomadCapture,
   previewXPathValidationOnHtml,
 } from './specialTemplates/specialTemplateLinkedinNomad.js';
+import {
+  isLinkedInNomadProfileCaptureUrl,
+  isLinkedInProfileUrlEquivalent,
+} from './specialTemplates/linkedinNomadValidation.js';
 import { notifyPageDecodeReadyUi } from './pageDecodeReadyUiNotify.js';
 import {
   canFinalizePageDecodeReady,
@@ -179,6 +185,29 @@ function isFetchedResponseForRequest(requestUrl, responseUrl) {
     normalizeUrlForResponseMatch(requestUrl) ===
     normalizeUrlForResponseMatch(responseUrl)
   );
+}
+
+/**
+ * Strict URL match by default; LinkedIn Nomad profile slot may accept safe pathname equivalence.
+ */
+function isFetchedResponseForRequestWithTemplateFallback(
+  requestUrl,
+  responseUrl,
+  activeTemplate,
+  profileSlot
+) {
+  if (isFetchedResponseForRequest(requestUrl, responseUrl)) {
+    return true;
+  }
+  if (
+    profileSlot &&
+    matchesLinkedInNomadTemplate(activeTemplate) &&
+    isLinkedInNomadProfileCaptureUrl(requestUrl) &&
+    isLinkedInProfileUrlEquivalent(requestUrl, responseUrl)
+  ) {
+    return true;
+  }
+  return false;
 }
 
 /**
@@ -489,8 +518,14 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
           mergedUrl,
         });
       }
+      const mainFrameProfileSlot = isLinkedInNomadProfileCaptureUrl(mergedUrl);
       if (
-        !isFetchedResponseForRequest(mergedUrl, fetchedResponseUrl)
+        !isFetchedResponseForRequestWithTemplateFallback(
+          mergedUrl,
+          fetchedResponseUrl,
+          activeTemplate,
+          mainFrameProfileSlot
+        )
       ) {
         if (htmlTemplateDebug) {
           logHtmlTemplateDebug(activeTemplate, 'main_frame:urlMismatch', {
@@ -559,8 +594,14 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
     }
 
     if (requestsMap[matchRequestId].type !== 'main_frame') {
+      const replayProfileSlot = isLinkedInNomadProfileCaptureUrl(urlForFetch);
       if (
-        !isFetchedResponseForRequest(urlForFetch, fetchedResponseUrl)
+        !isFetchedResponseForRequestWithTemplateFallback(
+          urlForFetch,
+          fetchedResponseUrl,
+          activeTemplate,
+          replayProfileSlot
+        )
       ) {
         if (htmlTemplateDebug) {
           logHtmlTemplateDebug(activeTemplate, 'replay:urlMismatch', {
@@ -586,10 +627,16 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
         continue;
       }
 
-      const replayLooksLikeHtml = shouldTreatFetchedBodyAsHtmlForValidation(
-        fetchedContentType,
-        matchRequestUrlResult
-      );
+      const linkedInProfileFragment =
+        matchesLinkedInNomadTemplate(activeTemplate) &&
+        collectXPathExpressionsForHtmlValidation(jsonPathArr).length > 0 &&
+        isLinkedInNomadProfileCaptureUrl(urlForFetch);
+      const replayLooksLikeHtml =
+        shouldTreatFetchedBodyAsHtmlForValidationWithOptions(
+          fetchedContentType,
+          matchRequestUrlResult,
+          { linkedInProfileFragment }
+        );
 
       if (
         replayLooksLikeHtml &&

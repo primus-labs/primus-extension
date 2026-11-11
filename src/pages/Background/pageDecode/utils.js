@@ -1,8 +1,5 @@
 /* global require, chrome, console, FormData, TextDecoder, Promise, fetch */
 import jp from 'jsonpath';
-const { select } = require('xpath');
-const { DOMParser } = require('xmldom');
-const cheerio = require('cheerio');
 
 import {
   SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
@@ -29,6 +26,12 @@ import {
 } from '../padoZKAttestationJSSDK/buildAggregateSubcondition.js';
 import { resolveJsonPathWithEmptyArrayTruncate } from './specialTemplates/emptyArrayJsonPathTruncate/truncateAtEmptyArray.js';
 import { resolveJsonPathWithUnreachableTruncate } from './specialTemplates/cursorDashboard/truncateJsonPathAtUnreachable.js';
+import { shouldTreatLinkedInProfileHtmlFragment } from './specialTemplates/linkedinNomadValidation.js';
+export {
+  validateXPathWithLibs,
+  collectXPathExpressionsForHtmlValidation,
+  validateHtmlResponseCondition,
+} from './htmlXPathValidation.js';
 
 /** Fetch request data (JSON/object) for template matching. Re-sends captured request. */
 export const fetchRequestData = async (params) => {
@@ -83,6 +86,28 @@ export function shouldTreatFetchedBodyAsHtmlForValidation(contentType, data) {
     return true;
   }
   return false;
+}
+
+/**
+ * HTML routing for replay validation (optional LinkedIn profile fragment fallback).
+ *
+ * @param {string | undefined} contentType
+ * @param {unknown} data
+ * @param {{ linkedInProfileFragment?: boolean } | undefined} [options]
+ * @returns {boolean}
+ */
+export function shouldTreatFetchedBodyAsHtmlForValidationWithOptions(
+  contentType,
+  data,
+  options
+) {
+  if (shouldTreatFetchedBodyAsHtmlForValidation(contentType, data)) {
+    return true;
+  }
+  if (options?.linkedInProfileFragment !== true) {
+    return false;
+  }
+  return shouldTreatLinkedInProfileHtmlFragment(contentType, data);
 }
 
 /** Fetch HTML content for main_frame requests. Used for XPath/HTML condition checks. */
@@ -541,81 +566,6 @@ export const validateResponseCondition = (
   });
 
   return { isMatch, negativeIndexResolutionFailed };
-};
-export const validateXPathWithLibs = (html, xpath) => {
-  try {
-    const normalizedXpath = String(xpath || '')
-      .trim()
-      // Template configs may mark XPath as optional with a trailing "?".
-      // xpath lib does not support this syntax, so strip it before evaluation.
-      .replace(/\?+$/, '');
-    if (!normalizedXpath) return [];
-
-    // Match duplicate aria-label/data-item-id attributes, keep the first one, and remove subsequent duplicates
-    // const cleanedHtml = html
-    //   .replace(/(\s+aria-label="[^"]+")(?=.*\1)/g, '')
-    //   .replace(/(\s+data-item-id="[^"]+")(?=.*\1)/g, '');
-    // Automatically handle all duplicate attributes without the need for manual regular expressions
-    const $ = cheerio.load(html, { decodeEntities: false });
-    // xmldom parses as XML; raw JS inside <script> often contains "<" which breaks XML parsing.
-    // Empty <script> bodies (keep elements/attrs) so XPath like //script[n] still matches; strip style/noscript.
-    $('script').empty();
-    $('style,noscript').remove();
-    const cleanedHtml = $.html()
-      .replace(/&nbsp;/gi, ' ')
-      .replace(/&(?!#?[a-zA-Z0-9]+;)/g, '&amp;')
-      .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '');
-    const parserMessages = [];
-    const doc = new DOMParser({
-      errorHandler: {
-        warning: () => {},
-        error: () => {},
-        fatalError: (msg) => {
-          parserMessages.push(String(msg || 'fatal parse error'));
-        },
-      },
-    }).parseFromString(cleanedHtml);
-    if (parserMessages.length) {
-      throw new Error(parserMessages[0]);
-    }
-    const nodes = select(normalizedXpath, doc);
-
-    return nodes
-      .map((node) => {
-        if (node.nodeType === 2) {
-          // ATTRIBUTE_NODE
-          return node.value;
-        } else if (node.nodeType === 1) {
-          // ELEMENT_NODE
-          return node.getAttribute('content') || node.textContent;
-        }
-        return null;
-      })
-      .filter(Boolean);
-  } catch (error) {
-    console.error('Failed to valid XPath：', error.message);
-    console.debug(
-      'Error context：',
-      html.substring(Math.max(0, error.position - 50), error.position + 50)
-    );
-    return [];
-  }
-};
-/** Check if HTML response matches template conditions (XPath). */
-export const validateHtmlResponseCondition = (jsonPathArr, html) => {
-  const xpathItems = jsonPathArr.filter((jpItem) => typeof jpItem === 'string');
-  if (xpathItems.length === 0) {
-    return false;
-  }
-  const isMatch = xpathItems.every((jpItem) => {
-    try {
-      const itemMatch = validateXPathWithLibs(html, jpItem);
-      return itemMatch && itemMatch.length > 0;
-    } catch {
-      return false;
-    }
-  });
-  return isMatch;
 };
 // Replace existing parameters in the URL and add new parameters
 

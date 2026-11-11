@@ -35,9 +35,7 @@ async function clickDiscordAccountTarget(tabId) {
     func: () => {
       const hasClassPrefix = (el, prefix) =>
         el instanceof HTMLElement &&
-        Array.from(el.classList).some((name) =>
-          name.startsWith(`${prefix}__`)
-        );
+        Array.from(el.classList).some((name) => name.startsWith(prefix));
 
       const isVisible = (el) => {
         if (!(el instanceof HTMLElement) || !el.isConnected) return false;
@@ -99,13 +97,7 @@ async function clickDiscordAccountTarget(tabId) {
         };
       }
 
-      const matchedTarget = candidate.el;
-      const target =
-        matchedTarget.matches('[role="button"], button')
-          ? matchedTarget
-          : matchedTarget.querySelector('[role="button"], button') ||
-            matchedTarget.closest('[role="button"], button') ||
-            matchedTarget;
+      const target = candidate.el;
       if (typeof target.focus === 'function') {
         target.focus();
       }
@@ -139,7 +131,7 @@ async function clickDiscordAccountTarget(tabId) {
       return {
         clicked: true,
         match: candidate.match,
-        className: matchedTarget.className || '',
+        className: target.className || '',
       };
     },
   });

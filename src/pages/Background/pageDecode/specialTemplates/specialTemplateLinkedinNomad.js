@@ -4,7 +4,10 @@
 /* global console, setTimeout, Promise */
 import { matchesTemplateId } from './templateIdUtils.js';
 import { checkIsRequiredUrl } from '../../utils/utils';
-import { validateXPathWithLibs } from '../utils.js';
+import {
+  collectXPathExpressionsForHtmlValidation,
+  validateXPathWithLibs,
+} from '../htmlXPathValidation.js';
 import { notifyPageDecodeReadyUi } from '../pageDecodeReadyUiNotify.js';
 
 export const TEMPLATE_ID = 'a87deb8c-32c7-41c7-ac69-60bad0e35a38';
@@ -61,20 +64,19 @@ export function previewXPathValidationOnHtml(html, jsonPathArr) {
   if (typeof html !== 'string' || !html) {
     return [];
   }
-  return jsonPathArr
-    .filter((item) => typeof item === 'string')
-    .map((xpath) => {
-      const values = validateXPathWithLibs(html, xpath);
-      return {
-        xpath,
-        matchCount: values.length,
-        values: values
-          .slice(0, 3)
-          .map((v) =>
-            typeof v === 'string' ? v.replace(/\s+/g, ' ').trim().slice(0, 120) : String(v)
-          ),
-      };
-    });
+  const xpaths = collectXPathExpressionsForHtmlValidation(jsonPathArr);
+  return xpaths.map((xpath) => {
+    const values = validateXPathWithLibs(html, xpath);
+    return {
+      xpath,
+      matchCount: values.length,
+      values: values
+        .slice(0, 3)
+        .map((v) =>
+          typeof v === 'string' ? v.replace(/\s+/g, ' ').trim().slice(0, 120) : String(v)
+        ),
+    };
+  });
 }
 
 export function summarizeLinkedInNomadCapture(requests, requestsMap) {
