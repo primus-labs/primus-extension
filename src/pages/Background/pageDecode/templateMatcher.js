@@ -29,6 +29,7 @@ import { tryPatchFormatResponseForSpecialTemplateChannelSubscription } from './s
 import { getPatchedFormatParamsForSpecialTemplateReputationPhala } from './specialTemplates/specialTemplateReputationPhala';
 import { tryPatchFormatResponseJsonPathsForTemplate } from './specialTemplates/templateJsonPathHooks';
 import { tryPatchAlgorithmParamsForHailuoCreationEmptyFeeds } from './specialTemplates/hailuoCreationEmptyFeeds';
+import { tryPatchAlgorithmParamsForCapcutCreationEmptyEntries } from './specialTemplates/capcutCreationEmptyEntries';
 export async function formatAlgorithmParamsFn() {
   const pageDecodeState = getPageDecodeState();
   const { state } = pageDecodeState;
@@ -255,6 +256,11 @@ export async function formatAlgorithmParamsFn() {
   tryPatchAlgorithmParamsForSpecialTemplateLumaMonad(aligorithmParams, activeTemplate);
   tryPatchAlgorithmParamsForSpecialTemplateLumaPagedApproved(aligorithmParams, activeTemplate);
   tryPatchAlgorithmParamsForHailuoCreationEmptyFeeds(
+    aligorithmParams,
+    activeTemplate,
+    state
+  );
+  tryPatchAlgorithmParamsForCapcutCreationEmptyEntries(
     aligorithmParams,
     activeTemplate,
     state

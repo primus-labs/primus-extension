@@ -25,7 +25,8 @@ export async function tryCheckHailuoCreationEmptyFeedsTarget(ctx) {
     return { handled: false };
   }
 
-  if (!isCreationFeedsEmpty(matchRequestUrlResult)) {
+  const feedsEmpty = isCreationFeedsEmpty(matchRequestUrlResult);
+  if (!feedsEmpty) {
     resetHailuoCreationEmptyFeedsMode(state);
     return { handled: false };
   }

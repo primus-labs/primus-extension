@@ -6,6 +6,10 @@
 /* global chrome, console */
 import { matchesTemplateId } from './templateIdUtils.js';
 import { logLinkedInNomad } from './specialTemplateLinkedinNomad.js';
+import {
+  applyCapcutLibraryJumpNavigation,
+  shouldUseCapcutLibraryJumpNavigation,
+} from './specialTemplateCapcutLibraryJump.js';
 
 export const TEMPLATE_ID = 'a87deb8c-32c7-41c7-ac69-60bad0e35a38';
 export const displayName = 'LinkedIn profile jump';
@@ -202,6 +206,16 @@ export async function applyJumpConfigDataSourceNavigation(
         href,
         error: e?.message || String(e),
       });
+      return false;
+    }
+  }
+
+  if (shouldUseCapcutLibraryJumpNavigation(activeTemplate, href)) {
+    try {
+      await applyCapcutLibraryJumpNavigation(tabId, href);
+      return true;
+    } catch (e) {
+      console.warn('capcut jump: library follow-up failed', e);
       return false;
     }
   }

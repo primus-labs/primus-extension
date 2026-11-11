@@ -6,6 +6,7 @@ export {
   isHailuoCreationTemplate,
   isHailuoCreationRequestUrl,
   isCreationFeedsEmpty,
+  shouldCaptureHailuoIdentityLookupRequest,
 } from './feedsEmpty.js';
 export {
   findIdentityLookupInRequestsMap,

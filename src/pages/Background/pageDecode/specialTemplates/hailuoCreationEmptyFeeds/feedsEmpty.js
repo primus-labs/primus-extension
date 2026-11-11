@@ -2,6 +2,8 @@ import jp from 'jsonpath';
 import { matchesTemplateId } from '../templateIdUtils.js';
 import {
   HAILUO_CREATION_MY_URL_MARKER,
+  IDENTITY_LOOKUP_HOST,
+  IDENTITY_LOOKUP_PATH_MARKER,
   TEMPLATE_ID_HAILUO_CREATION,
 } from './constants.js';
 
@@ -10,6 +12,26 @@ import {
  */
 export function isHailuoCreationTemplate(activeTemplate) {
   return matchesTemplateId(activeTemplate, TEMPLATE_ID_HAILUO_CREATION);
+}
+
+/**
+ * @param {{ attTemplateID?: string; templateId?: string; id?: string } | null | undefined} activeTemplate
+ * @param {string | undefined} requestUrl
+ */
+export function shouldCaptureHailuoIdentityLookupRequest(
+  activeTemplate,
+  requestUrl
+) {
+  if (!isHailuoCreationTemplate(activeTemplate)) {
+    return false;
+  }
+  if (typeof requestUrl !== 'string' || !requestUrl) {
+    return false;
+  }
+  return (
+    requestUrl.includes(IDENTITY_LOOKUP_HOST) &&
+    requestUrl.includes(IDENTITY_LOOKUP_PATH_MARKER)
+  );
 }
 
 /**

@@ -57,8 +57,14 @@ import { trySendSecondRequestWithFirstHeaders } from './specialTemplates/special
 import { getJsonPathEvaluationOptionsForTemplate } from './specialTemplates/templateJsonPathHooks';
 import {
   isHailuoCreationTemplate,
+  shouldCaptureHailuoIdentityLookupRequest,
   tryCheckHailuoCreationEmptyFeedsTarget,
 } from './specialTemplates/hailuoCreationEmptyFeeds';
+import {
+  isCapcutCreationTemplate,
+  shouldCaptureCapcutEverPhotoTokenRequest,
+  tryCheckCapcutCreationEmptyEntriesTarget,
+} from './specialTemplates/capcutCreationEmptyEntries';
 import {
   tryApplyJumpConfigFromResponse,
   tryJumpConfigStandaloneIntercept,
@@ -730,6 +736,40 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
           }
         }
       } else if (
+        isCapcutCreationTemplate(activeTemplate) &&
+        matchRequestUrlResult
+      ) {
+        const capcutCheck = await tryCheckCapcutCreationEmptyEntriesTarget({
+          state,
+          requestsMap,
+          templateRequestUrl,
+          matchRequestUrlResult,
+        });
+        if (capcutCheck.handled) {
+          isTargetUrl = capcutCheck.isMatch === true;
+        } else {
+          const needsResponse = conditionSetNeedsResponse(jsonPathArr);
+          const needsBody = conditionSetNeedsRequestBody(jsonPathArr);
+          const canValidate =
+            jsonPathArr.length > 0 &&
+            (!needsResponse || matchRequestUrlResult != null) &&
+            (!needsBody || mergedBody != null);
+          if (canValidate) {
+            const checkResult = validateResponseCondition(
+              jsonPathArr,
+              matchRequestUrlResult,
+              mergedBody,
+              jsonPathEvaluationOptions
+            );
+            if (checkResult.negativeIndexResolutionFailed) {
+              negativeIndexCheckFailed = true;
+              await rejectNegativeIndexCondition();
+            } else {
+              isTargetUrl = checkResult.isMatch;
+            }
+          }
+        }
+      } else if (
         isChannelSubscriptionTemplate(activeTemplate) &&
         matchRequestUrlResult
       ) {
@@ -1184,6 +1224,36 @@ export function setupWebRequestListener() {
       }
       debouncedCheckWebRequestIsReady();
     } else {
+      if (
+        shouldCaptureHailuoIdentityLookupRequest(
+          state.activeTemplate,
+          currRequestUrl
+        )
+      ) {
+        storeInRequestsMap(requestId, {
+          headers: formatHeader,
+          method,
+          url: currRequestUrl,
+          requestId,
+          type: details.type,
+          hailuoIdentityFallback: true,
+        });
+      }
+      if (
+        shouldCaptureCapcutEverPhotoTokenRequest(
+          state.activeTemplate,
+          currRequestUrl
+        )
+      ) {
+        storeInRequestsMap(requestId, {
+          headers: formatHeader,
+          method,
+          url: currRequestUrl,
+          requestId,
+          type: details.type,
+          capcutEverPhotoFallback: true,
+        });
+      }
       if (matchesGithubHomeTemplate(state.activeTemplate)) {
         logGitHubHome('capture:urlNotMatched', {
           currRequestUrl,
@@ -1274,6 +1344,34 @@ export function setupWebRequestListener() {
           body: parsedBody,
         });
       }
+    }
+
+    const hailuoIdentityFallback = shouldCaptureHailuoIdentityLookupRequest(
+      state.activeTemplate,
+      currRequestUrl
+    );
+    if (hailuoIdentityFallback && parsedBody != null) {
+      storeInRequestsMap(requestId, {
+        url: currRequestUrl,
+        requestId,
+        method: method || 'POST',
+        body: parsedBody,
+        hailuoIdentityFallback: true,
+      });
+    }
+
+    const capcutEverPhotoFallback = shouldCaptureCapcutEverPhotoTokenRequest(
+      state.activeTemplate,
+      currRequestUrl
+    );
+    if (capcutEverPhotoFallback && parsedBody != null) {
+      storeInRequestsMap(requestId, {
+        url: currRequestUrl,
+        requestId,
+        method: method || 'POST',
+        body: parsedBody,
+        capcutEverPhotoFallback: true,
+      });
     }
 
     const template = getActiveDatasourceTemplate(state, 'onBeforeRequestFn');
