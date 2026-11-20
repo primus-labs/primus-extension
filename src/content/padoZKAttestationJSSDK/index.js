@@ -1,4 +1,8 @@
 import { sendMessageWithRetry } from '@/utils/contentMessaging';
+import {
+  isValidSdkInboundPostMessage,
+  PADO_EXTENSION_TARGET,
+} from '@/shared/sdkBridgePolicy.js';
 
 let removeInFlight = false;
 
@@ -12,9 +16,22 @@ function shouldRetryStartAttestationError(err) {
 }
 
 window.addEventListener('message', (e) => {
-  const { target, name, params } = e.data;
-  if (target === 'padoExtension') {
-    // console.log('333pado-content-sdk-listen-message', e.data);
+  const { target, name, params } = e.data || {};
+  if (target === PADO_EXTENSION_TARGET) {
+    if (name === 'checkIsInstalled') {
+      window.postMessage({
+        target: 'padoZKAttestationJSSDK',
+        origin: 'padoExtension',
+        name: 'checkIsInstalledRes',
+        params: true,
+      });
+      return;
+    }
+
+    if (!isValidSdkInboundPostMessage(e)) {
+      return;
+    }
+
     if (name === 'initAttestation') {
       sendMessageWithRetry({
         type: 'padoZKAttestationJSSDK',
@@ -53,15 +70,7 @@ window.addEventListener('message', (e) => {
         params,
       }).catch(() => {});
     }
-    if (name === 'checkIsInstalled') {
-      window.postMessage({
-        target: 'padoZKAttestationJSSDK',
-        origin: 'padoExtension',
-        name: 'checkIsInstalledRes',
-        params: true,
-      });
-    }
-    
+
     if (name === 'removeActiveAttestation') {
       if (removeInFlight) return;
       removeInFlight = true;
@@ -79,6 +88,7 @@ chrome.runtime.onMessage.addListener(async (message, _sender, _sendResponse) => 
   const { type, name, params } = message;
   if (type === 'padoZKAttestationJSSDK') {
     if (name === 'initAttestationRes') {
+      debugger
       window.postMessage({
         target: 'padoZKAttestationJSSDK',
         origin: 'padoExtension',

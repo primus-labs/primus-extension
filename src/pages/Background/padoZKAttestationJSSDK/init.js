@@ -14,6 +14,7 @@ import {
   getSdkAttestationSession,
   setSdkAttestationSession,
 } from './sessionStorage.js';
+import { isNetworkClientType } from './sdkBridgePolicy.js';
 
 const sdkState = {
   hasGetTwitterScreenName: false,
@@ -106,14 +107,15 @@ export async function handleInitAttestation(params, senderTabId, processAlgorith
 
   sdkState.sdkVersion = params?.sdkVersion;
   sdkState.sdkName = params?.sdkName;
-  sdkState.isNetworkSdk = !!(sdkState.sdkName && sdkState.sdkName.indexOf('network') > -1);
+  sdkState.isNetworkSdk = isNetworkClientType(params?.clientType);
 
-  const dappTabId = await storeDappTabId(senderTabId);
+  const dappTabId = senderTabId;
   await setSdkAttestationSession({
     ownerTabId: dappTabId,
     clientType: params?.clientType || '',
     sdkVersion: sdkState.sdkVersion,
     active: true,
+    bridgeInitialized: true,
   });
   processAlgorithmReq({ reqMethodName: 'start' });
 

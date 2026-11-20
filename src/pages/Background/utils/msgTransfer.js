@@ -49,3 +49,27 @@ export async function sendInitAttestationRes(targetTabId) {
     },
   });
 }
+
+/**
+ * Notify dapp tab that initAttestation was rejected before session setup.
+ * @param {number | null | undefined} targetTabId
+ * @param {string} [errorCode]
+ */
+export async function sendInitAttestationFailure(
+  targetTabId,
+  errorCode = '00005'
+) {
+  if (targetTabId == null) return;
+  const sendToTab = createTabMessageSender(targetTabId);
+  await sendToTab({
+    type: 'padoZKAttestationJSSDK',
+    name: 'initAttestationRes',
+    params: {
+      result: false,
+      errorData: {
+        code: errorCode,
+        desc: 'Invalid SDK bridge parameters.',
+      },
+    },
+  });
+}

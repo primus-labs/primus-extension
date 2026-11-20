@@ -51,6 +51,13 @@ import {
   responseTemplateIndicatesStream,
   STREAM_REVEAL_OP,
 } from '../pageDecode/streamTemplate.js';
+import {
+  isNetworkClientType,
+  validateAllowedClientType,
+  validateClientTypeMatchesSession,
+  validateInitBeforeStart,
+  validateOwnerSession,
+} from './sdkBridgePolicy.js';
 
 const ACTIVE_REQUEST_STALE_GRACE_MS = 60 * 1000;
 
@@ -149,6 +156,47 @@ export async function handleStartAttestation(
   const state = getSdkState();
   const currentDappTabId = sender?.tab?.id;
   const sendToSdk = createTabMessageSender(currentDappTabId);
+
+  const bridgeSession = await getSdkAttestationSession();
+  const ownerCheck = validateOwnerSession(bridgeSession, currentDappTabId);
+  const initCheck = validateInitBeforeStart(bridgeSession);
+  const clientTypeCheck = validateAllowedClientType(params?.clientType);
+  const clientMatchCheck = validateClientTypeMatchesSession(
+    bridgeSession,
+    params?.clientType
+  );
+  if (!ownerCheck.ok) {
+    console.log(
+      'debuge-zktls-startAttestation-bridge-reject',
+      JSON.stringify({
+        reason: ownerCheck.reason,
+        code: ownerCheck.code,
+        senderTabId: currentDappTabId,
+        sessionOwnerTabId: bridgeSession?.ownerTabId ?? null,
+      })
+    );
+    await sendBusyStartAttestationResponse(currentDappTabId);
+    return;
+  }
+  const bridgeParamFailure = [initCheck, clientTypeCheck, clientMatchCheck].find(
+    (check) => !check.ok
+  );
+  if (bridgeParamFailure) {
+    console.log(
+      'debuge-zktls-startAttestation-bridge-reject',
+      JSON.stringify({
+        reason: bridgeParamFailure.reason,
+        code: bridgeParamFailure.code,
+        clientType: params?.clientType,
+        sessionClientType: bridgeSession?.clientType,
+        bridgeInitialized: bridgeSession?.bridgeInitialized === true,
+        ownerTabId: bridgeSession?.ownerTabId ?? null,
+      })
+    );
+    await sendStartAttestationResolvedError(sendToSdk, bridgeParamFailure.code);
+    return;
+  }
+
   const pageDecodeVerifyTimeoutMs = resolvePageDecodeVerifyTimeoutMs(
     params?.attRequest
   );
@@ -223,7 +271,9 @@ export async function handleStartAttestation(
   try {
     state.sdkVersion = params?.sdkVersion;
     state.sdkName = params?.sdkName;
-    state.isNetworkSdk = !!(state.sdkName && state.sdkName.indexOf('network') > -1);
+    state.isNetworkSdk = isNetworkClientType(
+      params?.clientType || bridgeSession?.clientType
+    );
     state.sdkParams = params;
 
     await safeStorageSet({
@@ -232,9 +282,10 @@ export async function handleStartAttestation(
     });
     await setSdkAttestationSession({
       ownerTabId: currentDappTabId,
-      clientType: params?.clientType || '',
+      clientType: params?.clientType || bridgeSession?.clientType || '',
       sdkVersion: state.sdkVersion,
       active: true,
+      bridgeInitialized: bridgeSession?.bridgeInitialized === true,
     });
     processAlgorithmReq({ reqMethodName: 'start' });
 

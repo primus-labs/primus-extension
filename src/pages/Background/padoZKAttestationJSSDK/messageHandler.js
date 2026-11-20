@@ -15,6 +15,16 @@ import {
   closeSdkDataSourceTabWithoutCancel,
 } from '../pageDecode/closeDataSourceTab.js';
 import { stopKeepAlive } from '../utils/keepAlive.js';
+import {
+  isAllowedSdkInboundMessageName,
+  isPlainPayloadObject,
+  validateAllowedClientType,
+  validateOwnerSession,
+} from './sdkBridgePolicy.js';
+import { getSdkAttestationSession } from './sessionStorage.js';
+import {
+  sendInitAttestationFailure,
+} from '../utils/msgTransfer.js';
 
 export async function padoZKAttestationJSSDKMsgListener(
   request,
@@ -22,7 +32,7 @@ export async function padoZKAttestationJSSDKMsgListener(
   sendResponse,
   processAlgorithmReq
 ) {
-  const { name, params } = request;
+  const { name, params } = request ?? {};
   let responded = false;
   const respondOnce = (payload = { ok: true }) => {
     if (responded) return;
@@ -34,7 +44,38 @@ export async function padoZKAttestationJSSDKMsgListener(
     }
   };
 
+  if (!isAllowedSdkInboundMessageName(name)) {
+    respondOnce();
+    return;
+  }
+
   setProcessAlgorithmReqRef(processAlgorithmReq);
+
+  const senderTabId = sender?.tab?.id;
+
+  if (name === 'initAttestation') {
+    if (!isPlainPayloadObject(params)) {
+      await sendInitAttestationFailure(senderTabId, '00005');
+      respondOnce();
+      return;
+    }
+    const clientTypeCheck = validateAllowedClientType(params.clientType);
+    if (!clientTypeCheck.ok) {
+      await sendInitAttestationFailure(senderTabId, clientTypeCheck.code);
+      respondOnce();
+      return;
+    }
+    await handleInitAttestation(params, senderTabId, processAlgorithmReq);
+    respondOnce();
+    return;
+  }
+
+  const session = await getSdkAttestationSession();
+  const ownerCheck = validateOwnerSession(session, senderTabId);
+  if (!ownerCheck.ok) {
+    respondOnce();
+    return;
+  }
 
   if (name === 'closeDataSourceTab') {
     try {
@@ -60,17 +101,11 @@ export async function padoZKAttestationJSSDKMsgListener(
     return;
   }
 
-  if (name === 'initAttestation') {
-    await handleInitAttestation(
-      params,
-      sender.tab?.id,
-      processAlgorithmReq
-    );
-    respondOnce();
-    return;
-  }
-
   if (name === 'startAttestation') {
+    if (!isPlainPayloadObject(params)) {
+      respondOnce();
+      return;
+    }
     await handleStartAttestation(
       params,
       sender,

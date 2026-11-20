@@ -32,8 +32,22 @@ var secretsPath = path.join(__dirname, 'secrets.' + env.NODE_ENV + '.js');
 var imgFileExtensions = ['svg', 'png', 'jpg', 'jpeg', 'gif'];
 var fontFileExtensions = ['eot', 'otf', 'ttf', 'woff', 'woff2'];
 
+var sdkExtraClientTypes = [];
 if (fileSystem.existsSync(secretsPath)) {
   alias['secrets'] = secretsPath;
+  try {
+    const secrets = require(secretsPath);
+    if (Array.isArray(secrets.SDK_EXTRA_CLIENT_TYPES)) {
+      sdkExtraClientTypes = secrets.SDK_EXTRA_CLIENT_TYPES.filter(
+        (entry) => typeof entry === 'string' && entry.trim().length > 0
+      );
+    }
+  } catch (secretsLoadError) {
+    console.warn(
+      '[webpack] Failed to read SDK_EXTRA_CLIENT_TYPES from secrets file:',
+      secretsLoadError
+    );
+  }
 }
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
@@ -219,6 +233,9 @@ var options = {
     new webpack.ProgressPlugin(),
     // expose and write the allowed env vars on the compiled bundle
     new webpack.EnvironmentPlugin(['NODE_ENV']),
+    new webpack.DefinePlugin({
+      __SDK_EXTRA_CLIENT_TYPES__: JSON.stringify(sdkExtraClientTypes),
+    }),
     new CopyWebpackPlugin({
       patterns: [
         {

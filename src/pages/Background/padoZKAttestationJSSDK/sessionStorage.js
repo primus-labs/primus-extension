@@ -65,6 +65,7 @@ export function getSdkAttestationSessionFromStorage(storage = {}) {
     clientType,
     sdkVersion,
     active: Boolean(active),
+    ...(session?.bridgeInitialized === true ? { bridgeInitialized: true } : {}),
   };
 }
 
