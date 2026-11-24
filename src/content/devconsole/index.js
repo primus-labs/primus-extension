@@ -1,7 +1,14 @@
 import { sendMessageWithRetry } from '@/utils/contentMessaging';
 
 window.addEventListener('message', (e) => {
-  const { target, name, params } = e.data;
+  if (e.source !== window) {
+    return;
+  }
+  const data = e.data;
+  if (!data || typeof data !== 'object') {
+    return;
+  }
+  const { target, name, params } = data;
   if (target === 'primusExtension') {
     // console.log('devconsole-content-listen-message', e.data);
     if (name === 'checkDataSource') {

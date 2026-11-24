@@ -1219,7 +1219,7 @@ export function setupWebRequestListener() {
     await tryJumpConfigPresenceStep({ currRequestUrl, method });
 
     if (isTarget) {
-      console.log('captured request', currRequestUrl,JSON.stringify(details));
+      // console.log('captured request', currRequestUrl,JSON.stringify(details));
       if (matchesGithubHomeTemplate(state.activeTemplate)) {
         logGitHubHome('capture:matched', {
           currRequestUrl,
