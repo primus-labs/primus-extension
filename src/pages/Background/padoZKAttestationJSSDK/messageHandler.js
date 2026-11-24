@@ -2,7 +2,11 @@
  * Pado ZK Attestation SDK message router. Dispatches by message name and registers tab-removed listener.
  */
 import { handleInitAttestation } from './init.js';
-import { clearSdkAttestationRuntimeState } from './sessionStorage.js';
+import {
+  clearSdkAttestationRuntimeState,
+  getSdkAttestationSession,
+} from './sessionStorage.js';
+import { isSdkMessageFromOwner } from '../messageSenderPolicy.js';
 import {
   handleStartAttestation,
   handleGetAttestationResult,
@@ -33,6 +37,18 @@ export async function padoZKAttestationJSSDKMsgListener(
       // Ignore closed or invalid message ports.
     }
   };
+
+  const senderTabId = sender?.tab?.id;
+  const session =
+    name === 'initAttestation' ? null : await getSdkAttestationSession();
+  if (!isSdkMessageFromOwner(name, senderTabId, session?.ownerTabId)) {
+    console.warn('blocked SDK message from non-owner tab', {
+      name,
+      tabId: senderTabId,
+    });
+    respondOnce({ ok: false });
+    return;
+  }
 
   setProcessAlgorithmReqRef(processAlgorithmReq);
 

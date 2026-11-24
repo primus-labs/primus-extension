@@ -14,6 +14,7 @@ import {
   SDK_ATTESTATION_PRESET_STORAGE_KEYS,
   SDK_ATTESTATION_SESSION_STORAGE_KEYS,
 } from '../padoZKAttestationJSSDK/sessionStorage.js';
+import { isAlgorithmResponseFromOffscreen } from '../messageSenderPolicy.js';
 
 export async function algorithmMsgListener(
   message,
@@ -23,6 +24,21 @@ export async function algorithmMsgListener(
 ) {
   const ack = createAlgorithmMessageAck(sendResponse);
   try {
+    if (
+      !isAlgorithmResponseFromOffscreen(
+        message,
+        sender,
+        chrome.runtime.id,
+        chrome.runtime.getURL('offscreen.html')
+      )
+    ) {
+      console.warn('algorithmMsgListener blocked unexpected sender', {
+        resMethodName: message?.resMethodName,
+        tabId: sender?.tab?.id,
+      });
+      return;
+    }
+
     const { resMethodName } = message;
 
     const storage = await safeStorageGet([

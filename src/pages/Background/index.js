@@ -11,6 +11,7 @@ import {
 } from './offscreenManager.js';
 import './pageDecode/index.js';
 import { pageDecodeMsgListener } from './pageDecode/index.js';
+import { getPageDecodeState } from './pageDecode/state.js';
 import { padoZKAttestationJSSDKMsgListener } from './padoZKAttestationJSSDK/index.js';
 import { algorithmMsgListener } from './algorithm/index.js';
 import { devconsoleMsgListener } from './devconsole/index.js';
@@ -26,6 +27,11 @@ import {
   clearSdkAttestationRuntimeState,
   getSdkAttestationSession,
 } from './padoZKAttestationJSSDK/sessionStorage.js';
+import {
+  getBackgroundRouteKey,
+  isAlgorithmResponseFromOffscreen,
+  isTrustedPageDecodeRuntimeSender,
+} from './messageSenderPolicy.js';
 
 setupKeepAliveListener();
 
@@ -136,7 +142,12 @@ const messageRoutes = {
 };
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log('background onMessage message', message);
+  console.log('background onMessage', {
+    type: message?.type,
+    resType: message?.resType,
+    name: message?.name,
+    resMethodName: message?.resMethodName,
+  });
   if (message.type === 'xEvent') {
     xEventMsgListener(message, sender);
     return;
@@ -145,7 +156,40 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     xEventMsgListener(message, sender);
     return;
   }
-  const routeKey = message.resType === 'algorithm' ? 'algorithm' : message.type;
+  const routeKey = getBackgroundRouteKey(message);
+  if (routeKey === 'algorithm') {
+    const isTrusted = isAlgorithmResponseFromOffscreen(
+      message,
+      sender,
+      chrome.runtime.id,
+      chrome.runtime.getURL('offscreen.html')
+    );
+    if (!isTrusted) {
+      console.warn('blocked unexpected algorithm response sender', {
+        resMethodName: message?.resMethodName,
+        tabId: sender?.tab?.id,
+        senderType: sender?.tab ? 'tab' : 'extension-context',
+      });
+      sendResponse?.({ ok: false });
+      return;
+    }
+  }
+  if (
+    routeKey === 'pageDecode' &&
+    !isTrustedPageDecodeRuntimeSender(
+      sender,
+      getPageDecodeState().state.dataSourcePageTabId,
+      chrome.runtime.id
+    )
+  ) {
+    console.warn('blocked unexpected pageDecode sender', {
+      name: message?.name,
+      tabId: sender?.tab?.id,
+      senderType: sender?.tab ? 'tab' : 'extension-context',
+    });
+    sendResponse?.({ ok: false });
+    return;
+  }
   const handler = messageRoutes[routeKey];
   if (handler) {
     handler(message, sender, sendResponse);
