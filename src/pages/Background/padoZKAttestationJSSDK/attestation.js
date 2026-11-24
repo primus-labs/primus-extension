@@ -15,7 +15,6 @@ import { getSdkState, getProcessAlgorithmReqRef } from './init.js';
 import { getNetworkChainConfig, isNetworkSdkClient } from './networkChainConfig';
 import {
   ensureChainAllowlistForStart,
-  getAllowedHostsForChainId,
   parseNetworkChainIdFromExtendedParams,
   validateNetworkAlgoApis,
 } from './networkNodeAllowlist';
@@ -255,14 +254,17 @@ export async function handleStartAttestation(
       : undefined;
 
     const algoApisParam = state.isNetworkSdk ? params.attRequest?.algoApis : undefined;
+    const padoApiIndex = algorithmType === 'proxytls' ? 1 : 0;
 
-    if (state.isNetworkSdk && !params.attRequest?.algoApis?.[0]) {
-      console.log('network-sdk params error: missing algoApis[0]');
+    if (state.isNetworkSdk && !params.attRequest?.algoApis?.[padoApiIndex]) {
+      console.log(
+        `network-sdk params error: missing algoApis[${padoApiIndex}]`
+      );
       await cleanupStartAttestationState();
       const resParams = {
         result: false,
         errorData: {
-          desc: 'Invalid algoApis: missing algorithm endpoint (algoApis[0])',
+          desc: `Invalid algoApis: missing algorithm endpoint (algoApis[${padoApiIndex}])`,
           code: '00015',
         },
       };
@@ -295,9 +297,12 @@ export async function handleStartAttestation(
         return;
       }
 
-      await ensureChainAllowlistForStart(chainId);
-      const allowedHosts = await getAllowedHostsForChainId(chainId);
-      const validation = validateNetworkAlgoApis(params.attRequest?.algoApis, allowedHosts);
+      const allowedHosts = await ensureChainAllowlistForStart(chainId);
+      const validation = validateNetworkAlgoApis(
+        params.attRequest?.algoApis,
+        algorithmType,
+        allowedHosts
+      );
       if (!validation.ok) {
         console.log('network-sdk algoApis validation failed', validation.reason);
         await cleanupStartAttestationState();

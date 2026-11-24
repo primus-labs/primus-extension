@@ -38,19 +38,57 @@ describe('networkNodeAllowlist', () => {
     const allowed = new Set(['good.node:443']);
     const goodApis = [
       'wss://good.node/algorithm',
-      '',
+      'wss://good.node/algorithm-proxy',
       'wss://good.node/algoproxy',
     ];
-    assert.deepEqual(validateNetworkAlgoApis(goodApis, allowed), { ok: true });
+    assert.deepEqual(validateNetworkAlgoApis(goodApis, 'proxytls', allowed), {
+      ok: true,
+    });
+    assert.deepEqual(validateNetworkAlgoApis(goodApis, 'mpctls', allowed), {
+      ok: true,
+    });
 
     const badApis = [
       'wss://evil.node/algorithm',
-      '',
+      'wss://evil.node/algorithm-proxy',
       'wss://evil.node/algoproxy',
     ];
-    const bad = validateNetworkAlgoApis(badApis, allowed);
+    const bad = validateNetworkAlgoApis(badApis, 'proxytls', allowed);
     assert.equal(bad.ok, false);
     assert.match(bad.reason, /registered network nodes/);
+  });
+
+  it('validates the endpoint selected by algorithmType', () => {
+    const allowed = new Set(['good.node:443']);
+    const missingProxyTls = validateNetworkAlgoApis(
+      ['wss://good.node/algorithm', '', 'wss://good.node/algoproxy'],
+      'proxytls',
+      allowed
+    );
+    assert.equal(missingProxyTls.ok, false);
+
+    const invalidProxyTls = validateNetworkAlgoApis(
+      [
+        'wss://good.node/algorithm',
+        'https://good.node/algorithm-proxy',
+        'wss://good.node/algoproxy',
+      ],
+      'proxytls',
+      allowed
+    );
+    assert.equal(invalidProxyTls.ok, false);
+
+    const unsupported = validateNetworkAlgoApis(
+      [
+        'wss://good.node/algorithm',
+        'wss://good.node/algorithm-proxy',
+        'wss://good.node/algoproxy',
+      ],
+      'unknown',
+      allowed
+    );
+    assert.equal(unsupported.ok, false);
+    assert.match(unsupported.reason, /Unsupported/);
   });
 
   it('collectHostsFromNodeInfoRows keeps only status registered', () => {

@@ -4,16 +4,29 @@
  */
 export const NETWORK_SDK_PACKAGE = '@primuslabs/network-js-sdk';
 
-/** @typedef {{ chainId: number; chainName: string; nodeContractAddress: string; rpcUrl: string }} NetworkChainEntry */
+/** @typedef {{ chainId: number; chainName: string; nodeContractAddress: string; rpcUrls: string[] }} NetworkChainEntry */
 
 const RPC_BY_CHAIN = {
-  84532: 'https://sepolia.base.org',
-  8453: 'https://mainnet.base.org',
-  133: 'https://testnet.hsk.xyz',
-  177: 'https://mainnet.hsk.xyz',
+  84532: [
+    'https://sepolia.base.org',
+    'https://base-sepolia-rpc.publicnode.com',
+    'https://base-sepolia.gateway.tenderly.co',
+  ],
+  8453: [
+    'https://mainnet.base.org',
+    'https://base-rpc.publicnode.com',
+  ],
+  133: [
+    'https://testnet.hsk.xyz',
+    'https://133.rpc.thirdweb.com',
+  ],
+  177: [
+    'https://mainnet.hsk.xyz',
+    'https://177.rpc.thirdweb.com',
+  ],
 };
 
-/** @type {Record<number, Omit<NetworkChainEntry, 'rpcUrl'>>} */
+/** @type {Record<number, Omit<NetworkChainEntry, 'rpcUrls'>>} */
 const CHAIN_META = {
   84532: {
     chainId: 84532,
@@ -41,7 +54,18 @@ export const NETWORK_NODE_STATUS_REGISTERED = 1;
 
 export const NETWORK_NODE_ALLOWLIST_STORAGE_KEY = 'networkNodeAllowedHosts';
 
-export const MAX_NODE_ATTESTOR_INDEX = 256;
+export const NETWORK_NODE_ALLOWLIST_STORAGE_KEY_PREFIX =
+  'networkNodeAllowedHosts:';
+
+/** Cache is used without a synchronous refresh within this window. */
+export const NETWORK_ALLOWLIST_FRESH_TTL_MS = 5 * 60 * 1000;
+
+/** A failed refresh may fall back to cache only within this total age. */
+export const NETWORK_ALLOWLIST_MAX_STALE_MS = 30 * 60 * 1000;
+
+export const NETWORK_NODE_RPC_RETRIES = 3;
+
+export const NETWORK_NODE_READ_BATCH_SIZE = 20;
 
 /** Max wait for single-chain refresh during startAttestation before validation. */
 export const NETWORK_ALLOWLIST_START_REFRESH_TIMEOUT_MS = 6000;
@@ -56,9 +80,9 @@ export const NETWORK_ALLOWLIST_INIT_SINGLE_CHAIN_TIMEOUT_MS = 12000;
 export function getNetworkChainConfig(chainId) {
   const meta = CHAIN_META[chainId];
   if (!meta) return null;
-  const rpcUrl = RPC_BY_CHAIN[chainId];
-  if (!rpcUrl) return null;
-  return { ...meta, rpcUrl };
+  const rpcUrls = RPC_BY_CHAIN[chainId];
+  if (!rpcUrls?.length) return null;
+  return { ...meta, rpcUrls };
 }
 
 /** @returns {NetworkChainEntry[]} */

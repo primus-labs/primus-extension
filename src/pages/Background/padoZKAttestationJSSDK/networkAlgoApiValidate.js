@@ -52,10 +52,11 @@ export function isHostAllowed(parsedHost, allowedHosts) {
 
 /**
  * @param {string[] | undefined} algoApis
+ * @param {'mpctls' | 'proxytls'} algorithmType
  * @param {Set<string> | string[]} allowedHosts
  * @returns {{ ok: boolean; reason?: string }}
  */
-export function validateNetworkAlgoApis(algoApis, allowedHosts) {
+export function validateNetworkAlgoApis(algoApis, algorithmType, allowedHosts) {
   const allowedSet =
     allowedHosts instanceof Set
       ? allowedHosts
@@ -65,30 +66,30 @@ export function validateNetworkAlgoApis(algoApis, allowedHosts) {
     return { ok: false, reason: 'Node allowlist empty or not loaded' };
   }
 
-  const algo0 = algoApis?.[0];
-  const algo2 = algoApis?.[2];
-  if (!algo0 || !algo2) {
-    return { ok: false, reason: 'Missing algoApis[0] or algoApis[2]' };
+  if (algorithmType !== 'mpctls' && algorithmType !== 'proxytls') {
+    return { ok: false, reason: 'Unsupported algorithmType' };
   }
 
-  const host0 = parseWssHost(algo0);
-  const host2 = parseWssHost(algo2);
-  if (!host0 || !host2) {
-    return { ok: false, reason: 'Invalid wss URL in algoApis' };
+  const endpointIndex = algorithmType === 'proxytls' ? 1 : 0;
+  const endpointHost = parseWssHost(algoApis?.[endpointIndex]);
+  const proxyHost = parseWssHost(algoApis?.[2]);
+  if (!endpointHost || !proxyHost) {
+    return {
+      ok: false,
+      reason: `Missing or invalid wss URL in algoApis[${endpointIndex}] or algoApis[2]`,
+    };
   }
-  if (host0 !== host2) {
-    return { ok: false, reason: 'algoApis[0] and algoApis[2] host mismatch' };
+  if (endpointHost !== proxyHost) {
+    return {
+      ok: false,
+      reason: `algoApis[${endpointIndex}] and algoApis[2] host mismatch`,
+    };
   }
 
-  const algo1 = algoApis?.[1];
-  if (algo1 && String(algo1).trim()) {
-    const host1 = parseWssHost(algo1);
-    if (host1 && host1 !== host0) {
-      return { ok: false, reason: 'algoApis[1] host mismatch' };
-    }
-  }
-
-  if (!isHostAllowed(host0, allowedSet)) {
+  if (
+    !isHostAllowed(endpointHost, allowedSet) ||
+    !isHostAllowed(proxyHost, allowedSet)
+  ) {
     return {
       ok: false,
       reason: 'Algorithm endpoint host not in registered network nodes',

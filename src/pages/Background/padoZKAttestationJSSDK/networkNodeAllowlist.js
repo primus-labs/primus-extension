@@ -3,13 +3,22 @@ import nodeContractAbi from './networkNodeContractAbi.json';
 import {
   getAllNetworkChainConfigs,
   getNetworkChainConfig,
-  MAX_NODE_ATTESTOR_INDEX,
+  NETWORK_ALLOWLIST_FRESH_TTL_MS,
   NETWORK_ALLOWLIST_INIT_SINGLE_CHAIN_TIMEOUT_MS,
+  NETWORK_ALLOWLIST_MAX_STALE_MS,
   NETWORK_ALLOWLIST_START_REFRESH_TIMEOUT_MS,
   NETWORK_NODE_ALLOWLIST_STORAGE_KEY,
+  NETWORK_NODE_ALLOWLIST_STORAGE_KEY_PREFIX,
+  NETWORK_NODE_READ_BATCH_SIZE,
+  NETWORK_NODE_RPC_RETRIES,
   parseInitChainId,
 } from './networkChainConfig';
-import { withTimeout } from './networkAllowlistUtils';
+import {
+  getAllowlistCacheState,
+  isArrayReadEndError,
+  readSequentiallyUntilEnd,
+  withTimeout,
+} from './networkAllowlistUtils';
 import {
   collectHostsFromNodeInfoRows,
   normalizeHost,
@@ -33,6 +42,7 @@ const inFlightRefreshByChain = new Map();
 export { withTimeout, parseInitChainId };
 
 /**
+ * Legacy shared cache reader. New writes use an independent key per chain.
  * @returns {Promise<{ updatedAt?: number; byChainId: Record<string, string[]> }>}
  */
 export async function readAllowlistCache() {
@@ -46,19 +56,50 @@ export async function readAllowlistCache() {
 }
 
 /**
+ * @param {number | string} chainId
+ * @returns {string}
+ */
+function getChainStorageKey(chainId) {
+  return `${NETWORK_NODE_ALLOWLIST_STORAGE_KEY_PREFIX}${chainId}`;
+}
+
+/**
+ * @param {number | string} chainId
+ * @returns {Promise<{ hosts: string[]; refreshedAt: number; legacy?: boolean } | null>}
+ */
+export async function readChainAllowlistCache(chainId) {
+  const storageKey = getChainStorageKey(chainId);
+  const stored = await safeStorageGet([storageKey]);
+  const payload = stored?.[storageKey];
+  if (payload && typeof payload === 'object' && Array.isArray(payload.hosts)) {
+    return {
+      hosts: payload.hosts,
+      refreshedAt: Number(payload.refreshedAt) || 0,
+    };
+  }
+
+  const legacy = await readAllowlistCache();
+  const hosts = legacy.byChainId[String(chainId)];
+  if (!Array.isArray(hosts)) return null;
+  return {
+    hosts,
+    refreshedAt: Number(legacy.updatedAt) || 0,
+    legacy: true,
+  };
+}
+
+/**
  * @param {number} chainId
  * @param {string[]} hosts
+ * @returns {Promise<{ hosts: string[]; refreshedAt: number }>}
  */
-export async function mergeChainHostsIntoStorage(chainId, hosts) {
-  const key = String(chainId);
-  const { byChainId } = await readAllowlistCache();
-  const nextByChainId = { ...byChainId, [key]: Array.isArray(hosts) ? hosts : [] };
+export async function writeChainHostsToStorage(chainId, hosts) {
   const payload = {
-    updatedAt: Date.now(),
-    byChainId: nextByChainId,
+    hosts: Array.isArray(hosts) ? hosts : [],
+    refreshedAt: Date.now(),
   };
   await safeStorageSet({
-    [NETWORK_NODE_ALLOWLIST_STORAGE_KEY]: payload,
+    [getChainStorageKey(chainId)]: payload,
   });
   return payload;
 }
@@ -68,57 +109,82 @@ export async function mergeChainHostsIntoStorage(chainId, hosts) {
  * @returns {Promise<string[]>}
  */
 export async function getAllowedHostsForChainId(chainId) {
-  const key = String(chainId);
-  const { byChainId } = await readAllowlistCache();
-  return Array.isArray(byChainId[key]) ? byChainId[key] : [];
+  const cache = await readChainAllowlistCache(chainId);
+  return cache?.hosts || [];
+}
+
+/** @param {number} ms @returns {Promise<void>} */
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * @template T
+ * @param {() => Promise<T>} operation
+ * @returns {Promise<T>}
+ */
+async function retryRpc(operation) {
+  let lastError;
+  for (let attempt = 0; attempt < NETWORK_NODE_RPC_RETRIES; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      if (isArrayReadEndError(error)) throw error;
+      lastError = error;
+      if (attempt < NETWORK_NODE_RPC_RETRIES - 1) {
+        await delay(100 * (attempt + 1));
+      }
+    }
+  }
+  throw lastError;
+}
+
+/**
+ * @template T
+ * @param {number} count
+ * @param {(index: number) => Promise<T>} reader
+ * @returns {Promise<T[]>}
+ */
+async function readInBatches(count, reader) {
+  const results = [];
+  for (let start = 0; start < count; start += NETWORK_NODE_READ_BATCH_SIZE) {
+    const end = Math.min(start + NETWORK_NODE_READ_BATCH_SIZE, count);
+    const batch = Array.from({ length: end - start }, (_, offset) =>
+      reader(start + offset)
+    );
+    results.push(...(await Promise.all(batch)));
+  }
+  return results;
 }
 
 /**
  * @param {import('ethers').providers.Provider} provider
  * @param {string} contractAddress
- * @param {number} chainId
  * @returns {Promise<Set<string>>}
  */
-async function fetchAllowedHostsOnChain(provider, contractAddress, chainId) {
+async function fetchAllowedHostsOnChain(provider, contractAddress) {
   const contract = new ethers.Contract(contractAddress, nodeContractAbi, provider);
-  /** @type {string[]} */
-  const attestorAddresses = [];
+  const blockTag = await retryRpc(() => provider.getBlockNumber());
+  const attestorAddresses = (
+    await readSequentiallyUntilEnd(
+      (index) => retryRpc(() => contract.nodeAttestors(index, { blockTag })),
+      isArrayReadEndError
+    )
+  ).filter((attestor) => attestor && attestor !== ZERO_ADDRESS);
 
-  for (let i = 0; i < MAX_NODE_ATTESTOR_INDEX; i++) {
-    let attestor;
-    try {
-      attestor = await contract.nodeAttestors(i);
-    } catch {
-      break;
+  const nodeInfoResults = await readInBatches(
+    attestorAddresses.length,
+    async (index) => {
+      const info = await retryRpc(() =>
+        contract.getNodeInfo(attestorAddresses[index], { blockTag })
+      );
+      const status = Number(info?.status ?? info?.[1]);
+      const urls = info?.urls ?? info?.[6] ?? [];
+      return { status, urls: Array.isArray(urls) ? urls : [] };
     }
-
-    if (!attestor || attestor === ZERO_ADDRESS) {
-      break;
-    }
-    attestorAddresses.push(attestor);
-  }
-
-  const nodeInfoResults = await Promise.all(
-    attestorAddresses.map(async (attestor) => {
-      try {
-        const info = await contract.getNodeInfo(attestor);
-        const status = Number(info?.status ?? info?.[1]);
-        const urls = info?.urls ?? info?.[6] ?? [];
-        const urlList = Array.isArray(urls) ? urls : [];
-        return { status, urls: urlList };
-      } catch {
-        return null;
-      }
-    })
   );
 
-  const hosts = new Set();
-  nodeInfoResults.filter(Boolean).forEach((row) => {
-    const rowHosts = collectHostsFromNodeInfoRows([row]);
-    rowHosts.forEach((h) => hosts.add(h));
-  });
-
-  return hosts;
+  return collectHostsFromNodeInfoRows(nodeInfoResults);
 }
 
 /**
@@ -128,20 +194,23 @@ async function fetchAllowedHostsOnChain(provider, contractAddress, chainId) {
 async function refreshChainAllowlistRpc(chainId) {
   const config = getNetworkChainConfig(chainId);
   if (!config) {
-    return [];
+    throw new Error(`Unsupported network chainId: ${chainId}`);
   }
 
-  try {
-    const provider = new ethers.providers.JsonRpcProvider(config.rpcUrl);
-    const hosts = await fetchAllowedHostsOnChain(
-      provider,
-      config.nodeContractAddress,
-      chainId
-    );
-    return [...hosts];
-  } catch {
-    return [];
+  let lastError;
+  for (const rpcUrl of config.rpcUrls) {
+    try {
+      const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+      const hosts = await fetchAllowedHostsOnChain(
+        provider,
+        config.nodeContractAddress
+      );
+      return [...hosts];
+    } catch (error) {
+      lastError = error;
+    }
   }
+  throw lastError || new Error(`No RPC available for chainId: ${chainId}`);
 }
 
 /**
@@ -157,10 +226,9 @@ export function refreshChainWithPersist(chainId) {
 
   const work = (async () => {
     const hosts = await refreshChainAllowlistRpc(chainId);
-    await mergeChainHostsIntoStorage(chainId, hosts);
+    await writeChainHostsToStorage(chainId, hosts);
     return hosts;
   })()
-    .catch(() => [])
     .finally(() => {
       inFlightRefreshByChain.delete(chainId);
     });
@@ -171,7 +239,7 @@ export function refreshChainWithPersist(chainId) {
 
 /**
  * @param {number[]} chainIds
- * @returns {Promise<void>}
+ * @returns {Promise<string[]>}
  */
 function refreshChainsParallel(chainIds) {
   return Promise.all(chainIds.map((id) => refreshChainWithPersist(id))).then(() => undefined);
@@ -203,21 +271,31 @@ export async function refreshSingleChainForInit(chainId) {
 /**
  * Start path: sync refresh when cache missing/empty or await in-flight refresh.
  * @param {number} chainId
- * @returns {Promise<void>}
+ * @returns {Promise<string[]>}
  */
 export async function ensureChainAllowlistForStart(chainId) {
-  const hosts = await getAllowedHostsForChainId(chainId);
-  if (hosts.length > 0) {
-    return;
+  const cache = await readChainAllowlistCache(chainId);
+  const cacheState = getAllowlistCacheState(
+    cache,
+    Date.now(),
+    NETWORK_ALLOWLIST_FRESH_TTL_MS,
+    NETWORK_ALLOWLIST_MAX_STALE_MS
+  );
+  if (cacheState === 'fresh') {
+    return cache.hosts;
   }
 
   const inFlight = inFlightRefreshByChain.get(chainId);
   const refreshPromise = inFlight || refreshChainWithPersist(chainId);
 
   try {
-    await withTimeout(refreshPromise, NETWORK_ALLOWLIST_START_REFRESH_TIMEOUT_MS);
+    return await withTimeout(
+      refreshPromise,
+      NETWORK_ALLOWLIST_START_REFRESH_TIMEOUT_MS
+    );
   } catch {
-    // validation fails closed if cache still empty
+    if (cacheState === 'stale') return cache.hosts;
+    return [];
   }
 }
 
@@ -227,9 +305,13 @@ export async function ensureChainAllowlistForStart(chainId) {
  */
 export async function refreshAllChainsNodeAllowlist() {
   const configs = getAllNetworkChainConfigs();
-  await Promise.all(configs.map((cfg) => refreshChainWithPersist(cfg.chainId)));
-  const { updatedAt, byChainId } = await readAllowlistCache();
-  return { updatedAt: updatedAt ?? Date.now(), byChainId };
+  const entries = await Promise.all(
+    configs.map(async (config) => [
+      String(config.chainId),
+      await refreshChainWithPersist(config.chainId),
+    ])
+  );
+  return { updatedAt: Date.now(), byChainId: Object.fromEntries(entries) };
 }
 
 /**
