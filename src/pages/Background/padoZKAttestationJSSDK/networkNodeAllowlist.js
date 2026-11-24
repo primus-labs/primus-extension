@@ -17,6 +17,7 @@ import {
   getAllowlistCacheState,
   isArrayReadEndError,
   readSequentiallyUntilEnd,
+  resolveCachedAllowlist,
   withTimeout,
 } from './networkAllowlistUtils';
 import {
@@ -36,7 +37,7 @@ export {
 
 const ZERO_ADDRESS = ethers.constants.AddressZero;
 
-/** @type {Map<number, Promise<string[]>>} */
+/** @type {Map<number, Promise<{ hosts: string[]; snapshotAt: number }>>} */
 const inFlightRefreshByChain = new Map();
 
 export { withTimeout, parseInitChainId };
@@ -91,12 +92,17 @@ export async function readChainAllowlistCache(chainId) {
 /**
  * @param {number} chainId
  * @param {string[]} hosts
+ * @param {number} [refreshedAt]
  * @returns {Promise<{ hosts: string[]; refreshedAt: number }>}
  */
-export async function writeChainHostsToStorage(chainId, hosts) {
+export async function writeChainHostsToStorage(
+  chainId,
+  hosts,
+  refreshedAt = Date.now()
+) {
   const payload = {
     hosts: Array.isArray(hosts) ? hosts : [],
-    refreshedAt: Date.now(),
+    refreshedAt,
   };
   await safeStorageSet({
     [getChainStorageKey(chainId)]: payload,
@@ -160,11 +166,12 @@ async function readInBatches(count, reader) {
 /**
  * @param {import('ethers').providers.Provider} provider
  * @param {string} contractAddress
- * @returns {Promise<Set<string>>}
+ * @returns {Promise<{ hosts: Set<string>; snapshotAt: number }>}
  */
 async function fetchAllowedHostsOnChain(provider, contractAddress) {
   const contract = new ethers.Contract(contractAddress, nodeContractAbi, provider);
   const blockTag = await retryRpc(() => provider.getBlockNumber());
+  const snapshotAt = Date.now();
   const attestorAddresses = (
     await readSequentiallyUntilEnd(
       (index) => retryRpc(() => contract.nodeAttestors(index, { blockTag })),
@@ -184,12 +191,15 @@ async function fetchAllowedHostsOnChain(provider, contractAddress) {
     }
   );
 
-  return collectHostsFromNodeInfoRows(nodeInfoResults);
+  return {
+    hosts: collectHostsFromNodeInfoRows(nodeInfoResults),
+    snapshotAt,
+  };
 }
 
 /**
  * @param {number} chainId
- * @returns {Promise<string[]>}
+ * @returns {Promise<{ hosts: string[]; snapshotAt: number }>}
  */
 async function refreshChainAllowlistRpc(chainId) {
   const config = getNetworkChainConfig(chainId);
@@ -201,11 +211,11 @@ async function refreshChainAllowlistRpc(chainId) {
   for (const rpcUrl of config.rpcUrls) {
     try {
       const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-      const hosts = await fetchAllowedHostsOnChain(
+      const result = await fetchAllowedHostsOnChain(
         provider,
         config.nodeContractAddress
       );
-      return [...hosts];
+      return { hosts: [...result.hosts], snapshotAt: result.snapshotAt };
     } catch (error) {
       lastError = error;
     }
@@ -216,7 +226,7 @@ async function refreshChainAllowlistRpc(chainId) {
 /**
  * Deduplicated refresh + storage merge for one chain.
  * @param {number} chainId
- * @returns {Promise<string[]>}
+ * @returns {Promise<{ hosts: string[]; snapshotAt: number }>}
  */
 export function refreshChainWithPersist(chainId) {
   const existing = inFlightRefreshByChain.get(chainId);
@@ -225,9 +235,13 @@ export function refreshChainWithPersist(chainId) {
   }
 
   const work = (async () => {
-    const hosts = await refreshChainAllowlistRpc(chainId);
-    await writeChainHostsToStorage(chainId, hosts);
-    return hosts;
+    const result = await refreshChainAllowlistRpc(chainId);
+    await writeChainHostsToStorage(
+      chainId,
+      result.hosts,
+      result.snapshotAt
+    );
+    return result;
   })()
     .finally(() => {
       inFlightRefreshByChain.delete(chainId);
@@ -239,7 +253,7 @@ export function refreshChainWithPersist(chainId) {
 
 /**
  * @param {number[]} chainIds
- * @returns {Promise<string[]>}
+ * @returns {Promise<void>}
  */
 function refreshChainsParallel(chainIds) {
   return Promise.all(chainIds.map((id) => refreshChainWithPersist(id))).then(() => undefined);
@@ -271,7 +285,7 @@ export async function refreshSingleChainForInit(chainId) {
 /**
  * Start path: sync refresh when cache missing/empty or await in-flight refresh.
  * @param {number} chainId
- * @returns {Promise<string[]>}
+ * @returns {Promise<{ status: 'ready' | 'stale' | 'unavailable'; hosts: string[] }>}
  */
 export async function ensureChainAllowlistForStart(chainId) {
   const cache = await readChainAllowlistCache(chainId);
@@ -282,20 +296,26 @@ export async function ensureChainAllowlistForStart(chainId) {
     NETWORK_ALLOWLIST_MAX_STALE_MS
   );
   if (cacheState === 'fresh') {
-    return cache.hosts;
+    return { status: 'ready', hosts: cache.hosts };
   }
 
   const inFlight = inFlightRefreshByChain.get(chainId);
   const refreshPromise = inFlight || refreshChainWithPersist(chainId);
 
   try {
-    return await withTimeout(
+    const result = await withTimeout(
       refreshPromise,
       NETWORK_ALLOWLIST_START_REFRESH_TIMEOUT_MS
     );
+    return { status: 'ready', hosts: result.hosts };
   } catch {
-    if (cacheState === 'stale') return cache.hosts;
-    return [];
+    const latestCache = await readChainAllowlistCache(chainId);
+    return resolveCachedAllowlist(
+      latestCache,
+      Date.now(),
+      NETWORK_ALLOWLIST_FRESH_TTL_MS,
+      NETWORK_ALLOWLIST_MAX_STALE_MS
+    );
   }
 }
 
@@ -308,7 +328,7 @@ export async function refreshAllChainsNodeAllowlist() {
   const entries = await Promise.all(
     configs.map(async (config) => [
       String(config.chainId),
-      await refreshChainWithPersist(config.chainId),
+      (await refreshChainWithPersist(config.chainId)).hosts,
     ])
   );
   return { updatedAt: Date.now(), byChainId: Object.fromEntries(entries) };
@@ -329,7 +349,7 @@ export function parseNetworkChainIdFromExtendedParams(extendedParams) {
   return Number.isFinite(num) ? num : null;
 }
 
-/** @param {number} chainId @returns {Promise<string[]> | undefined} */
+/** @param {number} chainId @returns {Promise<{ hosts: string[]; snapshotAt: number }> | undefined} */
 export function getInFlightRefresh(chainId) {
   return inFlightRefreshByChain.get(chainId);
 }

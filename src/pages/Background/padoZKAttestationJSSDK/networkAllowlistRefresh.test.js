@@ -6,6 +6,7 @@ import {
   isArrayReadEndError,
   parseInitChainIdValue,
   readSequentiallyUntilEnd,
+  resolveCachedAllowlist,
   withTimeout,
 } from './networkAllowlistUtils.js';
 import { getNetworkChainConfig } from './networkChainConfig.js';
@@ -83,6 +84,18 @@ describe('networkAllowlistRefresh', () => {
       ),
       'expired'
     );
+  });
+
+  it('does not use a stale cache after it expires while refresh is pending', () => {
+    const cache = { hosts: ['node'], refreshedAt: 500 };
+    assert.deepEqual(resolveCachedAllowlist(cache, 999, 100, 500), {
+      status: 'stale',
+      hosts: ['node'],
+    });
+    assert.deepEqual(resolveCachedAllowlist(cache, 1001, 100, 500), {
+      status: 'unavailable',
+      hosts: [],
+    });
   });
 
   it('recognizes only Solidity array out-of-bounds panic', () => {

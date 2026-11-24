@@ -121,3 +121,27 @@ export function getAllowlistCacheState(
   if (!cache.legacy && age <= freshTtlMs) return 'fresh';
   return age <= maxStaleMs ? 'stale' : 'expired';
 }
+
+/**
+ * @param {{ hosts?: unknown; refreshedAt?: unknown; legacy?: boolean } | null} cache
+ * @param {number} now
+ * @param {number} freshTtlMs
+ * @param {number} maxStaleMs
+ * @returns {{ status: 'ready' | 'stale' | 'unavailable'; hosts: string[] }}
+ */
+export function resolveCachedAllowlist(
+  cache,
+  now,
+  freshTtlMs,
+  maxStaleMs
+) {
+  const state = getAllowlistCacheState(
+    cache,
+    now,
+    freshTtlMs,
+    maxStaleMs
+  );
+  if (state === 'fresh') return { status: 'ready', hosts: cache.hosts };
+  if (state === 'stale') return { status: 'stale', hosts: cache.hosts };
+  return { status: 'unavailable', hosts: [] };
+}

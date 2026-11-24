@@ -42,6 +42,10 @@ import {
   setSdkAttestationPreset,
   setSdkAttestationSession,
 } from './sessionStorage.js';
+import {
+  getStartSessionClaimAction,
+  withSdkSessionOwnershipLock,
+} from './sessionOwnershipLock.js';
 import { createTabMessageSender } from '../utils/msgTransfer.js';
 import { cleanupPageDecodeWithoutCancel } from '../pageDecode/closeDataSourceTab.js';
 import {
@@ -170,67 +174,41 @@ export async function handleStartAttestation(
     JSON.stringify(params)
   );
 
-  const {
-    [SDK_START_ATTESTATION_LOCK_TAB_ID_KEY]: startAttestationLockTabId,
-    [SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY]: startAttestationLockStartedAt,
-    activeRequestAttestation: lastActiveRequestAttestationStr,
-  } = await safeStorageGet([
-    SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-    SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-    'activeRequestAttestation',
-  ]);
-  const currentSession = await getSdkAttestationSession();
-  const beginAttestFlag = currentSession?.sdkVersion;
-
-  if (startAttestationLockTabId != null) {
+  const ownershipResult = await withSdkSessionOwnershipLock(async () => {
+    const {
+      [SDK_START_ATTESTATION_LOCK_TAB_ID_KEY]: startAttestationLockTabId,
+      [SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY]:
+        startAttestationLockStartedAt,
+      activeRequestAttestation: lastActiveRequestAttestationStr,
+    } = await safeStorageGet([
+      SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+      SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
+      'activeRequestAttestation',
+    ]);
+    const currentSession = await getSdkAttestationSession();
     const startedAt = Number(startAttestationLockStartedAt);
     const hasValidStartedAt = Number.isFinite(startedAt);
-    const isStaleLock =
-      !hasValidStartedAt || Date.now() - startedAt > activeRequestStaleTtlMs;
+    const claimAction = getStartSessionClaimAction({
+      lockTabId: startAttestationLockTabId,
+      lockStartedAt: startAttestationLockStartedAt,
+      hasActiveRequest: !!lastActiveRequestAttestationStr,
+      hasSessionVersion: !!currentSession?.sdkVersion,
+      now: Date.now(),
+      staleTtlMs: activeRequestStaleTtlMs,
+    });
+    if (claimAction === 'busy') return { acquired: false };
 
-    if (isStaleLock) {
+    if (claimAction === 'clear-and-acquire') {
       console.log(
-        'debuge-zktls-clear-stale-startAttestation-lock',
+        'debuge-zktls-clear-stale-attestation-state',
         JSON.stringify({
+          hasBeginAttest: !!currentSession?.sdkVersion,
           startedAt: hasValidStartedAt ? startedAt : null,
-          ownerTabId: startAttestationLockTabId,
+          ownerTabId: startAttestationLockTabId ?? null,
         })
       );
       await cleanupStaleActiveAttestationState();
-    } else {
-      await sendBusyStartAttestationResponse(currentDappTabId);
-      return;
     }
-  }
-
-  if (lastActiveRequestAttestationStr) {
-    const startedAt = Number(startAttestationLockStartedAt);
-    const hasValidStartedAt = Number.isFinite(startedAt);
-    const isStaleLock =
-      !beginAttestFlag ||
-      !hasValidStartedAt ||
-      Date.now() - startedAt > activeRequestStaleTtlMs;
-
-    if (isStaleLock) {
-      console.log(
-        'debuge-zktls-clear-stale-activeRequestAttestation',
-        JSON.stringify({
-          hasBeginAttest: !!beginAttestFlag,
-          startedAt: hasValidStartedAt ? startedAt : null,
-        })
-      );
-      await cleanupStaleActiveAttestationState();
-    } else {
-      await sendBusyStartAttestationResponse(currentDappTabId);
-      return;
-    }
-  }
-
-  try {
-    state.sdkVersion = params?.sdkVersion;
-    state.sdkName = params?.sdkName;
-    state.isNetworkSdk = isNetworkSdkClient(params);
-    state.sdkParams = params;
 
     await safeStorageSet({
       [SDK_START_ATTESTATION_LOCK_TAB_ID_KEY]: currentDappTabId,
@@ -239,9 +217,23 @@ export async function handleStartAttestation(
     await setSdkAttestationSession({
       ownerTabId: currentDappTabId,
       clientType: params?.clientType || '',
-      sdkVersion: state.sdkVersion,
+      sdkVersion: params?.sdkVersion || '',
       active: true,
     });
+    return { acquired: true };
+  });
+
+  if (!ownershipResult.acquired) {
+    await sendBusyStartAttestationResponse(currentDappTabId);
+    return;
+  }
+
+  try {
+    state.sdkVersion = params?.sdkVersion;
+    state.sdkName = params?.sdkName;
+    state.isNetworkSdk = isNetworkSdkClient(params);
+    state.sdkParams = params;
+
     processAlgorithmReq({ reqMethodName: 'start' });
 
     let activeWebProofTemplate = {};
@@ -297,11 +289,28 @@ export async function handleStartAttestation(
         return;
       }
 
-      const allowedHosts = await ensureChainAllowlistForStart(chainId);
+      const allowlist = await ensureChainAllowlistForStart(chainId);
+      if (allowlist.status === 'unavailable') {
+        console.log('network-sdk node allowlist unavailable', chainId);
+        await cleanupStartAttestationState();
+        await sendToSdk({
+          type: 'padoZKAttestationJSSDK',
+          name: 'getAttestationRes',
+          params: {
+            result: false,
+            errorData: {
+              desc: 'Network node allowlist is still loading. Please try again.',
+              code: '10001',
+            },
+            reStartFlag: true,
+          },
+        });
+        return;
+      }
       const validation = validateNetworkAlgoApis(
         params.attRequest?.algoApis,
         algorithmType,
-        allowedHosts
+        allowlist.hosts
       );
       if (!validation.ok) {
         console.log('network-sdk algoApis validation failed', validation.reason);

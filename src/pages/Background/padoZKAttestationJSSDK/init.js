@@ -11,9 +11,12 @@ import {
 } from '@/config/constants';
 import { safeStorageGet, safeStorageSet } from '@/utils/safeStorage';
 import {
-  getSdkAttestationSession,
   setSdkAttestationSession,
 } from './sessionStorage.js';
+import {
+  canInitClaimSession,
+  withSdkSessionOwnershipLock,
+} from './sessionOwnershipLock.js';
 import { isNetworkSdkClient } from './networkChainConfig';
 import { parseInitChainId } from './networkChainConfig';
 import {
@@ -62,17 +65,6 @@ export async function fetchConfigure() {
   }
 }
 
-export async function storeDappTabId(id) {
-  const currentSession = await getSdkAttestationSession();
-  await setSdkAttestationSession({
-    ownerTabId: id,
-    clientType: currentSession?.clientType || '',
-    sdkVersion: currentSession?.sdkVersion || '',
-    active: true,
-  });
-  return id;
-}
-
 /**
  * Handle initAttestation: fetch config, store dapp tab, start algorithm, optionally update algo URL.
  */
@@ -86,54 +78,61 @@ export async function handleInitAttestation(params, senderTabId, processAlgorith
 
   await fetchConfigure();
 
-  const {
-    [SDK_START_ATTESTATION_LOCK_TAB_ID_KEY]: startAttestationLockTabId,
-    [SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY]: startAttestationLockStartedAt,
-  } = await safeStorageGet([
-    SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-    SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-  ]);
-  if (
-    startAttestationLockTabId != null &&
-    senderTabId != null &&
-    startAttestationLockTabId !== senderTabId
-  ) {
+  const claimedOwnership = await withSdkSessionOwnershipLock(async () => {
+    const {
+      [SDK_START_ATTESTATION_LOCK_TAB_ID_KEY]: startAttestationLockTabId,
+      [SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY]:
+        startAttestationLockStartedAt,
+    } = await safeStorageGet([
+      SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+      SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
+    ]);
+    if (!canInitClaimSession(startAttestationLockTabId, senderTabId)) {
+      return {
+        claimed: false,
+        ownerTabId: startAttestationLockTabId,
+        startedAt: startAttestationLockStartedAt ?? null,
+      };
+    }
+
+    sdkState.sdkVersion = params?.sdkVersion;
+    sdkState.sdkName = params?.sdkName;
+    sdkState.isNetworkSdk = isNetworkSdkClient(params);
+    await setSdkAttestationSession({
+      ownerTabId: senderTabId,
+      clientType: params?.clientType || '',
+      sdkVersion: sdkState.sdkVersion,
+      active: true,
+    });
+    return { claimed: true };
+  });
+
+  if (!claimedOwnership.claimed) {
     console.log(
       'debuge-zktls-initAttestation-skip-owner-override',
       JSON.stringify({
         senderTabId,
-        ownerTabId: startAttestationLockTabId,
-        startedAt: startAttestationLockStartedAt ?? null,
+        ownerTabId: claimedOwnership.ownerTabId,
+        startedAt: claimedOwnership.startedAt,
       })
     );
     await sendInitAttestationRes(senderTabId);
     return;
   }
 
-  sdkState.sdkVersion = params?.sdkVersion;
-  sdkState.sdkName = params?.sdkName;
-  sdkState.isNetworkSdk = isNetworkSdkClient(params);
-
   if (sdkState.isNetworkSdk) {
     const initChainId = parseInitChainId(params?.chainId);
     if (initChainId != null) {
-      await refreshSingleChainForInit(initChainId);
+      refreshSingleChainForInit(initChainId);
     } else {
       refreshAllChainsBackground();
     }
   }
 
-  const dappTabId = await storeDappTabId(senderTabId);
-  await setSdkAttestationSession({
-    ownerTabId: dappTabId,
-    clientType: params?.clientType || '',
-    sdkVersion: sdkState.sdkVersion,
-    active: true,
-  });
   processAlgorithmReq({ reqMethodName: 'start' });
 
   if (!sdkState.isNetworkSdk) {
     updateAlgoUrl();
   }
-  console.log('333pado-bg-receive-initAttestation', dappTabId);
+  console.log('333pado-bg-receive-initAttestation', senderTabId);
 }
