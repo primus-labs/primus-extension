@@ -4,6 +4,9 @@
  */
 /* global Module */
 
+/** Keep in sync with networkChainConfig NETWORK_SDK_PACKAGE (offscreen is copied raw, no bundler). */
+const NETWORK_SDK_PACKAGE = '@primuslabs/network-js-sdk';
+
 Module = typeof Module !== 'undefined' ? Module : {};
 Module.onRuntimeInitialized = async () => {
   console.log('off screen Module Initialized OK');
@@ -46,13 +49,9 @@ function registerStreamCallback(paramsObj) {
   }
 }
 
-/**
- * Returns effective algorithm version based on clientType.
- * clientType.toLowerCase().includes('network') -> 1.1.1, otherwise main version.
- */
+/** Returns WASM algorithm version for network-js-sdk clientType only. */
 function getEffectiveVersion(clientType) {
-  const ct = (clientType || '').toLowerCase();
-  return ct.includes('network') ? LEGACY_NETWORK_VERSION : CLIENT_VERSION;
+  return clientType === NETWORK_SDK_PACKAGE ? LEGACY_NETWORK_VERSION : CLIENT_VERSION;
 }
 
 /**
@@ -157,26 +156,28 @@ class AlgorithmClient {
 
 const algorithmClient = new AlgorithmClient();
 
-chrome.runtime.onMessage.addListener((message) => {
+async function handleOffscreenAlgorithmMessage(message) {
   console.log('offscreen onMessage message', message);
   if (message.type !== 'algorithm') return;
 
   if (message.method === 'init') {
-    const res = algorithmClient.init(message.params);
+    const res = await algorithmClient.init(message.params);
     chrome.runtime.sendMessage({
       resType: 'algorithm',
       resMethodName: 'init',
       res,
     });
-  } else if (message.method === 'getAttestation') {
+    return;
+  }
+
+  if (message.method === 'getAttestation') {
     const rawData = {
       source: message.params.source,
       schemaType: message.params.schemaType,
       sigFormat: message.params.sigFormat,
       attestationId: message.params.requestid,
       event: message.params.event,
-      address:
-        message.params?.user?.address,
+      address: message.params?.user?.address,
       requestid: message.params.requestid,
       order: '4',
     };
@@ -192,14 +193,20 @@ chrome.runtime.onMessage.addListener((message) => {
       res,
       requestid: message.params.requestid,
     });
-  } else if (message.method === 'getAttestationResult') {
+    return;
+  }
+
+  if (message.method === 'getAttestationResult') {
     const res = algorithmClient.getAttestationResult(message.params || {});
     chrome.runtime.sendMessage({
       resType: 'algorithm',
       resMethodName: 'getAttestationResult',
       res,
     });
-  } else if (message.method === 'startOffline') {
+    return;
+  }
+
+  if (message.method === 'startOffline') {
     const res = algorithmClient.startOffline(message.params);
     chrome.runtime.sendMessage({
       resType: 'algorithm',
@@ -207,4 +214,8 @@ chrome.runtime.onMessage.addListener((message) => {
       res,
     });
   }
+}
+
+chrome.runtime.onMessage.addListener((message) => {
+  void handleOffscreenAlgorithmMessage(message);
 });

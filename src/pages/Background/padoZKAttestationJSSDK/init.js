@@ -14,6 +14,12 @@ import {
   getSdkAttestationSession,
   setSdkAttestationSession,
 } from './sessionStorage.js';
+import { isNetworkSdkClient } from './networkChainConfig';
+import { parseInitChainId } from './networkChainConfig';
+import {
+  refreshAllChainsBackground,
+  refreshSingleChainForInit,
+} from './networkNodeAllowlist';
 
 const sdkState = {
   hasGetTwitterScreenName: false,
@@ -106,7 +112,16 @@ export async function handleInitAttestation(params, senderTabId, processAlgorith
 
   sdkState.sdkVersion = params?.sdkVersion;
   sdkState.sdkName = params?.sdkName;
-  sdkState.isNetworkSdk = !!(sdkState.sdkName && sdkState.sdkName.indexOf('network') > -1);
+  sdkState.isNetworkSdk = isNetworkSdkClient(params);
+
+  if (sdkState.isNetworkSdk) {
+    const initChainId = parseInitChainId(params?.chainId);
+    if (initChainId != null) {
+      await refreshSingleChainForInit(initChainId);
+    } else {
+      refreshAllChainsBackground();
+    }
+  }
 
   const dappTabId = await storeDappTabId(senderTabId);
   await setSdkAttestationSession({

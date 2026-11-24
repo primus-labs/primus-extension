@@ -12,6 +12,13 @@ import {
   SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
 } from '@/config/constants';
 import { getSdkState, getProcessAlgorithmReqRef } from './init.js';
+import { getNetworkChainConfig, isNetworkSdkClient } from './networkChainConfig';
+import {
+  ensureChainAllowlistForStart,
+  getAllowedHostsForChainId,
+  parseNetworkChainIdFromExtendedParams,
+  validateNetworkAlgoApis,
+} from './networkNodeAllowlist';
 import { safeStorageGet, safeStorageSet } from '@/utils/safeStorage';
 import { sendMsgToTab } from '../utils/utils.js';
 import { safeJsonParse, parseAlgorithmReportData } from '@/utils/utils';
@@ -223,7 +230,7 @@ export async function handleStartAttestation(
   try {
     state.sdkVersion = params?.sdkVersion;
     state.sdkName = params?.sdkName;
-    state.isNetworkSdk = !!(state.sdkName && state.sdkName.indexOf('network') > -1);
+    state.isNetworkSdk = isNetworkSdkClient(params);
     state.sdkParams = params;
 
     await safeStorageSet({
@@ -250,12 +257,12 @@ export async function handleStartAttestation(
     const algoApisParam = state.isNetworkSdk ? params.attRequest?.algoApis : undefined;
 
     if (state.isNetworkSdk && !params.attRequest?.algoApis?.[0]) {
-      console.log('network-sdk params error');
+      console.log('network-sdk params error: missing algoApis[0]');
       await cleanupStartAttestationState();
       const resParams = {
         result: false,
         errorData: {
-          desc: 'Invalid Algorithm Parameters',
+          desc: 'Invalid algoApis: missing algorithm endpoint (algoApis[0])',
           code: '00015',
         },
       };
@@ -265,6 +272,48 @@ export async function handleStartAttestation(
         params: resParams,
       });
       return;
+    }
+
+    if (state.isNetworkSdk) {
+      const chainId = parseNetworkChainIdFromExtendedParams(
+        params.attRequest?.extendedParams
+      );
+      if (chainId == null || !getNetworkChainConfig(chainId)) {
+        console.log('network-sdk params error: invalid chainId', chainId);
+        await cleanupStartAttestationState();
+        await sendToSdk({
+          type: 'padoZKAttestationJSSDK',
+          name: 'getAttestationRes',
+          params: {
+            result: false,
+            errorData: {
+              desc: 'Invalid algoApis: missing or unsupported extendedParams.chainId',
+              code: '00015',
+            },
+          },
+        });
+        return;
+      }
+
+      await ensureChainAllowlistForStart(chainId);
+      const allowedHosts = await getAllowedHostsForChainId(chainId);
+      const validation = validateNetworkAlgoApis(params.attRequest?.algoApis, allowedHosts);
+      if (!validation.ok) {
+        console.log('network-sdk algoApis validation failed', validation.reason);
+        await cleanupStartAttestationState();
+        await sendToSdk({
+          type: 'padoZKAttestationJSSDK',
+          name: 'getAttestationRes',
+          params: {
+            result: false,
+            errorData: {
+              desc: `Invalid algoApis: ${validation.reason}`,
+              code: '00015',
+            },
+          },
+        });
+        return;
+      }
     }
 
     const padoUrlKey = algorithmType === 'proxytls' ? 'zkPadoUrl' : 'padoUrl';
