@@ -190,6 +190,7 @@ export function useTimeoutManager(activeRequest, status, statusRef, setters) {
           chrome.runtime.sendMessage({
             type: 'pageDecode',
             name: 'interceptionFail',
+            params: { requestId: activeRequest?.requestid },
           });
         }
       }, initializedShowTime);
@@ -210,6 +211,7 @@ export function useTimeoutManager(activeRequest, status, statusRef, setters) {
           chrome.runtime.sendMessage({
             type: 'pageDecode',
             name: 'dataSourcePageDialogTimeout',
+            params: { requestId: activeRequest?.requestid },
           });
         }
       }, verifyingTimeoutMs);

@@ -1,10 +1,6 @@
 import { sendInitAttestationRes } from './utils/msgTransfer.js';
 import { eventReport } from '@/services/api/usertracker';
 import {
-  SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-  SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-} from '@/config/constants';
-import {
   createOffscreenDoc,
   closeOffscreenDoc,
   hasOffscreenDocument,
@@ -14,16 +10,11 @@ import { pageDecodeMsgListener } from './pageDecode/index.js';
 import { padoZKAttestationJSSDKMsgListener } from './padoZKAttestationJSSDK/index.js';
 import { algorithmMsgListener } from './algorithm/index.js';
 import { devconsoleMsgListener } from './devconsole/index.js';
-import {
-  safeStorageGet,
-  safeStorageRemove,
-} from '@/utils/safeStorage';
 import { setupKeepAliveListener } from './utils/keepAlive.js';
 import { ensureExtensionUserIdentity } from './identityBootstrap.js';
 import { listener as xEventMsgListener } from './xEvent/index.js';
 import {
-  clearSdkAttestationResultCache,
-  clearSdkAttestationRuntimeState,
+  clearSdkAttestationRuntimeStateWithLock,
   getSdkAttestationSession,
 } from './padoZKAttestationJSSDK/sessionStorage.js';
 
@@ -43,7 +34,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason, version: _version }) => 
       reqMethodName: 'start',
     });
   } else if (reason === chrome.runtime.OnInstalledReason.UPDATE) {
-    await clearSdkAttestationRuntimeState();
+    await clearSdkAttestationRuntimeStateWithLock();
     await ensureExtensionUserIdentity();
   }
 });
@@ -107,13 +98,8 @@ const processAlgorithmReq = async (message) => {
       });
       break;
     case 'stop': {
+      // Session ownership is cleared by the request handler under its ownership lock.
       await closeOffscreenDoc();
-      await safeStorageRemove([
-        SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-        SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-        'activeRequestAttestation',
-      ]);
-      await clearSdkAttestationResultCache();
       if (!params?.noRestart) {
         await startFn();
       }

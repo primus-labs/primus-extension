@@ -9,11 +9,7 @@ import {
   ERROR_UNKNOWN,
   ERROR_UNKNOWN_SUB_ALGO_MISSING_ERRCODE,
 } from '@/config/errorCodes';
-import {
-  SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-  SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-} from '@/config/constants';
-import { safeStorageGet, safeStorageSet, safeStorageRemove } from '@/utils/safeStorage';
+import { safeStorageGet, safeStorageSet } from '@/utils/safeStorage';
 import { safeJsonParse, parseAlgorithmReportData } from '@/utils/utils';
 import { stopKeepAlive } from '../utils/keepAlive.js';
 import {
@@ -22,9 +18,9 @@ import {
   resolveNoteV2MapFromConfigParsed,
 } from '@/utils/attestationProcessNoteV2';
 import {
-  clearSdkAttestationRuntimeState,
   getSdkAttestationPresetFromStorage,
   getSdkAttestationSessionFromStorage,
+  teardownSdkAttestationRuntimeStateForRequest,
 } from '../padoZKAttestationJSSDK/sessionStorage.js';
 import { createTabMessageSender } from '../utils/msgTransfer.js';
 
@@ -67,7 +63,8 @@ export async function handleGetAttestation(
   dappTabId,
   sender,
   ack,
-  processAlgorithmReq
+  processAlgorithmReq,
+  requestId
 ) {
   if (!message?.res) return;
   let parsed;
@@ -96,19 +93,25 @@ export async function handleGetAttestation(
     msgObj.desc = getNoteV2Sdk(noteV2Map, tipCode, initDescFallback);
     msgObj.sourcePageTip = getNoteV2Extension(noteV2Map, tipCode, '');
 
-    await pageDecodeMsgListener(
-      {
-        name: 'end',
-        params: { result: 'warn', failReason: { ...msgObj } },
+    await teardownSdkAttestationRuntimeStateForRequest(requestId, {
+      onCleared: async () => {
+        await pageDecodeMsgListener(
+          {
+            name: 'end',
+            params: { result: 'warn', failReason: { ...msgObj } },
+          },
+          sender,
+          ack,
+          HAS_GET_TWITTER_SCREEN_NAME,
+          processAlgorithmReq
+        );
+        stopKeepAlive();
+        await processAlgorithmReq({
+          reqMethodName: 'stop',
+          params: { noRestart: true },
+        });
       },
-      sender,
-      ack,
-      HAS_GET_TWITTER_SCREEN_NAME,
-      processAlgorithmReq
-    );
-    stopKeepAlive();
-    await clearSdkAttestationRuntimeState();
-    processAlgorithmReq({ reqMethodName: 'stop', params: { noRestart: true } });
+    });
   }
 
   const resParams = { result };
@@ -168,8 +171,19 @@ export async function handleGetAttestationResult(
   const { retcode, content, details, isUserClick } = parsedRes;
   if (isUserClick !== 'true') return;
 
-  await safeStorageSet({ getAttestationResultRes: message.res });
   const parsedActiveRequestAttestation = safeJsonParse(activeRequestAttestation, {}) || {};
+  const activeRequestId =
+    parsedActiveRequestAttestation.requestid || activeAttestationParams.requestid;
+  const requestId = message.requestid;
+  if (!requestId || requestId !== activeRequestId) {
+    console.log('ignore stale getAttestationResult', requestId);
+    return;
+  }
+  if (content?.requestid && content.requestid !== requestId) {
+    console.log('ignore mismatched getAttestationResult', content.requestid);
+    return;
+  }
+  await safeStorageSet({ getAttestationResultRes: message.res });
   const extendedParamsObj = activeAttestationParams?.extendedParams
     ? (safeJsonParse(activeAttestationParams.extendedParams, {}) || {})
     : {};
@@ -178,18 +192,21 @@ export async function handleGetAttestationResult(
     const closeDataSourceOnProofComplete =
       activeAttestationParams.closeDataSourceOnProofComplete === true;
 
-    await pageDecodeMsgListener(
-      { name: 'end', params: { result: 'success' } },
-      sender,
-      ack,
-      HAS_GET_TWITTER_SCREEN_NAME,
-      processAlgorithmReq
-    );
-    stopKeepAlive();
-    if (closeDataSourceOnProofComplete) {
-      await closeSdkDataSourceTabWithoutCancel();
-    }
-    await clearSdkAttestationRuntimeState();
+    await teardownSdkAttestationRuntimeStateForRequest(requestId, {
+      onCleared: async () => {
+        await pageDecodeMsgListener(
+          { name: 'end', params: { result: 'success' } },
+          sender,
+          ack,
+          HAS_GET_TWITTER_SCREEN_NAME,
+          processAlgorithmReq
+        );
+        stopKeepAlive();
+        if (closeDataSourceOnProofComplete) {
+          await closeSdkDataSourceTabWithoutCancel();
+        }
+      },
+    });
     await sendToSdk({
       type: 'padoZKAttestationJSSDK',
       name: 'startAttestationRes',
@@ -204,8 +221,7 @@ export async function handleGetAttestationResult(
     ) {
       const activeRequestId = parsedActiveRequestAttestation.requestid;
       if (activeRequestId !== content?.requestid) {
-        stopKeepAlive();
-        await clearSdkAttestationRuntimeState();
+        console.log('ignore stale getAttestationResult', content?.requestid);
         return;
       }
 
@@ -281,18 +297,25 @@ export async function handleGetAttestationResult(
         }
       }
 
-      await pageDecodeMsgListener(
-        {
-          name: 'end',
-          params: { result: 'warn', failReason: { ...msgObj } },
+      await teardownSdkAttestationRuntimeStateForRequest(requestId, {
+        onCleared: async () => {
+          await pageDecodeMsgListener(
+            {
+              name: 'end',
+              params: { result: 'warn', failReason: { ...msgObj } },
+            },
+            sender,
+            ack,
+            HAS_GET_TWITTER_SCREEN_NAME,
+            processAlgorithmReq
+          );
+          stopKeepAlive();
+          await processAlgorithmReq({
+            reqMethodName: 'stop',
+            params: { noRestart: true },
+          });
         },
-        sender,
-        ack,
-        HAS_GET_TWITTER_SCREEN_NAME,
-        processAlgorithmReq
-      );
-      stopKeepAlive();
-      await clearSdkAttestationRuntimeState();
+      });
       const resParams = {
         result: false,
         errorData: {
@@ -337,21 +360,27 @@ export async function handleGetAttestationResult(
       tipKeyForMessage = ERROR_UNKNOWN;
     }
 
-    processAlgorithmReq({ reqMethodName: 'stop', params: { noRestart: true } });
     const msgObj = getAttestTipForCode(tipKeyForMessage, noteV2Map);
 
-    await pageDecodeMsgListener(
-      {
-        name: 'end',
-        params: { result: 'warn', failReason: { ...msgObj } },
+    await teardownSdkAttestationRuntimeStateForRequest(requestId, {
+      onCleared: async () => {
+        await pageDecodeMsgListener(
+          {
+            name: 'end',
+            params: { result: 'warn', failReason: { ...msgObj } },
+          },
+          sender,
+          ack,
+          HAS_GET_TWITTER_SCREEN_NAME,
+          processAlgorithmReq
+        );
+        stopKeepAlive();
+        await processAlgorithmReq({
+          reqMethodName: 'stop',
+          params: { noRestart: true },
+        });
       },
-      sender,
-      ack,
-      HAS_GET_TWITTER_SCREEN_NAME,
-      processAlgorithmReq
-    );
-    stopKeepAlive();
-    await clearSdkAttestationRuntimeState();
+    });
 
     let errorCodeOut;
     /** @type {{ subCode?: string } | undefined} */

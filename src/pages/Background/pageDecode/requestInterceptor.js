@@ -221,6 +221,7 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
   }
   const { requestsMap } = state;
   const activeTemplate = state.activeTemplate;
+  const attestationRequestId = activeTemplate?.requestid;
   const htmlTemplateDebug = matchesHtmlTemplateDebug(activeTemplate);
   const jsonPathEvaluationOptions =
     getJsonPathEvaluationOptionsForTemplate(activeTemplate);
@@ -451,7 +452,7 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
           code: '00104',
         },
         state.dataSourcePageTabId,
-        {}
+        { requestId: attestationRequestId }
       );
     };
 
@@ -670,7 +671,7 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
               code: '00104',
             },
             state.dataSourcePageTabId,
-            {}
+            { requestId: attestationRequestId }
           );
         };
         const requestMonadMeta = {
@@ -695,7 +696,7 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
               code: '00104',
             },
             state.dataSourcePageTabId,
-            {}
+            { requestId: attestationRequestId }
           );
         };
         const requestLumaPagedMeta = {
@@ -720,7 +721,7 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
               code: '00104',
             },
             state.dataSourcePageTabId,
-            {}
+            { requestId: attestationRequestId }
           );
         };
         isTargetUrl =
@@ -741,7 +742,7 @@ export async function checkSDKTargetRequest(requestId, templateRequestUrl) {
               code: '00104',
             },
             state.dataSourcePageTabId,
-            {}
+            { requestId: attestationRequestId }
           );
         };
         isTargetUrl = await checkTargetRequestFnForReputationPhalaCvmList(

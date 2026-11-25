@@ -2,7 +2,7 @@
  * Pado ZK Attestation SDK message router. Dispatches by message name and registers tab-removed listener.
  */
 import { handleInitAttestation } from './init.js';
-import { clearSdkAttestationRuntimeState } from './sessionStorage.js';
+import { teardownSdkAttestationRuntimeStateForRequest } from './sessionStorage.js';
 import {
   handleStartAttestation,
   handleGetAttestationResult,
@@ -48,14 +48,23 @@ export async function padoZKAttestationJSSDKMsgListener(
   }
 
   if (name === 'removeActiveAttestation') {
-    stopKeepAlive();
-    await cleanupPageDecodeWithoutCancel();
-    await clearSdkAttestationRuntimeState();
-    try {
-      await processAlgorithmReq({ reqMethodName: 'stop', params: { noRestart: true } });
-    } catch (e) {
-      console.log('removeActiveAttestation stop error', e);
-    }
+    await teardownSdkAttestationRuntimeStateForRequest(
+      params?.requestId,
+      {
+        onCleared: async () => {
+          stopKeepAlive();
+          await cleanupPageDecodeWithoutCancel();
+          try {
+            await processAlgorithmReq({
+              reqMethodName: 'stop',
+              params: { noRestart: true },
+            });
+          } catch (e) {
+            console.log('removeActiveAttestation stop error', e);
+          }
+        },
+      }
+    );
     respondOnce({});
     return;
   }
@@ -75,14 +84,15 @@ export async function padoZKAttestationJSSDKMsgListener(
       params,
       sender,
       respondOnce,
-      processAlgorithmReq
+      processAlgorithmReq,
+      params?.requestId
     );
     respondOnce();
     return;
   }
 
   if (name === 'getAttestationResult') {
-    handleGetAttestationResult(processAlgorithmReq);
+    handleGetAttestationResult(processAlgorithmReq, params?.requestId);
     respondOnce();
     return;
   }

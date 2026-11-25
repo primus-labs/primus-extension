@@ -8,12 +8,14 @@ import {
   handleGetAttestationResult,
 } from './attestationHandler.js';
 import { safeStorageGet } from '@/utils/safeStorage';
+import { SDK_START_ATTESTATION_LOCK_REQUEST_ID_KEY } from '@/config/constants';
 import {
   getSdkAttestationPresetFromStorage,
   getSdkAttestationSessionFromStorage,
   SDK_ATTESTATION_PRESET_STORAGE_KEYS,
   SDK_ATTESTATION_SESSION_STORAGE_KEYS,
 } from '../padoZKAttestationJSSDK/sessionStorage.js';
+import { isCurrentRequestId } from '../padoZKAttestationJSSDK/sessionOwnershipLock.js';
 
 export async function algorithmMsgListener(
   message,
@@ -29,12 +31,28 @@ export async function algorithmMsgListener(
       ...SDK_ATTESTATION_SESSION_STORAGE_KEYS,
       'configMap',
       'activeRequestAttestation',
+      SDK_START_ATTESTATION_LOCK_REQUEST_ID_KEY,
       ...SDK_ATTESTATION_PRESET_STORAGE_KEYS,
     ]);
 
     const session = getSdkAttestationSessionFromStorage(storage);
     const preset = getSdkAttestationPresetFromStorage(storage);
     const dappTabId = session?.ownerTabId;
+    const activeRequestId =
+      storage[SDK_START_ATTESTATION_LOCK_REQUEST_ID_KEY];
+
+    if (
+      (resMethodName === 'getAttestation' ||
+        resMethodName === 'getAttestationResult') &&
+      !isCurrentRequestId(activeRequestId, message.requestid)
+    ) {
+      console.log(
+        'ignore stale algorithm response',
+        resMethodName,
+        message.requestid
+      );
+      return;
+    }
 
     if (resMethodName === 'start') {
       processAlgorithmReq({ reqMethodName: 'init' });
@@ -50,7 +68,8 @@ export async function algorithmMsgListener(
           dappTabId,
           sender,
           ack,
-          processAlgorithmReq
+          processAlgorithmReq,
+          message.requestid
         );
       }
       if (resMethodName === 'getAttestationResult') {

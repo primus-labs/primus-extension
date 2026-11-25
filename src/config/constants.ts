@@ -21,6 +21,10 @@ export const SDK_START_ATTESTATION_LOCK_TAB_ID_KEY =
 export const SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY =
   'padoZKAttestationJSSDKStartAttestationLockStartedAt';
 
+/** Unique request token for the current startAttestation lock owner. */
+export const SDK_START_ATTESTATION_LOCK_REQUEST_ID_KEY =
+  'padoZKAttestationJSSDKStartAttestationLockRequestId';
+
 /** Unified lightweight SDK attestation session object key. */
 export const SDK_ATTESTATION_SESSION_KEY = 'padoZKAttestationJSSDKSession';
 
