@@ -14,7 +14,14 @@ function shouldRetryStartAttestationError(err) {
 }
 
 window.addEventListener('message', (e) => {
-  const { target, name, params } = e.data;
+  if (e.source !== window) {
+    return;
+  }
+  const data = e.data;
+  if (!data || typeof data !== 'object') {
+    return;
+  }
+  const { target, name, params } = data;
   if (target === 'padoExtension') {
     // console.log('333pado-content-sdk-listen-message', e.data);
     if (name === 'initAttestation') {
