@@ -3,9 +3,9 @@
  */
 import { handleInitAttestation } from './init.js';
 import {
-  clearSdkAttestationRuntimeState,
   getSdkAttestationSession,
   getSdkInitializationSession,
+  teardownSdkAttestationRuntimeStateForRequest,
 } from './sessionStorage.js';
 import { authorizeSdkMessage } from './sdkMessageOwnership.js';
 import {
@@ -85,18 +85,20 @@ export async function padoZKAttestationJSSDKMsgListener(
   }
 
   if (name === 'removeActiveAttestation') {
-    stopKeepAlive();
-    await cleanupPageDecodeWithoutCancel();
-    try {
-      await clearSdkAttestationRuntimeState(() =>
-        processAlgorithmReq({
-          reqMethodName: 'stop',
-          params: { noRestart: true },
-        })
-      );
-    } catch (e) {
-      console.log('removeActiveAttestation stop error', e);
-    }
+    await teardownSdkAttestationRuntimeStateForRequest(params?.requestId, {
+      onCleared: async () => {
+        stopKeepAlive();
+        await cleanupPageDecodeWithoutCancel();
+        try {
+          await processAlgorithmReq({
+            reqMethodName: 'stop',
+            params: { noRestart: true },
+          });
+        } catch (e) {
+          console.log('removeActiveAttestation stop error', e);
+        }
+      },
+    });
     respondOnce({});
     return;
   }
@@ -117,14 +119,15 @@ export async function padoZKAttestationJSSDKMsgListener(
       params,
       sender,
       respondOnce,
-      processAlgorithmReq
+      processAlgorithmReq,
+      params?.requestId
     );
     respondOnce();
     return;
   }
 
   if (name === 'getAttestationResult') {
-    await handleGetAttestationResult(processAlgorithmReq);
+    await handleGetAttestationResult(processAlgorithmReq, params?.requestId);
     respondOnce();
     return;
   }
@@ -133,7 +136,8 @@ export async function padoZKAttestationJSSDKMsgListener(
     await handleGetAttestationResultTimeout(
       sender,
       respondOnce,
-      processAlgorithmReq
+      processAlgorithmReq,
+      params?.requestId
     );
     respondOnce();
     return;

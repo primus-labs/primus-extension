@@ -1,4 +1,5 @@
 import {
+  SDK_START_ATTESTATION_LOCK_REQUEST_ID_KEY,
   SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
   SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
   SDK_ATTESTATION_PRESET_KEY,
@@ -41,6 +42,7 @@ export const SDK_ATTESTATION_RESULT_CACHE_KEYS = [
 export const SDK_ATTESTATION_RUNTIME_STORAGE_KEYS = [
   SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
   SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
+  SDK_START_ATTESTATION_LOCK_REQUEST_ID_KEY,
   'activeRequestAttestation',
   ...SDK_ATTESTATION_RESULT_CACHE_KEYS,
 ];
@@ -179,18 +181,31 @@ export async function getSdkStartAttestationLockTabId() {
   return Number.isInteger(tabId) ? tabId : null;
 }
 
-export async function clearSdkAttestationRuntimeStateUnlocked() {
+export async function clearSdkAttestationRuntimeStateUnlocked(options = {}) {
+  const runtimeKeys = options.preserveActiveRequest
+    ? SDK_ATTESTATION_RUNTIME_STORAGE_KEYS.filter(
+        (key) => key !== 'activeRequestAttestation'
+      )
+    : SDK_ATTESTATION_RUNTIME_STORAGE_KEYS;
   await clearSdkProofLifecycle({
-    clearRuntime: () => safeStorageRemove(SDK_ATTESTATION_RUNTIME_STORAGE_KEYS),
+    clearRuntime: () => safeStorageRemove(runtimeKeys),
     clearPreset: clearSdkAttestationPreset,
   });
   await clearSdkAttestationSession();
 }
 
-export async function clearSdkAttestationRuntimeState(afterClear) {
+function normalizeRuntimeClearOptions(optionsOrAfterClear) {
+  if (typeof optionsOrAfterClear === 'function') {
+    return { afterClear: optionsOrAfterClear };
+  }
+  return optionsOrAfterClear || {};
+}
+
+export async function clearSdkAttestationRuntimeState(optionsOrAfterClear) {
+  const options = normalizeRuntimeClearOptions(optionsOrAfterClear);
   await withSdkProofOwnershipLock(async () => {
-    await clearSdkAttestationRuntimeStateUnlocked();
-    await afterClear?.();
+    await clearSdkAttestationRuntimeStateUnlocked(options);
+    await options.afterClear?.();
   });
 }
 
@@ -205,4 +220,84 @@ export async function clearSdkAttestationAllState() {
       },
     });
   });
+}
+
+/**
+ * Serializes full runtime cleanup with init/start ownership changes.
+ * Use the unlocked variant only when the caller already holds this lock.
+ */
+export async function clearSdkAttestationRuntimeStateWithLock() {
+  await clearSdkAttestationRuntimeState();
+}
+
+/**
+ * Atomically snapshots and clears a request only while it owns the start lock.
+ * @param {unknown} requestId
+ * @param {{
+ *   preserveActiveRequest?: boolean;
+ *   onCleared?: (result: {
+ *     cleared: true;
+ *     session: ReturnType<typeof getSdkAttestationSessionFromStorage>;
+ *     preset: ReturnType<typeof getSdkAttestationPresetFromStorage>;
+ *   }) => Promise<void> | void;
+ * }} [options]
+ * @returns {Promise<{
+ *   cleared: boolean;
+ *   session: ReturnType<typeof getSdkAttestationSessionFromStorage>;
+ *   preset: ReturnType<typeof getSdkAttestationPresetFromStorage>;
+ *   activeRequestAttestation?: unknown;
+ *   getAttestationResultRes?: unknown;
+ * }>}
+ */
+export async function teardownSdkAttestationRuntimeStateForRequest(
+  requestId,
+  options = {}
+) {
+  const notCleared = {
+    cleared: false,
+    session: null,
+    preset: null,
+    activeRequestAttestation: undefined,
+    getAttestationResultRes: undefined,
+  };
+  if (typeof requestId !== 'string' || requestId === '') return notCleared;
+
+  return withSdkProofOwnershipLock(async () => {
+    const storage = await safeStorageGet([
+      SDK_START_ATTESTATION_LOCK_REQUEST_ID_KEY,
+      ...SDK_ATTESTATION_SESSION_STORAGE_KEYS,
+      ...SDK_ATTESTATION_PRESET_STORAGE_KEYS,
+      'activeRequestAttestation',
+      'getAttestationResultRes',
+    ]);
+    if (storage?.[SDK_START_ATTESTATION_LOCK_REQUEST_ID_KEY] !== requestId) {
+      return notCleared;
+    }
+    const result = {
+      cleared: true,
+      session: getSdkAttestationSessionFromStorage(storage),
+      preset: getSdkAttestationPresetFromStorage(storage),
+      activeRequestAttestation: storage.activeRequestAttestation,
+      getAttestationResultRes: storage.getAttestationResultRes,
+    };
+    await clearSdkAttestationRuntimeStateUnlocked(options);
+    if (typeof options.onCleared === 'function') {
+      try {
+        await options.onCleared(result);
+      } catch (error) {
+        console.error('SDK attestation teardown side effect failed:', error);
+      }
+    }
+    return result;
+  });
+}
+
+/**
+ * Clears an asynchronous request only while it still owns the start lock.
+ * @param {unknown} requestId
+ * @returns {Promise<boolean>}
+ */
+export async function clearSdkAttestationRuntimeStateForRequest(requestId) {
+  const result = await teardownSdkAttestationRuntimeStateForRequest(requestId);
+  return result.cleared;
 }

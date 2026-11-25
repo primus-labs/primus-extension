@@ -1,10 +1,6 @@
 import { sendInitAttestationRes } from './utils/msgTransfer.js';
 import { eventReport } from '@/services/api/usertracker';
 import {
-  SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-  SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-} from '@/config/constants';
-import {
   createOffscreenDoc,
   closeOffscreenDoc,
   hasOffscreenDocument,
@@ -15,15 +11,11 @@ import { getPageDecodeState } from './pageDecode/state.js';
 import { padoZKAttestationJSSDKMsgListener } from './padoZKAttestationJSSDK/index.js';
 import { algorithmMsgListener } from './algorithm/index.js';
 import { devconsoleMsgListener } from './devconsole/index.js';
-import {
-  safeStorageRemove,
-} from '@/utils/safeStorage';
 import { setupKeepAliveListener } from './utils/keepAlive.js';
 import { ensureExtensionUserIdentity } from './identityBootstrap.js';
 import { listener as xEventMsgListener } from './xEvent/index.js';
 import {
   clearSdkAttestationAllState,
-  clearSdkAttestationResultCache,
   getSdkAttestationSession,
 } from './padoZKAttestationJSSDK/sessionStorage.js';
 import { completePendingSdkInitialization } from './padoZKAttestationJSSDK/init.js';
@@ -124,13 +116,8 @@ const processAlgorithmReq = async (message) => {
       });
       break;
     case 'stop': {
+      // Session ownership is cleared by the request handler under its ownership lock.
       await closeOffscreenDoc();
-      await safeStorageRemove([
-        SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-        SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-        'activeRequestAttestation',
-      ]);
-      await clearSdkAttestationResultCache();
       if (!params?.noRestart) {
         await startFn();
       }

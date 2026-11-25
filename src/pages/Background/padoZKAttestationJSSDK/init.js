@@ -19,6 +19,11 @@ import {
   withSdkInitializationLock,
   withSdkProofOwnershipLock,
 } from './sessionLifecycle.js';
+import { isNetworkSdkClient, parseInitChainId } from './networkChainConfig';
+import {
+  refreshAllChainsBackground,
+  refreshSingleChainForInit,
+} from './networkNodeAllowlist';
 
 const sdkState = {
   hasGetTwitterScreenName: false,
@@ -146,9 +151,16 @@ export async function handleInitAttestation(
     });
     if (!routed) return false;
 
-    const isNetworkSdk =
-      session.sdkName && session.sdkName.indexOf('network') > -1;
-    if (!isNetworkSdk) updateAlgoUrl();
+    if (isNetworkSdkClient(params)) {
+      const initChainId = parseInitChainId(params?.chainId);
+      if (initChainId != null) {
+        refreshSingleChainForInit(initChainId);
+      } else {
+        refreshAllChainsBackground();
+      }
+    } else {
+      updateAlgoUrl();
+    }
     return true;
   });
 

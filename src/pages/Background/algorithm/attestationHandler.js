@@ -18,11 +18,10 @@ import {
   resolveNoteV2MapFromConfigParsed,
 } from '@/utils/attestationProcessNoteV2';
 import {
-  clearSdkAttestationRuntimeState,
   getSdkAttestationPresetFromStorage,
   getSdkAttestationSessionFromStorage,
+  teardownSdkAttestationRuntimeStateForRequest,
 } from '../padoZKAttestationJSSDK/sessionStorage.js';
-import { isCurrentProofResult } from '../padoZKAttestationJSSDK/sessionLifecycle.js';
 import { createTabMessageSender } from '../utils/msgTransfer.js';
 
 const HAS_GET_TWITTER_SCREEN_NAME = false;
@@ -64,7 +63,8 @@ export async function handleGetAttestation(
   dappTabId,
   sender,
   ack,
-  processAlgorithmReq
+  processAlgorithmReq,
+  requestId
 ) {
   if (!message?.res) return;
   let parsed;
@@ -93,23 +93,25 @@ export async function handleGetAttestation(
     msgObj.desc = getNoteV2Sdk(noteV2Map, tipCode, initDescFallback);
     msgObj.sourcePageTip = getNoteV2Extension(noteV2Map, tipCode, '');
 
-    await pageDecodeMsgListener(
-      {
-        name: 'end',
-        params: { result: 'warn', failReason: { ...msgObj } },
+    await teardownSdkAttestationRuntimeStateForRequest(requestId, {
+      onCleared: async () => {
+        await pageDecodeMsgListener(
+          {
+            name: 'end',
+            params: { result: 'warn', failReason: { ...msgObj } },
+          },
+          sender,
+          ack,
+          HAS_GET_TWITTER_SCREEN_NAME,
+          processAlgorithmReq
+        );
+        stopKeepAlive();
+        await processAlgorithmReq({
+          reqMethodName: 'stop',
+          params: { noRestart: true },
+        });
       },
-      sender,
-      ack,
-      HAS_GET_TWITTER_SCREEN_NAME,
-      processAlgorithmReq
-    );
-    stopKeepAlive();
-    await clearSdkAttestationRuntimeState(() =>
-      processAlgorithmReq({
-        reqMethodName: 'stop',
-        params: { noRestart: true },
-      })
-    );
+    });
   }
 
   const resParams = { result };
@@ -169,8 +171,19 @@ export async function handleGetAttestationResult(
   const { retcode, content, details, isUserClick } = parsedRes;
   if (isUserClick !== 'true') return;
 
-  await safeStorageSet({ getAttestationResultRes: message.res });
   const parsedActiveRequestAttestation = safeJsonParse(activeRequestAttestation, {}) || {};
+  const activeRequestId =
+    parsedActiveRequestAttestation.requestid || activeAttestationParams.requestid;
+  const requestId = message.requestid;
+  if (!requestId || requestId !== activeRequestId) {
+    console.log('ignore stale getAttestationResult', requestId);
+    return;
+  }
+  if (content?.requestid && content.requestid !== requestId) {
+    console.log('ignore mismatched getAttestationResult', content.requestid);
+    return;
+  }
+  await safeStorageSet({ getAttestationResultRes: message.res });
   const extendedParamsObj = activeAttestationParams?.extendedParams
     ? (safeJsonParse(activeAttestationParams.extendedParams, {}) || {})
     : {};
@@ -179,18 +192,21 @@ export async function handleGetAttestationResult(
     const closeDataSourceOnProofComplete =
       activeAttestationParams.closeDataSourceOnProofComplete === true;
 
-    await pageDecodeMsgListener(
-      { name: 'end', params: { result: 'success' } },
-      sender,
-      ack,
-      HAS_GET_TWITTER_SCREEN_NAME,
-      processAlgorithmReq
-    );
-    stopKeepAlive();
-    if (closeDataSourceOnProofComplete) {
-      await closeSdkDataSourceTabWithoutCancel();
-    }
-    await clearSdkAttestationRuntimeState();
+    await teardownSdkAttestationRuntimeStateForRequest(requestId, {
+      onCleared: async () => {
+        await pageDecodeMsgListener(
+          { name: 'end', params: { result: 'success' } },
+          sender,
+          ack,
+          HAS_GET_TWITTER_SCREEN_NAME,
+          processAlgorithmReq
+        );
+        stopKeepAlive();
+        if (closeDataSourceOnProofComplete) {
+          await closeSdkDataSourceTabWithoutCancel();
+        }
+      },
+    });
     await sendToSdk({
       type: 'padoZKAttestationJSSDK',
       name: 'startAttestationRes',
@@ -203,12 +219,6 @@ export async function handleGetAttestationResult(
       content?.balanceGreaterThanBaseValue === 'true' &&
       content?.signature
     ) {
-      const activeRequestId = parsedActiveRequestAttestation.requestid;
-      if (!isCurrentProofResult(activeRequestId, content?.requestid)) {
-        console.log('ignore stale getAttestationResult', content?.requestid);
-        return;
-      }
-
       const passRes = JSON.parse(content.encodedData);
       passRes.extendedData = content.extendedData;
       passRes.allJsonResponse = content.allJsonResponse;
@@ -281,18 +291,25 @@ export async function handleGetAttestationResult(
         }
       }
 
-      await pageDecodeMsgListener(
-        {
-          name: 'end',
-          params: { result: 'warn', failReason: { ...msgObj } },
+      await teardownSdkAttestationRuntimeStateForRequest(requestId, {
+        onCleared: async () => {
+          await pageDecodeMsgListener(
+            {
+              name: 'end',
+              params: { result: 'warn', failReason: { ...msgObj } },
+            },
+            sender,
+            ack,
+            HAS_GET_TWITTER_SCREEN_NAME,
+            processAlgorithmReq
+          );
+          stopKeepAlive();
+          await processAlgorithmReq({
+            reqMethodName: 'stop',
+            params: { noRestart: true },
+          });
         },
-        sender,
-        ack,
-        HAS_GET_TWITTER_SCREEN_NAME,
-        processAlgorithmReq
-      );
-      stopKeepAlive();
-      await clearSdkAttestationRuntimeState();
+      });
       const resParams = {
         result: false,
         errorData: {
@@ -339,23 +356,25 @@ export async function handleGetAttestationResult(
 
     const msgObj = getAttestTipForCode(tipKeyForMessage, noteV2Map);
 
-    await pageDecodeMsgListener(
-      {
-        name: 'end',
-        params: { result: 'warn', failReason: { ...msgObj } },
+    await teardownSdkAttestationRuntimeStateForRequest(requestId, {
+      onCleared: async () => {
+        await pageDecodeMsgListener(
+          {
+            name: 'end',
+            params: { result: 'warn', failReason: { ...msgObj } },
+          },
+          sender,
+          ack,
+          HAS_GET_TWITTER_SCREEN_NAME,
+          processAlgorithmReq
+        );
+        stopKeepAlive();
+        await processAlgorithmReq({
+          reqMethodName: 'stop',
+          params: { noRestart: true },
+        });
       },
-      sender,
-      ack,
-      HAS_GET_TWITTER_SCREEN_NAME,
-      processAlgorithmReq
-    );
-    stopKeepAlive();
-    await clearSdkAttestationRuntimeState(() =>
-      processAlgorithmReq({
-        reqMethodName: 'stop',
-        params: { noRestart: true },
-      })
-    );
+    });
 
     let errorCodeOut;
     /** @type {{ subCode?: string } | undefined} */

@@ -125,6 +125,7 @@ function handleEnd(request) {
 async function handleClose(params, processAlgorithmReq) {
   const pageDecodeState = getPageDecodeState();
   const { state } = pageDecodeState;
+  const requestId = params?.requestId || state.activeTemplate?.requestid;
   console.log('pageDecode-close');
   const deleteTabId = params?.tabId ?? state.dataSourcePageTabId;
   const isCurrentSessionTabClose =
@@ -160,7 +161,7 @@ async function handleClose(params, processAlgorithmReq) {
   removeWebRequestListener();
   stopDiscordAccountClick(state.dataSourcePageTabId);
   pageDecodeState.reset();
-  await handlerForSdk(processAlgorithmReq, 'cancel');
+  await handlerForSdk(processAlgorithmReq, 'cancel', requestId);
 }
 
 export async function pageDecodeMsgListener(
@@ -319,6 +320,7 @@ export async function pageDecodeMsgListener(
       };
       chrome.tabs.onUpdated.addListener(state.tabUpdatedListener);
 
+      const initializedRequestId = state.activeTemplate?.requestid;
       state.tabRemovedListener = async (tabId) => {
         if (tabId === state.dataSourcePageTabId) {
           stopDiscordAccountClick(tabId);
@@ -328,7 +330,11 @@ export async function pageDecodeMsgListener(
           removeWebRequestListener();
           if (!skipCancel) {
             chrome.runtime.sendMessage({ type: 'pageDecode', name: 'stop' });
-            await handlerForSdk(processAlgorithmReq, 'cancel');
+            await handlerForSdk(
+              processAlgorithmReq,
+              'cancel',
+              initializedRequestId
+            );
           }
           pageDecodeState.reset();
         }
@@ -444,14 +450,21 @@ export async function pageDecodeMsgListener(
     }
     if (name === 'interceptionFail') {
       const session = await getSdkAttestationSession();
+      const requestId = params?.requestId || state.activeTemplate?.requestid;
       await handleTargetDataMissing(
         session?.sdkVersion
-          ? {}
-          : { skipRemoveActiveRequestAttestation: true }
+          ? { requestId }
+          : {
+              requestId,
+              skipRemoveActiveRequestAttestation: true,
+            }
       );
     }
     if (name === 'dataSourcePageDialogTimeout') {
-      await handleDataSourcePageDialogTimeout(processAlgorithmReq);
+      await handleDataSourcePageDialogTimeout(
+        processAlgorithmReq,
+        params?.requestId || state.activeTemplate?.requestid
+      );
     }
   } else {
     if (name === 'close' || name === 'cancel') {
@@ -459,14 +472,21 @@ export async function pageDecodeMsgListener(
     }
     if (name === 'interceptionFail') {
       const session = await getSdkAttestationSession();
+      const requestId = params?.requestId || state.activeTemplate?.requestid;
       await handleTargetDataMissing(
         session?.sdkVersion
-          ? {}
-          : { skipRemoveActiveRequestAttestation: true }
+          ? { requestId }
+          : {
+              requestId,
+              skipRemoveActiveRequestAttestation: true,
+            }
       );
     }
     if (name === 'dataSourcePageDialogTimeout') {
-      await handleDataSourcePageDialogTimeout(processAlgorithmReq);
+      await handleDataSourcePageDialogTimeout(
+        processAlgorithmReq,
+        params?.requestId || state.activeTemplate?.requestid
+      );
     }
     if (name === 'end') {
       handleEnd(request);

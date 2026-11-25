@@ -1,0 +1,35 @@
+[
+  {
+    "type": "function",
+    "name": "nodeAttestors",
+    "inputs": [{ "name": "", "type": "uint256" }],
+    "outputs": [{ "name": "", "type": "address" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getNodeInfo",
+    "inputs": [{ "name": "attestor", "type": "address" }],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "components": [
+          { "name": "version", "type": "uint64" },
+          { "name": "status", "type": "uint8" },
+          { "name": "owner", "type": "address" },
+          { "name": "attestor", "type": "address" },
+          { "name": "recipient", "type": "address" },
+          { "name": "metaUrl", "type": "string" },
+          { "name": "urls", "type": "string[]" },
+          { "name": "createTimestamp", "type": "uint256" },
+          { "name": "failureOrSuccessBitmap", "type": "uint256" },
+          { "name": "lastFailureTimestamp", "type": "uint256" },
+          { "name": "failureCounter", "type": "uint256" },
+          { "name": "successCounter", "type": "uint256" }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  }
+]

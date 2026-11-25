@@ -1,6 +1,8 @@
 import { sendMessageWithRetry } from '@/utils/contentMessaging';
+import { v4 as uuidv4 } from 'uuid';
 
 let removeInFlight = false;
+let activeRequestId = null;
 
 function shouldRetryStartAttestationError(err) {
   const message = String(err?.message || err || '').toLowerCase();
@@ -26,31 +28,32 @@ window.addEventListener('message', (e) => {
       }).catch(() => {});
     }
     if (name === 'startAttestation') {
+      activeRequestId = uuidv4();
       sendMessageWithRetry({
         type: 'padoZKAttestationJSSDK',
         name: 'startAttestation',
-        params,
+        params: { ...params, requestId: activeRequestId },
       }, 2, shouldRetryStartAttestationError).catch(() => {});
     }
     if (name === 'getAttestationResult') {
       sendMessageWithRetry({
         type: 'padoZKAttestationJSSDK',
         name: 'getAttestationResult',
-        params,
+        params: { ...params, requestId: activeRequestId },
       }).catch(() => {});
     }
     if (name === 'getAttestationResultTimeout') {
       sendMessageWithRetry({
         type: 'padoZKAttestationJSSDK',
         name: 'getAttestationResultTimeout',
-        params,
+        params: { ...params, requestId: activeRequestId },
       }).catch(() => {});
     }
     if (name === 'closeDataSourceTab') {
       sendMessageWithRetry({
         type: 'padoZKAttestationJSSDK',
         name: 'closeDataSourceTab',
-        params,
+        params: { ...params, requestId: activeRequestId },
       }).catch(() => {});
     }
     if (name === 'checkIsInstalled') {
@@ -68,6 +71,7 @@ window.addEventListener('message', (e) => {
       sendMessageWithRetry({
         type: 'padoZKAttestationJSSDK',
         name: 'removeActiveAttestation',
+        params: { requestId: activeRequestId },
       }).finally(() => {
         removeInFlight = false;
       });

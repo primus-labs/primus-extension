@@ -8,6 +8,7 @@ import {
   handleGetAttestationResult,
 } from './attestationHandler.js';
 import { safeStorageGet } from '@/utils/safeStorage';
+import { SDK_START_ATTESTATION_LOCK_REQUEST_ID_KEY } from '@/config/constants';
 import {
   getSdkAttestationPresetFromStorage,
   getSdkAttestationSessionFromStorage,
@@ -15,8 +16,8 @@ import {
   SDK_ATTESTATION_SESSION_STORAGE_KEYS,
 } from '../padoZKAttestationJSSDK/sessionStorage.js';
 import { isAlgorithmResponseFromOffscreen } from '../messageSenderPolicy.js';
-import { isCurrentProofResult } from '../padoZKAttestationJSSDK/sessionLifecycle.js';
 import { consumePendingSdkInitializationTabIds } from '../padoZKAttestationJSSDK/init.js';
+import { isCurrentRequestId } from '../padoZKAttestationJSSDK/sessionOwnershipLock.js';
 import { safeJsonParse } from '@/utils/utils';
 
 export async function algorithmMsgListener(
@@ -48,6 +49,7 @@ export async function algorithmMsgListener(
       ...SDK_ATTESTATION_SESSION_STORAGE_KEYS,
       'configMap',
       'activeRequestAttestation',
+      SDK_START_ATTESTATION_LOCK_REQUEST_ID_KEY,
       ...SDK_ATTESTATION_PRESET_STORAGE_KEYS,
     ]);
 
@@ -56,12 +58,15 @@ export async function algorithmMsgListener(
     const dappTabId = session?.ownerTabId;
     const activeRequest =
       safeJsonParse(storage.activeRequestAttestation, {}) || {};
-    const activeRequestId = activeRequest.requestid || preset?.requestid;
+    const activeRequestId =
+      storage[SDK_START_ATTESTATION_LOCK_REQUEST_ID_KEY] ||
+      activeRequest.requestid ||
+      preset?.requestid;
 
     if (
       (resMethodName === 'getAttestation' ||
         resMethodName === 'getAttestationResult') &&
-      !isCurrentProofResult(activeRequestId, message.requestid)
+      !isCurrentRequestId(activeRequestId, message.requestid)
     ) {
       console.log(
         'ignore stale algorithm response',
@@ -86,7 +91,8 @@ export async function algorithmMsgListener(
           dappTabId,
           sender,
           ack,
-          processAlgorithmReq
+          processAlgorithmReq,
+          message.requestid
         );
       }
       if (resMethodName === 'getAttestationResult') {
