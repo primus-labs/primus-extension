@@ -15,9 +15,9 @@ export const DISABLED_NAVER_URL_REGEX =
 export const DISABLED_X_FLOW_URL_REGEX =
   /^https:\/\/(?:www\.)?x\.com(?:\/.+)?\/single_sign_on(?:\/|[?#]|$)/i;
 
-/** GitHub /sessions/* (login session setup, 2FA, trusted-device, etc.) */
+/** GitHub /sessions/* and /settings/two_factor_checkup (2FA, trusted-device, etc.) */
 export const DISABLED_GITHUB_TWO_FACTOR_URL_REGEX =
-  /^https:\/\/github\.com\/sessions(?:\/[^?#]*)?(?:\?.*|#.*|\/|$)/i;
+  /^https:\/\/github\.com\/(?:sessions(?:\/[^?#]*)?|settings\/two_factor_checkup)(?:\?.*|#.*|\/|$)/i;
 
 /** LinkedIn 2FA enroll + checkpoint/challenge/{dynamic id} */
 export const DISABLED_LINKEDIN_MFA_URL_REGEX =
