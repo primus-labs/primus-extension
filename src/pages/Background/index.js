@@ -7,6 +7,7 @@ import {
 } from './offscreenManager.js';
 import './pageDecode/index.js';
 import { pageDecodeMsgListener } from './pageDecode/index.js';
+import { getPageDecodeState } from './pageDecode/state.js';
 import { padoZKAttestationJSSDKMsgListener } from './padoZKAttestationJSSDK/index.js';
 import { algorithmMsgListener } from './algorithm/index.js';
 import { devconsoleMsgListener } from './devconsole/index.js';
@@ -14,9 +15,16 @@ import { setupKeepAliveListener } from './utils/keepAlive.js';
 import { ensureExtensionUserIdentity } from './identityBootstrap.js';
 import { listener as xEventMsgListener } from './xEvent/index.js';
 import {
-  clearSdkAttestationRuntimeStateWithLock,
+  clearSdkAttestationAllState,
   getSdkAttestationSession,
 } from './padoZKAttestationJSSDK/sessionStorage.js';
+import { completePendingSdkInitialization } from './padoZKAttestationJSSDK/init.js';
+import { ensureAlgorithmDocument } from './padoZKAttestationJSSDK/algorithmInitialization.js';
+import {
+  getBackgroundRouteKey,
+  isAlgorithmResponseFromOffscreen,
+  isTrustedPageDecodeRuntimeSender,
+} from './messageSenderPolicy.js';
 
 setupKeepAliveListener();
 
@@ -34,7 +42,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason, version: _version }) => 
       reqMethodName: 'start',
     });
   } else if (reason === chrome.runtime.OnInstalledReason.UPDATE) {
-    await clearSdkAttestationRuntimeStateWithLock();
+    await clearSdkAttestationAllState();
     await ensureExtensionUserIdentity();
   }
 });
@@ -45,17 +53,36 @@ const processAlgorithmReq = async (message) => {
     `${new Date().toLocaleString()} processAlgorithmReq reqMethodName ${reqMethodName}`
   );
 
+  const initializeAlgorithm = async () => {
+    const session = await getSdkAttestationSession();
+    chrome.runtime.sendMessage({
+      type: 'algorithm',
+      method: 'init',
+      params: {
+        errLogUrl: 'wss://api.padolabs.org/logs',
+        clientType: session?.clientType || '',
+      },
+    });
+  };
+
   const startFn = async () => {
-    if (!(await hasOffscreenDocument())) {
-      console.log(
-        `${new Date().toLocaleString()} create offscreen document...........`
-      );
-      await createOffscreenDoc();
-      console.log(`${new Date().toLocaleString()} offscreen document created`);
-    } else {
-      const session = await getSdkAttestationSession();
-      if (session?.sdkVersion) {
-        await sendInitAttestationRes();
+    const result = await ensureAlgorithmDocument({
+      hasDocument: hasOffscreenDocument,
+      createDocument: async () => {
+        console.log(
+          `${new Date().toLocaleString()} create offscreen document...........`
+        );
+        await createOffscreenDoc();
+        console.log(`${new Date().toLocaleString()} offscreen document created`);
+      },
+      initializeExisting: initializeAlgorithm,
+      ensureInitialization: params?.ensureAlgorithmInit === true,
+    });
+
+    if (!result.created) {
+      const initializationTabId = params?.initializationTabId;
+      if (completePendingSdkInitialization(initializationTabId)) {
+        await sendInitAttestationRes(initializationTabId);
       }
       console.log(
         `${new Date().toLocaleString()} offscreen document has already created`
@@ -67,18 +94,9 @@ const processAlgorithmReq = async (message) => {
     case 'start':
       await startFn();
       break;
-    case 'init': {
-      const session = await getSdkAttestationSession();
-      chrome.runtime.sendMessage({
-        type: 'algorithm',
-        method: 'init',
-        params: {
-          errLogUrl: 'wss://api.padolabs.org/logs',
-          clientType: session?.clientType || '',
-        },
-      });
+    case 'init':
+      await initializeAlgorithm();
       break;
-    }
     case 'getAttestation':
       break;
     case 'getAttestationResult': {
@@ -122,7 +140,12 @@ const messageRoutes = {
 };
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log('background onMessage message', message);
+  console.log('background onMessage', {
+    type: message?.type,
+    resType: message?.resType,
+    name: message?.name,
+    resMethodName: message?.resMethodName,
+  });
   if (message.type === 'xEvent') {
     xEventMsgListener(message, sender);
     return;
@@ -131,7 +154,40 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     xEventMsgListener(message, sender);
     return;
   }
-  const routeKey = message.resType === 'algorithm' ? 'algorithm' : message.type;
+  const routeKey = getBackgroundRouteKey(message);
+  if (routeKey === 'algorithm') {
+    const isTrusted = isAlgorithmResponseFromOffscreen(
+      message,
+      sender,
+      chrome.runtime.id,
+      chrome.runtime.getURL('offscreen.html')
+    );
+    if (!isTrusted) {
+      console.warn('blocked unexpected algorithm response sender', {
+        resMethodName: message?.resMethodName,
+        tabId: sender?.tab?.id,
+        senderType: sender?.tab ? 'tab' : 'extension-context',
+      });
+      sendResponse?.({ ok: false });
+      return;
+    }
+  }
+  if (
+    routeKey === 'pageDecode' &&
+    !isTrustedPageDecodeRuntimeSender(
+      sender,
+      getPageDecodeState().state.dataSourcePageTabId,
+      chrome.runtime.id
+    )
+  ) {
+    console.warn('blocked unexpected pageDecode sender', {
+      name: message?.name,
+      tabId: sender?.tab?.id,
+      senderType: sender?.tab ? 'tab' : 'extension-context',
+    });
+    sendResponse?.({ ok: false });
+    return;
+  }
   const handler = messageRoutes[routeKey];
   if (handler) {
     handler(message, sender, sendResponse);

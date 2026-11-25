@@ -12,7 +12,11 @@ import {
   SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
   SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
 } from '@/config/constants';
-import { getSdkState, getProcessAlgorithmReqRef } from './init.js';
+import {
+  completePendingSdkInitialization,
+  getSdkState,
+  getProcessAlgorithmReqRef,
+} from './init.js';
 import { getNetworkChainConfig, isNetworkSdkClient } from './networkChainConfig';
 import {
   ensureChainAllowlistForStart,
@@ -36,10 +40,11 @@ import {
 } from '../pageDecode/specialTemplates/lumaMonad/constants';
 import {
   clearSdkAttestationResultCache,
-  clearSdkAttestationPreset,
   clearSdkAttestationRuntimeState,
-  clearSdkAttestationSession,
+  clearSdkAttestationRuntimeStateUnlocked,
   getSdkAttestationSession,
+  getSdkInitializationSession,
+  removeSdkInitializationSession,
   setSdkAttestationPreset,
   setSdkAttestationSession,
   teardownSdkAttestationRuntimeStateForRequest,
@@ -51,6 +56,13 @@ import {
 } from './sessionOwnershipLock.js';
 import { createTabMessageSender } from '../utils/msgTransfer.js';
 import { cleanupPageDecodeWithoutCancel } from '../pageDecode/closeDataSourceTab.js';
+import {
+  buildProofCleanupSnapshot,
+  isSameProofCleanupSnapshot,
+  shouldRemoveSdkInitializationForUrl,
+  withSdkInitializationLock,
+  withSdkProofOwnershipLock,
+} from './sessionLifecycle.js';
 import {
   buildAggregateSubcondition,
   JSON_PATH_EVALUATION_KEY,
@@ -96,7 +108,7 @@ async function cleanupStartAttestationState(claim, onCleared) {
     ) {
       return false;
     }
-    await clearSdkAttestationRuntimeState();
+    await clearSdkAttestationRuntimeStateUnlocked();
     if (typeof onCleared === 'function') {
       await onCleared();
     }
@@ -105,7 +117,7 @@ async function cleanupStartAttestationState(claim, onCleared) {
 }
 
 async function cleanupStaleActiveAttestationState() {
-  await clearSdkAttestationRuntimeState();
+  await clearSdkAttestationRuntimeStateUnlocked();
 }
 
 async function cleanupAbortedStartAttestationState(claim, onCleared) {
@@ -205,7 +217,11 @@ export async function handleStartAttestation(
     JSON.stringify(params)
   );
 
-  const ownershipResult = await withSdkSessionOwnershipLock(async () => {
+  const initializedSession = await getSdkInitializationSession(
+    currentDappTabId
+  );
+  const beginAttestFlag = initializedSession?.sdkVersion;
+  const ownershipResult = await withSdkProofOwnershipLock(async () => {
     const {
       [SDK_START_ATTESTATION_LOCK_TAB_ID_KEY]: startAttestationLockTabId,
       [SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY]:
@@ -253,8 +269,9 @@ export async function handleStartAttestation(
     });
     await setSdkAttestationSession({
       ownerTabId: currentDappTabId,
-      clientType: params?.clientType || '',
-      sdkVersion: params?.sdkVersion || '',
+      clientType: params?.clientType || initializedSession?.clientType || '',
+      sdkVersion: params?.sdkVersion || initializedSession?.sdkVersion || '',
+      sdkName: params?.sdkName || initializedSession?.sdkName || '',
       active: true,
     });
     return { acquired: true, claim };
@@ -266,12 +283,17 @@ export async function handleStartAttestation(
   }
 
   try {
-    state.sdkVersion = params?.sdkVersion;
-    state.sdkName = params?.sdkName;
-    state.isNetworkSdk = isNetworkSdkClient(params);
+    state.sdkVersion = params?.sdkVersion || beginAttestFlag;
+    state.sdkName = params?.sdkName || initializedSession?.sdkName;
+    state.isNetworkSdk =
+      isNetworkSdkClient(params) ||
+      !!(state.sdkName && state.sdkName.indexOf('network') > -1);
     state.sdkParams = params;
 
-    processAlgorithmReq({ reqMethodName: 'start' });
+    await processAlgorithmReq({
+      reqMethodName: 'start',
+      params: { ensureAlgorithmInit: true },
+    });
 
     let activeWebProofTemplate = {};
     let activeAttestationParams = {};
@@ -689,7 +711,10 @@ export async function handleStartAttestation(
       stopKeepAlive();
       await cleanupPageDecodeWithoutCancel();
       try {
-        await processAlgorithmReq({ reqMethodName: 'stop', params: { noRestart: true } });
+        await processAlgorithmReq({
+          reqMethodName: 'stop',
+          params: { noRestart: true },
+        });
       } catch (_stopErr) {
         // Best-effort cleanup; primary goal is to release the lock and notify the dapp.
       }
@@ -721,10 +746,22 @@ async function sendTemplateErrorToDapp(code, sendToSdk) {
 }
 
 /** Handle getAttestationResult: forward to algorithm. */
-export function handleGetAttestationResult(processAlgorithmReq, requestId) {
+export async function handleGetAttestationResult(processAlgorithmReq, requestId) {
+  let resolvedRequestId = requestId;
+  if (typeof resolvedRequestId !== 'string' || resolvedRequestId === '') {
+    const storage = await safeStorageGet([
+      SDK_START_ATTESTATION_LOCK_REQUEST_ID_KEY,
+      'activeRequestAttestation',
+    ]);
+    const activeRequest =
+      safeJsonParse(storage.activeRequestAttestation, {}) || {};
+    resolvedRequestId =
+      storage[SDK_START_ATTESTATION_LOCK_REQUEST_ID_KEY] ||
+      activeRequest.requestid;
+  }
   processAlgorithmReq({
     reqMethodName: 'getAttestationResult',
-    params: { requestid: requestId },
+    params: { requestid: resolvedRequestId },
   });
 }
 
@@ -795,9 +832,44 @@ export async function handleGetAttestationResultTimeout(
 
 /** Called when dapp tab is closed during attestation; cancel pageDecode. */
 export async function handleDappTabRemoved(tabId) {
-  const processAlgorithmReq = getProcessAlgorithmReqRef();
+  await withSdkInitializationLock(() =>
+    removeSdkInitializationSession(tabId)
+  );
+  completePendingSdkInitialization(tabId);
+  await cleanupActiveDappTab(tabId);
+}
+
+async function readProofCleanupSnapshot(tabId) {
   const session = await getSdkAttestationSession();
-  if (tabId === session?.ownerTabId && session?.sdkVersion) {
+  const storage = await safeStorageGet([
+    SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+    SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
+    'activeRequestAttestation',
+  ]);
+  return buildProofCleanupSnapshot(tabId, session, storage);
+}
+
+async function finalizeTabCleanupIfUnchanged(tabId, snapshot, beforeClear) {
+  await withSdkProofOwnershipLock(async () => {
+    const current = await readProofCleanupSnapshot(tabId);
+    if (!isSameProofCleanupSnapshot(snapshot, current)) return;
+    if (beforeClear) await beforeClear();
+    await clearSdkAttestationRuntimeStateUnlocked();
+  });
+}
+
+async function cleanupActiveDappTab(tabId) {
+  const processAlgorithmReq = getProcessAlgorithmReqRef();
+
+  const snapshot = await withSdkProofOwnershipLock(() =>
+    readProofCleanupSnapshot(tabId)
+  );
+  if (!snapshot) return;
+
+  const hasActiveProof =
+    snapshot.lockTabId != null || snapshot.activeRequestId != null;
+
+  if (hasActiveProof && snapshot.sdkVersion) {
     await pageDecodeMsgListener(
       { type: 'pageDecode', name: 'cancel' },
       {},
@@ -805,5 +877,37 @@ export async function handleDappTabRemoved(tabId) {
       getSdkState().hasGetTwitterScreenName,
       processAlgorithmReq
     );
+    await finalizeTabCleanupIfUnchanged(tabId, snapshot);
+    return;
   }
+
+  await finalizeTabCleanupIfUnchanged(
+    tabId,
+    snapshot,
+    !hasActiveProof && snapshot.sessionActive && processAlgorithmReq
+      ? async () => {
+          try {
+            await processAlgorithmReq({
+              reqMethodName: 'stop',
+              params: { noRestart: true },
+            });
+          } catch (error) {
+            console.log('owner tab removed stop error', error);
+          }
+        }
+      : undefined
+  );
+}
+
+export async function handleDappTabNavigated(tabId, nextUrl) {
+  const removed = await withSdkInitializationLock(async () => {
+    const initializedSession = await getSdkInitializationSession(tabId);
+    if (!shouldRemoveSdkInitializationForUrl(initializedSession, nextUrl)) {
+      return false;
+    }
+    await removeSdkInitializationSession(tabId);
+    completePendingSdkInitialization(tabId);
+    return true;
+  });
+  if (removed) await cleanupActiveDappTab(tabId);
 }

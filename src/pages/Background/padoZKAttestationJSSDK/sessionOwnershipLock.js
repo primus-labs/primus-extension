@@ -1,9 +1,9 @@
 /**
  * In-memory mutex for short SDK session/start-lock read-modify-write sections.
- * Chrome runs one background service worker instance, so one queue protects all
- * overlapping init/start message handlers without holding network work.
+ * Shares the proof-ownership queue so request-id cleanup and proof claims
+ * cannot interleave.
  */
-let ownershipQueue = Promise.resolve();
+import { withSdkProofOwnershipLock } from './sessionLifecycle.js';
 
 /**
  * @template T
@@ -11,18 +11,7 @@ let ownershipQueue = Promise.resolve();
  * @returns {Promise<T>}
  */
 export async function withSdkSessionOwnershipLock(operation) {
-  const previous = ownershipQueue;
-  let release;
-  ownershipQueue = new Promise((resolve) => {
-    release = resolve;
-  });
-
-  await previous;
-  try {
-    return await operation();
-  } finally {
-    release();
-  }
+  return withSdkProofOwnershipLock(operation);
 }
 
 /**

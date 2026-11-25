@@ -2,9 +2,7 @@
 import jp from 'jsonpath';
 
 import { customFetch2, customFetch2WithMeta } from '../utils/request';
-import {
-  teardownSdkAttestationRuntimeStateForRequest,
-} from '../padoZKAttestationJSSDK/sessionStorage.js';
+import { teardownSdkAttestationRuntimeStateForRequest } from '../padoZKAttestationJSSDK/sessionStorage.js';
 import { createTabMessageSender } from '../utils/msgTransfer.js';
 import { getPageDecodeState } from './state';
 import {

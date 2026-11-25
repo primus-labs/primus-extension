@@ -15,7 +15,10 @@ import {
   SDK_ATTESTATION_PRESET_STORAGE_KEYS,
   SDK_ATTESTATION_SESSION_STORAGE_KEYS,
 } from '../padoZKAttestationJSSDK/sessionStorage.js';
+import { isAlgorithmResponseFromOffscreen } from '../messageSenderPolicy.js';
+import { consumePendingSdkInitializationTabIds } from '../padoZKAttestationJSSDK/init.js';
 import { isCurrentRequestId } from '../padoZKAttestationJSSDK/sessionOwnershipLock.js';
+import { safeJsonParse } from '@/utils/utils';
 
 export async function algorithmMsgListener(
   message,
@@ -25,6 +28,21 @@ export async function algorithmMsgListener(
 ) {
   const ack = createAlgorithmMessageAck(sendResponse);
   try {
+    if (
+      !isAlgorithmResponseFromOffscreen(
+        message,
+        sender,
+        chrome.runtime.id,
+        chrome.runtime.getURL('offscreen.html')
+      )
+    ) {
+      console.warn('algorithmMsgListener blocked unexpected sender', {
+        resMethodName: message?.resMethodName,
+        tabId: sender?.tab?.id,
+      });
+      return;
+    }
+
     const { resMethodName } = message;
 
     const storage = await safeStorageGet([
@@ -38,8 +56,12 @@ export async function algorithmMsgListener(
     const session = getSdkAttestationSessionFromStorage(storage);
     const preset = getSdkAttestationPresetFromStorage(storage);
     const dappTabId = session?.ownerTabId;
+    const activeRequest =
+      safeJsonParse(storage.activeRequestAttestation, {}) || {};
     const activeRequestId =
-      storage[SDK_START_ATTESTATION_LOCK_REQUEST_ID_KEY];
+      storage[SDK_START_ATTESTATION_LOCK_REQUEST_ID_KEY] ||
+      activeRequest.requestid ||
+      preset?.requestid;
 
     if (
       (resMethodName === 'getAttestation' ||
@@ -56,12 +78,13 @@ export async function algorithmMsgListener(
 
     if (resMethodName === 'start') {
       processAlgorithmReq({ reqMethodName: 'init' });
+      const pendingTabIds = consumePendingSdkInitializationTabIds();
+      await Promise.all(
+        pendingTabIds.map((tabId) => sendInitAttestationRes(tabId))
+      );
     }
 
     if (session?.sdkVersion) {
-      if (resMethodName === 'start') {
-        await sendInitAttestationRes();
-      }
       if (resMethodName === 'getAttestation') {
         await handleGetAttestation(
           message,

@@ -2,14 +2,21 @@
  * Pado ZK Attestation SDK message router. Dispatches by message name and registers tab-removed listener.
  */
 import { handleInitAttestation } from './init.js';
-import { teardownSdkAttestationRuntimeStateForRequest } from './sessionStorage.js';
+import {
+  getSdkAttestationSession,
+  getSdkInitializationSession,
+  teardownSdkAttestationRuntimeStateForRequest,
+} from './sessionStorage.js';
+import { authorizeSdkMessage } from './sdkMessageOwnership.js';
 import {
   handleStartAttestation,
   handleGetAttestationResult,
   handleGetAttestationResultTimeout,
   handleDappTabRemoved,
+  handleDappTabNavigated,
 } from './attestation.js';
 import { setProcessAlgorithmReqRef } from './init.js';
+import { sendSdkOwnershipError } from '../utils/msgTransfer.js';
 import {
   cleanupPageDecodeWithoutCancel,
   closeSdkDataSourceTabWithoutCancel,
@@ -34,6 +41,36 @@ export async function padoZKAttestationJSSDKMsgListener(
     }
   };
 
+  const senderTabId = sender?.tab?.id;
+  const [activeSession, initializedSession] = await Promise.all([
+    getSdkAttestationSession(),
+    getSdkInitializationSession(senderTabId),
+  ]);
+  const authorized = await authorizeSdkMessage({
+    name,
+    senderTabId,
+    initializedOwnerTabId: initializedSession?.ownerTabId,
+    activeOwnerTabId: activeSession?.ownerTabId,
+    onBlocked: async (hasOwner) => {
+      console.warn('blocked SDK message from non-owner tab', {
+        name,
+        tabId: senderTabId,
+      });
+      if (
+        name === 'initAttestation' ||
+        name === 'startAttestation' ||
+        name === 'getAttestationResult' ||
+        name === 'getAttestationResultTimeout'
+      ) {
+        await sendSdkOwnershipError(name, senderTabId, hasOwner);
+      }
+    },
+    respond: respondOnce,
+  });
+  if (!authorized) {
+    return;
+  }
+
   setProcessAlgorithmReqRef(processAlgorithmReq);
 
   if (name === 'closeDataSourceTab') {
@@ -48,34 +85,32 @@ export async function padoZKAttestationJSSDKMsgListener(
   }
 
   if (name === 'removeActiveAttestation') {
-    await teardownSdkAttestationRuntimeStateForRequest(
-      params?.requestId,
-      {
-        onCleared: async () => {
-          stopKeepAlive();
-          await cleanupPageDecodeWithoutCancel();
-          try {
-            await processAlgorithmReq({
-              reqMethodName: 'stop',
-              params: { noRestart: true },
-            });
-          } catch (e) {
-            console.log('removeActiveAttestation stop error', e);
-          }
-        },
-      }
-    );
+    await teardownSdkAttestationRuntimeStateForRequest(params?.requestId, {
+      onCleared: async () => {
+        stopKeepAlive();
+        await cleanupPageDecodeWithoutCancel();
+        try {
+          await processAlgorithmReq({
+            reqMethodName: 'stop',
+            params: { noRestart: true },
+          });
+        } catch (e) {
+          console.log('removeActiveAttestation stop error', e);
+        }
+      },
+    });
     respondOnce({});
     return;
   }
 
   if (name === 'initAttestation') {
-    await handleInitAttestation(
+    const initialized = await handleInitAttestation(
       params,
       sender.tab?.id,
+      sender?.url,
       processAlgorithmReq
     );
-    respondOnce();
+    respondOnce({ ok: initialized });
     return;
   }
 
@@ -92,7 +127,7 @@ export async function padoZKAttestationJSSDKMsgListener(
   }
 
   if (name === 'getAttestationResult') {
-    handleGetAttestationResult(processAlgorithmReq, params?.requestId);
+    await handleGetAttestationResult(processAlgorithmReq, params?.requestId);
     respondOnce();
     return;
   }
@@ -101,7 +136,8 @@ export async function padoZKAttestationJSSDKMsgListener(
     await handleGetAttestationResultTimeout(
       sender,
       respondOnce,
-      processAlgorithmReq
+      processAlgorithmReq,
+      params?.requestId
     );
     respondOnce();
     return;
@@ -112,4 +148,8 @@ export async function padoZKAttestationJSSDKMsgListener(
 
 chrome.tabs.onRemoved.addListener((tabId) => {
   handleDappTabRemoved(tabId);
+});
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+  if (changeInfo.url) handleDappTabNavigated(tabId, changeInfo.url);
 });

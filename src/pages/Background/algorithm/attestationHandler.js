@@ -219,12 +219,6 @@ export async function handleGetAttestationResult(
       content?.balanceGreaterThanBaseValue === 'true' &&
       content?.signature
     ) {
-      const activeRequestId = parsedActiveRequestAttestation.requestid;
-      if (activeRequestId !== content?.requestid) {
-        console.log('ignore stale getAttestationResult', content?.requestid);
-        return;
-      }
-
       const passRes = JSON.parse(content.encodedData);
       passRes.extendedData = content.extendedData;
       passRes.allJsonResponse = content.allJsonResponse;

@@ -63,6 +63,7 @@ export async function handlerForSdk(processAlgorithmReq, operation, requestId) {
     } catch (error) {
       console.log('handlerForSdk error:', error);
     }
+    return true;
   }
   return true;
 }
@@ -151,7 +152,7 @@ export async function handleDataSourcePageDialogTimeout(
       });
       await eventReportFn(eventInfo.rawData);
     }
-  } else if (activeRequestAttestation) {
+  } else if (!session?.sdkVersion && activeRequestAttestation) {
     const parsed = safeJsonParse(activeRequestAttestation, {}) || {};
     if (!state.reportRequestIds.includes(parsed.requestid)) {
       state.reportRequestIds.push(parsed.requestid);

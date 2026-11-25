@@ -3,22 +3,23 @@
  */
 import { getSysConfig } from '@/services/api/config';
 import { updateAlgoUrl } from '@/services/api/algorithmUrlSync';
-import { getAlgoApi } from './utils';
-import { sendInitAttestationRes } from '../utils/msgTransfer.js';
 import {
-  SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-  SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-} from '@/config/constants';
-import { safeStorageGet, safeStorageSet } from '@/utils/safeStorage';
+  sendInitAttestationRes,
+  sendSdkOwnershipError,
+} from '../utils/msgTransfer.js';
+import { safeStorageSet } from '@/utils/safeStorage';
 import {
+  getSdkInitializationSession,
+  getSdkStartAttestationLockTabId,
+  removeSdkInitializationSession,
   setSdkAttestationSession,
+  setSdkInitializationSession,
 } from './sessionStorage.js';
 import {
-  canInitClaimSession,
-  withSdkSessionOwnershipLock,
-} from './sessionOwnershipLock.js';
-import { isNetworkSdkClient } from './networkChainConfig';
-import { parseInitChainId } from './networkChainConfig';
+  withSdkInitializationLock,
+  withSdkProofOwnershipLock,
+} from './sessionLifecycle.js';
+import { isNetworkSdkClient, parseInitChainId } from './networkChainConfig';
 import {
   refreshAllChainsBackground,
   refreshSingleChainForInit,
@@ -34,6 +35,7 @@ const sdkState = {
 
 /** Set by message handler so tab-removed listener can stop algorithm. */
 let processAlgorithmReqRef = null;
+const pendingInitializationTabIds = new Set();
 
 export function setProcessAlgorithmReqRef(fn) {
   processAlgorithmReqRef = fn;
@@ -45,6 +47,18 @@ export function getProcessAlgorithmReqRef() {
 
 export function getSdkState() {
   return sdkState;
+}
+
+export function completePendingSdkInitialization(tabId) {
+  if (!pendingInitializationTabIds.has(tabId)) return false;
+  pendingInitializationTabIds.delete(tabId);
+  return true;
+}
+
+export function consumePendingSdkInitializationTabIds() {
+  const tabIds = [...pendingInitializationTabIds];
+  pendingInitializationTabIds.clear();
+  return tabIds;
 }
 
 export async function fetchConfigure() {
@@ -68,7 +82,12 @@ export async function fetchConfigure() {
 /**
  * Handle initAttestation: fetch config, store dapp tab, start algorithm, optionally update algo URL.
  */
-export async function handleInitAttestation(params, senderTabId, processAlgorithmReq) {
+export async function handleInitAttestation(
+  params,
+  senderTabId,
+  senderUrl,
+  processAlgorithmReq
+) {
   console.log(
     'debuge-zktls-initAttestation',
     params?.sdkVersion,
@@ -78,61 +97,73 @@ export async function handleInitAttestation(params, senderTabId, processAlgorith
 
   await fetchConfigure();
 
-  const claimedOwnership = await withSdkSessionOwnershipLock(async () => {
-    const {
-      [SDK_START_ATTESTATION_LOCK_TAB_ID_KEY]: startAttestationLockTabId,
-      [SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY]:
-        startAttestationLockStartedAt,
-    } = await safeStorageGet([
-      SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-      SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-    ]);
-    if (!canInitClaimSession(startAttestationLockTabId, senderTabId)) {
-      return {
-        claimed: false,
-        ownerTabId: startAttestationLockTabId,
-        startedAt: startAttestationLockStartedAt ?? null,
-      };
-    }
+  if (!Number.isInteger(senderTabId)) return false;
 
-    sdkState.sdkVersion = params?.sdkVersion;
-    sdkState.sdkName = params?.sdkName;
-    sdkState.isNetworkSdk = isNetworkSdkClient(params);
-    await setSdkAttestationSession({
+  const initialized = await withSdkInitializationLock(async () => {
+    const currentSession = await getSdkInitializationSession(senderTabId);
+    let origin = '';
+    try {
+      origin = senderUrl ? new URL(senderUrl).origin : '';
+    } catch (_error) {
+      origin = '';
+    }
+    const session = {
       ownerTabId: senderTabId,
       clientType: params?.clientType || '',
-      sdkVersion: sdkState.sdkVersion,
+      sdkVersion: params?.sdkVersion || '',
+      sdkName: params?.sdkName || '',
+      hostname: params?.hostname || '',
+      origin,
       active: true,
+    };
+    await setSdkInitializationSession(session);
+
+    if (currentSession?.active) {
+      await sendInitAttestationRes(senderTabId);
+      return true;
+    }
+
+    const routed = await withSdkProofOwnershipLock(async () => {
+      const activeProofTabId = await getSdkStartAttestationLockTabId();
+      if (activeProofTabId != null) {
+        await sendInitAttestationRes(senderTabId);
+        return true;
+      }
+
+      await setSdkAttestationSession(session);
+      pendingInitializationTabIds.add(senderTabId);
+      try {
+        await processAlgorithmReq({
+          reqMethodName: 'start',
+          params: {
+            initializationTabId: senderTabId,
+            ensureAlgorithmInit: true,
+          },
+        });
+      } catch (error) {
+        completePendingSdkInitialization(senderTabId);
+        await removeSdkInitializationSession(senderTabId);
+        await sendSdkOwnershipError('initAttestation', senderTabId, false);
+        console.log('SDK initialization failed', error);
+        return false;
+      }
+      return true;
     });
-    return { claimed: true };
+    if (!routed) return false;
+
+    if (isNetworkSdkClient(params)) {
+      const initChainId = parseInitChainId(params?.chainId);
+      if (initChainId != null) {
+        refreshSingleChainForInit(initChainId);
+      } else {
+        refreshAllChainsBackground();
+      }
+    } else {
+      updateAlgoUrl();
+    }
+    return true;
   });
 
-  if (!claimedOwnership.claimed) {
-    console.log(
-      'debuge-zktls-initAttestation-skip-owner-override',
-      JSON.stringify({
-        senderTabId,
-        ownerTabId: claimedOwnership.ownerTabId,
-        startedAt: claimedOwnership.startedAt,
-      })
-    );
-    await sendInitAttestationRes(senderTabId);
-    return;
-  }
-
-  if (sdkState.isNetworkSdk) {
-    const initChainId = parseInitChainId(params?.chainId);
-    if (initChainId != null) {
-      refreshSingleChainForInit(initChainId);
-    } else {
-      refreshAllChainsBackground();
-    }
-  }
-
-  processAlgorithmReq({ reqMethodName: 'start' });
-
-  if (!sdkState.isNetworkSdk) {
-    updateAlgoUrl();
-  }
   console.log('333pado-bg-receive-initAttestation', senderTabId);
+  return initialized;
 }

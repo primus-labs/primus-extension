@@ -4,10 +4,15 @@ import {
   SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
   SDK_ATTESTATION_PRESET_KEY,
   SDK_ATTESTATION_SESSION_KEY,
+  SDK_INITIALIZED_SESSIONS_KEY,
 } from '@/config/constants';
 import { safeStorageGet, safeStorageRemove, safeStorageSet } from '@/utils/safeStorage';
 import { safeJsonParse } from '@/utils/utils';
-import { withSdkSessionOwnershipLock } from './sessionOwnershipLock.js';
+import {
+  clearSdkFullLifecycle,
+  clearSdkProofLifecycle,
+  withSdkProofOwnershipLock,
+} from './sessionLifecycle.js';
 
 export const LEGACY_SDK_ATTESTATION_SESSION_KEYS = [
   'padoZKAttestationJSSDKBeginAttest',
@@ -76,6 +81,55 @@ export async function getSdkAttestationSession() {
   return getSdkAttestationSessionFromStorage(storage);
 }
 
+export function getSdkInitializationSessionsFromStorage(storage = {}) {
+  const sessions = storage?.[SDK_INITIALIZED_SESSIONS_KEY];
+  return sessions && typeof sessions === 'object' && !Array.isArray(sessions)
+    ? sessions
+    : {};
+}
+
+export async function getSdkInitializationSessions() {
+  const storage = await safeStorageGet(SDK_INITIALIZED_SESSIONS_KEY);
+  return getSdkInitializationSessionsFromStorage(storage);
+}
+
+export async function getSdkInitializationSession(tabId) {
+  if (!Number.isInteger(tabId)) return null;
+
+  const sessions = await getSdkInitializationSessions();
+  return sessions[String(tabId)] || null;
+}
+
+export async function setSdkInitializationSession(session) {
+  if (!Number.isInteger(session?.ownerTabId)) return false;
+
+  const sessions = await getSdkInitializationSessions();
+  await safeStorageSet({
+    [SDK_INITIALIZED_SESSIONS_KEY]: {
+      ...sessions,
+      [String(session.ownerTabId)]: session,
+    },
+  });
+  return true;
+}
+
+export async function removeSdkInitializationSession(tabId) {
+  if (!Number.isInteger(tabId)) return false;
+
+  const sessions = await getSdkInitializationSessions();
+  const key = String(tabId);
+  if (!sessions[key]) return false;
+
+  const nextSessions = { ...sessions };
+  delete nextSessions[key];
+  await safeStorageSet({ [SDK_INITIALIZED_SESSIONS_KEY]: nextSessions });
+  return true;
+}
+
+export async function clearSdkInitializationSessions() {
+  await safeStorageRemove(SDK_INITIALIZED_SESSIONS_KEY);
+}
+
 export async function setSdkAttestationSession(session) {
   await safeStorageSet({
     [SDK_ATTESTATION_SESSION_KEY]: session,
@@ -121,15 +175,51 @@ export async function clearSdkAttestationResultCache() {
   await safeStorageRemove(SDK_ATTESTATION_RESULT_CACHE_KEYS);
 }
 
-export async function clearSdkAttestationRuntimeState(options = {}) {
+export async function getSdkStartAttestationLockTabId() {
+  const storage = await safeStorageGet(SDK_START_ATTESTATION_LOCK_TAB_ID_KEY);
+  const tabId = storage?.[SDK_START_ATTESTATION_LOCK_TAB_ID_KEY];
+  return Number.isInteger(tabId) ? tabId : null;
+}
+
+export async function clearSdkAttestationRuntimeStateUnlocked(options = {}) {
   const runtimeKeys = options.preserveActiveRequest
     ? SDK_ATTESTATION_RUNTIME_STORAGE_KEYS.filter(
         (key) => key !== 'activeRequestAttestation'
       )
     : SDK_ATTESTATION_RUNTIME_STORAGE_KEYS;
-  await safeStorageRemove(runtimeKeys);
+  await clearSdkProofLifecycle({
+    clearRuntime: () => safeStorageRemove(runtimeKeys),
+    clearPreset: clearSdkAttestationPreset,
+  });
   await clearSdkAttestationSession();
-  await clearSdkAttestationPreset();
+}
+
+function normalizeRuntimeClearOptions(optionsOrAfterClear) {
+  if (typeof optionsOrAfterClear === 'function') {
+    return { afterClear: optionsOrAfterClear };
+  }
+  return optionsOrAfterClear || {};
+}
+
+export async function clearSdkAttestationRuntimeState(optionsOrAfterClear) {
+  const options = normalizeRuntimeClearOptions(optionsOrAfterClear);
+  await withSdkProofOwnershipLock(async () => {
+    await clearSdkAttestationRuntimeStateUnlocked(options);
+    await options.afterClear?.();
+  });
+}
+
+export async function clearSdkAttestationAllState() {
+  await withSdkProofOwnershipLock(async () => {
+    await clearSdkFullLifecycle({
+      clearRuntime: () => safeStorageRemove(SDK_ATTESTATION_RUNTIME_STORAGE_KEYS),
+      clearPreset: clearSdkAttestationPreset,
+      clearSession: async () => {
+        await clearSdkAttestationSession();
+        await clearSdkInitializationSessions();
+      },
+    });
+  });
 }
 
 /**
@@ -137,7 +227,7 @@ export async function clearSdkAttestationRuntimeState(options = {}) {
  * Use the unlocked variant only when the caller already holds this lock.
  */
 export async function clearSdkAttestationRuntimeStateWithLock() {
-  await withSdkSessionOwnershipLock(clearSdkAttestationRuntimeState);
+  await clearSdkAttestationRuntimeState();
 }
 
 /**
@@ -172,7 +262,7 @@ export async function teardownSdkAttestationRuntimeStateForRequest(
   };
   if (typeof requestId !== 'string' || requestId === '') return notCleared;
 
-  return withSdkSessionOwnershipLock(async () => {
+  return withSdkProofOwnershipLock(async () => {
     const storage = await safeStorageGet([
       SDK_START_ATTESTATION_LOCK_REQUEST_ID_KEY,
       ...SDK_ATTESTATION_SESSION_STORAGE_KEYS,
@@ -190,7 +280,7 @@ export async function teardownSdkAttestationRuntimeStateForRequest(
       activeRequestAttestation: storage.activeRequestAttestation,
       getAttestationResultRes: storage.getAttestationResultRes,
     };
-    await clearSdkAttestationRuntimeState(options);
+    await clearSdkAttestationRuntimeStateUnlocked(options);
     if (typeof options.onCleared === 'function') {
       try {
         await options.onCleared(result);
