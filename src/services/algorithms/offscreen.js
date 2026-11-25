@@ -202,6 +202,7 @@ async function handleOffscreenAlgorithmMessage(message) {
       resType: 'algorithm',
       resMethodName: 'getAttestationResult',
       res,
+      requestid: message.params?.requestid,
     });
     return;
   }

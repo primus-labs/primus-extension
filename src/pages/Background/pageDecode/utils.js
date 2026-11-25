@@ -1,17 +1,9 @@
 /* global require, chrome, console, FormData, TextDecoder, Promise, fetch */
 import jp from 'jsonpath';
 
-import {
-  SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-  SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-} from '@/config/constants';
 import { customFetch2, customFetch2WithMeta } from '../utils/request';
-import { safeStorageRemove } from '@/utils/safeStorage';
 import {
-  clearSdkAttestationResultCache,
-  clearSdkAttestationPreset,
-  clearSdkAttestationSession,
-  getSdkAttestationSession,
+  teardownSdkAttestationRuntimeStateForRequest,
 } from '../padoZKAttestationJSSDK/sessionStorage.js';
 import { createTabMessageSender } from '../utils/msgTransfer.js';
 import { getPageDecodeState } from './state';
@@ -171,29 +163,27 @@ export const fetchHtmlContent = async (params) => {
 
 /** Send attestation error to dapp tab and optionally remove storage / close data source tab. */
 export const handleAttestationError = async (errorData, dataSourcePageTabId, options = {}) => {
+  const teardown = await teardownSdkAttestationRuntimeStateForRequest(
+    options.requestId,
+    {
+      preserveActiveRequest:
+        options.skipRemoveActiveRequestAttestation === true,
+      onCleared: options.onCleared,
+    }
+  );
+  if (!teardown.cleared) return null;
+
   let resParams = {
     result: false,
     errorData,
   };
-  const session = await getSdkAttestationSession();
-  const sendToSdk = createTabMessageSender(session?.ownerTabId);
+  const sendToSdk = createTabMessageSender(teardown.session?.ownerTabId);
   await sendToSdk({
     type: 'padoZKAttestationJSSDK',
     name: 'getAttestationRes',
     params: resParams,
   });
 
-  const keysToRemove = [
-    SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-    SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-  ];
-  if (!options.skipRemoveActiveRequestAttestation) {
-    keysToRemove.push('activeRequestAttestation');
-  }
-  await safeStorageRemove(keysToRemove);
-  await clearSdkAttestationResultCache();
-  await clearSdkAttestationSession();
-  await clearSdkAttestationPreset();
   if (dataSourcePageTabId) {
     const { state } = getPageDecodeState();
     if (dataSourcePageTabId === state.dataSourcePageTabId) {
@@ -201,6 +191,7 @@ export const handleAttestationError = async (errorData, dataSourcePageTabId, opt
     }
     await chrome.tabs.remove(dataSourcePageTabId);
   }
+  return teardown;
 };
 
 /**

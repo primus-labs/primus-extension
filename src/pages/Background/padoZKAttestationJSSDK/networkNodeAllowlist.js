@@ -14,10 +14,11 @@ import {
   parseInitChainId,
 } from './networkChainConfig';
 import {
-  getAllowlistCacheState,
+  ensureAllowlistForStart,
   isArrayReadEndError,
-  readSequentiallyUntilEnd,
-  resolveCachedAllowlist,
+  readInBatches,
+  readInBatchesUntilEnd,
+  readFromFallbacks,
   withTimeout,
 } from './networkAllowlistUtils';
 import {
@@ -146,24 +147,6 @@ async function retryRpc(operation) {
 }
 
 /**
- * @template T
- * @param {number} count
- * @param {(index: number) => Promise<T>} reader
- * @returns {Promise<T[]>}
- */
-async function readInBatches(count, reader) {
-  const results = [];
-  for (let start = 0; start < count; start += NETWORK_NODE_READ_BATCH_SIZE) {
-    const end = Math.min(start + NETWORK_NODE_READ_BATCH_SIZE, count);
-    const batch = Array.from({ length: end - start }, (_, offset) =>
-      reader(start + offset)
-    );
-    results.push(...(await Promise.all(batch)));
-  }
-  return results;
-}
-
-/**
  * @param {import('ethers').providers.Provider} provider
  * @param {string} contractAddress
  * @returns {Promise<{ hosts: Set<string>; snapshotAt: number }>}
@@ -173,9 +156,10 @@ async function fetchAllowedHostsOnChain(provider, contractAddress) {
   const blockTag = await retryRpc(() => provider.getBlockNumber());
   const snapshotAt = Date.now();
   const attestorAddresses = (
-    await readSequentiallyUntilEnd(
+    await readInBatchesUntilEnd(
       (index) => retryRpc(() => contract.nodeAttestors(index, { blockTag })),
-      isArrayReadEndError
+      isArrayReadEndError,
+      NETWORK_NODE_READ_BATCH_SIZE
     )
   ).filter((attestor) => attestor && attestor !== ZERO_ADDRESS);
 
@@ -188,7 +172,8 @@ async function fetchAllowedHostsOnChain(provider, contractAddress) {
       const status = Number(info?.status ?? info?.[1]);
       const urls = info?.urls ?? info?.[6] ?? [];
       return { status, urls: Array.isArray(urls) ? urls : [] };
-    }
+    },
+    NETWORK_NODE_READ_BATCH_SIZE
   );
 
   return {
@@ -207,20 +192,14 @@ async function refreshChainAllowlistRpc(chainId) {
     throw new Error(`Unsupported network chainId: ${chainId}`);
   }
 
-  let lastError;
-  for (const rpcUrl of config.rpcUrls) {
-    try {
-      const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-      const result = await fetchAllowedHostsOnChain(
-        provider,
-        config.nodeContractAddress
-      );
-      return { hosts: [...result.hosts], snapshotAt: result.snapshotAt };
-    } catch (error) {
-      lastError = error;
-    }
-  }
-  throw lastError || new Error(`No RPC available for chainId: ${chainId}`);
+  return readFromFallbacks(config.rpcUrls, async (rpcUrl) => {
+    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    const result = await fetchAllowedHostsOnChain(
+      provider,
+      config.nodeContractAddress
+    );
+    return { hosts: [...result.hosts], snapshotAt: result.snapshotAt };
+  });
 }
 
 /**
@@ -288,35 +267,15 @@ export async function refreshSingleChainForInit(chainId) {
  * @returns {Promise<{ status: 'ready' | 'stale' | 'unavailable'; hosts: string[] }>}
  */
 export async function ensureChainAllowlistForStart(chainId) {
-  const cache = await readChainAllowlistCache(chainId);
-  const cacheState = getAllowlistCacheState(
-    cache,
-    Date.now(),
-    NETWORK_ALLOWLIST_FRESH_TTL_MS,
-    NETWORK_ALLOWLIST_MAX_STALE_MS
-  );
-  if (cacheState === 'fresh') {
-    return { status: 'ready', hosts: cache.hosts };
-  }
-
-  const inFlight = inFlightRefreshByChain.get(chainId);
-  const refreshPromise = inFlight || refreshChainWithPersist(chainId);
-
-  try {
-    const result = await withTimeout(
-      refreshPromise,
-      NETWORK_ALLOWLIST_START_REFRESH_TIMEOUT_MS
-    );
-    return { status: 'ready', hosts: result.hosts };
-  } catch {
-    const latestCache = await readChainAllowlistCache(chainId);
-    return resolveCachedAllowlist(
-      latestCache,
-      Date.now(),
-      NETWORK_ALLOWLIST_FRESH_TTL_MS,
-      NETWORK_ALLOWLIST_MAX_STALE_MS
-    );
-  }
+  return ensureAllowlistForStart({
+    chainId,
+    readCache: readChainAllowlistCache,
+    getRefreshPromise: () =>
+      inFlightRefreshByChain.get(chainId) || refreshChainWithPersist(chainId),
+    freshTtlMs: NETWORK_ALLOWLIST_FRESH_TTL_MS,
+    maxStaleMs: NETWORK_ALLOWLIST_MAX_STALE_MS,
+    refreshTimeoutMs: NETWORK_ALLOWLIST_START_REFRESH_TIMEOUT_MS,
+  });
 }
 
 /**

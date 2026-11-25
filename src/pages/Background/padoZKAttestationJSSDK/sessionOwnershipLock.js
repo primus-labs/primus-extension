@@ -36,6 +36,36 @@ export function canInitClaimSession(lockTabId, senderTabId) {
 }
 
 /**
+ * @param {{ ownerTabId?: number; startedAt?: number; requestId?: string }} claim
+ * @param {{ ownerTabId?: number; startedAt?: unknown; requestId?: unknown }} stored
+ * @returns {boolean}
+ */
+export function isCurrentStartSessionClaim(claim, stored) {
+  return (
+    claim?.ownerTabId != null &&
+    claim.ownerTabId === stored?.ownerTabId &&
+    Number.isFinite(claim.startedAt) &&
+    claim.startedAt === Number(stored?.startedAt) &&
+    typeof claim.requestId === 'string' &&
+    claim.requestId !== '' &&
+    claim.requestId === stored?.requestId
+  );
+}
+
+/**
+ * @param {unknown} currentRequestId
+ * @param {unknown} messageRequestId
+ * @returns {boolean}
+ */
+export function isCurrentRequestId(currentRequestId, messageRequestId) {
+  return (
+    typeof currentRequestId === 'string' &&
+    currentRequestId !== '' &&
+    currentRequestId === messageRequestId
+  );
+}
+
+/**
  * @param {{
  *   lockTabId?: number | null;
  *   lockStartedAt?: unknown;

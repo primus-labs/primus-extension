@@ -1,4 +1,5 @@
 import {
+  SDK_START_ATTESTATION_LOCK_REQUEST_ID_KEY,
   SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
   SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
   SDK_ATTESTATION_PRESET_KEY,
@@ -6,6 +7,7 @@ import {
 } from '@/config/constants';
 import { safeStorageGet, safeStorageRemove, safeStorageSet } from '@/utils/safeStorage';
 import { safeJsonParse } from '@/utils/utils';
+import { withSdkSessionOwnershipLock } from './sessionOwnershipLock.js';
 
 export const LEGACY_SDK_ATTESTATION_SESSION_KEYS = [
   'padoZKAttestationJSSDKBeginAttest',
@@ -35,6 +37,7 @@ export const SDK_ATTESTATION_RESULT_CACHE_KEYS = [
 export const SDK_ATTESTATION_RUNTIME_STORAGE_KEYS = [
   SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
   SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
+  SDK_START_ATTESTATION_LOCK_REQUEST_ID_KEY,
   'activeRequestAttestation',
   ...SDK_ATTESTATION_RESULT_CACHE_KEYS,
 ];
@@ -118,8 +121,93 @@ export async function clearSdkAttestationResultCache() {
   await safeStorageRemove(SDK_ATTESTATION_RESULT_CACHE_KEYS);
 }
 
-export async function clearSdkAttestationRuntimeState() {
-  await safeStorageRemove(SDK_ATTESTATION_RUNTIME_STORAGE_KEYS);
+export async function clearSdkAttestationRuntimeState(options = {}) {
+  const runtimeKeys = options.preserveActiveRequest
+    ? SDK_ATTESTATION_RUNTIME_STORAGE_KEYS.filter(
+        (key) => key !== 'activeRequestAttestation'
+      )
+    : SDK_ATTESTATION_RUNTIME_STORAGE_KEYS;
+  await safeStorageRemove(runtimeKeys);
   await clearSdkAttestationSession();
   await clearSdkAttestationPreset();
+}
+
+/**
+ * Serializes full runtime cleanup with init/start ownership changes.
+ * Use the unlocked variant only when the caller already holds this lock.
+ */
+export async function clearSdkAttestationRuntimeStateWithLock() {
+  await withSdkSessionOwnershipLock(clearSdkAttestationRuntimeState);
+}
+
+/**
+ * Atomically snapshots and clears a request only while it owns the start lock.
+ * @param {unknown} requestId
+ * @param {{
+ *   preserveActiveRequest?: boolean;
+ *   onCleared?: (result: {
+ *     cleared: true;
+ *     session: ReturnType<typeof getSdkAttestationSessionFromStorage>;
+ *     preset: ReturnType<typeof getSdkAttestationPresetFromStorage>;
+ *   }) => Promise<void> | void;
+ * }} [options]
+ * @returns {Promise<{
+ *   cleared: boolean;
+ *   session: ReturnType<typeof getSdkAttestationSessionFromStorage>;
+ *   preset: ReturnType<typeof getSdkAttestationPresetFromStorage>;
+ *   activeRequestAttestation?: unknown;
+ *   getAttestationResultRes?: unknown;
+ * }>}
+ */
+export async function teardownSdkAttestationRuntimeStateForRequest(
+  requestId,
+  options = {}
+) {
+  const notCleared = {
+    cleared: false,
+    session: null,
+    preset: null,
+    activeRequestAttestation: undefined,
+    getAttestationResultRes: undefined,
+  };
+  if (typeof requestId !== 'string' || requestId === '') return notCleared;
+
+  return withSdkSessionOwnershipLock(async () => {
+    const storage = await safeStorageGet([
+      SDK_START_ATTESTATION_LOCK_REQUEST_ID_KEY,
+      ...SDK_ATTESTATION_SESSION_STORAGE_KEYS,
+      ...SDK_ATTESTATION_PRESET_STORAGE_KEYS,
+      'activeRequestAttestation',
+      'getAttestationResultRes',
+    ]);
+    if (storage?.[SDK_START_ATTESTATION_LOCK_REQUEST_ID_KEY] !== requestId) {
+      return notCleared;
+    }
+    const result = {
+      cleared: true,
+      session: getSdkAttestationSessionFromStorage(storage),
+      preset: getSdkAttestationPresetFromStorage(storage),
+      activeRequestAttestation: storage.activeRequestAttestation,
+      getAttestationResultRes: storage.getAttestationResultRes,
+    };
+    await clearSdkAttestationRuntimeState(options);
+    if (typeof options.onCleared === 'function') {
+      try {
+        await options.onCleared(result);
+      } catch (error) {
+        console.error('SDK attestation teardown side effect failed:', error);
+      }
+    }
+    return result;
+  });
+}
+
+/**
+ * Clears an asynchronous request only while it still owns the start lock.
+ * @param {unknown} requestId
+ * @returns {Promise<boolean>}
+ */
+export async function clearSdkAttestationRuntimeStateForRequest(requestId) {
+  const result = await teardownSdkAttestationRuntimeStateForRequest(requestId);
+  return result.cleared;
 }

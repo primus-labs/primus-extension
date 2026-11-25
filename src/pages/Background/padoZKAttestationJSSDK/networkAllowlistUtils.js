@@ -11,12 +11,17 @@ export function withTimeout(promise, timeoutMs) {
   if (!timeoutMs || timeoutMs <= 0) {
     return promise;
   }
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(
+      () => reject(new Error(`timeout after ${timeoutMs}ms`)),
+      timeoutMs
+    );
+  });
   return Promise.race([
     promise,
-    new Promise((_, reject) => {
-      setTimeout(() => reject(new Error(`timeout after ${timeoutMs}ms`)), timeoutMs);
-    }),
-  ]);
+    timeout,
+  ]).finally(() => clearTimeout(timer));
 }
 
 /**
@@ -102,6 +107,82 @@ export async function readSequentiallyUntilEnd(reader, isEnd) {
 }
 
 /**
+ * Reads a contiguous contract array in bounded parallel batches.
+ * Results after the first out-of-bounds index are ignored.
+ * @template T
+ * @param {(index: number) => Promise<T>} reader
+ * @param {(error: unknown) => boolean} isEnd
+ * @param {number} batchSize
+ * @returns {Promise<T[]>}
+ */
+export async function readInBatchesUntilEnd(reader, isEnd, batchSize) {
+  if (!Number.isInteger(batchSize) || batchSize <= 0) {
+    throw new RangeError('batchSize must be a positive integer');
+  }
+
+  const results = [];
+  for (let start = 0; ; start += batchSize) {
+    const batch = await Promise.allSettled(
+      Array.from({ length: batchSize }, (_, offset) => reader(start + offset))
+    );
+    const endOffset = batch.findIndex(
+      (entry) => entry.status === 'rejected' && isEnd(entry.reason)
+    );
+    const valueCount = endOffset === -1 ? batch.length : endOffset;
+
+    for (let offset = 0; offset < valueCount; offset++) {
+      const entry = batch[offset];
+      if (entry.status === 'rejected') throw entry.reason;
+      results.push(entry.value);
+    }
+    if (endOffset !== -1) return results;
+  }
+}
+
+/**
+ * Maps a known number of entries with bounded concurrency.
+ * @template T
+ * @param {number} count
+ * @param {(index: number) => Promise<T>} reader
+ * @param {number} batchSize
+ * @returns {Promise<T[]>}
+ */
+export async function readInBatches(count, reader, batchSize) {
+  if (!Number.isInteger(batchSize) || batchSize <= 0) {
+    throw new RangeError('batchSize must be a positive integer');
+  }
+
+  const results = [];
+  for (let start = 0; start < count; start += batchSize) {
+    const end = Math.min(start + batchSize, count);
+    const batch = Array.from({ length: end - start }, (_, offset) =>
+      reader(start + offset)
+    );
+    results.push(...(await Promise.all(batch)));
+  }
+  return results;
+}
+
+/**
+ * Tries values in order and returns the first successful result.
+ * @template T
+ * @param {string[]} values
+ * @param {(value: string) => Promise<T>} reader
+ * @returns {Promise<T>}
+ */
+export async function readFromFallbacks(values, reader) {
+  let lastError;
+  for (const value of values) {
+    try {
+      return await reader(value);
+    } catch (error) {
+      lastError = error;
+    }
+  }
+  throw lastError || new Error('No fallback available');
+}
+
+/**
  * @param {{ hosts?: unknown; refreshedAt?: unknown; legacy?: boolean } | null} cache
  * @param {number} now
  * @param {number} freshTtlMs
@@ -144,4 +225,49 @@ export function resolveCachedAllowlist(
   if (state === 'fresh') return { status: 'ready', hosts: cache.hosts };
   if (state === 'stale') return { status: 'stale', hosts: cache.hosts };
   return { status: 'unavailable', hosts: [] };
+}
+
+/**
+ * Testable start-path policy around cache, refresh and timeout.
+ * @param {{
+ *   chainId: number;
+ *   readCache: (chainId: number) => Promise<{ hosts: string[]; refreshedAt: number; legacy?: boolean } | null>;
+ *   getRefreshPromise: () => Promise<{ hosts: string[]; snapshotAt: number }>;
+ *   freshTtlMs: number;
+ *   maxStaleMs: number;
+ *   refreshTimeoutMs: number;
+ *   now?: () => number;
+ *   timeout?: typeof withTimeout;
+ * }} options
+ * @returns {Promise<{ status: 'ready' | 'stale' | 'unavailable'; hosts: string[] }>}
+ */
+export async function ensureAllowlistForStart(options) {
+  const now = options.now || Date.now;
+  const timeout = options.timeout || withTimeout;
+  const cache = await options.readCache(options.chainId);
+  const cacheState = getAllowlistCacheState(
+    cache,
+    now(),
+    options.freshTtlMs,
+    options.maxStaleMs
+  );
+  if (cacheState === 'fresh') {
+    return { status: 'ready', hosts: cache.hosts };
+  }
+
+  try {
+    const result = await timeout(
+      options.getRefreshPromise(),
+      options.refreshTimeoutMs
+    );
+    return { status: 'ready', hosts: result.hosts };
+  } catch {
+    const latestCache = await options.readCache(options.chainId);
+    return resolveCachedAllowlist(
+      latestCache,
+      now(),
+      options.freshTtlMs,
+      options.maxStaleMs
+    );
+  }
 }

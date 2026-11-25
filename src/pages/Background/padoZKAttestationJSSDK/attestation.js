@@ -8,6 +8,7 @@ import { getAlgoApi } from './utils';
 import {
   STARTOFFLINETIMEOUT,
   DEFAULT_PAGE_DECODE_VERIFY_MS,
+  SDK_START_ATTESTATION_LOCK_REQUEST_ID_KEY,
   SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
   SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
 } from '@/config/constants';
@@ -41,9 +42,11 @@ import {
   getSdkAttestationSession,
   setSdkAttestationPreset,
   setSdkAttestationSession,
+  teardownSdkAttestationRuntimeStateForRequest,
 } from './sessionStorage.js';
 import {
   getStartSessionClaimAction,
+  isCurrentStartSessionClaim,
   withSdkSessionOwnershipLock,
 } from './sessionOwnershipLock.js';
 import { createTabMessageSender } from '../utils/msgTransfer.js';
@@ -73,16 +76,40 @@ function resolvePageDecodeVerifyTimeoutMs(attRequest) {
   return Math.round(n);
 }
 
-async function cleanupStartAttestationState() {
-  await clearSdkAttestationRuntimeState();
+async function cleanupStartAttestationState(claim, onCleared) {
+  return withSdkSessionOwnershipLock(async () => {
+    const {
+      [SDK_START_ATTESTATION_LOCK_TAB_ID_KEY]: ownerTabId,
+      [SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY]: startedAt,
+      [SDK_START_ATTESTATION_LOCK_REQUEST_ID_KEY]: requestId,
+    } = await safeStorageGet([
+      SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+      SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
+      SDK_START_ATTESTATION_LOCK_REQUEST_ID_KEY,
+    ]);
+    if (
+      !isCurrentStartSessionClaim(claim, {
+        ownerTabId,
+        startedAt,
+        requestId,
+      })
+    ) {
+      return false;
+    }
+    await clearSdkAttestationRuntimeState();
+    if (typeof onCleared === 'function') {
+      await onCleared();
+    }
+    return true;
+  });
 }
 
 async function cleanupStaleActiveAttestationState() {
   await clearSdkAttestationRuntimeState();
 }
 
-async function cleanupAbortedStartAttestationState() {
-  await clearSdkAttestationRuntimeState();
+async function cleanupAbortedStartAttestationState(claim, onCleared) {
+  return cleanupStartAttestationState(claim, onCleared);
 }
 
 /** Chrome scripting API when the main frame shows an interstitial / network error page. */
@@ -164,6 +191,10 @@ export async function handleStartAttestation(
   );
   const activeRequestStaleTtlMs =
     pageDecodeVerifyTimeoutMs + ACTIVE_REQUEST_STALE_GRACE_MS;
+  const requestid =
+    typeof params?.requestId === 'string' && params.requestId
+      ? params.requestId
+      : uuidv4();
 
   console.log(
     'debuge-zktls-startAttestation',
@@ -210,9 +241,15 @@ export async function handleStartAttestation(
       await cleanupStaleActiveAttestationState();
     }
 
+    const claim = {
+      ownerTabId: currentDappTabId,
+      startedAt: Date.now(),
+      requestId: requestid,
+    };
     await safeStorageSet({
       [SDK_START_ATTESTATION_LOCK_TAB_ID_KEY]: currentDappTabId,
-      [SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY]: Date.now(),
+      [SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY]: claim.startedAt,
+      [SDK_START_ATTESTATION_LOCK_REQUEST_ID_KEY]: claim.requestId,
     });
     await setSdkAttestationSession({
       ownerTabId: currentDappTabId,
@@ -220,7 +257,7 @@ export async function handleStartAttestation(
       sdkVersion: params?.sdkVersion || '',
       active: true,
     });
-    return { acquired: true };
+    return { acquired: true, claim };
   });
 
   if (!ownershipResult.acquired) {
@@ -238,7 +275,6 @@ export async function handleStartAttestation(
 
     let activeWebProofTemplate = {};
     let activeAttestationParams = {};
-    const requestid = uuidv4();
     const chainName = params.chainName;
     let walletAddress;
     let algorithmType = state.sdkVersion
@@ -252,7 +288,7 @@ export async function handleStartAttestation(
       console.log(
         `network-sdk params error: missing algoApis[${padoApiIndex}]`
       );
-      await cleanupStartAttestationState();
+      await cleanupStartAttestationState(ownershipResult.claim);
       const resParams = {
         result: false,
         errorData: {
@@ -274,7 +310,7 @@ export async function handleStartAttestation(
       );
       if (chainId == null || !getNetworkChainConfig(chainId)) {
         console.log('network-sdk params error: invalid chainId', chainId);
-        await cleanupStartAttestationState();
+        await cleanupStartAttestationState(ownershipResult.claim);
         await sendToSdk({
           type: 'padoZKAttestationJSSDK',
           name: 'getAttestationRes',
@@ -292,7 +328,7 @@ export async function handleStartAttestation(
       const allowlist = await ensureChainAllowlistForStart(chainId);
       if (allowlist.status === 'unavailable') {
         console.log('network-sdk node allowlist unavailable', chainId);
-        await cleanupStartAttestationState();
+        await cleanupStartAttestationState(ownershipResult.claim);
         await sendToSdk({
           type: 'padoZKAttestationJSSDK',
           name: 'getAttestationRes',
@@ -314,7 +350,7 @@ export async function handleStartAttestation(
       );
       if (!validation.ok) {
         console.log('network-sdk algoApis validation failed', validation.reason);
-        await cleanupStartAttestationState();
+        await cleanupStartAttestationState(ownershipResult.claim);
         await sendToSdk({
           type: 'padoZKAttestationJSSDK',
           name: 'getAttestationRes',
@@ -614,13 +650,13 @@ export async function handleStartAttestation(
             params.attRequest?.closeDataSourceOnProofComplete === true,
           };
         } else {
-          await cleanupStartAttestationState();
+          await cleanupStartAttestationState(ownershipResult.claim);
           await sendTemplateErrorToDapp('00012', sendToSdk);
           return;
         }
       } catch (e) {
         console.log('sdk template error:', e);
-        await cleanupStartAttestationState();
+        await cleanupStartAttestationState(ownershipResult.claim);
         await sendTemplateErrorToDapp('00012', sendToSdk);
         return;
       }
@@ -649,14 +685,15 @@ export async function handleStartAttestation(
     );
   } catch (e) {
     console.log('startAttestation unexpected error:', e);
-    stopKeepAlive();
-    await cleanupPageDecodeWithoutCancel();
-    await cleanupAbortedStartAttestationState();
-    try {
-      await processAlgorithmReq({ reqMethodName: 'stop', params: { noRestart: true } });
-    } catch (_stopErr) {
-      // Best-effort cleanup; primary goal is to release the lock and notify the dapp.
-    }
+    await cleanupAbortedStartAttestationState(ownershipResult.claim, async () => {
+      stopKeepAlive();
+      await cleanupPageDecodeWithoutCancel();
+      try {
+        await processAlgorithmReq({ reqMethodName: 'stop', params: { noRestart: true } });
+      } catch (_stopErr) {
+        // Best-effort cleanup; primary goal is to release the lock and notify the dapp.
+      }
+    });
     const code = isChromeMainFrameErrorPageInjectFailure(e)
       ? ERROR_DATA_SOURCE_TAB_ERROR_PAGE
       : ERROR_UNKNOWN;
@@ -684,10 +721,10 @@ async function sendTemplateErrorToDapp(code, sendToSdk) {
 }
 
 /** Handle getAttestationResult: forward to algorithm. */
-export function handleGetAttestationResult(processAlgorithmReq) {
+export function handleGetAttestationResult(processAlgorithmReq, requestId) {
   processAlgorithmReq({
     reqMethodName: 'getAttestationResult',
-    params: {},
+    params: { requestid: requestId },
   });
 }
 
@@ -697,11 +734,10 @@ export function handleGetAttestationResult(processAlgorithmReq) {
 export async function handleGetAttestationResultTimeout(
   sender,
   sendResponse,
-  processAlgorithmReq
+  processAlgorithmReq,
+  requestId
 ) {
   const state = getSdkState();
-  const session = await getSdkAttestationSession();
-  const sendToSdk = createTabMessageSender(session?.ownerTabId);
   const { configMap, attestationLogInQuery } = await safeStorageGet([
     'configMap',
     'attestationLogInQuery',
@@ -715,20 +751,31 @@ export async function handleGetAttestationResultTimeout(
     sourcePageTip: tip.sourcePageTip,
   };
 
-  stopKeepAlive();
-  await clearSdkAttestationRuntimeState();
-
-  await pageDecodeMsgListener(
+  const teardown = await teardownSdkAttestationRuntimeStateForRequest(
+    requestId,
     {
-      name: 'end',
-      params: { result: 'warn', failReason: { ...msgObj } },
-    },
-    sender,
-    sendResponse,
-    state.hasGetTwitterScreenName,
-    processAlgorithmReq
+      onCleared: async () => {
+        stopKeepAlive();
+        await pageDecodeMsgListener(
+          {
+            name: 'end',
+            params: { result: 'warn', failReason: { ...msgObj } },
+          },
+          sender,
+          sendResponse,
+          state.hasGetTwitterScreenName,
+          processAlgorithmReq
+        );
+        await processAlgorithmReq({
+          reqMethodName: 'stop',
+          params: { noRestart: true },
+        });
+      },
+    }
   );
-  processAlgorithmReq({ reqMethodName: 'stop', params: { noRestart: true } });
+  if (!teardown.cleared) return false;
+
+  const sendToSdk = createTabMessageSender(teardown.session?.ownerTabId);
   const resParams = {
     result: false,
     errorData: {
@@ -743,6 +790,7 @@ export async function handleGetAttestationResultTimeout(
     name: 'startAttestationRes',
     params: resParams,
   });
+  return true;
 }
 
 /** Called when dapp tab is closed during attestation; cancel pageDecode. */

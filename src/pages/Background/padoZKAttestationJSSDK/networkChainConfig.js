@@ -68,7 +68,7 @@ export const NETWORK_NODE_RPC_RETRIES = 3;
 export const NETWORK_NODE_READ_BATCH_SIZE = 20;
 
 /** Max wait for single-chain refresh during startAttestation before validation. */
-export const NETWORK_ALLOWLIST_START_REFRESH_TIMEOUT_MS = 6000;
+export const NETWORK_ALLOWLIST_START_REFRESH_TIMEOUT_MS = 12000;
 
 /** Max wait for single-chain refresh during init when chainId is provided. */
 export const NETWORK_ALLOWLIST_INIT_SINGLE_CHAIN_TIMEOUT_MS = 12000;

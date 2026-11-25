@@ -5,21 +5,11 @@ import { sendMsgToTab } from '../utils/utils';
 import { handleAttestationError } from './utils';
 import { eventReport } from '@/services/api/usertracker';
 import { ERROR_USER_CANCELLED } from '@/config/errorCodes';
-import {
-  SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-  SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-} from '@/config/constants';
 import { getPageDecodeState } from './state';
-import { safeStorageGet, safeStorageRemove } from '@/utils/safeStorage';
 import { safeJsonParse } from '@/utils/utils';
 import { stopKeepAlive } from '../utils/keepAlive.js';
 import {
-  clearSdkAttestationResultCache,
-  clearSdkAttestationRuntimeState,
-  getSdkAttestationPresetFromStorage,
-  getSdkAttestationSessionFromStorage,
-  SDK_ATTESTATION_PRESET_STORAGE_KEYS,
-  SDK_ATTESTATION_SESSION_STORAGE_KEYS,
+  teardownSdkAttestationRuntimeStateForRequest,
 } from '../padoZKAttestationJSSDK/sessionStorage.js';
 import { captureSdkTabMessageSender, createTabMessageSender } from '../utils/msgTransfer.js';
 
@@ -39,21 +29,25 @@ export async function sendMsgToDataSourcePage(msg) {
   return sendMsgToTab(state.dataSourcePageTabId, msg);
 }
 
-export async function handlerForSdk(processAlgorithmReq, operation) {
-  const storage = await safeStorageGet([
-    ...SDK_ATTESTATION_SESSION_STORAGE_KEYS,
-    SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-    'activeRequestAttestation',
-  ]);
-  const session = getSdkAttestationSessionFromStorage(storage);
-  const sendToSdk = createTabMessageSender(session?.ownerTabId);
-  const {
-    [SDK_START_ATTESTATION_LOCK_TAB_ID_KEY]: startAttestationLockTabId,
-    activeRequestAttestation: lastActiveRequestAttestationStr,
-  } = storage;
-  if (session?.sdkVersion) {
-    stopKeepAlive();
-    await clearSdkAttestationRuntimeState();
+export async function handlerForSdk(processAlgorithmReq, operation, requestId) {
+  const teardown = await teardownSdkAttestationRuntimeStateForRequest(
+    requestId,
+    {
+      onCleared: processAlgorithmReq
+        ? async () => {
+            stopKeepAlive();
+            await processAlgorithmReq({
+              reqMethodName: 'stop',
+              params: { noRestart: true },
+            });
+          }
+        : undefined,
+    }
+  );
+  if (!teardown.cleared) return false;
+
+  const sendToSdk = createTabMessageSender(teardown.session?.ownerTabId);
+  if (teardown.session?.sdkVersion) {
     const desc = `The user ${operation} the attestation`;
     const resParams = {
       result: false,
@@ -70,9 +64,7 @@ export async function handlerForSdk(processAlgorithmReq, operation) {
       console.log('handlerForSdk error:', error);
     }
   }
-  if (processAlgorithmReq && (lastActiveRequestAttestationStr || startAttestationLockTabId != null)) {
-    await processAlgorithmReq({ reqMethodName: 'stop', params: { noRestart: true } });
-  }
+  return true;
 }
 
 export async function eventReportGenerateFn(rawData) {
@@ -93,7 +85,10 @@ export async function handleTargetDataMissing(options = {}) {
 }
 
 /** 2-minute timeout on data source dialog; report failure and stop algorithm. */
-export async function handleDataSourcePageDialogTimeout(processAlgorithmReq) {
+export async function handleDataSourcePageDialogTimeout(
+  processAlgorithmReq,
+  requestId
+) {
   const eventInfo = {
     eventType: 'ATTESTATION_GENERATE',
     rawData: {
@@ -101,15 +96,31 @@ export async function handleDataSourcePageDialogTimeout(processAlgorithmReq) {
       detail: { code: '00014', desc: '' },
     },
   };
-  const storage = await safeStorageGet([
-    ...SDK_ATTESTATION_SESSION_STORAGE_KEYS,
-    ...SDK_ATTESTATION_PRESET_STORAGE_KEYS,
-    'activeRequestAttestation',
-    'getAttestationResultRes',
-  ]);
-  const session = getSdkAttestationSessionFromStorage(storage);
-  const sdkPreset = getSdkAttestationPresetFromStorage(storage);
-  const { activeRequestAttestation, getAttestationResultRes } = storage;
+  const teardown = await handleAttestationError(
+    {
+      desc: 'The process did not respond within 2 minutes. Please try again later.',
+      code: '00014',
+    },
+    undefined,
+    {
+      requestId,
+      onCleared: async () => {
+        stopKeepAlive();
+        await processAlgorithmReq({
+          reqMethodName: 'stop',
+          params: { noRestart: true },
+        });
+      },
+    }
+  );
+  if (!teardown) return false;
+
+  const {
+    session,
+    preset: sdkPreset,
+    activeRequestAttestation,
+    getAttestationResultRes,
+  } = teardown;
 
   const { state } = getPageDecodeState();
 
@@ -154,19 +165,8 @@ export async function handleDataSourcePageDialogTimeout(processAlgorithmReq) {
         ext: { sigFormat, event },
       });
       await eventReportFn(eventInfo.rawData);
-      await safeStorageRemove([
-        SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-        SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-        'activeRequestAttestation',
-      ]);
-      await clearSdkAttestationResultCache();
     }
   }
 
-  stopKeepAlive();
-  processAlgorithmReq({ reqMethodName: 'stop', params: { noRestart: true } });
-  await handleAttestationError({
-    desc: 'The process did not respond within 2 minutes. Please try again later.',
-    code: '00014',
-  });
+  return true;
 }
