@@ -43,18 +43,26 @@ export function isTrustedPageDecodeRuntimeSender(
 }
 
 /**
- * init establishes the owner; all later SDK controls stay bound to that tab.
+ * Initialization is per tab. Proof controls other than start stay bound to the
+ * currently active proof tab.
  * @param {string} name
  * @param {number | null | undefined} senderTabId
- * @param {number | null | undefined} ownerTabId
+ * @param {number | null | undefined} initializedOwnerTabId
+ * @param {number | null | undefined} activeOwnerTabId
  * @returns {boolean}
  */
-export function isSdkMessageFromOwner(name, senderTabId, ownerTabId) {
+export function isSdkMessageFromOwner(
+  name,
+  senderTabId,
+  initializedOwnerTabId,
+  activeOwnerTabId = initializedOwnerTabId
+) {
   if (senderTabId == null) return false;
-  if (name === 'initAttestation') {
-    return ownerTabId == null || senderTabId === ownerTabId;
+  if (name === 'initAttestation') return true;
+  if (name === 'startAttestation') {
+    return senderTabId === initializedOwnerTabId;
   }
-  return ownerTabId != null && senderTabId === ownerTabId;
+  return senderTabId === activeOwnerTabId;
 }
 
 /**

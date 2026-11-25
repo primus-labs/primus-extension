@@ -16,6 +16,7 @@ import {
 } from '../padoZKAttestationJSSDK/sessionStorage.js';
 import { isAlgorithmResponseFromOffscreen } from '../messageSenderPolicy.js';
 import { isCurrentProofResult } from '../padoZKAttestationJSSDK/sessionLifecycle.js';
+import { consumePendingSdkInitializationTabIds } from '../padoZKAttestationJSSDK/init.js';
 import { safeJsonParse } from '@/utils/utils';
 
 export async function algorithmMsgListener(
@@ -72,12 +73,13 @@ export async function algorithmMsgListener(
 
     if (resMethodName === 'start') {
       processAlgorithmReq({ reqMethodName: 'init' });
+      const pendingTabIds = consumePendingSdkInitializationTabIds();
+      await Promise.all(
+        pendingTabIds.map((tabId) => sendInitAttestationRes(tabId))
+      );
     }
 
     if (session?.sdkVersion) {
-      if (resMethodName === 'start') {
-        await sendInitAttestationRes();
-      }
       if (resMethodName === 'getAttestation') {
         await handleGetAttestation(
           message,

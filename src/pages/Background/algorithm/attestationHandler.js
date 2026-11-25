@@ -9,11 +9,7 @@ import {
   ERROR_UNKNOWN,
   ERROR_UNKNOWN_SUB_ALGO_MISSING_ERRCODE,
 } from '@/config/errorCodes';
-import {
-  SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-  SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-} from '@/config/constants';
-import { safeStorageGet, safeStorageSet, safeStorageRemove } from '@/utils/safeStorage';
+import { safeStorageGet, safeStorageSet } from '@/utils/safeStorage';
 import { safeJsonParse, parseAlgorithmReportData } from '@/utils/utils';
 import { stopKeepAlive } from '../utils/keepAlive.js';
 import {
@@ -108,8 +104,12 @@ export async function handleGetAttestation(
       processAlgorithmReq
     );
     stopKeepAlive();
-    await clearSdkAttestationRuntimeState();
-    processAlgorithmReq({ reqMethodName: 'stop', params: { noRestart: true } });
+    await clearSdkAttestationRuntimeState(() =>
+      processAlgorithmReq({
+        reqMethodName: 'stop',
+        params: { noRestart: true },
+      })
+    );
   }
 
   const resParams = { result };
@@ -337,7 +337,6 @@ export async function handleGetAttestationResult(
       tipKeyForMessage = ERROR_UNKNOWN;
     }
 
-    processAlgorithmReq({ reqMethodName: 'stop', params: { noRestart: true } });
     const msgObj = getAttestTipForCode(tipKeyForMessage, noteV2Map);
 
     await pageDecodeMsgListener(
@@ -351,7 +350,12 @@ export async function handleGetAttestationResult(
       processAlgorithmReq
     );
     stopKeepAlive();
-    await clearSdkAttestationRuntimeState();
+    await clearSdkAttestationRuntimeState(() =>
+      processAlgorithmReq({
+        reqMethodName: 'stop',
+        params: { noRestart: true },
+      })
+    );
 
     let errorCodeOut;
     /** @type {{ subCode?: string } | undefined} */

@@ -8,6 +8,7 @@ import {
 import { customFetch2, customFetch2WithMeta } from '../utils/request';
 import { safeStorageRemove } from '@/utils/safeStorage';
 import {
+  clearSdkAttestationRuntimeState,
   clearSdkAttestationResultCache,
   clearSdkAttestationPreset,
   getSdkAttestationSession,
@@ -176,22 +177,27 @@ export const handleAttestationError = async (errorData, dataSourcePageTabId, opt
   };
   const session = await getSdkAttestationSession();
   const sendToSdk = createTabMessageSender(session?.ownerTabId);
+  if (session?.sdkVersion) {
+    await clearSdkAttestationRuntimeState(options.afterSdkClear);
+  }
   await sendToSdk({
     type: 'padoZKAttestationJSSDK',
     name: 'getAttestationRes',
     params: resParams,
   });
 
-  const keysToRemove = [
-    SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-    SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-  ];
-  if (!options.skipRemoveActiveRequestAttestation) {
-    keysToRemove.push('activeRequestAttestation');
+  if (!session?.sdkVersion) {
+    const keysToRemove = [
+      SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+      SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
+    ];
+    if (!options.skipRemoveActiveRequestAttestation) {
+      keysToRemove.push('activeRequestAttestation');
+    }
+    await safeStorageRemove(keysToRemove);
+    await clearSdkAttestationResultCache();
+    await clearSdkAttestationPreset();
   }
-  await safeStorageRemove(keysToRemove);
-  await clearSdkAttestationResultCache();
-  await clearSdkAttestationPreset();
   if (dataSourcePageTabId) {
     const { state } = getPageDecodeState();
     if (dataSourcePageTabId === state.dataSourcePageTabId) {

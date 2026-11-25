@@ -51,9 +51,19 @@ export async function handlerForSdk(processAlgorithmReq, operation) {
     [SDK_START_ATTESTATION_LOCK_TAB_ID_KEY]: startAttestationLockTabId,
     activeRequestAttestation: lastActiveRequestAttestationStr,
   } = storage;
+  const shouldStopAlgorithm =
+    processAlgorithmReq &&
+    (lastActiveRequestAttestationStr || startAttestationLockTabId != null);
   if (session?.sdkVersion) {
     stopKeepAlive();
-    await clearSdkAttestationRuntimeState();
+    await clearSdkAttestationRuntimeState(() =>
+      shouldStopAlgorithm
+        ? processAlgorithmReq({
+            reqMethodName: 'stop',
+            params: { noRestart: true },
+          })
+        : undefined
+    );
     const desc = `The user ${operation} the attestation`;
     const resParams = {
       result: false,
@@ -69,8 +79,9 @@ export async function handlerForSdk(processAlgorithmReq, operation) {
     } catch (error) {
       console.log('handlerForSdk error:', error);
     }
+    return;
   }
-  if (processAlgorithmReq && (lastActiveRequestAttestationStr || startAttestationLockTabId != null)) {
+  if (shouldStopAlgorithm) {
     await processAlgorithmReq({ reqMethodName: 'stop', params: { noRestart: true } });
   }
 }
@@ -140,7 +151,7 @@ export async function handleDataSourcePageDialogTimeout(processAlgorithmReq) {
       });
       await eventReportFn(eventInfo.rawData);
     }
-  } else if (activeRequestAttestation) {
+  } else if (!session?.sdkVersion && activeRequestAttestation) {
     const parsed = safeJsonParse(activeRequestAttestation, {}) || {};
     if (!state.reportRequestIds.includes(parsed.requestid)) {
       state.reportRequestIds.push(parsed.requestid);
@@ -164,9 +175,23 @@ export async function handleDataSourcePageDialogTimeout(processAlgorithmReq) {
   }
 
   stopKeepAlive();
-  processAlgorithmReq({ reqMethodName: 'stop', params: { noRestart: true } });
-  await handleAttestationError({
+  const errorData = {
     desc: 'The process did not respond within 2 minutes. Please try again later.',
     code: '00014',
-  });
+  };
+  if (session?.sdkVersion) {
+    await handleAttestationError(errorData, undefined, {
+      afterSdkClear: () =>
+        processAlgorithmReq({
+          reqMethodName: 'stop',
+          params: { noRestart: true },
+        }),
+    });
+  } else {
+    await processAlgorithmReq({
+      reqMethodName: 'stop',
+      params: { noRestart: true },
+    });
+    await handleAttestationError(errorData);
+  }
 }

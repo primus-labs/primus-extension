@@ -5,6 +5,7 @@ import { handleInitAttestation } from './init.js';
 import {
   clearSdkAttestationRuntimeState,
   getSdkAttestationSession,
+  getSdkInitializationSession,
 } from './sessionStorage.js';
 import { authorizeSdkMessage } from './sdkMessageOwnership.js';
 import {
@@ -12,6 +13,7 @@ import {
   handleGetAttestationResult,
   handleGetAttestationResultTimeout,
   handleDappTabRemoved,
+  handleDappTabNavigated,
 } from './attestation.js';
 import { setProcessAlgorithmReqRef } from './init.js';
 import { sendSdkOwnershipError } from '../utils/msgTransfer.js';
@@ -40,11 +42,15 @@ export async function padoZKAttestationJSSDKMsgListener(
   };
 
   const senderTabId = sender?.tab?.id;
-  const session = await getSdkAttestationSession();
+  const [activeSession, initializedSession] = await Promise.all([
+    getSdkAttestationSession(),
+    getSdkInitializationSession(senderTabId),
+  ]);
   const authorized = await authorizeSdkMessage({
     name,
     senderTabId,
-    ownerTabId: session?.ownerTabId,
+    initializedOwnerTabId: initializedSession?.ownerTabId,
+    activeOwnerTabId: activeSession?.ownerTabId,
     onBlocked: async (hasOwner) => {
       console.warn('blocked SDK message from non-owner tab', {
         name,
@@ -81,9 +87,13 @@ export async function padoZKAttestationJSSDKMsgListener(
   if (name === 'removeActiveAttestation') {
     stopKeepAlive();
     await cleanupPageDecodeWithoutCancel();
-    await clearSdkAttestationRuntimeState();
     try {
-      await processAlgorithmReq({ reqMethodName: 'stop', params: { noRestart: true } });
+      await clearSdkAttestationRuntimeState(() =>
+        processAlgorithmReq({
+          reqMethodName: 'stop',
+          params: { noRestart: true },
+        })
+      );
     } catch (e) {
       console.log('removeActiveAttestation stop error', e);
     }
@@ -95,6 +105,7 @@ export async function padoZKAttestationJSSDKMsgListener(
     const initialized = await handleInitAttestation(
       params,
       sender.tab?.id,
+      sender?.url,
       processAlgorithmReq
     );
     respondOnce({ ok: initialized });
@@ -133,4 +144,8 @@ export async function padoZKAttestationJSSDKMsgListener(
 
 chrome.tabs.onRemoved.addListener((tabId) => {
   handleDappTabRemoved(tabId);
+});
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+  if (changeInfo.url) handleDappTabNavigated(tabId, changeInfo.url);
 });

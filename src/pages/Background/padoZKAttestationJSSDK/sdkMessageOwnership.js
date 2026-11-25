@@ -5,7 +5,8 @@ import { isSdkMessageFromOwner } from '../messageSenderPolicy.js';
  * @param {{
  *   name: string;
  *   senderTabId?: number;
- *   ownerTabId?: number | null;
+ *   initializedOwnerTabId?: number | null;
+ *   activeOwnerTabId?: number | null;
  *   onBlocked: (hasOwner: boolean) => Promise<void>;
  *   respond: (payload: { ok: false }) => void;
  * }} options
@@ -16,13 +17,18 @@ export async function authorizeSdkMessage(options) {
     isSdkMessageFromOwner(
       options.name,
       options.senderTabId,
-      options.ownerTabId
+      options.initializedOwnerTabId,
+      options.activeOwnerTabId
     )
   ) {
     return true;
   }
 
-  await options.onBlocked(options.ownerTabId != null);
+  const relevantOwnerTabId =
+    options.name === 'startAttestation'
+      ? options.initializedOwnerTabId
+      : options.activeOwnerTabId;
+  await options.onBlocked(relevantOwnerTabId != null);
   options.respond({ ok: false });
   return false;
 }

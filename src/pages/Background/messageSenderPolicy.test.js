@@ -73,13 +73,20 @@ describe('background message sender policy', () => {
     );
   });
 
-  it('binds SDK controls to owner while allowing init to establish it', () => {
+  it('allows per-tab initialization and binds proof controls to active owner', () => {
     assert.equal(isSdkMessageFromOwner('initAttestation', 20, null), true);
     assert.equal(isSdkMessageFromOwner('initAttestation', 20, 20), true);
-    assert.equal(isSdkMessageFromOwner('initAttestation', 21, 20), false);
+    assert.equal(isSdkMessageFromOwner('initAttestation', 21, 20), true);
     assert.equal(isSdkMessageFromOwner('startAttestation', 20, 20), true);
     assert.equal(isSdkMessageFromOwner('startAttestation', 21, 20), false);
-    assert.equal(isSdkMessageFromOwner('removeActiveAttestation', null, 20), false);
+    assert.equal(
+      isSdkMessageFromOwner('removeActiveAttestation', 21, 21, 20),
+      false
+    );
+    assert.equal(
+      isSdkMessageFromOwner('removeActiveAttestation', 20, 20, 20),
+      true
+    );
   });
 
   it('does not route algorithm commands as background responses', () => {

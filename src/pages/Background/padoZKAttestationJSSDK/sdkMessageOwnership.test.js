@@ -12,7 +12,8 @@ describe('SDK message ownership routing', () => {
     const authorized = await authorizeSdkMessage({
       name: 'startAttestation',
       senderTabId: 21,
-      ownerTabId: 20,
+      initializedOwnerTabId: 20,
+      activeOwnerTabId: 20,
       onBlocked: async (hasOwner) => {
         visibleFailures.push(hasOwner);
       },
@@ -32,7 +33,8 @@ describe('SDK message ownership routing', () => {
     const authorized = await authorizeSdkMessage({
       name: 'startAttestation',
       senderTabId: 20,
-      ownerTabId: 20,
+      initializedOwnerTabId: 20,
+      activeOwnerTabId: null,
       onBlocked: async () => {
         blocked = true;
       },
