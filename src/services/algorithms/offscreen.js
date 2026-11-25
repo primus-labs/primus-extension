@@ -198,6 +198,7 @@ chrome.runtime.onMessage.addListener((message) => {
       resType: 'algorithm',
       resMethodName: 'getAttestationResult',
       res,
+      requestid: message.params?.requestid,
     });
   } else if (message.method === 'startOffline') {
     const res = algorithmClient.startOffline(message.params);

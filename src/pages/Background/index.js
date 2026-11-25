@@ -23,8 +23,8 @@ import { setupKeepAliveListener } from './utils/keepAlive.js';
 import { ensureExtensionUserIdentity } from './identityBootstrap.js';
 import { listener as xEventMsgListener } from './xEvent/index.js';
 import {
+  clearSdkAttestationAllState,
   clearSdkAttestationResultCache,
-  clearSdkAttestationRuntimeState,
   getSdkAttestationSession,
 } from './padoZKAttestationJSSDK/sessionStorage.js';
 import {
@@ -49,7 +49,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason, version: _version }) => 
       reqMethodName: 'start',
     });
   } else if (reason === chrome.runtime.OnInstalledReason.UPDATE) {
-    await clearSdkAttestationRuntimeState();
+    await clearSdkAttestationAllState();
     await ensureExtensionUserIdentity();
   }
 });

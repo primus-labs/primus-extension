@@ -6,6 +6,10 @@ import {
 } from '@/config/constants';
 import { safeStorageGet, safeStorageRemove, safeStorageSet } from '@/utils/safeStorage';
 import { safeJsonParse } from '@/utils/utils';
+import {
+  clearSdkFullLifecycle,
+  clearSdkProofLifecycle,
+} from './sessionLifecycle.js';
 
 export const LEGACY_SDK_ATTESTATION_SESSION_KEYS = [
   'padoZKAttestationJSSDKBeginAttest',
@@ -119,7 +123,16 @@ export async function clearSdkAttestationResultCache() {
 }
 
 export async function clearSdkAttestationRuntimeState() {
-  await safeStorageRemove(SDK_ATTESTATION_RUNTIME_STORAGE_KEYS);
-  await clearSdkAttestationSession();
-  await clearSdkAttestationPreset();
+  await clearSdkProofLifecycle({
+    clearRuntime: () => safeStorageRemove(SDK_ATTESTATION_RUNTIME_STORAGE_KEYS),
+    clearPreset: clearSdkAttestationPreset,
+  });
+}
+
+export async function clearSdkAttestationAllState() {
+  await clearSdkFullLifecycle({
+    clearRuntime: () => safeStorageRemove(SDK_ATTESTATION_RUNTIME_STORAGE_KEYS),
+    clearPreset: clearSdkAttestationPreset,
+    clearSession: clearSdkAttestationSession,
+  });
 }

@@ -28,13 +28,11 @@ import {
   MONAD_CALCULATIONS,
 } from '../pageDecode/specialTemplates/lumaMonad/constants';
 import {
+  clearSdkAttestationAllState,
   clearSdkAttestationResultCache,
-  clearSdkAttestationPreset,
   clearSdkAttestationRuntimeState,
-  clearSdkAttestationSession,
   getSdkAttestationSession,
   setSdkAttestationPreset,
-  setSdkAttestationSession,
 } from './sessionStorage.js';
 import { createTabMessageSender } from '../utils/msgTransfer.js';
 import { cleanupPageDecodeWithoutCancel } from '../pageDecode/closeDataSourceTab.js';
@@ -229,12 +227,6 @@ export async function handleStartAttestation(
     await safeStorageSet({
       [SDK_START_ATTESTATION_LOCK_TAB_ID_KEY]: currentDappTabId,
       [SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY]: Date.now(),
-    });
-    await setSdkAttestationSession({
-      ownerTabId: currentDappTabId,
-      clientType: params?.clientType || '',
-      sdkVersion: state.sdkVersion,
-      active: true,
     });
     processAlgorithmReq({ reqMethodName: 'start' });
 
@@ -621,10 +613,15 @@ async function sendTemplateErrorToDapp(code, sendToSdk) {
 }
 
 /** Handle getAttestationResult: forward to algorithm. */
-export function handleGetAttestationResult(processAlgorithmReq) {
+export async function handleGetAttestationResult(processAlgorithmReq) {
+  const { activeRequestAttestation } = await safeStorageGet([
+    'activeRequestAttestation',
+  ]);
+  const activeRequest =
+    safeJsonParse(activeRequestAttestation, {}) || {};
   processAlgorithmReq({
     reqMethodName: 'getAttestationResult',
-    params: {},
+    params: { requestid: activeRequest.requestid },
   });
 }
 
@@ -686,13 +683,39 @@ export async function handleGetAttestationResultTimeout(
 export async function handleDappTabRemoved(tabId) {
   const processAlgorithmReq = getProcessAlgorithmReqRef();
   const session = await getSdkAttestationSession();
-  if (tabId === session?.ownerTabId && session?.sdkVersion) {
-    await pageDecodeMsgListener(
-      { type: 'pageDecode', name: 'cancel' },
-      {},
-      () => {},
-      getSdkState().hasGetTwitterScreenName,
-      processAlgorithmReq
-    );
+  if (tabId !== session?.ownerTabId) return;
+
+  const {
+    [SDK_START_ATTESTATION_LOCK_TAB_ID_KEY]: lockTabId,
+    activeRequestAttestation,
+  } = await safeStorageGet([
+    SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
+    'activeRequestAttestation',
+  ]);
+  const hasActiveProof =
+    lockTabId != null || Boolean(activeRequestAttestation);
+
+  try {
+    if (hasActiveProof && session?.sdkVersion) {
+      await pageDecodeMsgListener(
+        { type: 'pageDecode', name: 'cancel' },
+        {},
+        () => {},
+        getSdkState().hasGetTwitterScreenName,
+        processAlgorithmReq
+      );
+    }
+    if (!hasActiveProof && session?.active && processAlgorithmReq) {
+      try {
+        await processAlgorithmReq({
+          reqMethodName: 'stop',
+          params: { noRestart: true },
+        });
+      } catch (error) {
+        console.log('owner tab removed stop error', error);
+      }
+    }
+  } finally {
+    await clearSdkAttestationAllState();
   }
 }

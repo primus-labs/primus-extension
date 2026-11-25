@@ -1,6 +1,7 @@
 import { padoExtensionVersion } from '@/config/constants';
 import { sendMsgToTab } from './utils.js';
 import { getSdkAttestationSession } from '../padoZKAttestationJSSDK/sessionStorage.js';
+import { createSdkOwnershipErrorMessage } from '../padoZKAttestationJSSDK/sdkMessageOwnership.js';
 
 /* global chrome, console, URL */
 
@@ -48,4 +49,13 @@ export async function sendInitAttestationRes(targetTabId) {
       },
     },
   });
+}
+
+/**
+ * Sends an SDK-visible ownership failure instead of relying on the internal
+ * runtime-message ACK, which page SDK callers do not observe.
+ */
+export async function sendSdkOwnershipError(name, targetTabId, hasOwner) {
+  const sendToTab = createTabMessageSender(targetTabId);
+  await sendToTab(createSdkOwnershipErrorMessage(name, hasOwner));
 }

@@ -15,6 +15,8 @@ import {
   SDK_ATTESTATION_SESSION_STORAGE_KEYS,
 } from '../padoZKAttestationJSSDK/sessionStorage.js';
 import { isAlgorithmResponseFromOffscreen } from '../messageSenderPolicy.js';
+import { isCurrentProofResult } from '../padoZKAttestationJSSDK/sessionLifecycle.js';
+import { safeJsonParse } from '@/utils/utils';
 
 export async function algorithmMsgListener(
   message,
@@ -51,6 +53,22 @@ export async function algorithmMsgListener(
     const session = getSdkAttestationSessionFromStorage(storage);
     const preset = getSdkAttestationPresetFromStorage(storage);
     const dappTabId = session?.ownerTabId;
+    const activeRequest =
+      safeJsonParse(storage.activeRequestAttestation, {}) || {};
+    const activeRequestId = activeRequest.requestid || preset?.requestid;
+
+    if (
+      (resMethodName === 'getAttestation' ||
+        resMethodName === 'getAttestationResult') &&
+      !isCurrentProofResult(activeRequestId, message.requestid)
+    ) {
+      console.log(
+        'ignore stale algorithm response',
+        resMethodName,
+        message.requestid
+      );
+      return;
+    }
 
     if (resMethodName === 'start') {
       processAlgorithmReq({ reqMethodName: 'init' });

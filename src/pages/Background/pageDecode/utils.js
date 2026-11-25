@@ -10,7 +10,6 @@ import { safeStorageRemove } from '@/utils/safeStorage';
 import {
   clearSdkAttestationResultCache,
   clearSdkAttestationPreset,
-  clearSdkAttestationSession,
   getSdkAttestationSession,
 } from '../padoZKAttestationJSSDK/sessionStorage.js';
 import { createTabMessageSender } from '../utils/msgTransfer.js';
@@ -192,7 +191,6 @@ export const handleAttestationError = async (errorData, dataSourcePageTabId, opt
   }
   await safeStorageRemove(keysToRemove);
   await clearSdkAttestationResultCache();
-  await clearSdkAttestationSession();
   await clearSdkAttestationPreset();
   if (dataSourcePageTabId) {
     const { state } = getPageDecodeState();

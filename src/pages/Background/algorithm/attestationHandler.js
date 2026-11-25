@@ -26,6 +26,7 @@ import {
   getSdkAttestationPresetFromStorage,
   getSdkAttestationSessionFromStorage,
 } from '../padoZKAttestationJSSDK/sessionStorage.js';
+import { isCurrentProofResult } from '../padoZKAttestationJSSDK/sessionLifecycle.js';
 import { createTabMessageSender } from '../utils/msgTransfer.js';
 
 const HAS_GET_TWITTER_SCREEN_NAME = false;
@@ -203,9 +204,8 @@ export async function handleGetAttestationResult(
       content?.signature
     ) {
       const activeRequestId = parsedActiveRequestAttestation.requestid;
-      if (activeRequestId !== content?.requestid) {
-        stopKeepAlive();
-        await clearSdkAttestationRuntimeState();
+      if (!isCurrentProofResult(activeRequestId, content?.requestid)) {
+        console.log('ignore stale getAttestationResult', content?.requestid);
         return;
       }
 

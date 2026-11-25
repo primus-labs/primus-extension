@@ -6,7 +6,7 @@ import {
   clearSdkAttestationRuntimeState,
   getSdkAttestationSession,
 } from './sessionStorage.js';
-import { isSdkMessageFromOwner } from '../messageSenderPolicy.js';
+import { authorizeSdkMessage } from './sdkMessageOwnership.js';
 import {
   handleStartAttestation,
   handleGetAttestationResult,
@@ -14,6 +14,7 @@ import {
   handleDappTabRemoved,
 } from './attestation.js';
 import { setProcessAlgorithmReqRef } from './init.js';
+import { sendSdkOwnershipError } from '../utils/msgTransfer.js';
 import {
   cleanupPageDecodeWithoutCancel,
   closeSdkDataSourceTabWithoutCancel,
@@ -39,14 +40,28 @@ export async function padoZKAttestationJSSDKMsgListener(
   };
 
   const senderTabId = sender?.tab?.id;
-  const session =
-    name === 'initAttestation' ? null : await getSdkAttestationSession();
-  if (!isSdkMessageFromOwner(name, senderTabId, session?.ownerTabId)) {
-    console.warn('blocked SDK message from non-owner tab', {
-      name,
-      tabId: senderTabId,
-    });
-    respondOnce({ ok: false });
+  const session = await getSdkAttestationSession();
+  const authorized = await authorizeSdkMessage({
+    name,
+    senderTabId,
+    ownerTabId: session?.ownerTabId,
+    onBlocked: async (hasOwner) => {
+      console.warn('blocked SDK message from non-owner tab', {
+        name,
+        tabId: senderTabId,
+      });
+      if (
+        name === 'initAttestation' ||
+        name === 'startAttestation' ||
+        name === 'getAttestationResult' ||
+        name === 'getAttestationResultTimeout'
+      ) {
+        await sendSdkOwnershipError(name, senderTabId, hasOwner);
+      }
+    },
+    respond: respondOnce,
+  });
+  if (!authorized) {
     return;
   }
 
@@ -77,12 +92,12 @@ export async function padoZKAttestationJSSDKMsgListener(
   }
 
   if (name === 'initAttestation') {
-    await handleInitAttestation(
+    const initialized = await handleInitAttestation(
       params,
       sender.tab?.id,
       processAlgorithmReq
     );
-    respondOnce();
+    respondOnce({ ok: initialized });
     return;
   }
 
@@ -98,7 +113,7 @@ export async function padoZKAttestationJSSDKMsgListener(
   }
 
   if (name === 'getAttestationResult') {
-    handleGetAttestationResult(processAlgorithmReq);
+    await handleGetAttestationResult(processAlgorithmReq);
     respondOnce();
     return;
   }

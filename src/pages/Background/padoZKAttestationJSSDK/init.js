@@ -3,17 +3,16 @@
  */
 import { getSysConfig } from '@/services/api/config';
 import { updateAlgoUrl } from '@/services/api/algorithmUrlSync';
-import { getAlgoApi } from './utils';
-import { sendInitAttestationRes } from '../utils/msgTransfer.js';
 import {
-  SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-  SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-} from '@/config/constants';
-import { safeStorageGet, safeStorageSet } from '@/utils/safeStorage';
+  sendInitAttestationRes,
+  sendSdkOwnershipError,
+} from '../utils/msgTransfer.js';
+import { safeStorageSet } from '@/utils/safeStorage';
 import {
   getSdkAttestationSession,
   setSdkAttestationSession,
 } from './sessionStorage.js';
+import { claimSdkInitializationOwner } from './sessionLifecycle.js';
 
 const sdkState = {
   hasGetTwitterScreenName: false,
@@ -56,17 +55,6 @@ export async function fetchConfigure() {
   }
 }
 
-export async function storeDappTabId(id) {
-  const currentSession = await getSdkAttestationSession();
-  await setSdkAttestationSession({
-    ownerTabId: id,
-    clientType: currentSession?.clientType || '',
-    sdkVersion: currentSession?.sdkVersion || '',
-    active: true,
-  });
-  return id;
-}
-
 /**
  * Handle initAttestation: fetch config, store dapp tab, start algorithm, optionally update algo URL.
  */
@@ -80,45 +68,40 @@ export async function handleInitAttestation(params, senderTabId, processAlgorith
 
   await fetchConfigure();
 
-  const {
-    [SDK_START_ATTESTATION_LOCK_TAB_ID_KEY]: startAttestationLockTabId,
-    [SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY]: startAttestationLockStartedAt,
-  } = await safeStorageGet([
-    SDK_START_ATTESTATION_LOCK_TAB_ID_KEY,
-    SDK_START_ATTESTATION_LOCK_STARTED_AT_KEY,
-  ]);
-  if (
-    startAttestationLockTabId != null &&
-    senderTabId != null &&
-    startAttestationLockTabId !== senderTabId
-  ) {
-    console.log(
-      'debuge-zktls-initAttestation-skip-owner-override',
-      JSON.stringify({
-        senderTabId,
-        ownerTabId: startAttestationLockTabId,
-        startedAt: startAttestationLockStartedAt ?? null,
-      })
+  const ownership = await claimSdkInitializationOwner({
+    senderTabId,
+    getSession: getSdkAttestationSession,
+    setSession: setSdkAttestationSession,
+    createSession: () => ({
+      ownerTabId: senderTabId,
+      clientType: params?.clientType || '',
+      sdkVersion: params?.sdkVersion || '',
+      active: true,
+    }),
+  });
+  if (!ownership.claimed) {
+    await sendSdkOwnershipError(
+      'initAttestation',
+      senderTabId,
+      ownership.ownerTabId != null
     );
-    await sendInitAttestationRes(senderTabId);
-    return;
+    return false;
   }
 
   sdkState.sdkVersion = params?.sdkVersion;
   sdkState.sdkName = params?.sdkName;
   sdkState.isNetworkSdk = !!(sdkState.sdkName && sdkState.sdkName.indexOf('network') > -1);
 
-  const dappTabId = await storeDappTabId(senderTabId);
-  await setSdkAttestationSession({
-    ownerTabId: dappTabId,
-    clientType: params?.clientType || '',
-    sdkVersion: sdkState.sdkVersion,
-    active: true,
-  });
+  if (ownership.alreadyOwned) {
+    await sendInitAttestationRes(senderTabId);
+    return true;
+  }
+
   processAlgorithmReq({ reqMethodName: 'start' });
 
   if (!sdkState.isNetworkSdk) {
     updateAlgoUrl();
   }
-  console.log('333pado-bg-receive-initAttestation', dappTabId);
+  console.log('333pado-bg-receive-initAttestation', senderTabId);
+  return true;
 }

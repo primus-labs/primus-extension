@@ -75,6 +75,8 @@ describe('background message sender policy', () => {
 
   it('binds SDK controls to owner while allowing init to establish it', () => {
     assert.equal(isSdkMessageFromOwner('initAttestation', 20, null), true);
+    assert.equal(isSdkMessageFromOwner('initAttestation', 20, 20), true);
+    assert.equal(isSdkMessageFromOwner('initAttestation', 21, 20), false);
     assert.equal(isSdkMessageFromOwner('startAttestation', 20, 20), true);
     assert.equal(isSdkMessageFromOwner('startAttestation', 21, 20), false);
     assert.equal(isSdkMessageFromOwner('removeActiveAttestation', null, 20), false);

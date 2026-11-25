@@ -51,7 +51,9 @@ export function isTrustedPageDecodeRuntimeSender(
  */
 export function isSdkMessageFromOwner(name, senderTabId, ownerTabId) {
   if (senderTabId == null) return false;
-  if (name === 'initAttestation') return true;
+  if (name === 'initAttestation') {
+    return ownerTabId == null || senderTabId === ownerTabId;
+  }
   return ownerTabId != null && senderTabId === ownerTabId;
 }
 
